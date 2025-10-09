@@ -1,0 +1,19 @@
+{
+  "sectionTitle": "Pernah Bekerja Sama Dengan",
+  "icon": "Users",
+  "link": "/testimoni",
+  "partners": [
+    {
+      "name": "Digital Learning Studio",
+      "desc": "Pengembangan konten video edukatif berbasis interaktif."
+    },
+    {
+      "name": "Madrasah Tech Community",
+      "desc": "Kolaborasi workshop integrasi teknologi pendidikan."
+    },
+    {
+      "name": "Kampus Merdeka Project",
+      "desc": "Membantu tim riset membuat media pembelajaran berbasis web."
+    }
+  ]
+}

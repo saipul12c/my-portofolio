@@ -1,0 +1,214 @@
+{
+  "projects": [
+    {
+      "id": 1,
+      "title": "EduLearn Media",
+      "subtitle": "Platform Pembelajaran Interaktif",
+      "overview": "Sebuah platform pembelajaran digital berbasis web yang memadukan video edukatif, kuis, dan sistem penilaian otomatis untuk menciptakan pengalaman belajar interaktif dan modern.",
+      "description": "EduLearn Media dikembangkan untuk menghadirkan pengalaman belajar daring yang lebih imersif dan efektif. Menggunakan React sebagai fondasi utama, aplikasi ini menampilkan video pembelajaran, kuis interaktif, dan dashboard kemajuan siswa yang diperbarui secara real-time. Tampilan antarmuka dibuat minimalis namun dinamis dengan animasi ringan menggunakan Framer Motion.",
+      "goals": "Meningkatkan efektivitas pembelajaran daring melalui sistem pembelajaran berbasis multimedia yang menarik dan mudah diakses.",
+      "features": [
+        "Integrasi video pembelajaran HD dengan pemutar kustom",
+        "Kuis interaktif dengan perhitungan skor otomatis",
+        "Dashboard real-time untuk guru dan siswa",
+        "Mode malam/siang dan tampilan adaptif",
+        "Pencarian cepat berdasarkan materi atau kategori"
+      ],
+      "challenges": [
+        "Meningkatkan performa rendering video di perangkat low-end",
+        "Menangani state kompleks untuk sistem nilai dan progres siswa",
+        "Mengoptimalkan transisi antar halaman agar tetap halus"
+      ],
+      "timeline": [
+        { "phase": "Riset & Perancangan UI/UX", "duration": "3 minggu" },
+        { "phase": "Pengembangan Frontend", "duration": "6 minggu" },
+        { "phase": "Integrasi Data & Pengujian", "duration": "3 minggu" }
+      ],
+      "results": "Platform digunakan oleh 3 lembaga pendidikan dan mendapat rating 4.8/5 dari pengguna awal.",
+      "impact": "Meningkatkan keterlibatan siswa sebesar 30% dibandingkan metode e-learning konvensional.",
+      "role": "Frontend Developer & UI Designer",
+      "tech": ["React", "Tailwind CSS", "Framer Motion"],
+      "tools": ["Figma", "Trello", "Notion"],
+      "tags": ["Education", "React", "Learning Platform", "Interactive UI"],
+      "gallery": [
+        "https://images.unsplash.com/photo-1605902711622-cfb43c4437b5?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1603570417033-62c9071b3b50?auto=format&fit=crop&w=900&q=80"
+      ],
+      "image": "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=900&q=80",
+      "category": "Web App",
+      "date": "2024-04-20",
+      "duration": "3 bulan",
+      "collaborators": ["Digital Learning Studio"],
+      "status": "Selesai",
+      "rating": 4.8,
+      "label": "Rekomendasi",
+      "testimonials": [
+        {
+          "author": "Nurul Hidayah, Guru Digital Learning",
+          "comment": "EduLearn Media sangat membantu dalam pembelajaran daring. Dashboard progres siswanya luar biasa detail!"
+        }
+      ],
+      "link": "#",
+      "repo": "https://github.com/username/edulearn-media"
+    },
+    {
+      "id": 2,
+      "title": "Digital Islamic Gallery",
+      "subtitle": "Pameran Virtual 3D Seni Islam",
+      "overview": "Pameran seni virtual berbasis Three.js yang memungkinkan pengunjung menjelajahi ruang pamer 3D berisi karya seni Islam dengan efek pencahayaan realistis.",
+      "description": "Digital Islamic Gallery adalah proyek pameran seni Islam dalam format 3D interaktif. Dengan Three.js, pengunjung dapat menelusuri ruang virtual seolah berada di galeri fisik. Efek pencahayaan, bayangan, dan animasi kamera dibuat untuk menghadirkan atmosfer yang imersif dan menenangkan.",
+      "goals": "Mempromosikan karya seni Islam dengan pendekatan teknologi modern dan ramah pengguna.",
+      "features": [
+        "Ruang pamer 3D dengan interaksi kamera bebas",
+        "Efek pencahayaan realistis dengan ambient light",
+        "Katalog karya seni interaktif dengan tooltip informasi",
+        "Mode malam/siang dan peta lokasi galeri",
+        "Sistem preloader agar transisi masuk lebih halus"
+      ],
+      "challenges": [
+        "Menyeimbangkan kualitas visual dengan performa rendering",
+        "Membuat kontrol kamera bebas tanpa menyebabkan motion lag",
+        "Mengoptimalkan untuk perangkat dengan GPU lemah"
+      ],
+      "timeline": [
+        { "phase": "Konsep & Asset Desain", "duration": "2 minggu" },
+        { "phase": "Implementasi 3D Scene & Animasi", "duration": "4 minggu" },
+        { "phase": "Testing & Publikasi", "duration": "2 minggu" }
+      ],
+      "results": "Galeri ini menarik lebih dari 2.000 pengunjung virtual dari 5 negara selama 2 minggu pertama.",
+      "impact": "Menjadi sarana promosi seni Islam digital pertama di komunitas Madrasah Tech.",
+      "role": "Frontend 3D Developer",
+      "tech": ["Three.js", "Vite", "Tailwind CSS"],
+      "tools": ["Blender", "Figma", "GitHub"],
+      "tags": ["3D", "Design", "Islamic Art", "WebGL"],
+      "gallery": [
+        "https://images.unsplash.com/photo-1507574565994-8f27be3c4d43?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=900&q=80"
+      ],
+      "image": "https://images.unsplash.com/photo-1506765515384-028b60a970df?auto=format&fit=crop&w=900&q=80",
+      "category": "Design & 3D",
+      "date": "2023-12-12",
+      "duration": "2 bulan",
+      "collaborators": ["Madrasah Tech Community"],
+      "status": "Publik",
+      "rating": 4.5,
+      "label": "Hot",
+      "testimonials": [
+        {
+          "author": "Aisyah, Kurator Seni Digital",
+          "comment": "Visualisasi 3D-nya sangat indah dan interaktif. Cocok untuk pameran daring era modern!"
+        }
+      ],
+      "link": "#",
+      "repo": "https://github.com/username/digital-islamic-gallery"
+    },
+    {
+      "id": 3,
+      "title": "Smart Teaching Tools",
+      "subtitle": "Inovasi Media Edukasi Modern",
+      "overview": "Sistem pembelajaran berbasis Augmented Reality untuk membantu siswa memahami konsep sains secara visual dan interaktif.",
+      "description": "Smart Teaching Tools adalah proyek kolaborasi Kampus Merdeka yang menggunakan AR.js untuk menghadirkan pembelajaran sains secara visual. Aplikasi ini memungkinkan siswa memindai marker tertentu dan menampilkan model 3D interaktif. Pengajar dapat menyesuaikan konten melalui dashboard Firebase sederhana.",
+      "goals": "Menghadirkan pengalaman belajar interaktif berbasis AR untuk mendukung pembelajaran tematik di madrasah.",
+      "features": [
+        "Marker-based AR untuk menampilkan model 3D",
+        "Dashboard Firebase untuk manajemen konten",
+        "Mode presentasi interaktif",
+        "Integrasi kontrol gesture dasar",
+        "Akses langsung melalui browser tanpa instalasi"
+      ],
+      "challenges": [
+        "Menjaga stabilitas AR pada perangkat dengan kamera standar",
+        "Menyeimbangkan kualitas model 3D dengan ukuran file ringan",
+        "Mengatasi keterbatasan deteksi marker di lingkungan minim cahaya"
+      ],
+      "timeline": [
+        { "phase": "Penelitian & Desain AR Marker", "duration": "1 bulan" },
+        { "phase": "Pengembangan Aplikasi", "duration": "3 bulan" },
+        { "phase": "Uji Lapangan & Evaluasi", "duration": "1 bulan" }
+      ],
+      "results": "Peningkatan partisipasi belajar hingga 40% di sekolah pilot project.",
+      "impact": "Menjadi salah satu inovasi yang direkomendasikan oleh komunitas EdTech nasional.",
+      "role": "Frontend AR Developer",
+      "tech": ["React", "AR.js", "Firebase"],
+      "tools": ["Blender", "Trello", "Figma"],
+      "tags": ["Education", "Augmented Reality", "React", "Innovation"],
+      "gallery": [
+        "https://images.unsplash.com/photo-1605379399642-870262d3d051?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80"
+      ],
+      "image": "https://images.unsplash.com/photo-1581091215367-59ab6c0a09a2?auto=format&fit=crop&w=900&q=80",
+      "category": "EdTech",
+      "date": "2024-05-10",
+      "duration": "5 bulan",
+      "collaborators": ["Kampus Merdeka Project"],
+      "status": "Berjalan",
+      "rating": 5,
+      "label": "Baru",
+      "testimonials": [
+        {
+          "author": "Dr. Rini, Dosen Pembimbing",
+          "comment": "Pendekatan AR-nya sangat inovatif! Proyek ini punya potensi besar untuk pembelajaran STEM."
+        }
+      ],
+      "link": "#",
+      "repo": "https://github.com/username/smart-teaching-tools"
+    },
+    {
+      "id": 4,
+      "title": "MyPortfolio Website",
+      "subtitle": "Personal Branding Platform",
+      "overview": "Situs portofolio pribadi dengan desain futuristik yang menampilkan proyek, pengalaman, dan profil profesional secara elegan.",
+      "description": "MyPortfolio Website dibangun sebagai platform personal branding dengan konsep clean design dan animasi transisi yang lembut. Menggunakan Vite untuk build cepat dan Framer Motion untuk animasi elegan, website ini menampilkan proyek-proyek dengan filter interaktif dan halaman detail dinamis.",
+      "goals": "Membangun citra profesional dengan website portofolio modern yang mudah diakses dan menarik.",
+      "features": [
+        "Desain responsif dengan dark/light mode",
+        "Animasi transisi antar halaman halus",
+        "Halaman proyek dinamis dengan data JSON",
+        "Integrasi media sosial dan form kontak langsung",
+        "Optimasi SEO dan meta-tag otomatis"
+      ],
+      "challenges": [
+        "Menjaga performa cepat dengan banyak animasi",
+        "Implementasi routing dinamis berbasis React Router",
+        "Penyesuaian UI agar tetap kontras di semua tema"
+      ],
+      "timeline": [
+        { "phase": "Desain & Struktur Konten", "duration": "1 minggu" },
+        { "phase": "Pengembangan UI & Routing", "duration": "2 minggu" },
+        { "phase": "Testing & Deployment", "duration": "1 minggu" }
+      ],
+      "results": "Website ini memperkuat branding personal dan menjadi pusat dokumentasi seluruh proyek publik.",
+      "impact": "Meningkatkan koneksi profesional melalui tampilan visual dan UX yang berkesan.",
+      "role": "Fullstack Web Developer",
+      "tech": ["React", "Vite", "Tailwind CSS"],
+      "tools": ["Figma", "VS Code", "Vercel"],
+      "tags": ["Portfolio", "UI/UX", "React", "Personal Website"],
+      "gallery": [
+        "https://images.unsplash.com/photo-1602407294553-6d8eeb3f07d7?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80"
+      ],
+      "image": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=900&q=80",
+      "category": "Personal",
+      "date": "2024-02-01",
+      "duration": "1 bulan",
+      "collaborators": ["Solo Project"],
+      "status": "Online",
+      "rating": 4.7,
+      "label": "Rekomendasi",
+      "testimonials": [
+        {
+          "author": "Andi Saputra, UI Enthusiast",
+          "comment": "Desainnya clean dan responsif banget. Navigasi dan animasi terasa premium!"
+        }
+      ],
+      "link": "#",
+      "repo": "https://github.com/username/myportfolio"
+    }
+  ],
+  "categories": ["All", "Web App", "Design & 3D", "EdTech", "Personal"],
+  "labelColors": {
+    "Hot": "bg-red-500/20 text-red-400 border-red-400/40",
+    "Baru": "bg-cyan-500/20 text-cyan-300 border-cyan-400/40",
+    "Rekomendasi": "bg-purple-500/20 text-purple-300 border-purple-400/40"
+  }
+}
