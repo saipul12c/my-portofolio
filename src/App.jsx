@@ -6,6 +6,10 @@ import Footer from "./components/Footer";
 import ProtectedErrorPage from "./components/ProtectedErrorPage";
 import { ErrorProvider } from "./context/ErrorContext";
 
+// 🛡️ Tambahan: Launch guard dan halaman launching
+import LaunchGuard from "./components/LaunchGuard";
+import LaunchingPage from "./pages/LaunchingPage";
+
 // 📄 Semua halaman utama
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -36,45 +40,88 @@ export default function App() {
     <Router>
       <ErrorProvider>
         <div className="flex flex-col min-h-screen bg-gray-900 text-white selection:bg-cyan-400/30 selection:text-cyan-200">
-          {/* 🌟 Navbar global */}
-          <Navbar />
+          <Routes>
+            {/* 🚀 Halaman Launching — berdiri sendiri, tidak dibungkus LaunchGuard */}
+            <Route path="/launching" element={<LaunchingPage />} />
 
-          {/* 📌 Konten utama */}
-          <main className="flex-grow overflow-x-hidden">
-            <Routes>
-              {/* Halaman utama */}
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/photography" element={<Photography />} />
-              <Route path="/gallery" element={<Gallery />} />
-              <Route path="/testimoni" element={<Testimoni />} />
+            {/* 🌍 Semua route utama dibungkus LaunchGuard */}
+            <Route
+              path="/*"
+              element={
+                <LaunchGuard>
+                  <div className="flex flex-col min-h-screen">
+                    {/* 🌟 Navbar global */}
+                    <Navbar />
 
-              {/* Halaman proyek */}
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/projects/:id" element={<ProjectDetail />} />
+                    {/* 📌 Konten utama */}
+                    <main className="flex-grow overflow-x-hidden">
+                      <Routes>
+                        {/* 🌍 Halaman utama */}
+                        <Route path="/" element={<Home />} />
+                        <Route path="/about" element={<About />} />
+                        <Route path="/contact" element={<Contact />} />
+                        <Route path="/photography" element={<Photography />} />
+                        <Route path="/gallery" element={<Gallery />} />
+                        <Route path="/testimoni" element={<Testimoni />} />
 
-              {/* Halaman tambahan dari About */}
-              <Route path="/certificates" element={<Certificates />} />
-              <Route path="/SoftSkills" element={<SoftSkills />} />
-              <Route path="/education" element={<Education />} />
-              <Route path="/visi" element={<Visi />} />
+                        {/* 💼 Halaman proyek */}
+                        <Route path="/projects" element={<Projects />} />
+                        <Route
+                          path="/projects/:id"
+                          element={<ProjectDetail />}
+                        />
 
-              {/* Halaman error dengan proteksi */}
-              <Route path="/401" element={<ProtectedErrorPage component={Unauthorized} />} />
-              <Route path="/403" element={<ProtectedErrorPage component={Forbidden} />} />
-              <Route path="/408" element={<ProtectedErrorPage component={Timeout} />} />
-              <Route path="/500" element={<ProtectedErrorPage component={ServerError} />} />
-              <Route path="/502" element={<ProtectedErrorPage component={BadGateway} />} />
-              <Route path="/503" element={<ProtectedErrorPage component={Maintenance} />} />
+                        {/* 📘 Halaman tambahan dari About */}
+                        <Route
+                          path="/certificates"
+                          element={<Certificates />}
+                        />
+                        <Route path="/SoftSkills" element={<SoftSkills />} />
+                        <Route path="/education" element={<Education />} />
+                        <Route path="/visi" element={<Visi />} />
 
-              {/* Default fallback 404 */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
+                        {/* ⚠️ Halaman error */}
+                        <Route
+                          path="/401"
+                          element={
+                            <ProtectedErrorPage component={Unauthorized} />
+                          }
+                        />
+                        <Route
+                          path="/403"
+                          element={<ProtectedErrorPage component={Forbidden} />}
+                        />
+                        <Route
+                          path="/408"
+                          element={<ProtectedErrorPage component={Timeout} />}
+                        />
+                        <Route
+                          path="/500"
+                          element={<ProtectedErrorPage component={ServerError} />}
+                        />
+                        <Route
+                          path="/502"
+                          element={<ProtectedErrorPage component={BadGateway} />}
+                        />
+                        <Route
+                          path="/503"
+                          element={
+                            <ProtectedErrorPage component={Maintenance} />
+                          }
+                        />
 
-          {/* 🌙 Footer global */}
-          <Footer />
+                        {/* 🕳️ Fallback 404 */}
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </main>
+
+                    {/* 🌙 Footer global */}
+                    <Footer />
+                  </div>
+                </LaunchGuard>
+              }
+            />
+          </Routes>
         </div>
       </ErrorProvider>
     </Router>
