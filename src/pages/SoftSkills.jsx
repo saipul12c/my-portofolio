@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 
-// 💫 Improved SoftSkills Component – Fixed YouTube Shorts Embed
 export default function SoftSkills() {
   const [skillsData, setSkillsData] = useState(null);
   const [skills, setSkills] = useState([]);
@@ -9,15 +9,24 @@ export default function SoftSkills() {
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [selectedSkill, setSelectedSkill] = useState(null);
 
+  const navigate = useNavigate();
+  const { id } = useParams(); // ambil /skills/:id
+  const location = useLocation();
+
+  // 🔹 Ambil data JSON
   useEffect(() => {
     fetch("/data/about/softskills.json")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Gagal memuat softskills.json");
+        return res.json();
+      })
       .then((data) => setSkillsData(data))
       .catch((err) => console.error("❌ Gagal ambil data skill:", err));
   }, []);
 
+  // 🔹 Proses data: label, warna, gradient, dll.
   useEffect(() => {
-    if (!skillsData) return;
+    if (!skillsData || !Array.isArray(skillsData.skills)) return;
 
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
@@ -49,61 +58,76 @@ export default function SoftSkills() {
       ],
     };
 
-    const processed = skillsData.skills.map((skill) => {
-      const labels = [...(skill.labels || [])];
-      if (skill.dateAdded) {
-        const addedDate = new Date(skill.dateAdded);
-        if (addedDate > oneYearAgo && !labels.includes("Baru")) labels.push("Baru");
-      }
+    const processed = skillsData.skills
+      .filter(
+        (skill) =>
+          skill &&
+          typeof skill === "object" &&
+          skill.name &&
+          skill.category &&
+          skill.level
+      )
+      .map((skill) => {
+        const labels = [...(skill.labels || [])];
+        if (skill.dateAdded) {
+          const addedDate = new Date(skill.dateAdded);
+          if (addedDate > oneYearAgo && !labels.includes("Baru"))
+            labels.push("Baru");
+        }
 
-      ["Populer", "Hot"].forEach((label) => {
-        if (!labels.includes(label) && Math.random() < 0.3) labels.push(label);
+        ["Populer", "Hot"].forEach((label) => {
+          if (!labels.includes(label) && Math.random() < 0.3) labels.push(label);
+        });
+
+        const labelColorMap = {};
+        labels.forEach((label) => {
+          labelColorMap[label] =
+            colors.label[Math.floor(Math.random() * colors.label.length)];
+        });
+
+        return {
+          ...skill,
+          labels,
+          labelColorMap,
+          levelColor:
+            colors.level[Math.floor(Math.random() * colors.level.length)],
+          cardGradient:
+            colors.card[Math.floor(Math.random() * colors.card.length)],
+        };
       });
-
-      const labelColorMap = {};
-      labels.forEach((label) => {
-        labelColorMap[label] =
-          colors.label[Math.floor(Math.random() * colors.label.length)];
-      });
-
-      return {
-        ...skill,
-        labels,
-        labelColorMap,
-        levelColor:
-          colors.level[Math.floor(Math.random() * colors.level.length)],
-        cardGradient:
-          colors.card[Math.floor(Math.random() * colors.card.length)],
-      };
-    });
 
     processed.sort((a, b) => (b.labels?.length || 0) - (a.labels?.length || 0));
     setSkills(processed);
   }, [skillsData]);
+
+  // 🧭 Sinkronisasi popup dengan URL param (:id)
+  useEffect(() => {
+    if (!id || skills.length === 0) return;
+
+    const found = skills.find((s) => s.id === id);
+    if (found) setSelectedSkill(found);
+    else setSelectedSkill(null);
+  }, [id, skills]);
 
   const levelToProgress = (level) => {
     const map = { ahli: 100, mahir: 80, menengah: 60 };
     return map[level?.toLowerCase()] || 40;
   };
 
-  // ✅ Format URL YouTube agar aman untuk Shorts & normal video
+  // ✅ Format URL YouTube aman
   const formatYouTubeURL = (url) => {
     if (!url) return "";
     let videoId = "";
-
-    if (url.includes("watch?v=")) {
-      videoId = url.split("watch?v=")[1].split("&")[0];
-    } else if (url.includes("shorts/")) {
-      videoId = url.split("shorts/")[1].split("?")[0];
-    } else if (url.includes("youtu.be/")) {
-      videoId = url.split("youtu.be/")[1].split("?")[0];
-    }
-
+    if (url.includes("watch?v=")) videoId = url.split("watch?v=")[1].split("&")[0];
+    else if (url.includes("shorts/")) videoId = url.split("shorts/")[1].split("?")[0];
+    else if (url.includes("youtu.be/")) videoId = url.split("youtu.be/")[1].split("?")[0];
     return `https://www.youtube.com/embed/${videoId}?rel=0`;
   };
 
   const filteredSkills = skills.filter((skill) => {
-    const matchSearch = skill.name.toLowerCase().includes(search.toLowerCase());
+    const matchSearch = skill.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
     const matchCategory =
       categoryFilter === "All" || skill.category === categoryFilter;
     return matchSearch && matchCategory;
@@ -126,7 +150,7 @@ export default function SoftSkills() {
         className="text-center max-w-3xl mb-12"
       >
         <h1 className="text-4xl font-extrabold text-cyan-400 mb-3 drop-shadow-lg">
-          {skillsData.sectionTitle}
+          {skillsData.sectionTitle || "Soft Skills"}
         </h1>
         <p className="text-gray-300 leading-relaxed">
           Temukan berbagai kemampuan non-teknis dan profesional yang
@@ -159,13 +183,13 @@ export default function SoftSkills() {
         <AnimatePresence>
           {filteredSkills.map((skill, i) => (
             <motion.div
-              key={skill.name}
+              key={skill.id || skill.name}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: i * 0.05 }}
               viewport={{ once: true }}
               className={`relative p-6 rounded-3xl shadow-xl border border-gray-700 bg-gradient-to-br ${skill.cardGradient} hover:scale-105 hover:shadow-2xl transition-all cursor-pointer backdrop-blur-lg`}
-              onClick={() => setSelectedSkill(skill)}
+              onClick={() => navigate(`/SoftSkills/${skill.id}`)}
             >
               {skill.labels?.length > 0 && (
                 <div className="absolute -top-4 left-4 flex flex-wrap gap-2 z-10">
@@ -208,7 +232,10 @@ export default function SoftSkills() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4"
-            onClick={() => setSelectedSkill(null)}
+            onClick={() => {
+              setSelectedSkill(null);
+              navigate("/SoftSkills"); // kembali ke /skills saat ditutup
+            }}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -218,7 +245,10 @@ export default function SoftSkills() {
               onClick={(e) => e.stopPropagation()}
             >
               <button
-                onClick={() => setSelectedSkill(null)}
+                onClick={() => {
+                  setSelectedSkill(null);
+                  navigate("/SoftSkills");
+                }}
                 className="absolute top-4 right-4 p-2 bg-red-500 hover:bg-red-600 rounded-full text-white transition"
               >
                 ✕
@@ -256,7 +286,6 @@ export default function SoftSkills() {
                   </div>
                 )}
 
-                {/* Progress Bar */}
                 <div className="w-full bg-gray-700 rounded-full h-3 mt-4 overflow-hidden">
                   <motion.div
                     className="h-3 bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400"
@@ -275,12 +304,10 @@ export default function SoftSkills() {
                   <h3 className="text-pink-400 font-semibold mb-2">
                     Video Pendukung
                   </h3>
-
                   {(() => {
                     const videoURL = selectedSkill.video;
                     const embedURL = formatYouTubeURL(videoURL);
                     const isShorts = videoURL.includes("shorts/");
-
                     return (
                       <div
                         className={`overflow-hidden shadow-lg border border-gray-700 rounded-xl bg-black flex justify-center items-center ${

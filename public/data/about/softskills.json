@@ -26,6 +26,7 @@
       "popularityScore": 90
     },
     {
+      "id": "2",
       "name": "Kreativitas",
       "category": "Soft Skill",
       "level": "Ahli",
@@ -48,6 +49,7 @@
       "popularityScore": 85
     },
     {
+      "id": "3",
       "name": "Manajemen Waktu",
       "category": "Soft Skill",
       "level": "Mahir",
@@ -70,6 +72,7 @@
       "popularityScore": 70
     },
     {
+      "id": "4",
       "name": "Kolaborasi Tim",
       "category": "Soft Skill",
       "level": "Ahli",
@@ -92,6 +95,7 @@
       "popularityScore": 80
     },
     {
+      "id": "5",
       "name": "Empati dalam Mengajar",
       "category": "Soft Skill",
       "level": "Ahli",
@@ -114,6 +118,7 @@
       "popularityScore": 75
     },
     {
+      "id": "6",
       "name": "Adaptif terhadap Teknologi",
       "category": "Professional Skill",
       "level": "Mahir",
@@ -136,6 +141,7 @@
       "popularityScore": 80
     },
     {
+      "id": "7",
       "name": "Pemikiran Analitis",
       "category": "Professional Skill",
       "level": "Mahir",
@@ -158,6 +164,7 @@
       "popularityScore": 75
     },
     {
+      "id": "8",
       "name": "Kepemimpinan",
       "category": "Soft Skill",
       "level": "Mahir",
@@ -180,6 +187,7 @@
       "popularityScore": 70
     },
     {
+      "id": "9",
       "name": "Negosiasi & Persuasi",
       "category": "Professional Skill",
       "level": "Mahir",
@@ -202,6 +210,7 @@
       "popularityScore": 75
     },
     {
+      "id": "10",
       "name": "Pemecahan Masalah",
       "category": "Professional Skill",
       "level": "Ahli",
@@ -224,6 +233,7 @@
       "popularityScore": 85
     },
     {
+      "id": "11",
       "name": "Pemikiran Kritis",
       "category": "Soft Skill",
       "level": "Mahir",
@@ -246,6 +256,7 @@
       "popularityScore": 75
     },
     {
+      "id": "12",
       "name": "Digital Literacy",
       "category": "Professional Skill",
       "level": "Mahir",
@@ -268,6 +279,7 @@
       "popularityScore": 75
     },
     {
+      "id": "13",
       "name": "Manajemen Stres",
       "category": "Soft Skill",
       "level": "Mahir",
@@ -290,6 +302,7 @@
       "popularityScore": 70
     },
     {
+      "id": "14",
       "name": "Inovasi Berkelanjutan",
       "category": "Professional Skill",
       "level": "Mahir",
@@ -312,6 +325,7 @@
       "popularityScore": 75
     },
     {
+      "id": "15",
       "name": "Kecerdasan Emosional",
       "category": "Soft Skill",
       "level": "Ahli",
@@ -323,7 +337,9 @@
       "examples": [
         "Menangani konflik dengan empati",
         "Menjaga kestabilan emosi di situasi tekanan"
-      ],
+      ]
+    },
+    {
       "icon": "Brain",
       "difficulty": "Medium",
       "tags": ["emosi", "empati", "hubungan"],

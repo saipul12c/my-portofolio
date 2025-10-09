@@ -77,6 +77,8 @@ export default function App() {
                           element={<Certificates />}
                         />
                         <Route path="/SoftSkills" element={<SoftSkills />} />
+                        {/* 🧠 Detail Soft Skill */}
+                        <Route path="/SoftSkills/:id" element={<SoftSkills />} />
                         <Route path="/education" element={<Education />} />
                         <Route path="/visi" element={<Visi />} />
 
