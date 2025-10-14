@@ -25,6 +25,7 @@ import Certificates from "./pages/Certificates";
 import SoftSkills from "./pages/SoftSkills";
 import Education from "./pages/education";
 import Visi from "./pages/visi";
+import Hobbies from "./pages/Hobbies";
 
 // ⚠️ Halaman error kustom
 import NotFound from "./pages/errors/NotFound";
@@ -81,6 +82,7 @@ export default function App() {
                         <Route path="/SoftSkills/:id" element={<SoftSkills />} />
                         <Route path="/education" element={<Education />} />
                         <Route path="/visi" element={<Visi />} />
+                        <Route path="/hobbies" element={<Hobbies />} />
 
                         {/* ⚠️ Halaman error */}
                         <Route

@@ -1,0 +1,95 @@
+[
+  {
+    "id": 1,
+    "type": "image",
+    "title": "Senja di Pelabuhan",
+    "desc": "Langit jingga memantul di permukaan air, menghadirkan suasana damai dan nostalgia.",
+    "src": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80",
+    "category": "Landscape",
+    "tags": ["senja", "laut", "sunset"],
+    "uploaded_at": "2024-03-15",
+    "creator": "Syaiful Mukmin",
+    "details": {
+      "camera": "Canon EOS R6",
+      "location": "Pelabuhan Sunda Kelapa, Jakarta"
+    }
+  },
+  {
+    "id": 2,
+    "type": "video",
+    "title": "Kehidupan Kampus",
+    "desc": "Cuplikan video pendek tentang suasana belajar dan interaksi mahasiswa di kampus.",
+    "src": "https://www.w3schools.com/html/mov_bbb.mp4",
+    "category": "Education",
+    "duration": "00:02:45",
+    "tags": ["kampus", "edukasi", "mahasiswa"],
+    "uploaded_at": "2024-04-02",
+    "creator": "Tim Media Edukasi",
+    "details": {
+      "resolution": "1080p",
+      "format": "MP4"
+    }
+  },
+  {
+    "id": 3,
+    "type": "short",
+    "title": "Ngoding 10 Detik",
+    "desc": "Short video tentang tips cepat belajar React untuk pemula.",
+    "src": "https://www.w3schools.com/html/mov_bbb.mp4",
+    "category": "Tutorial",
+    "duration": "00:00:10",
+    "tags": ["coding", "react", "shorts"],
+    "uploaded_at": "2024-04-20",
+    "creator": "DevShort Indonesia",
+    "details": {
+      "aspect_ratio": "9:16",
+      "platform": "YouTube Shorts"
+    }
+  },
+  {
+    "id": 4,
+    "type": "album",
+    "title": "Koleksi Potret Bahagia",
+    "desc": "Serangkaian foto yang menggambarkan kebahagiaan sederhana dalam kehidupan sehari-hari.",
+    "category": "Portrait",
+    "src": [
+      "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["portrait", "happiness", "album"],
+    "uploaded_at": "2024-05-10",
+    "creator": "Syaiful Mukmin"
+  },
+  {
+    "id": 5,
+    "type": "image",
+    "title": "Harmoni Alam",
+    "desc": "Bidikan sederhana dedaunan hijau yang menyimbolkan ketenangan dan kehidupan.",
+    "src": "https://images.unsplash.com/photo-1521207418485-99c705420785?auto=format&fit=crop&w=900&q=80",
+    "category": "Nature",
+    "tags": ["alam", "daun", "hijau"],
+    "uploaded_at": "2024-06-12",
+    "creator": "Syaiful Mukmin",
+    "details": {
+      "camera": "Nikon Z6",
+      "location": "Taman Nasional Gunung Halimun"
+    }
+  },
+  {
+    "id": 6,
+    "type": "video",
+    "title": "Belajar Digital",
+    "desc": "Cuplikan pendek dari projek media pembelajaran berbasis video animatif.",
+    "src": "https://www.w3schools.com/html/movie.mp4",
+    "category": "Project",
+    "duration": "00:03:10",
+    "tags": ["project", "digital", "education"],
+    "uploaded_at": "2024-07-01",
+    "creator": "Media EduTech",
+    "details": {
+      "format": "MP4",
+      "software": "After Effects"
+    }
+  }
+]

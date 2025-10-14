@@ -1,200 +1,313 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Image, PlayCircle, X } from "lucide-react";
-import Maintenance from "./errors/Maintenance"; // 🚧 Tambahkan ini!
+import {
+  X,
+  Sparkles,
+  Heart,
+  MessageCircle,
+  Share2,
+  Music,
+  Eye,
+  UserCheck,
+  Tag,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import Maintenance from "./errors/Maintenance";
+
+import GalleryImages from "../components/gallery/GalleryImages";
+import GalleryVideos from "../components/gallery/GalleryVideos";
+import GalleryShorts from "../components/gallery/GalleryShorts";
+import GalleryAlbums from "../components/gallery/GalleryAlbums";
 
 export default function Gallery() {
   const [selectedMedia, setSelectedMedia] = useState(null);
-
-  // 🚧 Mode Maintenance (set false agar halaman tetap tampil)
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const videoRef = useRef(null); // ref untuk kontrol video modal
   const isMaintenance = false;
 
-  if (isMaintenance) {
-    return <Maintenance />; // Jika true → tampilkan halaman Maintenance
-  }
+  if (isMaintenance) return <Maintenance />;
 
-  const galleryItems = [
-    {
-      id: 1,
-      type: "image",
-      title: "Senja di Pelabuhan",
-      desc: "Langit jingga memantul di permukaan air, menghadirkan suasana damai dan nostalgia.",
-      src: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80",
-      category: "Landscape",
-    },
-    {
-      id: 2,
-      type: "video",
-      title: "Kehidupan Kampus",
-      desc: "Cuplikan video pendek tentang suasana belajar dan interaksi mahasiswa di kampus.",
-      src: "https://www.w3schools.com/html/mov_bbb.mp4",
-      category: "Education",
-    },
-    {
-      id: 3,
-      type: "image",
-      title: "Warna Malam",
-      desc: "Permainan warna lampu kota di malam hari, memantulkan nuansa urban yang hangat.",
-      src: "https://images.unsplash.com/photo-1508057198894-247b23fe5ade?auto=format&fit=crop&w=900&q=80",
-      category: "Street",
-    },
-    {
-      id: 4,
-      type: "image",
-      title: "Potret Bahagia",
-      desc: "Senyum tulus yang terekam tanpa skenario. Momen sederhana, makna mendalam.",
-      src: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=900&q=80",
-      category: "Portrait",
-    },
-    {
-      id: 5,
-      type: "video",
-      title: "Belajar Digital",
-      desc: "Cuplikan pendek dari projek media pembelajaran berbasis video animatif.",
-      src: "https://www.w3schools.com/html/movie.mp4",
-      category: "Project",
-    },
-    {
-      id: 6,
-      type: "image",
-      title: "Harmoni Alam",
-      desc: "Bidikan sederhana dedaunan hijau yang menyimbolkan ketenangan dan kehidupan.",
-      src: "https://images.unsplash.com/photo-1521207418485-99c705420785?auto=format&fit=crop&w=900&q=80",
-      category: "Nature",
-    },
-  ];
+  const handlePrev = () => {
+    if (!selectedMedia?.src?.length) return;
+    setCurrentIndex((prev) =>
+      prev === 0 ? selectedMedia.src.length - 1 : prev - 1
+    );
+  };
+
+  const handleNext = () => {
+    if (!selectedMedia?.src?.length) return;
+    setCurrentIndex((prev) =>
+      prev === selectedMedia.src.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const handleVideoHover = () => {
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
+  };
+
+  const handleVideoLeave = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  };
 
   return (
-    <main className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center px-6 sm:px-10 md:px-20 py-20 relative overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-0 left-0 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-10 right-10 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl animate-pulse" />
+    <main className="min-h-screen bg-gradient-to-b from-[#0f172a] via-[#111827] to-[#020617] text-white flex flex-col items-center px-6 sm:px-10 md:px-20 py-24 relative overflow-hidden">
+      {/* 🌈 Background Glow */}
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute top-0 left-10 w-80 h-80 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-2000" />
       </div>
 
-      {/* Header */}
+      {/* ✨ Header */}
       <motion.div
         className="text-center max-w-3xl mx-auto space-y-6 mb-16"
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
-          <Image className="w-10 h-10 text-cyan-400" />
-          Galeri Media
+        <h1 className="text-5xl sm:text-6xl font-extrabold leading-tight bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
+          <Sparkles className="w-10 h-10 text-cyan-300 animate-spin-slow" />
+          Galeri Gen Z
         </h1>
         <p className="text-gray-300 text-lg sm:text-xl leading-relaxed">
-          Kumpulan karya visual — foto dan video — yang menggambarkan perjalanan,
-          kreativitas, serta nilai edukatif dalam setiap frame 🎥📸
+          Eksplor vibe dunia visual — short, video, dan foto kekinian ✨📸🎬
         </p>
       </motion.div>
 
-      {/* Gallery Grid */}
-      <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-7xl"
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1 }}
-      >
-        {galleryItems.map((item) => (
-          <motion.div
-            key={item.id}
-            whileHover={{ scale: 1.03 }}
-            onClick={() => setSelectedMedia(item)}
-            className="relative overflow-hidden rounded-2xl group bg-white/5 backdrop-blur-xl border border-white/10 hover:border-cyan-400 transition-all cursor-pointer shadow-lg"
-          >
-            {/* Media Preview */}
-            {item.type === "image" ? (
-              <img
-                src={item.src}
-                alt={item.title}
-                className="w-full h-64 object-cover rounded-2xl transition-transform duration-500 group-hover:scale-110 group-hover:grayscale-[30%]"
-              />
-            ) : (
-              <video
-                src={item.src}
-                className="w-full h-64 object-cover rounded-2xl opacity-90 group-hover:opacity-100 transition"
-                muted
-                autoPlay
-                loop
-              />
-            )}
+      {/* ⚡ Modular Components */}
+      <GalleryShorts
+        onSelect={(media) => {
+          setSelectedMedia(media);
+          setCurrentIndex(0);
+        }}
+      />
+      <GalleryImages
+        onSelect={(media) => {
+          setSelectedMedia(media);
+          setCurrentIndex(0);
+        }}
+      />
+      <GalleryVideos
+        onSelect={(media) => {
+          setSelectedMedia(media);
+          setCurrentIndex(0);
+        }}
+      />
+      <GalleryAlbums
+        onSelect={(media) => {
+          setSelectedMedia(media);
+          setCurrentIndex(0);
+        }}
+      />
 
-            {/* Watermark */}
-            <p className="absolute bottom-3 right-4 text-[10px] sm:text-xs text-white/60 italic tracking-wider select-none">
-              © Syaiful Mukmin Media
-            </p>
-
-            {/* Overlay Info */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all flex flex-col justify-end p-5">
-              <h3 className="text-lg font-semibold text-white">
-                {item.title}
-              </h3>
-              <p className="text-sm text-gray-300">{item.category}</p>
-            </div>
-
-            {/* Play Icon for Videos */}
-            {item.type === "video" && (
-              <PlayCircle className="absolute top-4 left-4 w-8 h-8 text-cyan-300 opacity-80 group-hover:scale-110 transition-transform" />
-            )}
-          </motion.div>
-        ))}
-      </motion.div>
-
-      {/* Popup Modal */}
+      {/* 💫 Modal */}
       <AnimatePresence>
         {selectedMedia && (
           <motion.div
-            className="fixed inset-0 bg-black/90 backdrop-blur-lg flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="relative max-w-4xl w-full bg-white/10 border border-cyan-400/20 rounded-2xl p-4 sm:p-6 flex flex-col items-center"
-              initial={{ scale: 0.95 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.95 }}
+              className="relative bg-[#1a1a1a]/95 border border-white/10 rounded-2xl overflow-hidden shadow-2xl w-full max-w-6xl flex flex-col md:flex-row"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 100, damping: 20 }}
             >
-              {/* Close Button */}
+              {/* Tombol Close */}
               <button
                 onClick={() => setSelectedMedia(null)}
-                className="absolute top-4 right-4 text-cyan-300 hover:text-white transition"
+                className="absolute top-3 right-3 text-gray-300 hover:text-white transition z-20"
               >
                 <X size={28} />
               </button>
 
-              {/* Media Content */}
-              {selectedMedia.type === "image" ? (
-                <img
-                  src={selectedMedia.src}
-                  alt={selectedMedia.title}
-                  className="w-full h-[60vh] object-cover rounded-xl mb-6 shadow-lg"
-                />
-              ) : (
-                <video
-                  src={selectedMedia.src}
-                  controls
-                  autoPlay
-                  className="w-full h-[60vh] object-cover rounded-xl mb-6 shadow-lg"
-                />
-              )}
+              {/* Bagian kiri: Media */}
+              <div className="w-full md:w-2/3 bg-black flex items-center justify-center relative">
+                {/* Album / Image array */}
+                {selectedMedia.type === "album" ||
+                (selectedMedia.type === "image" && Array.isArray(selectedMedia.src)) ? (
+                  <>
+                    <img
+                      src={selectedMedia.src[currentIndex]}
+                      alt={`${selectedMedia.title} ${currentIndex + 1}`}
+                      className="w-full max-h-[85vh] object-contain rounded-lg"
+                    />
+                    {selectedMedia.src.length > 1 && (
+                      <>
+                        <button
+                          onClick={handlePrev}
+                          className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 p-2 rounded-full hover:bg-black/60"
+                        >
+                          <ChevronLeft size={24} />
+                        </button>
+                        <button
+                          onClick={handleNext}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 p-2 rounded-full hover:bg-black/60"
+                        >
+                          <ChevronRight size={24} />
+                        </button>
+                      </>
+                    )}
+                  </>
+                ) : selectedMedia.type === "video" || selectedMedia.type === "short" ? (
+                  <video
+                    ref={videoRef}
+                    src={selectedMedia.src}
+                    controls
+                    muted
+                    loop
+                    playsInline
+                    className="w-full max-h-[85vh] object-contain rounded-lg"
+                    onMouseEnter={handleVideoHover}
+                    onMouseLeave={handleVideoLeave}
+                  />
+                ) : (
+                  <img
+                    src={selectedMedia.src}
+                    alt={selectedMedia.title}
+                    className="w-full max-h-[85vh] object-contain rounded-lg"
+                  />
+                )}
+              </div>
 
-              {/* Watermark */}
-              <p className="absolute bottom-6 right-8 text-xs text-white/50 italic tracking-wider select-none">
-                © Syaiful Mukmin Media
-              </p>
+              {/* Bagian kanan: Info */}
+              <div className="w-full md:w-1/3 bg-[#111] text-gray-200 p-6 flex flex-col justify-between overflow-y-auto max-h-[85vh]">
+                {/* Creator Info */}
+                {selectedMedia.creator && (
+                  <div className="flex items-center gap-3 mb-5">
+                    {selectedMedia.creator.avatar && (
+                      <img
+                        src={selectedMedia.creator.avatar}
+                        alt={selectedMedia.creator.display_name || "User"}
+                        className="w-10 h-10 rounded-full border border-white/20"
+                      />
+                    )}
+                    <div>
+                      <h3 className="font-semibold text-cyan-300 flex items-center gap-1">
+                        {selectedMedia.creator.display_name || "Anonim"}
+                        {selectedMedia.creator.verified && (
+                          <span className="text-cyan-400 text-xs">✔</span>
+                        )}
+                      </h3>
+                      <p className="text-xs text-gray-400 flex items-center gap-1">
+                        @{selectedMedia.creator.username || "unknown"}
+                        <UserCheck size={12} />
+                        {(selectedMedia.creator.followers || 0).toLocaleString()} followers
+                      </p>
+                    </div>
+                  </div>
+                )}
 
-              {/* Text Info */}
-              <h2 className="text-2xl font-semibold mb-2 text-cyan-300">
-                {selectedMedia.title}
-              </h2>
-              <p className="text-gray-300 text-center max-w-2xl">
-                {selectedMedia.desc}
-              </p>
-              <p className="mt-3 text-sm text-gray-500 italic">
-                Kategori: {selectedMedia.category}
-              </p>
+                {/* Judul & Deskripsi */}
+                <h2 className="text-lg font-bold mb-2 text-white">
+                  {selectedMedia.title}
+                </h2>
+                <p className="text-sm text-gray-300 mb-3">{selectedMedia.desc}</p>
+
+                {/* Tags */}
+                {selectedMedia.tags && selectedMedia.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {selectedMedia.tags.map((tag, i) => (
+                      <span
+                        key={i}
+                        className="text-xs bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 px-2 py-1 rounded-full flex items-center gap-1"
+                      >
+                        <Tag size={12} /> {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Musik Info */}
+                {selectedMedia.music && (
+                  <div className="flex items-center gap-2 mb-4 text-sm text-gray-300">
+                    <Music size={16} className="text-cyan-400" />
+                    <span>
+                      {selectedMedia.music.title || "Unknown"} —{" "}
+                      <span className="text-gray-400">
+                        {selectedMedia.music.artist || "Unknown"}
+                      </span>
+                    </span>
+                  </div>
+                )}
+
+                {/* Engagement */}
+                {selectedMedia.engagement && (
+                  <div className="flex items-center gap-6 mb-5 text-sm text-gray-400 flex-wrap">
+                    <span className="flex items-center gap-1">
+                      <Heart className="text-pink-400" size={16} />{" "}
+                      {(selectedMedia.engagement.likes || 0).toLocaleString()}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <MessageCircle size={16} />{" "}
+                      {(selectedMedia.engagement.comments || 0).toLocaleString()}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Share2 size={16} />{" "}
+                      {(selectedMedia.engagement.shares || 0).toLocaleString()}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Eye size={16} />{" "}
+                      {(selectedMedia.engagement.views || 0).toLocaleString()}
+                    </span>
+                  </div>
+                )}
+
+                {/* Comments Preview */}
+                {selectedMedia.comments_preview &&
+                  selectedMedia.comments_preview.length > 0 && (
+                    <div className="mt-4">
+                      <h4 className="text-sm font-semibold text-gray-200 mb-2">
+                        Komentar Teratas
+                      </h4>
+                      <div className="space-y-3">
+                        {selectedMedia.comments_preview.map((c, i) => (
+                          <div key={i} className="flex gap-2">
+                            {c.avatar && (
+                              <img
+                                src={c.avatar}
+                                alt={c.user || "User"}
+                                className="w-7 h-7 rounded-full"
+                              />
+                            )}
+                            <div>
+                              <p className="text-sm">
+                                <span className="font-semibold text-cyan-300">
+                                  {c.user || "Anonim"}
+                                </span>{" "}
+                                <span className="text-gray-300">{c.comment || ""}</span>
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {(c.likes || 0).toLocaleString()} suka
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                {/* Footer info */}
+                <div className="border-t border-white/10 pt-4 mt-4">
+                  {selectedMedia.uploaded_at && (
+                    <p className="text-xs text-gray-500 italic">
+                      Diposting pada:{" "}
+                      {new Date(selectedMedia.uploaded_at).toLocaleString("id-ID", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })}
+                    </p>
+                  )}
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         )}
