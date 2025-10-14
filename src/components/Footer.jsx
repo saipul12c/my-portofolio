@@ -7,7 +7,7 @@ export default function Footer() {
 
   const portfolioLinks = [
     { to: "/projects", label: "Projects" },
-    { to: "/photography", label: "Photography" },
+    { to: "/blog", label: "Blog & Berita" },
     { to: "/gallery", label: "Gallery" },
     { to: "/certificates", label: "Certificates" },
     { to: "/visi", label: "Visi & Misi" },

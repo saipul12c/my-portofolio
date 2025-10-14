@@ -20,12 +20,15 @@ import ProjectDetail from "./pages/projek/detail/ProjectDetail";
 import Gallery from "./pages/Gallery";
 import Testimoni from "./pages/Testimoni";
 
-// 📄 Halaman tambahan dari About
+// 📄 Halaman tambahan
 import Certificates from "./pages/Certificates";
 import SoftSkills from "./pages/SoftSkills";
 import Education from "./pages/education";
 import Visi from "./pages/visi";
 import Hobbies from "./pages/Hobbies";
+import Blog from "./pages/blog/Blog";
+import BlogDetail from "./pages/blog/detail/BlogDetail";
+
 
 // ⚠️ Halaman error kustom
 import NotFound from "./pages/errors/NotFound";
@@ -83,6 +86,8 @@ export default function App() {
                         <Route path="/education" element={<Education />} />
                         <Route path="/visi" element={<Visi />} />
                         <Route path="/hobbies" element={<Hobbies />} />
+                        <Route path="/blog" element={<Blog />} />
+                        <Route path="/blog/:slug" element={<BlogDetail />} />
 
                         {/* ⚠️ Halaman error */}
                         <Route
