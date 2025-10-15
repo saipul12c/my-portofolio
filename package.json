@@ -12,6 +12,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.14",
     "@tanstack/react-virtual": "^3.13.12",
+    "compromise": "^14.14.4",
     "emailjs-com": "^3.2.0",
     "framer-motion": "^12.23.22",
     "lucide-react": "^0.545.0",
