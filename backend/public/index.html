@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manajemen Data Blog</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>📰 Manajemen Data Blog</h1>
+      <p>Kelola artikel, penulis, dan kategori dengan mudah</p>
+    </header>
+
+    <!-- Pesan status -->
+    <div id="message" class="message"></div>
+
+    <!-- ======================================================== -->
+    <!-- 🟩 FORMULIR TAMBAH / EDIT DATA -->
+    <!-- ======================================================== -->
+    <section class="form-section">
+      <h2>Tambah / Edit Artikel</h2>
+      <form id="postForm" class="form">
+        <input type="hidden" id="postId" />
+
+        <div class="form-group">
+          <label for="title">Judul</label>
+          <input type="text" id="title" placeholder="Judul artikel" required />
+        </div>
+
+        <div class="form-group">
+          <label for="author">Penulis</label>
+          <input type="text" id="author" placeholder="Nama penulis" required />
+        </div>
+
+        <div class="form-group">
+          <label for="excerpt">Deskripsi singkat</label>
+          <textarea id="excerpt" placeholder="Tulis ringkasan singkat artikel..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="category">Kategori</label>
+          <input type="text" id="category" placeholder="Contoh: Pendidikan, Teknologi..." />
+        </div>
+
+        <div class="form-group">
+          <label for="metaTitle">Meta Title (SEO)</label>
+          <input type="text" id="metaTitle" placeholder="Judul SEO artikel..." />
+        </div>
+
+        <div class="form-group">
+          <label for="metaDescription">Meta Description (SEO)</label>
+          <textarea id="metaDescription" placeholder="Deskripsi SEO artikel..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="content">Isi Artikel</label>
+          <textarea id="content" rows="6" placeholder="Tulis isi lengkap artikel di sini..."></textarea>
+        </div>
+
+        <div class="form-buttons">
+          <button type="submit" class="btn primary">💾 Simpan</button>
+          <button type="button" id="resetBtn" class="btn secondary">🔄 Reset</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- ⚠️ AKSI MASSAL -->
+    <!-- ======================================================== -->
+    <section class="bulk-actions">
+      <button onclick="deleteAll()" class="btn danger">⚠️ Hapus Semua Data</button>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 📋 TABEL DATA BLOG -->
+    <!-- ======================================================== -->
+    <section class="table-section">
+      <h2>Daftar Artikel</h2>
+      <div class="table-container">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Judul</th>
+              <th>Penulis</th>
+              <th>Tanggal</th>
+              <th>Kategori</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="6" style="text-align:center;">Memuat data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <p>© 2025 Sistem Manajemen Blog — Dibuat dengan ❤️ dan Express.js</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
