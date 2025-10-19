@@ -1,0 +1,13 @@
+# Block suspicious user agents
+SetEnvIfNoCase User-Agent "sqlmap" bad_bot
+SetEnvIfNoCase User-Agent "nikto" bad_bot
+SetEnvIfNoCase User-Agent "masscan" bad_bot
+
+Order allow,deny
+Allow from all
+Deny from env=bad_bot
+
+# Deny direct access to sensitive files
+<FilesMatch "(results\.json|\.git|config\.php|backup\.zip)">
+  Require all denied
+</FilesMatch>

@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /uji-brute
+Disallow: /admin
+Disallow: /internal
+Disallow: /private
+Disallow: /api/secret
+Allow: /
