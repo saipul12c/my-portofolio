@@ -4,8 +4,8 @@
     "type": "short",
     "title": "Ngoding 10 Detik",
     "desc": "Tips cepat belajar React untuk pemula. Dijamin langsung paham useState! ⚡",
-    "src": "https://www.w3schools.com/html/mov_bbb.mp4",
-    "thumbnail": "https://img.youtube.com/vi/abcd1234/hqdefault.jpg",
+    "src": "/videos/mov_bbb.mp4",
+    "thumbnail": "/thumbnails/short1.jpg",
     "category": "Tutorial",
     "duration": "00:00:10",
     "tags": ["coding", "react", "shorts", "belajarcepat", "devlife"],
@@ -13,117 +13,19 @@
     "creator": {
       "username": "devshort_id",
       "display_name": "DevShort Indonesia",
-      "avatar": "https://randomuser.me/api/portraits/men/75.jpg",
-      "verified": true,
-      "followers": 15400,
-      "bio": "Berbagi ilmu ngoding dengan gaya santai 😎💻",
-      "joined_at": "2021-09-15T00:00:00Z",
-      "social_links": {
-        "youtube": "https://youtube.com/@devshortid",
-        "instagram": "https://instagram.com/devshort.id",
-        "tiktok": "https://tiktok.com/@devshortid"
-      }
-    },
-    "details": {
-      "aspect_ratio": "9:16",
-      "resolution": "1080x1920",
-      "frame_rate": "60fps",
-      "platform": "YouTube Shorts",
-      "device": "iPhone 14 Pro",
-      "location": {
-        "city": "Jakarta",
-        "country": "Indonesia",
-        "geo": { "lat": -6.2088, "lon": 106.8456 }
-      },
-      "language": "id",
-      "mood": ["energetic", "educational"],
-      "filters": ["Vibrance+", "SharpEdge"],
-      "captions": {
-        "auto_generated": true,
-        "languages": ["id", "en"]
-      }
-    },
-    "music": {
-      "title": "Lo-Fi Coding Beat",
-      "artist": "CodeChillz",
-      "src": "https://example.com/music/lofi-coding.mp3",
-      "license": "free",
-      "bpm": 85,
-      "genre": "Lo-Fi",
-      "is_original_audio": false
+      "avatar": "/avatars/devshort1.jpg"
     },
     "engagement": {
       "views": 82345,
       "likes": 5200,
       "comments": 134,
       "shares": 98,
-      "saves": 215,
-      "watch_time_avg": "00:00:07",
-      "completion_rate": 0.87
+      "saves": 215
     },
-    "trending": {
-      "is_trending": true,
-      "rank": 12,
-      "trend_category": "TechTok",
-      "momentum_score": 8.9,
-      "boost_reason": "High retention rate and shares among beginner coders"
-    },
-    "ai_recommendation": {
-      "relevance_score": 9.4,
-      "predicted_audience": ["developer", "student", "tech enthusiast"],
-      "similar_videos": [12, 45, 78, 102],
-      "topic_vector": [0.81, 0.62, 0.33, 0.77]
-    },
-    "collaboration": {
-      "is_collab": true,
-      "collab_with": [
-        {
-          "username": "frontend_girl",
-          "display_name": "Frontend Girl",
-          "avatar": "https://randomuser.me/api/portraits/women/21.jpg"
-        }
-      ]
-    },
-    "comments_preview": [
-      {
-        "user": "frontend_girl",
-        "avatar": "https://randomuser.me/api/portraits/women/21.jpg",
-        "comment": "Akhirnya ngerti juga useEffect 😭🔥",
-        "likes": 52,
-        "posted_at": "2024-04-20T10:30:00Z",
-        "is_pinned": true,
-        "replies_count": 3
-      },
-      {
-        "user": "coder_kecil",
-        "avatar": "https://randomuser.me/api/portraits/men/19.jpg",
-        "comment": "Mantap bang, request versi TypeScript dong 🙏",
-        "likes": 31,
-        "posted_at": "2024-04-20T11:00:00Z",
-        "is_pinned": false
-      }
-    ],
     "user_behavior": {
       "liked_by_user": false,
-      "watched_percentage": 0.64,
-      "interacted": ["paused", "liked_suggestion"],
-      "last_viewed_at": "2024-04-23T14:05:00Z"
-    },
-    "analytics": {
-      "geo_reach": ["Jakarta", "Bandung", "Surabaya"],
-      "device_stats": {
-        "mobile": 89,
-        "desktop": 8,
-        "tablet": 3
-      },
-      "peak_view_time": "18:00-20:00 WIB"
-    },
-    "meta": {
-      "content_id": "yt_abc123xyz",
-      "hash_id": "f7d9e4b12c",
-      "version": "2.3",
-      "license": "Standard",
-      "ai_generated_thumbnail": true
+      "watched_percentage": 0,
+      "interacted": []
     }
   },
   {
@@ -131,8 +33,8 @@
     "type": "short",
     "title": "Debugging Kilat",
     "desc": "Cara cepat menemukan bug di JavaScript dalam 15 detik! ⚡🐛",
-    "src": "https://www.w3schools.com/html/movie.mp4",
-    "thumbnail": "https://img.youtube.com/vi/efgh5678/hqdefault.jpg",
+    "src": "/videos/movie.mp4",
+    "thumbnail": "/thumbnails/short2.jpg",
     "category": "Tutorial",
     "duration": "00:00:15",
     "tags": ["coding", "javascript", "debugging", "shorts", "tips"],
@@ -140,297 +42,77 @@
     "creator": {
       "username": "jsninja",
       "display_name": "JS Ninja",
-      "avatar": "https://randomuser.me/api/portraits/men/34.jpg",
-      "verified": true,
-      "followers": 10200,
-      "bio": "Ninja coding tips buat kalian yang sibuk 😎",
-      "joined_at": "2022-02-10T00:00:00Z",
-      "social_links": {
-        "youtube": "https://youtube.com/@jsninja",
-        "instagram": "https://instagram.com/js.ninja",
-        "tiktok": "https://tiktok.com/@jsninja"
-      }
-    },
-    "details": {
-      "aspect_ratio": "9:16",
-      "resolution": "1080x1920",
-      "frame_rate": "60fps",
-      "platform": "YouTube Shorts",
-      "device": "Samsung Galaxy S23",
-      "location": {
-        "city": "Bandung",
-        "country": "Indonesia",
-        "geo": { "lat": -6.9147, "lon": 107.6098 }
-      },
-      "language": "id",
-      "mood": ["energetic", "informative"],
-      "filters": ["Vibrance+", "QuickSharp"],
-      "captions": {
-        "auto_generated": true,
-        "languages": ["id", "en"]
-      }
-    },
-    "music": {
-      "title": "Fast Beat Coding",
-      "artist": "CodeRush",
-      "src": "https://example.com/music/fast-beat.mp3",
-      "license": "free",
-      "bpm": 120,
-      "genre": "Electronic",
-      "is_original_audio": false
+      "avatar": "/avatars/jsninja.jpg"
     },
     "engagement": {
       "views": 54000,
       "likes": 4300,
       "comments": 102,
       "shares": 75,
-      "saves": 110,
-      "watch_time_avg": "00:00:12",
-      "completion_rate": 0.79
+      "saves": 110
     },
-    "trending": {
-      "is_trending": true,
-      "rank": 20,
-      "trend_category": "TechTok",
-      "momentum_score": 7.5,
-      "boost_reason": "Quick actionable tips that viewers love"
-    },
-    "ai_recommendation": {
-      "relevance_score": 8.8,
-      "predicted_audience": ["developer", "student", "web enthusiast"],
-      "similar_videos": [1, 23, 56, 78],
-      "topic_vector": [0.75, 0.55, 0.40, 0.80]
-    },
-    "collaboration": {
-      "is_collab": false,
-      "collab_with": []
-    },
-    "comments_preview": [
-      {
-        "user": "bughunter",
-        "avatar": "https://randomuser.me/api/portraits/men/22.jpg",
-        "comment": "Cepet banget penjelasannya, love it!",
-        "likes": 44,
-        "posted_at": "2024-05-05T15:00:00Z",
-        "is_pinned": true,
-        "replies_count": 2
-      }
-    ],
     "user_behavior": {
       "liked_by_user": true,
       "watched_percentage": 0.95,
-      "interacted": ["liked", "shared"],
-      "last_viewed_at": "2024-05-06T09:30:00Z"
-    },
-    "analytics": {
-      "geo_reach": ["Bandung", "Jakarta", "Surabaya"],
-      "device_stats": {
-        "mobile": 85,
-        "desktop": 10,
-        "tablet": 5
-      },
-      "peak_view_time": "19:00-21:00 WIB"
-    },
-    "meta": {
-      "content_id": "yt_efgh5678",
-      "hash_id": "a9b8c7d6e5",
-      "version": "2.3",
-      "license": "Standard",
-      "ai_generated_thumbnail": false
+      "interacted": ["liked"]
     }
   },
   {
-    "id": 4,
+    "id": 3,
     "type": "short",
     "title": "React Tips 30 Detik",
     "desc": "Cara cepat bikin komponen reusable di React ⚡",
-    "src": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    "thumbnail": "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+    "src": "/videos/react_tips.mp4",
+    "thumbnail": "/thumbnails/short3.jpg",
     "category": "Tutorial",
     "duration": "00:00:30",
-    "tags": ["react", "tutorial", "shorts", "youtube"],
+    "tags": ["react", "tutorial", "shorts"],
     "uploaded_at": "2024-08-01T10:00:00Z",
     "creator": {
       "username": "reactguru",
       "display_name": "React Guru",
-      "avatar": "https://randomuser.me/api/portraits/men/50.jpg",
-      "verified": true,
-      "followers": 22000,
-      "bio": "Ngoding React gampang banget 😎",
-      "joined_at": "2020-01-01T00:00:00Z",
-      "social_links": {
-        "youtube": "https://youtube.com/@reactguru"
-      }
-    },
-    "details": {
-      "aspect_ratio": "9:16",
-      "resolution": "1080x1920",
-      "frame_rate": "60fps",
-      "platform": "YouTube",
-      "device": "MacBook Pro",
-      "location": {
-        "city": "Jakarta",
-        "country": "Indonesia",
-        "geo": { "lat": -6.2088, "lon": 106.8456 }
-      },
-      "language": "id",
-      "mood": ["educational", "energetic"],
-      "filters": ["Vibrance+"],
-      "captions": {
-        "auto_generated": true,
-        "languages": ["id", "en"]
-      }
-    },
-    "music": {
-      "title": "Energetic Beat",
-      "artist": "BeatMaster",
-      "src": "https://example.com/music/energetic-beat.mp3",
-      "license": "free",
-      "bpm": 100,
-      "genre": "Pop",
-      "is_original_audio": false
+      "avatar": "/avatars/reactguru.jpg"
     },
     "engagement": {
       "views": 65000,
       "likes": 5300,
       "comments": 120,
       "shares": 60,
-      "saves": 140,
-      "watch_time_avg": "00:00:25",
-      "completion_rate": 0.83
+      "saves": 140
     },
-    "trending": {
-      "is_trending": true,
-      "rank": 15,
-      "trend_category": "TechTok",
-      "momentum_score": 8.2,
-      "boost_reason": "Quick tips that users love"
-    },
-    "ai_recommendation": {
-      "relevance_score": 9.0,
-      "predicted_audience": ["developer", "student", "tech enthusiast"],
-      "similar_videos": [1, 2],
-      "topic_vector": [0.80, 0.60, 0.35, 0.75]
-    },
-    "collaboration": {
-      "is_collab": false,
-      "collab_with": []
-    },
-    "comments_preview": [],
     "user_behavior": {
       "liked_by_user": false,
       "watched_percentage": 0.70,
-      "interacted": ["paused"],
-      "last_viewed_at": "2024-08-02T12:00:00Z"
-    },
-    "analytics": {
-      "geo_reach": ["Jakarta", "Bandung", "Surabaya"],
-      "device_stats": { "mobile": 88, "desktop": 10, "tablet": 2 },
-      "peak_view_time": "18:00-20:00 WIB"
-    },
-    "meta": {
-      "content_id": "yt_dQw4w9WgXcQ",
-      "hash_id": "h1i2j3k4l5",
-      "version": "2.3",
-      "license": "Standard",
-      "ai_generated_thumbnail": true
+      "interacted": ["paused"]
     }
   },
   {
-    "id": 5,
+    "id": 4,
     "type": "short",
     "title": "TikTok JavaScript Hack",
     "desc": "Tips JavaScript keren dari TikTok developer ⚡🐱‍💻",
-    "src": "https://www.tiktok.com/@devshortid/video/7212345678901234567",
-    "thumbnail": "https://p16-sign-sg.tiktokcdn.com/tos-maliva-p-0068/abc123xyz_1080x1920.jpg",
+    "src": "/videos/tiktok_js_hack.mp4",
+    "thumbnail": "/thumbnails/short4.jpg",
     "category": "Tutorial",
     "duration": "00:00:20",
-    "tags": ["javascript", "tutorial", "shorts", "tiktok"],
+    "tags": ["javascript", "tutorial", "shorts"],
     "uploaded_at": "2024-09-01T12:00:00Z",
     "creator": {
       "username": "devshortid",
       "display_name": "DevShort TikTok",
-      "avatar": "https://randomuser.me/api/portraits/men/75.jpg",
-      "verified": true,
-      "followers": 15400,
-      "bio": "Berbagi ilmu ngoding sambil santai 😎",
-      "joined_at": "2021-09-15T00:00:00Z",
-      "social_links": {
-        "tiktok": "https://tiktok.com/@devshortid"
-      }
-    },
-    "details": {
-      "aspect_ratio": "9:16",
-      "resolution": "1080x1920",
-      "frame_rate": "60fps",
-      "platform": "TikTok",
-      "device": "iPhone 14",
-      "location": {
-        "city": "Jakarta",
-        "country": "Indonesia",
-        "geo": { "lat": -6.2088, "lon": 106.8456 }
-      },
-      "language": "id",
-      "mood": ["energetic", "fun"],
-      "filters": ["Vibrance+", "TikTokGlow"],
-      "captions": {
-        "auto_generated": true,
-        "languages": ["id", "en"]
-      }
-    },
-    "music": {
-      "title": "Upbeat Coding",
-      "artist": "TikBeat",
-      "src": "https://example.com/music/upbeat-coding.mp3",
-      "license": "free",
-      "bpm": 110,
-      "genre": "Pop",
-      "is_original_audio": false
+      "avatar": "/avatars/devshort2.jpg"
     },
     "engagement": {
       "views": 48000,
       "likes": 3900,
       "comments": 85,
       "shares": 55,
-      "saves": 95,
-      "watch_time_avg": "00:00:18",
-      "completion_rate": 0.80
+      "saves": 95
     },
-    "trending": {
-      "is_trending": true,
-      "rank": 18,
-      "trend_category": "TechTok",
-      "momentum_score": 7.9,
-      "boost_reason": "TikTok tips yang viral dan mudah diikuti"
-    },
-    "ai_recommendation": {
-      "relevance_score": 8.7,
-      "predicted_audience": ["developer", "student", "tech enthusiast"],
-      "similar_videos": [1, 2, 4],
-      "topic_vector": [0.78, 0.58, 0.36, 0.72]
-    },
-    "collaboration": {
-      "is_collab": false,
-      "collab_with": []
-    },
-    "comments_preview": [],
     "user_behavior": {
       "liked_by_user": true,
       "watched_percentage": 0.90,
-      "interacted": ["liked", "paused"],
-      "last_viewed_at": "2024-09-02T12:30:00Z"
-    },
-    "analytics": {
-      "geo_reach": ["Jakarta", "Bandung", "Surabaya"],
-      "device_stats": { "mobile": 86, "desktop": 12, "tablet": 2 },
-      "peak_view_time": "19:00-21:00 WIB"
-    },
-    "meta": {
-      "content_id": "tt_7212345678901234567",
-      "hash_id": "t1u2v3w4x5",
-      "version": "2.3",
-      "license": "Standard",
-      "ai_generated_thumbnail": true
+      "interacted": ["liked", "paused"]
     }
   }
 ]
