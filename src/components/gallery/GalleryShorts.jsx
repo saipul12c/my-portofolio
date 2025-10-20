@@ -40,7 +40,7 @@ export default function GalleryShorts({ onSelect }) {
   return (
     <section className="w-full max-w-7xl mx-auto mb-24">
       <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2 text-cyan-300">
-        <Film className="w-6 h-6" /> Pagelaran Shorts 🎬
+        <Film className="w-6 h-6" /> Shorts Video 🎬
       </h2>
 
       {/* 🎥 Grid Card ala Shorts */}
