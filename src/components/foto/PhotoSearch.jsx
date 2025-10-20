@@ -1,10 +1,50 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X } from "lucide-react";
 
 export default function PhotoSearch({ onSearch, allPhotos = [] }) {
   const [query, setQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [placeholderText, setPlaceholderText] = useState("");
+  const phrases = [
+    "Cari foto berdasarkan judul atau kategori...",
+    "Cari foto berdasarkan tema (Nature, City, Portrait...)",
+    "Cari foto berdasarkan mood (Dark, Bright, Warm...)",
+    "Cari foto berdasarkan gaya (Abstract, Minimal, Retro...)",
+  ];
+
+  // 🧠 Efek animasi ketik di placeholder
+  useEffect(() => {
+    let currentPhrase = 0;
+    let currentChar = 0;
+    let deleting = false;
+    let timeout;
+
+    const type = () => {
+      const fullText = phrases[currentPhrase];
+
+      if (!deleting) {
+        setPlaceholderText(fullText.slice(0, currentChar + 1));
+        currentChar++;
+        if (currentChar === fullText.length) {
+          deleting = true;
+          timeout = setTimeout(type, 2000); // jeda sebelum hapus
+          return;
+        }
+      } else {
+        setPlaceholderText(fullText.slice(0, currentChar - 1));
+        currentChar--;
+        if (currentChar === 0) {
+          deleting = false;
+          currentPhrase = (currentPhrase + 1) % phrases.length;
+        }
+      }
+      timeout = setTimeout(type, deleting ? 40 : 80); // kecepatan ketik/hapus
+    };
+
+    type();
+    return () => clearTimeout(timeout);
+  }, []);
 
   // Ambil daftar unik title + category dari semua foto
   const suggestions = allPhotos
@@ -19,7 +59,7 @@ export default function PhotoSearch({ onSearch, allPhotos = [] }) {
     setQuery(value);
     setShowSuggestions(true);
     onSearch(value);
-    window.scrollTo({ top: 0, behavior: "smooth" }); // ⬅️ Auto-scroll ke atas
+    window.scrollTo({ top: 0, behavior: "smooth" }); // Auto-scroll ke atas
   };
 
   // 🖱️ Saat user klik suggestion
@@ -27,14 +67,14 @@ export default function PhotoSearch({ onSearch, allPhotos = [] }) {
     setQuery(value);
     setShowSuggestions(false);
     onSearch(value);
-    window.scrollTo({ top: 0, behavior: "smooth" }); // ⬅️ Auto-scroll juga
+    window.scrollTo({ top: 0, behavior: "smooth" }); // Auto-scroll juga
   };
 
   const clearSearch = () => {
     setQuery("");
     setShowSuggestions(false);
     onSearch("");
-    window.scrollTo({ top: 0, behavior: "smooth" }); // ⬅️ dan reset ke atas
+    window.scrollTo({ top: 0, behavior: "smooth" }); // Reset ke atas
   };
 
   return (
@@ -48,7 +88,7 @@ export default function PhotoSearch({ onSearch, allPhotos = [] }) {
       <Search className="absolute left-3 top-3.5 text-gray-400" size={18} />
       <input
         type="text"
-        placeholder="Cari foto berdasarkan judul atau kategori..."
+        placeholder={placeholderText || "Cari foto berdasarkan judul atau kategori..."}
         value={query}
         onChange={handleChange}
         onFocus={() => setShowSuggestions(true)}
@@ -75,14 +115,14 @@ export default function PhotoSearch({ onSearch, allPhotos = [] }) {
             initial={{ opacity: 0, scale: 0.95, y: -5 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -5 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
           >
             {suggestions.map((item, i) => (
               <motion.li
                 key={i}
                 onClick={() => handleSelect(item)}
                 whileHover={{
-                  backgroundColor: 'rgba(34,211,238,0.15)',
+                  backgroundColor: "rgba(34,211,238,0.15)",
                   x: 4,
                   transition: { duration: 0.2 },
                 }}

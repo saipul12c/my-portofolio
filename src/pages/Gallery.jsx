@@ -15,8 +15,25 @@ import { Sparkles } from "lucide-react";
 export default function Gallery() {
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const videoRef = useRef(null); // ref untuk kontrol video modal
+  const [shortsList, setShortsList] = useState([]); // daftar data short aktif
+  const videoRef = useRef(null);
   const isMaintenance = false;
+
+  // 🌀 Navigasi ke short berikutnya
+  const handleNext = () => {
+    if (!shortsList.length) return;
+    const nextIndex = (currentIndex + 1) % shortsList.length;
+    setSelectedMedia(shortsList[nextIndex]);
+    setCurrentIndex(nextIndex);
+  };
+
+  // 🌀 Navigasi ke short sebelumnya
+  const handlePrev = () => {
+    if (!shortsList.length) return;
+    const prevIndex = (currentIndex - 1 + shortsList.length) % shortsList.length;
+    setSelectedMedia(shortsList[prevIndex]);
+    setCurrentIndex(prevIndex);
+  };
 
   if (isMaintenance) return <Maintenance />;
 
@@ -45,16 +62,39 @@ export default function Gallery() {
       </motion.div>
 
       {/* ⚡ Modular Components */}
-      <GalleryShorts onSelect={(media) => { setSelectedMedia(media); setCurrentIndex(0); }} />
-      <GalleryImages onSelect={(media) => { setSelectedMedia(media); setCurrentIndex(0); }} />
-      <GalleryVideos onSelect={(media) => { setSelectedMedia(media); setCurrentIndex(0); }} />
-      <GalleryAlbums onSelect={(media) => { setSelectedMedia(media); setCurrentIndex(0); }} />
+      <GalleryShorts
+        onSelect={(media, list, index) => {
+          setSelectedMedia(media);
+          setShortsList(list); // simpan semua short
+          setCurrentIndex(index); // index aktif
+        }}
+      />
+      <GalleryImages
+        onSelect={(media) => {
+          setSelectedMedia(media);
+          setCurrentIndex(0);
+        }}
+      />
+      <GalleryVideos
+        onSelect={(media) => {
+          setSelectedMedia(media);
+          setCurrentIndex(0);
+        }}
+      />
+      <GalleryAlbums
+        onSelect={(media) => {
+          setSelectedMedia(media);
+          setCurrentIndex(0);
+        }}
+      />
 
       {/* 💫 Modals */}
       <GalleryShortModal
         selectedMedia={selectedMedia}
         setSelectedMedia={setSelectedMedia}
         videoRef={videoRef}
+        handleNext={handleNext}
+        handlePrev={handlePrev}
       />
       <GalleryMediaModal
         selectedMedia={selectedMedia}

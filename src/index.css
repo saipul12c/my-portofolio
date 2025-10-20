@@ -24,3 +24,7 @@
 *::-webkit-scrollbar-thumb:hover {
   background-color: #eab308; /* warna saat hover */
 }
+
+input::placeholder {
+  transition: opacity 0.3s ease;
+}

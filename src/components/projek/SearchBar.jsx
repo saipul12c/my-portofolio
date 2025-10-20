@@ -17,6 +17,42 @@ export default function SearchBar({
   const [ghostText, setGhostText] = useState("");
   const inputRef = useRef(null);
 
+  // ✨ Placeholder typing animation
+  const [placeholderText, setPlaceholderText] = useState("");
+  const phrases = ["AI", "Game", "EduTech", "Portfolio", "Web App", "3D Project"];
+
+  useEffect(() => {
+    let currentPhrase = 0;
+    let currentChar = 0;
+    let deleting = false;
+    let timeout;
+
+    const type = () => {
+      const fullText = `Cari proyek... (${phrases[currentPhrase]})`;
+
+      if (!deleting) {
+        setPlaceholderText(fullText.slice(0, currentChar + 1));
+        currentChar++;
+        if (currentChar === fullText.length) {
+          deleting = true;
+          timeout = setTimeout(type, 2000); // jeda sebelum menghapus
+          return;
+        }
+      } else {
+        setPlaceholderText(fullText.slice(0, currentChar - 1));
+        currentChar--;
+        if (currentChar === 0) {
+          deleting = false;
+          currentPhrase = (currentPhrase + 1) % phrases.length;
+        }
+      }
+      timeout = setTimeout(type, deleting ? 40 : 80); // kecepatan ketik/hapus
+    };
+
+    type();
+    return () => clearTimeout(timeout);
+  }, []);
+
   // 📜 Ambil riwayat dari localStorage
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem("searchHistory") || "[]");
@@ -158,13 +194,13 @@ export default function SearchBar({
           <input
             ref={inputRef}
             type="text"
-            placeholder="Cari proyek... (AI, Game, EduTech...)"
+            placeholder={placeholderText || "Cari proyek..."}
             value={searchTerm}
             onFocus={() => setShowSuggestions(true)}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
             onChange={handleSearchChange}
             onKeyDown={handleKeyDown}
-            className="absolute top-0 left-0 w-full bg-transparent border border-white/10 rounded-xl pl-12 pr-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-400 placeholder-gray-400 z-10"
+            className="absolute top-0 left-0 w-full bg-transparent border border-white/10 rounded-xl pl-12 pr-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-400 placeholder-gray-400 z-10 transition-all duration-300"
             style={{ caretColor: "#22d3ee" }}
           />
         </div>
@@ -228,7 +264,11 @@ export default function SearchBar({
         >
           {categories.map((cat, i) => (
             <option key={i} value={cat} className="bg-[#0f172a] text-white">
-              {cat.includes("Popular") ? `🔥 ${cat}` : cat.includes("New") ? `🆕 ${cat}` : cat}
+              {cat.includes("Popular")
+                ? `🔥 ${cat}`
+                : cat.includes("New")
+                ? `🆕 ${cat}`
+                : cat}
             </option>
           ))}
         </select>

@@ -53,10 +53,10 @@ export default function GalleryShorts({ onSelect }) {
           transition={{ duration: 0.5 }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {currentData.map((short) => (
+          {currentData.map((short, index) => (
             <motion.div
               key={short.id}
-              onClick={() => onSelect && onSelect(short)}
+              onClick={() => onSelect && onSelect(short, currentData, index)} // 🔹 kirim data lengkap
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 180, damping: 15 }}
               className="relative rounded-2xl overflow-hidden cursor-pointer group"

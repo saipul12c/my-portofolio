@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 
@@ -6,12 +6,70 @@ export default function SoftSkills() {
   const [skillsData, setSkillsData] = useState(null);
   const [skills, setSkills] = useState([]);
   const [search, setSearch] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [recentSearch, setRecentSearch] = useState([]);
+  const [activeSuggestion, setActiveSuggestion] = useState(-1);
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [selectedSkill, setSelectedSkill] = useState(null);
+  const [placeholderText, setPlaceholderText] = useState("");
 
   const navigate = useNavigate();
-  const { id } = useParams(); // ambil /skills/:id
+  const { id } = useParams();
   const location = useLocation();
+  const searchRef = useRef(null);
+
+  // ✨ Animasi placeholder (Typewriter)
+  useEffect(() => {
+    const phrases = [
+      "Cari skill...",
+      "Cari kemampuan komunikasi...",
+      "Cari kreativitas...",
+      "Cari teamwork...",
+      "Cari kepemimpinan...",
+    ];
+
+    let currentPhrase = 0;
+    let currentChar = 0;
+    let deleting = false;
+    let timeout;
+
+    const type = () => {
+      const fullText = phrases[currentPhrase];
+
+      if (!deleting) {
+        setPlaceholderText(fullText.slice(0, currentChar + 1));
+        currentChar++;
+        if (currentChar === fullText.length) {
+          deleting = true;
+          timeout = setTimeout(type, 2000);
+          return;
+        }
+      } else {
+        setPlaceholderText(fullText.slice(0, currentChar - 1));
+        currentChar--;
+        if (currentChar === 0) {
+          deleting = false;
+          currentPhrase = (currentPhrase + 1) % phrases.length;
+        }
+      }
+      timeout = setTimeout(type, deleting ? 40 : 80);
+    };
+
+    type();
+    return () => clearTimeout(timeout);
+  }, []);
+
+  // 🧭 Keyboard Shortcut: Ctrl+F / Cmd+F untuk fokus ke search bar
+  useEffect(() => {
+    const handleShortcut = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "f") {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleShortcut);
+    return () => window.removeEventListener("keydown", handleShortcut);
+  }, []);
 
   // 🔹 Ambil data JSON
   useEffect(() => {
@@ -24,7 +82,7 @@ export default function SoftSkills() {
       .catch((err) => console.error("❌ Gagal ambil data skill:", err));
   }, []);
 
-  // 🔹 Proses data: label, warna, gradient, dll.
+  // 🔹 Proses data skill
   useEffect(() => {
     if (!skillsData || !Array.isArray(skillsData.skills)) return;
 
@@ -100,21 +158,66 @@ export default function SoftSkills() {
     setSkills(processed);
   }, [skillsData]);
 
-  // 🧭 Sinkronisasi popup dengan URL param (:id)
+  // 🧭 Sinkronisasi popup
   useEffect(() => {
     if (!id || skills.length === 0) return;
-
     const found = skills.find((s) => s.id === id);
-    if (found) setSelectedSkill(found);
-    else setSelectedSkill(null);
+    setSelectedSkill(found || null);
   }, [id, skills]);
+
+  // 🧩 Fuzzy search: bisa cari di name, description, category, dan labels
+  const filteredSkills = skills.filter((skill) => {
+    const q = search.toLowerCase();
+    const matchSearch =
+      skill.name.toLowerCase().includes(q) ||
+      skill.description?.toLowerCase().includes(q) ||
+      skill.category?.toLowerCase().includes(q) ||
+      skill.labels?.some((l) => l.toLowerCase().includes(q));
+    const matchCategory =
+      categoryFilter === "All" || skill.category === categoryFilter;
+    return matchSearch && matchCategory;
+  });
+
+  // 🪄 Auto-suggestions mirip Chrome
+  useEffect(() => {
+    if (search.trim().length === 0) {
+      setSuggestions([]);
+      return;
+    }
+    const matched = skills
+      .filter((s) => s.name.toLowerCase().includes(search.toLowerCase()))
+      .slice(0, 5);
+    setSuggestions(matched);
+  }, [search, skills]);
+
+  const handleSelectSuggestion = (text) => {
+    setSearch(text);
+    setSuggestions([]);
+    if (!recentSearch.includes(text))
+      setRecentSearch((prev) => [text, ...prev.slice(0, 4)]);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveSuggestion((p) => Math.min(p + 1, suggestions.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveSuggestion((p) => Math.max(p - 1, 0));
+    } else if (e.key === "Enter") {
+      if (activeSuggestion >= 0 && suggestions[activeSuggestion]) {
+        handleSelectSuggestion(suggestions[activeSuggestion].name);
+      } else {
+        handleSelectSuggestion(search);
+      }
+    }
+  };
 
   const levelToProgress = (level) => {
     const map = { ahli: 100, mahir: 80, menengah: 60 };
     return map[level?.toLowerCase()] || 40;
   };
 
-  // ✅ Format URL YouTube aman
   const formatYouTubeURL = (url) => {
     if (!url) return "";
     let videoId = "";
@@ -124,14 +227,20 @@ export default function SoftSkills() {
     return `https://www.youtube.com/embed/${videoId}?rel=0`;
   };
 
-  const filteredSkills = skills.filter((skill) => {
-    const matchSearch = skill.name
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    const matchCategory =
-      categoryFilter === "All" || skill.category === categoryFilter;
-    return matchSearch && matchCategory;
-  });
+  // ✨ Highlight hasil pencarian di teks
+  const highlightText = (text, keyword) => {
+    if (!keyword) return text;
+    const parts = text.split(new RegExp(`(${keyword})`, "gi"));
+    return parts.map((part, i) =>
+      part.toLowerCase() === keyword.toLowerCase() ? (
+        <mark key={i} className="bg-yellow-400/70 text-black rounded px-1">
+          {part}
+        </mark>
+      ) : (
+        part
+      )
+    );
+  };
 
   if (!skillsData)
     return (
@@ -159,14 +268,51 @@ export default function SoftSkills() {
       </motion.div>
 
       {/* 🔍 Search & Filter */}
-      <div className="flex flex-col sm:flex-row items-center justify-between w-full max-w-5xl mb-12 gap-6">
-        <input
-          type="text"
-          placeholder="Cari skill..."
-          className="flex-1 p-4 rounded-2xl bg-gray-800 text-white placeholder-gray-400 focus:ring-2 focus:ring-cyan-400 focus:outline-none transition-all"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      <div className="relative flex flex-col sm:flex-row items-center justify-between w-full max-w-5xl mb-12 gap-6">
+        <div className="relative w-full">
+          <input
+            ref={searchRef}
+            type="text"
+            placeholder={placeholderText || "Cari skill..."}
+            className="flex-1 w-full p-4 rounded-2xl bg-gray-800 text-white placeholder-gray-400 focus:ring-2 focus:ring-cyan-400 focus:outline-none transition-all"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+          {search && (
+            <button
+              onClick={() => setSearch("")}
+              className="absolute right-4 top-3 text-gray-400 hover:text-white text-xl"
+            >
+              ✕
+            </button>
+          )}
+
+          {/* 🔎 Suggestion Dropdown */}
+          <AnimatePresence>
+            {suggestions.length > 0 && (
+              <motion.ul
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute z-20 mt-2 w-full bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden"
+              >
+                {suggestions.map((s, i) => (
+                  <li
+                    key={s.id || s.name}
+                    onClick={() => handleSelectSuggestion(s.name)}
+                    className={`px-4 py-2 cursor-pointer hover:bg-cyan-600 ${
+                      i === activeSuggestion ? "bg-cyan-700" : ""
+                    }`}
+                  >
+                    {highlightText(s.name, search)}
+                  </li>
+                ))}
+              </motion.ul>
+            )}
+          </AnimatePresence>
+        </div>
+
         <select
           className="p-4 rounded-2xl bg-gray-800 text-white focus:ring-2 focus:ring-cyan-400 transition-all"
           value={categoryFilter}
@@ -215,9 +361,11 @@ export default function SoftSkills() {
                 </span>
               </div>
 
-              <h2 className="text-2xl font-bold mb-2">{skill.name}</h2>
+              <h2 className="text-2xl font-bold mb-2">
+                {highlightText(skill.name, search)}
+              </h2>
               <p className="text-gray-100 text-sm leading-relaxed line-clamp-3">
-                {skill.description}
+                {highlightText(skill.description || "", search)}
               </p>
             </motion.div>
           ))}
@@ -234,7 +382,7 @@ export default function SoftSkills() {
             className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4"
             onClick={() => {
               setSelectedSkill(null);
-              navigate("/SoftSkills"); // kembali ke /skills saat ditutup
+              navigate("/SoftSkills");
             }}
           >
             <motion.div
@@ -254,7 +402,6 @@ export default function SoftSkills() {
                 ✕
               </button>
 
-              {/* Left Info */}
               <div className="flex-1 space-y-3">
                 <h2 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
                   {selectedSkill.name}
@@ -298,7 +445,6 @@ export default function SoftSkills() {
                 </div>
               </div>
 
-              {/* 🎥 Right Video */}
               {selectedSkill.video && (
                 <div className="flex-1 flex flex-col items-center">
                   <h3 className="text-pink-400 font-semibold mb-2">
