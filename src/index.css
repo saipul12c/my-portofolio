@@ -1,5 +1,8 @@
 @import "tailwindcss";
 /* Untuk semua elemen */
+
+html, body { overflow-x: hidden; }
+
 * {
   scrollbar-width: thin;        /* Firefox */
   scrollbar-color: #facc15 #1f2937; /* warna thumb & track di Firefox */
