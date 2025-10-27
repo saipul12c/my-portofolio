@@ -1,145 +1,162 @@
-import { motion } from "framer-motion";
-import {
-  Camera,
-  BookOpen,
-  Film,
-  PenTool,
-  PenSquare,
-  Headphones,
-  Compass,
-  Laptop,
-} from "lucide-react";
+import { useState, useMemo } from "react";
+import { LazyMotion, m, AnimatePresence, domAnimation } from "framer-motion";
+import * as Icons from "lucide-react";
+import hobbiesData from "../data/hub/hobbiesData.json";
 
 export default function Hobbies() {
-  const hobbies = [
-    {
-      icon: <Camera size={34} className="text-teal-400" />,
-      title: "Fotografi",
-      desc: "Menangkap momen penuh makna dan belajar melihat keindahan dalam detail kecil kehidupan.",
-      color: "from-teal-400/30 to-sky-500/10",
-    },
-    {
-      icon: <BookOpen size={34} className="text-violet-400" />,
-      title: "Membaca Buku Pengembangan Diri",
-      desc: "Mendalami wawasan tentang mindset, kebijaksanaan, dan perjalanan menuju versi diri yang lebih baik.",
-      color: "from-violet-400/30 to-fuchsia-500/10",
-    },
-    {
-      icon: <Film size={34} className="text-pink-400" />,
-      title: "Editing Video Dokumenter Pendidikan",
-      desc: "Menyampaikan pesan edukatif secara kreatif melalui visual yang berkesan dan inspiratif.",
-      color: "from-pink-400/30 to-cyan-400/10",
-    },
-    {
-      icon: <PenTool size={34} className="text-cyan-300" />,
-      title: "Desain Grafis",
-      desc: "Menyalurkan imajinasi lewat tipografi, warna, dan komposisi visual yang kuat namun sederhana.",
-      color: "from-cyan-300/30 to-emerald-400/10",
-    },
-    {
-      icon: <PenSquare size={34} className="text-rose-300" />,
-      title: "Menulis Blog Edukasi",
-      desc: "Berbagi insight dan refleksi pembelajaran melalui tulisan yang ringan tapi bermakna.",
-      color: "from-rose-300/30 to-orange-300/10",
-    },
-    {
-      icon: <Headphones size={34} className="text-amber-300" />,
-      title: "Mendengarkan Musik Lo-fi",
-      desc: "Menenangkan pikiran dan menjaga fokus dengan alunan musik yang lembut dan menenangkan.",
-      color: "from-amber-300/30 to-orange-300/10",
-    },
-    {
-      icon: <Compass size={34} className="text-emerald-300" />,
-      title: "Jelajah Alam & Citywalk",
-      desc: "Menemukan inspirasi baru dari perjalanan sederhana, udara segar, dan suasana sekitar.",
-      color: "from-emerald-300/30 to-lime-400/10",
-    },
-    {
-      icon: <Laptop size={34} className="text-sky-300" />,
-      title: "Eksperimen Web Design Minimalis",
-      desc: "Menciptakan pengalaman digital yang bersih, fungsional, dan artistik melalui desain sederhana.",
-      color: "from-sky-300/30 to-indigo-400/10",
-    },
-  ];
+  const [selectedCategory, setSelectedCategory] = useState("Semua");
+
+  // Ambil semua kategori unik (pakai useMemo biar nggak ngulang tiap render)
+  const categories = useMemo(
+    () => ["Semua", ...new Set(hobbiesData.map((h) => h.category))],
+    []
+  );
+
+  // Label acak 35% (diproses sekali aja)
+  const labelTypes = ["🔥 Hot", "🆕 Baru", "⭐ Rekomendasi"];
+  const hobbiesWithLabels = useMemo(() => {
+    return hobbiesData.map((h) => {
+      const hasLabel = Math.random() < 0.35;
+      return hasLabel
+        ? { ...h, label: labelTypes[Math.floor(Math.random() * labelTypes.length)] }
+        : { ...h, label: null };
+    });
+  }, []);
+
+  // Urutkan: label di atas
+  const sortedHobbies = useMemo(() => {
+    return hobbiesWithLabels.sort((a, b) =>
+      a.label && !b.label ? -1 : !a.label && b.label ? 1 : 0
+    );
+  }, [hobbiesWithLabels]);
+
+  // Filter kategori
+  const filteredHobbies = useMemo(() => {
+    return selectedCategory === "Semua"
+      ? sortedHobbies
+      : sortedHobbies.filter((h) => h.category === selectedCategory);
+  }, [selectedCategory, sortedHobbies]);
 
   return (
-    <main className="relative min-h-screen flex flex-col items-center justify-start px-6 py-24 bg-gradient-to-b from-[#0b0f1c] via-[#101422] to-[#0b0f1c] text-white overflow-hidden">
-      {/* === Background Glow === */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-1/4 left-[15%] w-64 h-64 bg-cyan-400/15 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/3 right-[15%] w-72 h-72 bg-purple-400/15 rounded-full blur-[120px]" />
-      </div>
+    <LazyMotion features={domAnimation}>
+      <main className="relative min-h-screen flex flex-col items-center justify-start px-6 py-24 bg-gradient-to-b from-[#0d111a] via-[#111726] to-[#0d111a] text-white overflow-hidden scroll-smooth">
+        {/* === Background Glow === */}
+        <div className="absolute inset-0 -z-10 pointer-events-none select-none">
+          <div className="absolute top-1/4 left-[10%] w-60 h-60 bg-cyan-400/10 rounded-full blur-[80px]" />
+          <div className="absolute bottom-1/3 right-[10%] w-64 h-64 bg-purple-400/10 rounded-full blur-[90px]" />
+        </div>
 
-      {/* === Header === */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.9 }}
-        className="text-center max-w-3xl mb-20"
-      >
-        <motion.h1
-          animate={{
-            backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-          }}
-          transition={{
-            duration: 7,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-          className="text-4xl md:text-6xl font-extrabold bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300 bg-[length:200%_200%] bg-clip-text text-transparent"
+        {/* === Header === */}
+        <m.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="text-center max-w-3xl mb-16"
         >
-          Aktivitas & Ketertarikan
-        </motion.h1>
-        <p className="mt-6 text-gray-400 text-lg leading-relaxed">
-          Di luar dunia akademik dan teknologi, saya senang menyalurkan ide
-          melalui karya visual, tulisan, musik, dan eksplorasi kreatif lainnya —
-          tempat saya belajar tentang makna, keseimbangan, dan ekspresi diri.
-        </p>
-      </motion.div>
+          <h1 className="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 to-purple-300">
+            Aktivitas & Ketertarikan
+          </h1>
+          <p className="mt-6 text-gray-400 text-lg leading-relaxed">
+            Hidup bukan cuma kerja dan belajar. Kadang kita butuh waktu buat{" "}
+            <span className="text-cyan-300">eksplor</span>,{" "}
+            <span className="text-pink-300">berkarya</span>, dan{" "}
+            <span className="text-amber-300">bernapas</span> ✨
+          </p>
+        </m.div>
 
-      {/* === Hobby Cards === */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 max-w-6xl w-full">
-        {hobbies.map((hobby, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: index * 0.1 }}
-            viewport={{ once: true }}
-            whileHover={{ scale: 1.05, y: -4 }}
-            className={`relative group bg-gradient-to-br ${hobby.color} p-8 rounded-3xl border border-white/10 backdrop-blur-xl shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_35px_rgba(255,255,255,0.1)] transition-all duration-500`}
-          >
-            <div className="mb-6">{hobby.icon}</div>
-            <h2 className="text-xl font-semibold mb-3 text-white/90 group-hover:text-cyan-300 transition-colors">
-              {hobby.title}
-            </h2>
-
-            {/* === Deskripsi dengan efek “menyapu kuning” dari awal ke akhir === */}
-            <p
-              className="relative text-gray-400 text-[15px] leading-relaxed bg-gradient-to-r from-gray-400 to-yellow-300 bg-[length:200%_100%] bg-clip-text text-transparent transition-all duration-[2000ms] group-hover:bg-[position:100%_0%]"
+        {/* === Category Filter === */}
+        <m.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="flex flex-wrap justify-center gap-3 mb-12"
+        >
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-5 py-2 rounded-full text-sm font-medium border transition-all duration-300 ${
+                selectedCategory === cat
+                  ? "bg-cyan-500/20 border-cyan-400 text-white shadow-[0_0_10px_rgba(34,211,238,0.3)]"
+                  : "border-white/10 text-gray-400 hover:text-white hover:border-cyan-400/40"
+              }`}
             >
-              {hobby.desc}
-            </p>
+              {cat}
+            </button>
+          ))}
+        </m.div>
 
-            <style jsx>{`
-              .group:hover p {
-                background-position: 100% 0%;
-              }
-            `}</style>
+        {/* === Hobby Cards === */}
+        <m.section
+          layout
+          transition={{ layout: { duration: 0.5, ease: "easeInOut" } }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl w-full"
+        >
+          <AnimatePresence mode="popLayout">
+            {filteredHobbies.map((hobby) => {
+              const Icon = Icons[hobby.icon];
+              return (
+                <m.div
+                  key={hobby.title}
+                  layoutId={hobby.title}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  whileHover={{ scale: 1.03, y: -4 }}
+                  className="relative group bg-[#141a28]/60 p-7 rounded-2xl border border-white/10 backdrop-blur-md hover:border-cyan-400/30 transition-all duration-400 shadow-[0_0_15px_rgba(0,0,0,0.2)]"
+                >
+                  {/* === Floating Label === */}
+                  {hobby.label && (
+                    <m.span
+                      initial={{ opacity: 0, scale: 0.8, y: -10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className={`absolute -top-3 left-4 text-[11px] font-semibold px-3 py-1 rounded-full tracking-wide shadow-md backdrop-blur-sm ${
+                        hobby.label.includes("Hot")
+                          ? "bg-red-500/30 text-red-200"
+                          : hobby.label.includes("Baru")
+                          ? "bg-green-500/30 text-green-200"
+                          : "bg-amber-500/30 text-amber-200"
+                      }`}
+                    >
+                      {hobby.label}
+                    </m.span>
+                  )}
 
-            {/* Floating accent line */}
-            <motion.div
-              initial={{ width: "0%" }}
-              whileHover={{ width: "100%" }}
-              transition={{ duration: 0.4 }}
-              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r ${hobby.color} rounded-b-3xl`}
-            />
-          </motion.div>
-        ))}
-      </section>
+                  <div className="mb-5 flex items-center justify-between">
+                    <Icon size={32} className={`${hobby.iconColor}`} />
+                    <span className="text-xs uppercase tracking-wide text-white/50">
+                      {hobby.category}
+                    </span>
+                  </div>
 
-      {/* === Footer === */}
-      <div className="absolute bottom-0 w-full h-40 bg-gradient-to-t from-[#0b0f1c] to-transparent" />
-    </main>
+                  <h2 className="text-lg font-semibold mb-2 text-white/90 group-hover:text-cyan-300 transition-colors">
+                    {hobby.title}
+                  </h2>
+
+                  <p className="text-gray-400 text-[14px] leading-relaxed">
+                    {hobby.desc}
+                  </p>
+
+                  {hobby.link && (
+                    <a
+                      href={hobby.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block mt-4 text-sm text-cyan-300 font-medium hover:underline"
+                    >
+                      {hobby.linkLabel} →
+                    </a>
+                  )}
+                </m.div>
+              );
+            })}
+          </AnimatePresence>
+        </m.section>
+      </main>
+    </LazyMotion>
   );
 }

@@ -1,0 +1,202 @@
+[
+  {
+    "icon": "Camera",
+    "iconColor": "text-teal-400",
+    "title": "Fotografi",
+    "desc": "Menangkap momen penuh makna dan belajar melihat keindahan dalam detail kecil kehidupan.",
+    "color": "from-teal-400/30 to-sky-500/10",
+    "category": "Kreatif",
+    "link": "https://unsplash.com",
+    "linkLabel": "Lihat Galeri"
+  },
+  {
+    "icon": "BookOpen",
+    "iconColor": "text-violet-400",
+    "title": "Membaca Buku Pengembangan Diri",
+    "desc": "Mendalami wawasan tentang mindset, kebijaksanaan, dan perjalanan menuju versi diri yang lebih baik.",
+    "color": "from-violet-400/30 to-fuchsia-500/10",
+    "category": "Pembelajaran",
+    "link": "https://www.goodreads.com",
+    "linkLabel": "Cari Buku"
+  },
+  {
+    "icon": "Film",
+    "iconColor": "text-pink-400",
+    "title": "Editing Video Dokumenter Pendidikan",
+    "desc": "Menyampaikan pesan edukatif secara kreatif melalui visual yang berkesan dan inspiratif.",
+    "color": "from-pink-400/30 to-cyan-400/10",
+    "category": "Kreatif",
+    "link": "https://www.youtube.com",
+    "linkLabel": "Lihat Karya"
+  },
+  {
+    "icon": "PenTool",
+    "iconColor": "text-cyan-300",
+    "title": "Desain Grafis",
+    "desc": "Menyalurkan imajinasi lewat tipografi, warna, dan komposisi visual yang kuat namun sederhana.",
+    "color": "from-cyan-300/30 to-emerald-400/10",
+    "category": "Kreatif",
+    "link": "https://www.behance.net",
+    "linkLabel": "Portofolio"
+  },
+  {
+    "icon": "PenSquare",
+    "iconColor": "text-rose-300",
+    "title": "Menulis Blog Edukasi",
+    "desc": "Berbagi insight dan refleksi pembelajaran melalui tulisan yang ringan tapi bermakna.",
+    "color": "from-rose-300/30 to-orange-300/10",
+    "category": "Pembelajaran",
+    "link": "https://medium.com",
+    "linkLabel": "Baca Blog"
+  },
+  {
+    "icon": "Headphones",
+    "iconColor": "text-amber-300",
+    "title": "Mendengarkan Musik Lo-fi",
+    "desc": "Menenangkan pikiran dan menjaga fokus dengan alunan musik yang lembut dan menenangkan.",
+    "color": "from-amber-300/30 to-orange-300/10",
+    "category": "Relaksasi",
+    "link": "https://www.youtube.com/@lofihiphop",
+    "linkLabel": "Putar Musik"
+  },
+  {
+    "icon": "Compass",
+    "iconColor": "text-emerald-300",
+    "title": "Jelajah Alam & Citywalk",
+    "desc": "Menemukan inspirasi baru dari perjalanan sederhana, udara segar, dan suasana sekitar.",
+    "color": "from-emerald-300/30 to-lime-400/10",
+    "category": "Eksplorasi",
+    "link": "https://www.google.com/maps",
+    "linkLabel": "Temukan Tempat"
+  },
+  {
+    "icon": "Laptop",
+    "iconColor": "text-sky-300",
+    "title": "Eksperimen Web Design Minimalis",
+    "desc": "Menciptakan pengalaman digital yang bersih, fungsional, dan artistik melalui desain sederhana.",
+    "color": "from-sky-300/30 to-indigo-400/10",
+    "category": "Teknologi",
+    "link": "https://dribbble.com",
+    "linkLabel": "Lihat Inspirasi"
+  },
+  {
+    "icon": "Globe",
+    "iconColor": "text-indigo-300",
+    "title": "Belajar Bahasa Asing",
+    "desc": "Mempelajari bahasa lain untuk memahami budaya dan memperluas wawasan dunia.",
+    "color": "from-indigo-300/30 to-purple-400/10",
+    "category": "Pembelajaran",
+    "link": "https://duolingo.com",
+    "linkLabel": "Mulai Belajar"
+  },
+  {
+    "icon": "Code",
+    "iconColor": "text-cyan-400",
+    "title": "Ngoding Proyek Mini",
+    "desc": "Membuat proyek kecil untuk latihan logika, UI, dan mengasah kemampuan problem-solving.",
+    "color": "from-cyan-400/30 to-blue-400/10",
+    "category": "Teknologi",
+    "link": "https://github.com",
+    "linkLabel": "Lihat Repositori"
+  },
+  {
+    "icon": "Music",
+    "iconColor": "text-rose-400",
+    "title": "Menciptakan Beat Musik Digital",
+    "desc": "Eksperimen dengan software audio untuk membuat ritme dan melodi yang menenangkan.",
+    "color": "from-rose-400/30 to-amber-300/10",
+    "category": "Kreatif",
+    "link": "https://soundtrap.com",
+    "linkLabel": "Coba Produksi"
+  },
+  {
+    "icon": "Heart",
+    "iconColor": "text-red-400",
+    "title": "Volunteering & Teaching",
+    "desc": "Berbagi waktu dan ilmu untuk membantu orang lain memahami dunia dengan cara yang menyenangkan.",
+    "color": "from-red-400/30 to-pink-400/10",
+    "category": "Sosial",
+    "link": "https://www.volunteerworld.com",
+    "linkLabel": "Cari Program"
+  },
+  {
+    "icon": "BookMarked",
+    "iconColor": "text-amber-400",
+    "title": "Membuat Catatan Digital",
+    "desc": "Mengorganisir ide dan insight menggunakan aplikasi seperti Notion atau Obsidian.",
+    "color": "from-amber-400/30 to-emerald-300/10",
+    "category": "Produktivitas",
+    "link": "https://notion.so",
+    "linkLabel": "Coba Notion"
+  },
+  {
+    "icon": "Cpu",
+    "iconColor": "text-lime-300",
+    "title": "Belajar AI & Otomatisasi",
+    "desc": "Mengeksplorasi cara AI bisa bantu mempercepat pembelajaran dan produktivitas guru.",
+    "color": "from-lime-300/30 to-cyan-400/10",
+    "category": "Teknologi",
+    "link": "https://chat.openai.com",
+    "linkLabel": "Coba ChatGPT"
+  },
+  {
+    "icon": "Palette",
+    "iconColor": "text-purple-300",
+    "title": "Melukis Digital",
+    "desc": "Mengubah inspirasi jadi karya visual digital dengan nuansa emosional dan estetika.",
+    "color": "from-purple-300/30 to-pink-400/10",
+    "category": "Kreatif",
+    "link": "https://www.procreate.com",
+    "linkLabel": "Coba Procreate"
+  },
+  {
+    "icon": "Pen",
+    "iconColor": "text-emerald-400",
+    "title": "Menulis Jurnal Reflektif",
+    "desc": "Mengolah pengalaman harian menjadi pelajaran berharga dan bahan refleksi diri.",
+    "color": "from-emerald-400/30 to-teal-300/10",
+    "category": "Pembelajaran",
+    "link": "https://journey.cloud",
+    "linkLabel": "Mulai Menulis"
+  },
+  {
+    "icon": "Users",
+    "iconColor": "text-sky-400",
+    "title": "Bergabung dengan Komunitas Edukasi",
+    "desc": "Diskusi, kolaborasi, dan berbagi pengalaman dengan para pendidik dan kreator lainnya.",
+    "color": "from-sky-400/30 to-indigo-300/10",
+    "category": "Sosial",
+    "link": "https://discord.com",
+    "linkLabel": "Gabung Komunitas"
+  },
+  {
+    "icon": "Book",
+    "iconColor": "text-cyan-400",
+    "title": "Membaca Literatur Pendidikan",
+    "desc": "Menggali pendekatan baru dalam pengajaran, psikologi belajar, dan inovasi kurikulum.",
+    "color": "from-cyan-400/30 to-emerald-300/10",
+    "category": "Pembelajaran",
+    "link": "https://scholar.google.com",
+    "linkLabel": "Cari Artikel"
+  },
+  {
+    "icon": "Map",
+    "iconColor": "text-amber-300",
+    "title": "Menjelajahi Budaya Lokal",
+    "desc": "Belajar nilai dan filosofi kehidupan dari tradisi serta kebiasaan masyarakat sekitar.",
+    "color": "from-amber-300/30 to-red-400/10",
+    "category": "Eksplorasi",
+    "link": "https://indonesia.travel",
+    "linkLabel": "Jelajahi"
+  },
+  {
+    "icon": "Sparkles",
+    "iconColor": "text-pink-300",
+    "title": "Eksperimen dengan AI Kreatif",
+    "desc": "Menggabungkan seni dan teknologi untuk membuat karya visual, musik, atau teks dengan bantuan AI.",
+    "color": "from-pink-300/30 to-purple-400/10",
+    "category": "Teknologi",
+    "link": "https://www.runwayml.com",
+    "linkLabel": "Coba Sekarang"
+  }
+]

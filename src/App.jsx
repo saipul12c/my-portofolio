@@ -22,8 +22,8 @@ import Testimoni from "./pages/Testimoni";
 
 // 📄 Halaman tambahan
 import Certificates from "./pages/Certificates";
-import SoftSkills from "./pages/SoftSkills";
-import Education from "./pages/education";
+import SoftSkills from "./pages/skills/SoftSkills";
+import Education from "./pages/sekolah/education";
 import Visi from "./pages/visi";
 import Hobbies from "./pages/Hobbies";
 import Blog from "./pages/blog/Blog";
