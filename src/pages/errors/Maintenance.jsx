@@ -2,71 +2,18 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Wrench, Clock, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import maintenanceData from "../../data/maintenance/maintenanceData.json";
 
 export default function Maintenance() {
-  // 🕒 Waktu selesai bisa kamu ubah sesuka hati
+  // 🕒 Ubah waktu target sesuai kebutuhan
   const targetTime = new Date("2025-10-08T18:30:00+07:00");
 
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
   const [progress, setProgress] = useState(0);
   const [messageIndex, setMessageIndex] = useState(0);
 
-  // 🧠 50 pesan — ramah, ringan, dan bisa dipahami semua kalangan
-  const messages = [
-    // 💻 Teknis ringan (25 pesan)
-    "Memeriksa koneksi jaringan...",
-    "Mengatur ulang pengaturan sistem...",
-    "Memperbarui fitur agar lebih cepat...",
-    "Membersihkan file yang tidak diperlukan...",
-    "Mengoptimalkan tampilan situs...",
-    "Memastikan data tetap aman...",
-    "Menjalankan pemeriksaan server...",
-    "Menyesuaikan performa aplikasi...",
-    "Meningkatkan sistem keamanan...",
-    "Memperbaiki bug kecil yang mengganggu...",
-    "Menambahkan pembaruan terbaru...",
-    "Menyiapkan fitur baru di belakang layar...",
-    "Menjalankan tes stabilitas...",
-    "Mengatur sinkronisasi data...",
-    "Membuat koneksi server lebih stabil...",
-    "Mengatur ulang penyimpanan sementara...",
-    "Memastikan semua layanan aktif...",
-    "Menguji kembali sistem pembayaran...",
-    "Memeriksa tampilan agar pas di semua perangkat...",
-    "Menjalankan perawatan rutin...",
-    "Menambahkan lapisan keamanan tambahan...",
-    "Mengecek kinerja halaman utama...",
-    "Menyesuaikan konfigurasi untuk performa optimal...",
-    "Menyiapkan sistem agar lebih ringan...",
-    "Hampir selesai, tinggal sentuhan akhir... ✨",
-
-    // 🎨 Ramah publik / santai (25 pesan)
-    "Kami sedang menata ulang meja kerja digital kami 😄",
-    "Tim kami lagi ngeteh sambil memastikan sistem tetap stabil 🍵",
-    "Lagi dibenerin dikit, biar besok makin lancar 🚀",
-    "Tenang... ini bukan akhir dunia, cuma maintenance 😉",
-    "Lagi bersihin debu di server... bersin dikit 🤧",
-    "Ngopi dulu sambil nunggu sistem nyala ☕",
-    "Kami sedang menyiram tanaman kode kami 🌱",
-    "Tunggu sebentar, kami lagi ngelap layar digital 🧼",
-    "Update ini bakal bikin situs jadi lebih kece ✨",
-    "Sabar ya... sistem lagi dandan dikit 💅",
-    "Kami pastikan semuanya berjalan seperti semula 🔄",
-    "Nggak lama kok, janji! 😎",
-    "Server kami lagi yoga biar gak stres 🧘‍♂️",
-    "Lagi diolesin minyak kelapa biar lebih halus 🥥",
-    "Tenang, ini bagian dari perawatan rutin 💪",
-    "Update kecil hari ini, hasil besar nanti 🔧",
-    "Kami sedang mengganti baterai sistem 🔋",
-    "Tunggu sebentar... lagi pasang baut digital 🔩",
-    "Kami lagi kasih vitamin ke website ini 🍊",
-    "Website ini lagi power nap sebentar 😴",
-    "Kami lagi beresin meja kerja digital 🧹",
-    "Sabar dulu, biar tampilannya makin keren 😍",
-    "Website kami sedang spa session 💆‍♀️",
-    "Sistem sedang dilatih jadi lebih pintar 🤖",
-    "Sedang menguji tombol sabar pengunjung 🕐",
-  ];
+  // 🔄 Ambil data pesan dari file JSON
+  const messages = maintenanceData.messages;
 
   function calculateTimeLeft() {
     const now = new Date();
@@ -113,7 +60,7 @@ export default function Maintenance() {
       {/* Efek latar */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(20,184,166,0.1),transparent_70%)] animate-pulse" />
 
-      {/* Ikon dan status */}
+      {/* Ikon & status */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}

@@ -1,77 +1,112 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Search, Compass, Home, RefreshCw, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 export default function NotFound() {
-  const messages = [
-    "Halaman ini seperti ninja, cepat dan lenyap tanpa jejak! 🥷",
-    "Sepertinya kamu menelusuri dunia maya terlalu jauh... 🌌",
-    "Ups! Mungkin halaman ini lagi liburan digital 🏖️",
-    "404 bukan akhir — ini cuma rute memutar ke beranda 🚗",
-    "Mungkin URL-nya sedikit typo? Nggak apa, manusiawi kok 😅",
-    "Server kita lagi mikir keras... tapi nggak nemu juga 😵‍💫",
-    "Kucing dev kami menekan tombol ‘hapus’ lagi 🐱",
-    "Halaman ini sedang dalam misi rahasia 🕵️‍♂️",
-    "Kadang yang hilang itu bukan halaman, tapi semangat 💪",
-    "Internet luas banget, tapi kita temukan arahmu 🧭",
-    "Nggak semua yang tersesat harus panik, kan? 😌",
-    "Sepertinya kamu menemukan area misterius 🔮",
-    "Jangan khawatir, halaman lain masih setia 💖",
-    "404 — artinya kita masih punya ruang untuk berkembang 💡",
-    "Halaman ini ngilang seperti sinyal di pegunungan 📡",
-    "Kodingan kami mungkin punya plot twist hari ini 🎭",
-    "Mungkin ini cara semesta bilang ‘take a break’ ☕",
-    "Peta digital kita belum di-update, sabar ya 🗺️",
-    "Kadang tersesat itu bagian dari petualangan 🧳",
-    "Halaman ini terjebak di antara dua semesta 😵‍🌍",
-    "Jangan panik... bahkan developer juga sering nyasar 🤭",
-    "Mungkin ini bug? Atau fitur tersembunyi? 👀",
-    "Kita cari jalan pulang bareng yuk! 🪄",
-    "Hmm... halaman ini belum lahir di dunia web 👶",
-    "Jalan ini buntu, tapi semangatmu jangan ikut buntu! 🚧",
-    "404: Halaman sedang introspeksi diri 🧘‍♀️",
-    "Mungkin kamu nyasar karena takdir digital ✨",
-    "Tenang... tiap klik salah adalah langkah menuju benar 🙏",
-    "Kita ubah momen tersesat jadi momen lucu 😄",
-    "Masih loading... oh ternyata nggak ada 😅",
-  ];
+  const navigate = useNavigate();
+  const messages = useMemo(
+    () => [
+      "Halaman ini seperti ninja, cepat dan lenyap tanpa jejak! 🥷",
+      "Sepertinya kamu menelusuri dunia maya terlalu jauh... 🌌",
+      "Ups! Mungkin halaman ini lagi liburan digital 🏖️",
+      "404 bukan akhir — ini cuma rute memutar ke beranda 🚗",
+      "Mungkin URL-nya sedikit typo? Nggak apa, manusiawi kok 😅",
+      "Server kita lagi mikir keras... tapi nggak nemu juga 😵‍💫",
+      "Kucing dev kami menekan tombol ‘hapus’ lagi 🐱",
+      "Halaman ini sedang dalam misi rahasia 🕵️‍♂️",
+      "Kadang yang hilang itu bukan halaman, tapi semangat 💪",
+      "Internet luas banget, tapi kita temukan arahmu 🧭",
+      "Nggak semua yang tersesat harus panik, kan? 😌",
+      "Sepertinya kamu menemukan area misterius 🔮",
+      "Jangan khawatir, halaman lain masih setia 💖",
+      "404 — artinya kita masih punya ruang untuk berkembang 💡",
+      "Halaman ini ngilang seperti sinyal di pegunungan 📡",
+      "Kodingan kami mungkin punya plot twist hari ini 🎭",
+      "Mungkin ini cara semesta bilang ‘take a break’ ☕",
+      "Peta digital kita belum di-update, sabar ya 🗺️",
+      "Kadang tersesat itu bagian dari petualangan 🧳",
+      "Halaman ini terjebak di antara dua semesta 😵‍🌍",
+      "Jangan panik... bahkan developer juga sering nyasar 🤭",
+      "Mungkin ini bug? Atau fitur tersembunyi? 👀",
+      "Kita cari jalan pulang bareng yuk! 🪄",
+      "Hmm... halaman ini belum lahir di dunia web 👶",
+      "Jalan ini buntu, tapi semangatmu jangan ikut buntu! 🚧",
+      "404: Halaman sedang introspeksi diri 🧘‍♀️",
+      "Mungkin kamu nyasar karena takdir digital ✨",
+      "Tenang... tiap klik salah adalah langkah menuju benar 🙏",
+      "Kita ubah momen tersesat jadi momen lucu 😄",
+      "Masih loading... oh ternyata nggak ada 😅",
+    ],
+    []
+  );
 
   const [index, setIndex] = useState(0);
+  const [buttonState, setButtonState] = useState({
+    home: false,
+    reload: false,
+    explore: false,
+  });
 
+  // Ganti pesan otomatis
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % messages.length);
-    }, 4000); // ganti pesan tiap 4 detik
+    }, 4000);
     return () => clearInterval(interval);
-  }, []);
+  }, [messages.length]);
+
+  // Posisi bintang tetap
+  const stars = useMemo(
+    () =>
+      Array.from({ length: 50 }, (_, i) => ({
+        id: i,
+        left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`,
+        duration: Math.random() * 6 + 4,
+        delay: Math.random() * 3,
+      })),
+    []
+  );
+
+  // Tombol aman dengan feedback
+  const handleAction = async (type, action) => {
+    if (buttonState[type]) return; // cegah spam klik
+    setButtonState((prev) => ({ ...prev, [type]: true }));
+
+    try {
+      await action();
+    } catch (err) {
+      console.error(`Gagal menjalankan aksi ${type}:`, err);
+      alert("Aksi gagal dijalankan. Coba lagi nanti.");
+    } finally {
+      setTimeout(() => {
+        setButtonState((prev) => ({ ...prev, [type]: false }));
+      }, 1000); // cooldown ringan biar smooth
+    }
+  };
 
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden text-center text-white bg-gradient-to-br from-slate-950 via-slate-900 to-gray-900">
-      {/* Efek Bintang */}
+      {/* 🌌 Efek Bintang */}
       <div className="absolute inset-0 overflow-hidden">
-        {[...Array(50)].map((_, i) => (
+        {stars.map((star) => (
           <motion.div
-            key={i}
+            key={star.id}
             className="absolute w-1 h-1 bg-cyan-300 rounded-full"
-            animate={{
-              opacity: [0, 1, 0],
-              y: ["0%", "100%", "0%"],
-            }}
+            animate={{ opacity: [0, 1, 0], y: ["0%", "100%", "0%"] }}
             transition={{
-              duration: Math.random() * 6 + 4,
+              duration: star.duration,
               repeat: Infinity,
-              delay: Math.random() * 3,
+              delay: star.delay,
+              ease: "easeInOut",
             }}
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
+            style={{ left: star.left, top: star.top }}
           />
         ))}
       </div>
 
-      {/* Ikon utama */}
+      {/* ✨ Ikon utama */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -82,7 +117,7 @@ export default function NotFound() {
         <Search className="w-20 h-20 text-cyan-400 animate-pulse drop-shadow-[0_0_20px_#22d3ee]" />
       </motion.div>
 
-      {/* Judul */}
+      {/* 🧭 Judul */}
       <motion.h1
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -92,7 +127,7 @@ export default function NotFound() {
         404 - Halaman Tidak Ditemukan
       </motion.h1>
 
-      {/* Pesan berubah otomatis */}
+      {/* 💬 Pesan berubah otomatis */}
       <div className="relative h-12 mt-4">
         <AnimatePresence mode="wait">
           <motion.p
@@ -108,7 +143,7 @@ export default function NotFound() {
         </AnimatePresence>
       </div>
 
-      {/* Tips dan Petunjuk */}
+      {/* 🧩 Tips dan Petunjuk */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -120,36 +155,59 @@ export default function NotFound() {
         <p>🔹 Kadang, kesalahan klik bisa jadi petualangan baru 😄</p>
       </motion.div>
 
-      {/* Tombol aksi */}
+      {/* 🎯 Tombol aksi */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2 }}
         className="flex flex-wrap gap-4 justify-center mt-8"
       >
-        <Link
-          to="/"
-          className="flex items-center gap-2 px-6 py-3 bg-cyan-500 hover:bg-cyan-600 transition-all rounded-xl font-semibold text-white shadow-lg hover:shadow-cyan-400/40"
-        >
-          <Home size={18} /> Kembali ke Beranda
-        </Link>
-
+        {/* Home */}
         <button
-          onClick={() => window.location.reload()}
-          className="flex items-center gap-2 px-6 py-3 bg-slate-700 hover:bg-slate-600 transition-all rounded-xl font-semibold text-gray-200 shadow-lg"
+          onClick={() => handleAction("home", () => navigate("/"))}
+          disabled={buttonState.home}
+          className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold shadow-lg transition-all ${
+            buttonState.home
+              ? "bg-cyan-700 text-gray-300 cursor-not-allowed animate-pulse"
+              : "bg-cyan-500 hover:bg-cyan-600 text-white hover:shadow-cyan-400/40"
+          }`}
         >
-          <RefreshCw size={18} /> Coba Muat Ulang
+          <Home size={18} />
+          {buttonState.home ? "Menuju..." : "Kembali ke Beranda"}
         </button>
 
-        <Link
-          to="/explore"
-          className="flex items-center gap-2 px-6 py-3 bg-teal-600 hover:bg-teal-700 transition-all rounded-xl font-semibold text-gray-200 shadow-lg"
+        {/* Reload */}
+        <button
+          onClick={() =>
+            handleAction("reload", () => Promise.resolve(window.location.reload()))
+          }
+          disabled={buttonState.reload}
+          className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold shadow-lg transition-all ${
+            buttonState.reload
+              ? "bg-slate-600 text-gray-300 cursor-not-allowed animate-pulse"
+              : "bg-slate-700 hover:bg-slate-600 text-gray-200"
+          }`}
         >
-          <Compass size={18} /> Jelajahi Halaman Lain
-        </Link>
+          <RefreshCw size={18} />
+          {buttonState.reload ? "Memuat..." : "Coba Muat Ulang"}
+        </button>
+
+        {/* Explore */}
+        <button
+          onClick={() => handleAction("explore", () => navigate("/explore"))}
+          disabled={buttonState.explore}
+          className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold shadow-lg transition-all ${
+            buttonState.explore
+              ? "bg-teal-700 text-gray-300 cursor-not-allowed animate-pulse"
+              : "bg-teal-600 hover:bg-teal-700 text-gray-200"
+          }`}
+        >
+          <Compass size={18} />
+          {buttonState.explore ? "Membuka..." : "Jelajahi Halaman Lain"}
+        </button>
       </motion.div>
 
-      {/* Catatan bawah */}
+      {/* 📜 Catatan bawah */}
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.9 }}
@@ -159,7 +217,7 @@ export default function NotFound() {
         “Jangan takut tersesat — setiap klik adalah cerita.” 🌠
       </motion.p>
 
-      {/* Keyframes tambahan */}
+      {/* 🎞️ Keyframes tambahan */}
       <style>
         {`
           @keyframes float {

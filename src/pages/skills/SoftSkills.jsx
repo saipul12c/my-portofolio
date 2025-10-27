@@ -1,92 +1,72 @@
-import { useState, useEffect, useRef } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+// SoftSkills.jsx
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import SoftSkillsHeader from "./components/SoftSkillsHeader";
 import SoftSkillsSearch from "./components/SoftSkillsSearch";
 import SoftSkillsCardGrid from "./components/SoftSkillsCardGrid";
 import SoftSkillsPopup from "./components/SoftSkillsPopup";
 import { highlightText } from "./components/SoftSkillsUtils";
 
+/**
+ * Parent component:
+ * - Memuat softskills.json
+ * - Memproses daftar skills (labels, colors, gradients)
+ * - Menyimpan filteredSkills yang dikirim dari SoftSkillsSearch via onFilterChange
+ * - Menangani popup berdasarkan route param id
+ */
 export default function SoftSkills() {
   const [skillsData, setSkillsData] = useState(null);
   const [skills, setSkills] = useState([]);
-  const [search, setSearch] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
-  const [recentSearch, setRecentSearch] = useState([]);
-  const [activeSuggestion, setActiveSuggestion] = useState(-1);
-  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [filteredSkills, setFilteredSkills] = useState([]);
   const [selectedSkill, setSelectedSkill] = useState(null);
-  const [placeholderText, setPlaceholderText] = useState("");
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   const navigate = useNavigate();
   const { id } = useParams();
-  const location = useLocation();
-  const searchRef = useRef(null);
 
-  // ✨ Animasi placeholder (Typewriter)
+  // ✅ Fetch JSON - aman untuk Vite & CRA
   useEffect(() => {
-    const phrases = [
-      "Cari skill...",
-      "Cari kemampuan komunikasi...",
-      "Cari kreativitas...",
-      "Cari teamwork...",
-      "Cari kepemimpinan...",
+    let mounted = true;
+
+    // Vite pakai import.meta.env.BASE_URL
+    const publicBase =
+      (typeof import.meta !== "undefined" && import.meta.env?.BASE_URL) || "";
+
+    const tryPaths = [
+      `${publicBase}data/about/softskills.json`,
+      "/data/about/softskills.json",
+      "/about/softskills.json",
+      "/softskills.json",
+      "./data/about/softskills.json",
     ];
 
-    let currentPhrase = 0;
-    let currentChar = 0;
-    let deleting = false;
-    let timeout;
-
-    const type = () => {
-      const fullText = phrases[currentPhrase];
-
-      if (!deleting) {
-        setPlaceholderText(fullText.slice(0, currentChar + 1));
-        currentChar++;
-        if (currentChar === fullText.length) {
-          deleting = true;
-          timeout = setTimeout(type, 2000);
+    const fetchSequential = async () => {
+      for (const p of tryPaths) {
+        try {
+          const res = await fetch(p);
+          if (!res.ok) continue;
+          const data = await res.json();
+          if (mounted) setSkillsData(data);
           return;
-        }
-      } else {
-        setPlaceholderText(fullText.slice(0, currentChar - 1));
-        currentChar--;
-        if (currentChar === 0) {
-          deleting = false;
-          currentPhrase = (currentPhrase + 1) % phrases.length;
+        } catch {
+          continue;
         }
       }
-      timeout = setTimeout(type, deleting ? 40 : 80);
-    };
 
-    type();
-    return () => clearTimeout(timeout);
-  }, []);
-
-  // 🧭 Keyboard Shortcut: Ctrl+F / Cmd+F untuk fokus ke search bar
-  useEffect(() => {
-    const handleShortcut = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "f") {
-        e.preventDefault();
-        searchRef.current?.focus();
+      if (mounted) {
+        console.error("❌ Gagal memuat softskills.json dari semua path percobaan");
+        setSkillsData({ error: true, message: "Gagal memuat data skill." });
       }
     };
-    window.addEventListener("keydown", handleShortcut);
-    return () => window.removeEventListener("keydown", handleShortcut);
+
+    fetchSequential();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  // 🔹 Ambil data JSON
-  useEffect(() => {
-    fetch("/data/about/softskills.json")
-      .then((res) => {
-        if (!res.ok) throw new Error("Gagal memuat softskills.json");
-        return res.json();
-      })
-      .then((data) => setSkillsData(data))
-      .catch((err) => console.error("❌ Gagal ambil data skill:", err));
-  }, []);
-
-  // 🔹 Proses data skill
+  // 🔹 Proses data skill (labels, colors, gradients)
   useEffect(() => {
     if (!skillsData || !Array.isArray(skillsData.skills)) return;
 
@@ -131,14 +111,16 @@ export default function SoftSkills() {
       )
       .map((skill) => {
         const labels = [...(skill.labels || [])];
+
         if (skill.dateAdded) {
           const addedDate = new Date(skill.dateAdded);
           if (addedDate > oneYearAgo && !labels.includes("Baru"))
             labels.push("Baru");
         }
 
+        // Tambahkan label random ringan
         ["Populer", "Hot"].forEach((label) => {
-          if (!labels.includes(label) && Math.random() < 0.3) labels.push(label);
+          if (!labels.includes(label) && Math.random() < 0.25) labels.push(label);
         });
 
         const labelColorMap = {};
@@ -159,63 +141,20 @@ export default function SoftSkills() {
       });
 
     processed.sort((a, b) => (b.labels?.length || 0) - (a.labels?.length || 0));
+
     setSkills(processed);
+    setFilteredSkills(processed);
   }, [skillsData]);
 
-  // 🧭 Sinkronisasi popup
+  // 🧭 Sinkronisasi popup berdasarkan route id
   useEffect(() => {
-    if (!id || skills.length === 0) return;
-    const found = skills.find((s) => s.id === id);
-    setSelectedSkill(found || null);
-  }, [id, skills]);
-
-  // 🧩 Fuzzy search: cari di name, description, category, dan labels
-  const filteredSkills = skills.filter((skill) => {
-    const q = search.toLowerCase();
-    const matchSearch =
-      skill.name.toLowerCase().includes(q) ||
-      skill.description?.toLowerCase().includes(q) ||
-      skill.category?.toLowerCase().includes(q) ||
-      skill.labels?.some((l) => l.toLowerCase().includes(q));
-    const matchCategory =
-      categoryFilter === "All" || skill.category === categoryFilter;
-    return matchSearch && matchCategory;
-  });
-
-  // 🪄 Auto-suggestions mirip Chrome
-  useEffect(() => {
-    if (search.trim().length === 0) {
-      setSuggestions([]);
+    if (!id || skills.length === 0) {
+      setSelectedSkill(null);
       return;
     }
-    const matched = skills
-      .filter((s) => s.name.toLowerCase().includes(search.toLowerCase()))
-      .slice(0, 5);
-    setSuggestions(matched);
-  }, [search, skills]);
-
-  const handleSelectSuggestion = (text) => {
-    setSearch(text);
-    setSuggestions([]);
-    if (!recentSearch.includes(text))
-      setRecentSearch((prev) => [text, ...prev.slice(0, 4)]);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setActiveSuggestion((p) => Math.min(p + 1, suggestions.length - 1));
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setActiveSuggestion((p) => Math.max(p - 1, 0));
-    } else if (e.key === "Enter") {
-      if (activeSuggestion >= 0 && suggestions[activeSuggestion]) {
-        handleSelectSuggestion(suggestions[activeSuggestion].name);
-      } else {
-        handleSelectSuggestion(search);
-      }
-    }
-  };
+    const found = skills.find((s) => String(s.id) === String(id));
+    setSelectedSkill(found || null);
+  }, [id, skills]);
 
   if (!skillsData)
     return (
@@ -224,35 +163,37 @@ export default function SoftSkills() {
       </div>
     );
 
+  if (skillsData.error)
+    return (
+      <div className="text-red-400 text-center mt-20">
+        {skillsData.message || "Terjadi kesalahan saat memuat data skill."}
+      </div>
+    );
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#0f172a] to-[#111827] text-white flex flex-col items-center px-6 py-20">
-      {/* 🌟 Header */}
+      {/* Header */}
       <SoftSkillsHeader title={skillsData.sectionTitle} />
 
-      {/* 🔍 Search & Filter */}
+      {/* Search & Filter */}
       <SoftSkillsSearch
-        searchRef={searchRef}
-        search={search}
-        setSearch={setSearch}
-        suggestions={suggestions}
-        activeSuggestion={activeSuggestion}
-        handleKeyDown={handleKeyDown}
-        handleSelectSuggestion={handleSelectSuggestion}
+        skills={skills}
+        onFilterChange={(newFilteredSkills, searchValue) => {
+          setFilteredSkills(newFilteredSkills);
+          setSearchKeyword(searchValue || "");
+        }}
         highlightText={highlightText}
-        placeholderText={placeholderText}
-        categoryFilter={categoryFilter}
-        setCategoryFilter={setCategoryFilter}
       />
 
-      {/* 💎 Skill Cards */}
+      {/* Skill Cards */}
       <SoftSkillsCardGrid
         filteredSkills={filteredSkills}
-        search={search}
+        search={searchKeyword}
         highlightText={highlightText}
         navigate={navigate}
       />
 
-      {/* 🪄 Popup Detail */}
+      {/* Popup Detail */}
       <SoftSkillsPopup
         selectedSkill={selectedSkill}
         setSelectedSkill={setSelectedSkill}

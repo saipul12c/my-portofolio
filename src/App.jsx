@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedErrorPage from "./components/ProtectedErrorPage";
 import { ErrorProvider } from "./context/ErrorContext";
+import HelpButton from "./components/HelpButton"; // ✅ Tombol bantuan baru
 
 // 🛡️ Tambahan: Launch guard dan halaman launching
 import LaunchGuard from "./components/LaunchGuard";
@@ -12,7 +13,7 @@ import LaunchingPage from "./pages/LaunchingPage";
 
 // 📄 Semua halaman utama
 import Home from "./pages/Home";
-import About from "./pages/About";
+import About from "./pages/tentang/About";
 import Contact from "./pages/Contact";
 import Photography from "./pages/Photography";
 import Projects from "./pages/projek/Projects";
@@ -28,7 +29,6 @@ import Visi from "./pages/visi";
 import Hobbies from "./pages/Hobbies";
 import Blog from "./pages/blog/Blog";
 import BlogDetail from "./pages/blog/detail/BlogDetail";
-
 
 // ⚠️ Halaman error kustom
 import NotFound from "./pages/errors/NotFound";
@@ -126,6 +126,9 @@ export default function App() {
 
                     {/* 🌙 Footer global */}
                     <Footer />
+
+                    {/* ❓ Tombol bantuan global */}
+                    <HelpButton />
                   </div>
                 </LaunchGuard>
               }
