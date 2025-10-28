@@ -13,16 +13,19 @@ export default function HelpMenu({ onOpenChatbot }) {
       </div>
 
       <ul className="space-y-3 text-sm">
+        {/* Item bantuan umum */}
         <HelpFAQItem />
         <HelpDocsItem />
         <HelpCommitmentItem />
 
+        {/* Pemisah chatbot */}
         <div className="pt-1 border-t border-gray-700">
           <HelpChatbotItem onOpenChatbot={onOpenChatbot} />
         </div>
 
         <hr className="border-gray-700 my-2" />
 
+        {/* Versi */}
         <HelpVersionInfo />
       </ul>
 
