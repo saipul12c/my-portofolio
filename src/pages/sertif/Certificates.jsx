@@ -1,78 +1,19 @@
 "use client";
 import { LazyMotion, m, AnimatePresence, domAnimation } from "framer-motion";
 import { useEffect, useState, useCallback, useMemo, useRef } from "react";
-import { X, Search, Sparkles } from "lucide-react";
+import { X, Search, Sparkles, ShieldCheck, Clock } from "lucide-react";
+import data from "../../data/sertif/certificates.json";
 
-// === Data Sertifikat ===
-const certificates = [
-  {
-    id: 1,
-    title: "Front-End Web Development",
-    issuer: "Dicoding Indonesia",
-    year: "2024",
-    category: "Web Development",
-    image: "https://images.unsplash.com/photo-1581093588401-22d3a4f3a1c3?w=800",
-    urlCertificate: "https://www.dicoding.com/certificates/URL-CONTOH-1",
-    description:
-      "Menyelesaikan pelatihan pengembangan web front-end menggunakan React, JavaScript, dan Tailwind.",
-    tags: ["React", "JavaScript", "TailwindCSS"],
-  },
-  {
-    id: 2,
-    title: "UI/UX Design Fundamentals",
-    issuer: "Google Indonesia",
-    year: "2023",
-    category: "UI/UX",
-    image: "https://images.unsplash.com/photo-1604147706283-d7110b38c7f7?w=800",
-    urlCertificate: "https://www.google.com/certificates/URL-CONTOH-2",
-    description:
-      "Pelatihan intensif dalam prinsip desain antarmuka dan prototyping menggunakan Figma.",
-    tags: ["Figma", "Desain Produk", "User Research"],
-  },
-  {
-    id: 3,
-    title: "EduTech Innovator Award",
-    issuer: "Kemdikbud",
-    year: "2025",
-    category: "Award & Recognition",
-    image: "https://images.unsplash.com/photo-1549924231-f129b911e442?w=800",
-    urlCertificate: "https://kemdikbud.go.id/award/URL-CONTOH-3",
-    description:
-      "Penghargaan nasional untuk kontribusi dalam pengembangan media pembelajaran digital interaktif.",
-    tags: ["Inovasi", "EdTech", "Penghargaan"],
-  },
-  {
-    id: 4,
-    title: "Project Management Professional (PMP)",
-    issuer: "PMI Institute",
-    year: "2024",
-    category: "Management",
-    image: "https://images.unsplash.com/photo-1581091870622-1d4cbf3a52c8?w=800",
-    urlCertificate: "https://pmi.org/certificates/URL-CONTOH-4",
-    description:
-      "Menekankan pendekatan agile dan waterfall dalam manajemen proyek profesional bersertifikat.",
-    tags: ["Manajemen Proyek", "Leadership", "Agile"],
-  },
-];
-
-// === Warna acak untuk tag ===
-const tagColors = [
-  "bg-pink-600/30 text-pink-300",
-  "bg-violet-600/30 text-violet-300",
-  "bg-emerald-600/30 text-emerald-300",
-  "bg-amber-600/30 text-amber-300",
-  "bg-sky-600/30 text-sky-300",
-];
+const certificates = data.certificates;
+const tagColors = data.tagColors;
 
 // === Fuzzy Smart Search ===
 const smartFilter = (certs, query, category) => {
   if (!query && category === "All") return certs;
-
   const q = query.toLowerCase().trim();
 
   const scoreItem = (cert) => {
     let score = 0;
-
     const boost = (field, weight = 1) => {
       const text = field.toLowerCase();
       if (text.startsWith(q)) score += 5 * weight;
@@ -83,8 +24,6 @@ const smartFilter = (certs, query, category) => {
     boost(cert.title, 2);
     boost(cert.issuer);
     cert.tags.forEach((t) => boost(t));
-
-    // penalti kategori jika tidak cocok
     if (category !== "All" && cert.category !== category) score -= 5;
 
     return score;
@@ -291,7 +230,11 @@ export default function Certificates() {
                   variants={cardAnim}
                   whileHover={{ scale: 1.05, y: -3 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-white/5 border border-white/10 rounded-3xl shadow-lg overflow-hidden hover:shadow-cyan-500/20 backdrop-blur-xl transition"
+                  style={{
+                    borderColor: cert.themeColor || "#22d3ee",
+                    boxShadow: `0 0 20px -5px ${cert.themeColor || "#22d3ee"}40`,
+                  }}
+                  className="bg-white/5 border rounded-3xl shadow-lg overflow-hidden hover:shadow-cyan-500/20 backdrop-blur-xl transition"
                 >
                   <img
                     src={cert.image}
@@ -306,6 +249,17 @@ export default function Certificates() {
                     <p className="text-gray-400 text-sm mt-1">
                       {cert.issuer} · {cert.year}
                     </p>
+                    <div className="flex items-center gap-3 text-sm text-gray-400 mt-2">
+                      <Clock size={14} className="text-cyan-400" />
+                      <span>{cert.duration}</span>
+                      <span>•</span>
+                      <span className="capitalize">{cert.difficulty}</span>
+                    </div>
+                    {cert.verified && (
+                      <div className="flex items-center text-emerald-400 text-xs mt-1">
+                        <ShieldCheck size={14} className="mr-1" /> Tersertifikasi
+                      </div>
+                    )}
                     <div className="flex gap-2 flex-wrap mt-3">
                       {cert.tags.map((tag, i) => (
                         <span
@@ -353,7 +307,11 @@ export default function Certificates() {
                 exit={{ scale: 0.95, opacity: 0 }}
                 transition={{ duration: 0.3 }}
                 onClick={(e) => e.stopPropagation()}
-                className="bg-[#141c2c] rounded-3xl overflow-hidden shadow-[0_0_40px_-5px_cyan] max-w-md w-full relative"
+                style={{
+                  borderColor: selected.themeColor,
+                  boxShadow: `0 0 40px -5px ${selected.themeColor}60`,
+                }}
+                className="bg-[#141c2c] border rounded-3xl overflow-hidden shadow-[0_0_40px_-5px_cyan] max-w-md w-full relative"
               >
                 <button
                   onClick={closePopup}
@@ -373,6 +331,22 @@ export default function Certificates() {
                   <p className="text-gray-400 text-sm mb-3">
                     {selected.issuer} · {selected.year}
                   </p>
+
+                  <div className="flex items-center gap-3 text-sm text-gray-300 mb-2">
+                    <Clock size={14} className="text-cyan-400" />
+                    <span>{selected.duration}</span>
+                    <span>•</span>
+                    <span className="capitalize">{selected.difficulty}</span>
+                    {selected.verified && (
+                      <>
+                        <span>•</span>
+                        <span className="text-emerald-400 flex items-center gap-1">
+                          <ShieldCheck size={14} /> Verified
+                        </span>
+                      </>
+                    )}
+                  </div>
+
                   <p className="text-gray-200 leading-relaxed">
                     {selected.description}
                   </p>

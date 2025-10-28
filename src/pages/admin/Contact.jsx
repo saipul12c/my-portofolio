@@ -15,7 +15,7 @@ import {
   Phone,
 } from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
-import Maintenance from "./errors/Maintenance";
+import Maintenance from "../errors/Maintenance";
 
 export default function Contact() {
   const isMaintenance = false;

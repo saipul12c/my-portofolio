@@ -9,7 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import testimonialsData from "../data/testimoni/testimonials.json";
+import testimonialsData from "../../data/testimoni/testimonials.json";
 
 export default function Testimoni() {
   const [selected, setSelected] = useState(null);

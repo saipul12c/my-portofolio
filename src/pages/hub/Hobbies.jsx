@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { LazyMotion, m, AnimatePresence, domAnimation } from "framer-motion";
 import * as Icons from "lucide-react";
-import hobbiesData from "../data/hub/hobbiesData.json";
+import hobbiesData from "../../data/hub/hobbiesData.json";
 
 export default function Hobbies() {
   const [selectedCategory, setSelectedCategory] = useState("Semua");

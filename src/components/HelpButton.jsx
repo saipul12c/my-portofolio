@@ -28,7 +28,7 @@ export default function HelpButton() {
   const [showSettings, setShowSettings] = useState(false);
 
   // 🧩 Maintenance toggle
-  const isMaintenance = false; // ubah ke true jika mode perbaikan
+  const isMaintenance = true; // ubah ke true jika mode perbaikan
 
   const handleOpenChatbot = () => {
     setShowChatbot(true);

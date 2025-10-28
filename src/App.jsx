@@ -14,19 +14,19 @@ import LaunchingPage from "./pages/LaunchingPage";
 // 📄 Semua halaman utama
 import Home from "./pages/Home";
 import About from "./pages/tentang/About";
-import Contact from "./pages/Contact";
-import Photography from "./pages/Photography";
+import Contact from "./pages/admin/Contact";
+import Photography from "./pages/foto/Photography";
 import Projects from "./pages/projek/Projects";
 import ProjectDetail from "./pages/projek/detail/ProjectDetail";
-import Gallery from "./pages/Gallery";
-import Testimoni from "./pages/Testimoni";
+import Gallery from "./pages/kenangan/Gallery";
+import Testimoni from "./pages/pengalaman/Testimoni";
 
 // 📄 Halaman tambahan
-import Certificates from "./pages/Certificates";
+import Certificates from "./pages/sertif/Certificates";
 import SoftSkills from "./pages/skills/SoftSkills";
 import Education from "./pages/sekolah/education";
-import Visi from "./pages/visi";
-import Hobbies from "./pages/Hobbies";
+import Visi from "./pages/visi/visi";
+import Hobbies from "./pages/hub/Hobbies";
 import Blog from "./pages/blog/Blog";
 import BlogDetail from "./pages/blog/detail/BlogDetail";
 
