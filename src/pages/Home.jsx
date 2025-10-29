@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Maintenance from "./errors/Maintenance"; // 🧩 impor halaman Maintenance
 
 export default function Home() {
-  const isMaintenance = true; // ubah ke false jika sudah normal
+  const isMaintenance = false; // ubah ke false jika sudah normal
   // const isMaintenance = true;
 
   if (isMaintenance) {
