@@ -1,21 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Wrench, Clock, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import maintenanceData from "../../data/maintenance/maintenanceData.json";
 
 export default function Maintenance() {
-  // 🕒 Ubah waktu target sesuai kebutuhan
-  const targetTime = new Date("2025-10-08T18:30:00+07:00");
-
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
-  const [progress, setProgress] = useState(0);
-  const [messageIndex, setMessageIndex] = useState(0);
+  // 🕒 Gunakan useMemo agar targetTime tidak berubah setiap render
+  const targetTime = useMemo(() => new Date("2025-10-08T18:30:00+07:00"), []);
 
   // 🔄 Ambil data pesan dari file JSON
   const messages = maintenanceData.messages;
 
-  function calculateTimeLeft() {
+  // 🧮 Bungkus fungsi pakai useCallback supaya stabil di memori
+  const calculateTimeLeft = useCallback(() => {
     const now = new Date();
     const diff = Math.max(0, targetTime - now);
     const totalSeconds = Math.floor(diff / 1000);
@@ -23,7 +20,11 @@ export default function Maintenance() {
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
     return { hours, minutes, seconds, totalSeconds };
-  }
+  }, [targetTime]);
+
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  const [progress, setProgress] = useState(0);
+  const [messageIndex, setMessageIndex] = useState(0);
 
   useEffect(() => {
     const totalDuration = targetTime - new Date();
@@ -50,7 +51,7 @@ export default function Maintenance() {
       clearInterval(countdown);
       clearInterval(messageInterval);
     };
-  }, []);
+  }, [calculateTimeLeft, messages.length, targetTime]);
 
   const { hours, minutes, seconds, totalSeconds } = timeLeft;
 

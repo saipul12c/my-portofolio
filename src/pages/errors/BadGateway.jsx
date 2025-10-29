@@ -3,41 +3,42 @@ import { Link } from "react-router-dom";
 import { Network, RefreshCcw, WifiOff } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function BadGateway() {
-  const messages = [
-    "Server perantara kami sedang susah sinyal 😅",
-    "Ups! Ada masalah di jalur komunikasi antar server.",
-    "Jaringan lagi baper, jadi pesannya nggak nyampe 😭",
-    "Server A udah jawab, tapi Server B lagi loading... lama banget!",
-    "Oops, koneksi antar server sempat nyangkut. Kami segera perbaiki!",
-    "Gateway kami lagi sibuk mikirin hidupnya 🧠💭",
-    "Ada yang nyangkut di kabel jaringan, tim kami lagi benerin 🔧",
-    "Permintaanmu nyasar di tengah jalan, tapi jangan khawatir 😌",
-    "Server tengah kayaknya lagi ngopi dulu ☕",
-    "Hmm... sepertinya sinyal antar server lagi buffering 📡",
-    "Gateway timeout? Enggak, cuma lagi lambat mikirnya 😅",
-    "Kami lagi ngecek kenapa pesan kamu belum sampai ke server tujuan 🔍",
-    "Error 502 bukan salahmu, tapi kami yang lagi beresin 😔",
-    "Sepertinya internet antar server lagi hujan deras 🌧️",
-    "Server tengah sempat tersandung kode 👣",
-    "Tunggu sebentar ya, kami lagi reset jaringan ⚙️",
-    "Ada kemacetan data di jalur penghubung 🚧",
-    "Server kami sedang melakukan sinkronisasi ulang 🔄",
-    "Mungkin server perantara lagi main petak umpet 😆",
-    "Kami udah panggil teknisi virtual buat beresin ini 🧑‍💻",
-    "Jaringan sedang rehat sejenak, biar nggak burnout 💤",
-    "Ada glitch kecil di gateway, lagi diperbaiki sekarang 💜",
-    "Kami udah laporkan masalah ini ke sistem pusat 🚨",
-    "Data nyasar di antariksa digital... kami lagi ambil pakai satelit 🛰️",
-    "Tenang, semuanya akan segera tersambung kembali ✨",
-  ];
+// ✅ Pindahkan ke luar komponen
+const messages = [
+  "Server perantara kami sedang susah sinyal 😅",
+  "Ups! Ada masalah di jalur komunikasi antar server.",
+  "Jaringan lagi baper, jadi pesannya nggak nyampe 😭",
+  "Server A udah jawab, tapi Server B lagi loading... lama banget!",
+  "Oops, koneksi antar server sempat nyangkut. Kami segera perbaiki!",
+  "Gateway kami lagi sibuk mikirin hidupnya 🧠💭",
+  "Ada yang nyangkut di kabel jaringan, tim kami lagi benerin 🔧",
+  "Permintaanmu nyasar di tengah jalan, tapi jangan khawatir 😌",
+  "Server tengah kayaknya lagi ngopi dulu ☕",
+  "Hmm... sepertinya sinyal antar server lagi buffering 📡",
+  "Gateway timeout? Enggak, cuma lagi lambat mikirnya 😅",
+  "Kami lagi ngecek kenapa pesan kamu belum sampai ke server tujuan 🔍",
+  "Error 502 bukan salahmu, tapi kami yang lagi beresin 😔",
+  "Sepertinya internet antar server lagi hujan deras 🌧️",
+  "Server tengah sempat tersandung kode 👣",
+  "Tunggu sebentar ya, kami lagi reset jaringan ⚙️",
+  "Ada kemacetan data di jalur penghubung 🚧",
+  "Server kami sedang melakukan sinkronisasi ulang 🔄",
+  "Mungkin server perantara lagi main petak umpet 😆",
+  "Kami udah panggil teknisi virtual buat beresin ini 🧑‍💻",
+  "Jaringan sedang rehat sejenak, biar nggak burnout 💤",
+  "Ada glitch kecil di gateway, lagi diperbaiki sekarang 💜",
+  "Kami udah laporkan masalah ini ke sistem pusat 🚨",
+  "Data nyasar di antariksa digital... kami lagi ambil pakai satelit 🛰️",
+  "Tenang, semuanya akan segera tersambung kembali ✨",
+];
 
+export default function BadGateway() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
     const randomMessage = messages[Math.floor(Math.random() * messages.length)];
     setMessage(randomMessage);
-  }, []);
+  }, []); // ✅ Sekarang aman, nggak perlu messages di dependency
 
   return (
     <div className="relative flex flex-col items-center justify-center min-h-[100vh] text-center px-6 bg-gradient-to-br from-slate-950 via-purple-950 to-indigo-900 text-white overflow-hidden">

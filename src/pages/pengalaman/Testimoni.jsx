@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useMemo, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import testimonialsData from "../../data/testimoni/testimonials.json";
 import TestimoniHeader from "./components/TestimoniHeader";
 import TestimoniSearchFilter from "./components/pencarian/TestimoniSearchFilter";

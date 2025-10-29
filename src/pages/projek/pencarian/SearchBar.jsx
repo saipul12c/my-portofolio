@@ -19,9 +19,11 @@ export default function SearchBar({
 
   // ✨ Placeholder typing animation
   const [placeholderText, setPlaceholderText] = useState("");
-  const phrases = ["AI", "Game", "EduTech", "Portfolio", "Web App", "3D Project"];
 
   useEffect(() => {
+    // ⬇️ Pindahkan phrases ke dalam efek agar tidak jadi dependensi dinamis
+    const phrases = ["AI", "Game", "EduTech", "Portfolio", "Web App", "3D Project"];
+
     let currentPhrase = 0;
     let currentChar = 0;
     let deleting = false;
@@ -51,7 +53,7 @@ export default function SearchBar({
 
     type();
     return () => clearTimeout(timeout);
-  }, []);
+  }, []); // ✅ dependency dikosongkan, phrases tidak diperlukan
 
   // 📜 Ambil riwayat dari localStorage
   useEffect(() => {

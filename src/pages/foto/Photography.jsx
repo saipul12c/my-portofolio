@@ -18,8 +18,6 @@ export default function Photography() {
   const loaderRef = useRef(null);
   const isMaintenance = false;
 
-  if (isMaintenance) return <Maintenance />;
-
   // 🔍 Filter pencarian
   const filteredPhotos = photos.filter((photo) =>
     [photo.title, photo.category]
@@ -27,15 +25,6 @@ export default function Photography() {
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
   );
-
-  // Ambil foto sesuai jumlah visible
-  const currentPhotos = filteredPhotos.slice(0, visiblePhotos);
-
-  // Reset saat pencarian berubah
-  const handleSearch = (value) => {
-    setSearchTerm(value);
-    setVisiblePhotos(9); // tampilkan ulang dari awal
-  };
 
   // 🧲 Infinite Scroll menggunakan Intersection Observer
   useEffect(() => {
@@ -56,6 +45,17 @@ export default function Photography() {
     if (loaderRef.current) observer.observe(loaderRef.current);
     return () => observer.disconnect();
   }, [visiblePhotos, filteredPhotos.length, isFetching]);
+
+  if (isMaintenance) return <Maintenance />;
+
+  // Ambil foto sesuai jumlah visible
+  const currentPhotos = filteredPhotos.slice(0, visiblePhotos);
+
+  // Reset saat pencarian berubah
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+    setVisiblePhotos(9); // tampilkan ulang dari awal
+  };
 
   return (
     <main className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center px-6 sm:px-10 md:px-20 py-20 relative overflow-hidden">

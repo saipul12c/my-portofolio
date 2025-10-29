@@ -48,10 +48,6 @@ export default function HelpButton() {
     }
   };
 
-  if (isMaintenance && false) {
-    return <Maintenance />;
-  }
-
   return (
     <div className="fixed bottom-6 right-6 z-[9999]">
       {/* ===== Floating Button ===== */}

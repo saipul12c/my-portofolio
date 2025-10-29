@@ -28,7 +28,7 @@ export default function TestimoniGrid({
         layout
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl w-full"
       >
-        {paginated.map((t, i) => (
+        {paginated.map((t) => (
           <motion.div
             key={t.id}
             whileHover={{ scale: 1.05, y: -6 }}

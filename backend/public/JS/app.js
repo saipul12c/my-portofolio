@@ -24,7 +24,6 @@ route();
 async function route() {
   const path = window.location.pathname;
   const page = path.split("/").pop();
-  const app = document.getElementById("app");
 
   if (page === "" || page === "index.html") {
     const data = await getAllPosts();

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Rocket, Star, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import data from "../../data/projects.json";
-import { useErrorAuth } from "../../context/ErrorContext";
+import { useErrorAuth } from "../../context/useErrorAuth";
 import SearchBar from "./pencarian/SearchBar";
 
 export default function Projects() {

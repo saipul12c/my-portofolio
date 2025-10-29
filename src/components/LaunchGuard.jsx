@@ -1,9 +1,12 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 export default function LaunchGuard({ children }) {
   const envDate = import.meta.env.VITE_LAUNCH_DATE;
-  const launchDate = new Date(envDate);
+
+  // Gunakan useMemo agar objek Date tidak berubah setiap render
+  const launchDate = useMemo(() => new Date(envDate), [envDate]);
+
   const [isReady, setIsReady] = useState(false);
   const [isLaunched, setIsLaunched] = useState(false);
   const location = useLocation();

@@ -6,7 +6,6 @@ import { similarity } from "../utilsTestimoni.jsx";
 export default function TestimoniSearchFilter({
   searchQuery,
   setSearchQuery,
-  debouncedQuery,
   suggestions,
   focusedIndex,
   setFocusedIndex,
@@ -125,7 +124,6 @@ export default function TestimoniSearchFilter({
   const sortedSuggestions = useMemo(() => {
     if (!suggestions) return [];
 
-    // Jika input kosong → tampilkan rekomendasi dari history
     if (!searchQuery) {
       const recent = searchHistory
         .map((term) => suggestions.find((s) => s.name === term))
@@ -151,9 +149,13 @@ export default function TestimoniSearchFilter({
     return scored.slice(0, 5);
   }, [suggestions, searchQuery, searchHistory]);
 
-  // 💬 Animated placeholder
+  // 💬 Animated placeholder (✅ FIXED: words pakai useMemo)
   const [placeholder, setPlaceholder] = useState("");
-  const words = ["Cari nama...", "Cari peran...", "Cari proyek..."];
+  const words = useMemo(
+    () => ["Cari nama...", "Cari peran...", "Cari proyek..."],
+    []
+  );
+
   useEffect(() => {
     let wordIndex = 0;
     let charIndex = 0;
@@ -181,7 +183,7 @@ export default function TestimoniSearchFilter({
     };
     type();
     return () => clearTimeout(timeout);
-  }, []);
+  }, [words]);
 
   // 📜 Scroll otomatis ke item aktif
   useEffect(() => {
@@ -191,7 +193,7 @@ export default function TestimoniSearchFilter({
         activeItem.scrollIntoView({ block: "nearest", behavior: "smooth" });
       }
     }
-  }, [focusedIndex]);
+  }, [focusedIndex, suggestionRef]);
 
   // ⌨️ Keyboard navigation + autocomplete
   const handleKeyDown = (e) => {
@@ -225,7 +227,7 @@ export default function TestimoniSearchFilter({
     }
   };
 
-  // Tutup suggestion saat klik di luar
+  // Tutup suggestion saat klik di luar (✅ FIXED: tambahkan dependencies)
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -238,8 +240,9 @@ export default function TestimoniSearchFilter({
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [inputRef, suggestionRef]);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
+  }, [inputRef, suggestionRef, setShowSuggestions]);
 
   const escapeRegex = (str) =>
     str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

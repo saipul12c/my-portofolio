@@ -22,7 +22,8 @@ export default function GalleryShortModal({
   handlePrev,
 }) {
   const [isMuted, setIsMuted] = useState(true);
-  const localVideoRef = videoRef || useRef(null);
+  const newRef = useRef(null);
+  const localVideoRef = videoRef || newRef;
 
   if (!selectedMedia || selectedMedia.type !== "short") return null;
 

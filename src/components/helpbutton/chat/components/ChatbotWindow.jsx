@@ -36,13 +36,13 @@ export function ChatbotWindow({ onClose, onOpenSettings }) {
     setIsTyping(true);
 
     setTimeout(() => {
-      const reply = getSmartReply(userText, messages);
+      const reply = getSmartReply(userText);
       setMessages((prev) => [...prev, { from: "bot", text: reply }]);
       setIsTyping(false);
     }, 1200);
   };
 
-  const getSmartReply = (msg, history) => {
+  const getSmartReply = (msg) => {
     const text = msg.toLowerCase();
 
     if (text.includes("halo") || text.includes("hai")) {

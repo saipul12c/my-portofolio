@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X } from "lucide-react";
 
@@ -6,12 +6,17 @@ export default function PhotoSearch({ onSearch, allPhotos = [] }) {
   const [query, setQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [placeholderText, setPlaceholderText] = useState("");
-  const phrases = [
-    "Cari foto berdasarkan judul atau kategori...",
-    "Cari foto berdasarkan tema (Nature, City, Portrait...)",
-    "Cari foto berdasarkan mood (Dark, Bright, Warm...)",
-    "Cari foto berdasarkan gaya (Abstract, Minimal, Retro...)",
-  ];
+
+  // ✅ Bekuin array phrases pakai useMemo biar gak re-render terus
+  const phrases = useMemo(
+    () => [
+      "Cari foto berdasarkan judul atau kategori...",
+      "Cari foto berdasarkan tema (Nature, City, Portrait...)",
+      "Cari foto berdasarkan mood (Dark, Bright, Warm...)",
+      "Cari foto berdasarkan gaya (Abstract, Minimal, Retro...)",
+    ],
+    []
+  );
 
   // 🧠 Efek animasi ketik di placeholder
   useEffect(() => {
@@ -28,7 +33,7 @@ export default function PhotoSearch({ onSearch, allPhotos = [] }) {
         currentChar++;
         if (currentChar === fullText.length) {
           deleting = true;
-          timeout = setTimeout(type, 2000); // jeda sebelum hapus
+          timeout = setTimeout(type, 2000);
           return;
         }
       } else {
@@ -39,42 +44,39 @@ export default function PhotoSearch({ onSearch, allPhotos = [] }) {
           currentPhrase = (currentPhrase + 1) % phrases.length;
         }
       }
-      timeout = setTimeout(type, deleting ? 40 : 80); // kecepatan ketik/hapus
+      timeout = setTimeout(type, deleting ? 40 : 80);
     };
 
     type();
     return () => clearTimeout(timeout);
-  }, []);
+  }, [phrases]); // sekarang aman banget
 
-  // Ambil daftar unik title + category dari semua foto
   const suggestions = allPhotos
     .flatMap((p) => [p.title, p.category])
     .filter((item, index, self) => item && self.indexOf(item) === index)
     .filter((item) => item.toLowerCase().includes(query.toLowerCase()))
-    .slice(0, 6); // batasi maksimal 6 saran
+    .slice(0, 6);
 
-  // 🧠 Saat user mengetik
   const handleChange = (e) => {
     const value = e.target.value;
     setQuery(value);
     setShowSuggestions(true);
     onSearch(value);
-    window.scrollTo({ top: 0, behavior: "smooth" }); // Auto-scroll ke atas
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // 🖱️ Saat user klik suggestion
   const handleSelect = (value) => {
     setQuery(value);
     setShowSuggestions(false);
     onSearch(value);
-    window.scrollTo({ top: 0, behavior: "smooth" }); // Auto-scroll juga
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const clearSearch = () => {
     setQuery("");
     setShowSuggestions(false);
     onSearch("");
-    window.scrollTo({ top: 0, behavior: "smooth" }); // Reset ke atas
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -84,7 +86,6 @@ export default function PhotoSearch({ onSearch, allPhotos = [] }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
-      {/* Input */}
       <Search className="absolute left-3 top-3.5 text-gray-400" size={18} />
       <input
         type="text"
@@ -92,11 +93,10 @@ export default function PhotoSearch({ onSearch, allPhotos = [] }) {
         value={query}
         onChange={handleChange}
         onFocus={() => setShowSuggestions(true)}
-        onBlur={() => setTimeout(() => setShowSuggestions(false), 200)} // biar bisa klik suggestion
+        onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
         className="w-full bg-white/5 border border-white/10 rounded-full py-2.5 pl-10 pr-10 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder-gray-400 transition-all"
       />
 
-      {/* Tombol clear */}
       {query && (
         <motion.button
           onClick={clearSearch}
@@ -107,7 +107,6 @@ export default function PhotoSearch({ onSearch, allPhotos = [] }) {
         </motion.button>
       )}
 
-      {/* Dropdown suggestion */}
       <AnimatePresence>
         {showSuggestions && suggestions.length > 0 && (
           <motion.ul

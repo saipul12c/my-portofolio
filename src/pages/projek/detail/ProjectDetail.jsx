@@ -1,4 +1,4 @@
-import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -25,7 +25,7 @@ import Forbidden from "../../errors/Forbidden"; // 🚫 Tambahkan ini
 
 export default function ProjectDetail() {
   const location = useLocation();
-  const navigate = useNavigate();
+  const { id } = useParams();
 
   // 🚧 Mode maintenance
   const isMaintenance = false; // ubah ke true kalau lagi perbaikan
@@ -40,7 +40,6 @@ export default function ProjectDetail() {
     return <Forbidden />;
   }
 
-  const { id } = useParams();
   const project = data.projects.find((p) => p.id === Number(id));
 
   // ❌ Jika ID tidak ditemukan

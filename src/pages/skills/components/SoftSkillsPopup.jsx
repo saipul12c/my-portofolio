@@ -98,7 +98,8 @@ export default function SoftSkillsPopup({ selectedSkill, setSelectedSkill, navig
                 {(() => {
                   const videoURL = selectedSkill.video;
                   const embedURL = formatYouTubeURL(videoURL);
-                  const isShorts = /shorts[\/?]/i.test(videoURL || "");
+                  // ✅ Hapus escape karakter tidak perlu pada regex
+                  const isShorts = /shorts[/?]/i.test(videoURL || "");
                   // jika embedURL kosong (invalid), tampilkan pesan
                   if (!embedURL) {
                     return (

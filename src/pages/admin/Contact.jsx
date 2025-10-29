@@ -1,5 +1,5 @@
 import { motion, useAnimation } from "framer-motion";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import emailjs from "emailjs-com";
 import { toast, ToastContainer } from "react-toastify";
@@ -76,8 +76,6 @@ export default function Contact() {
       .finally(() => setLoading(false));
   };
 
-  if (isMaintenance) return <Maintenance />;
-
   // 🎬 Scroll Animation Helper
   const useScrollReveal = (delay = 0) => {
     const controls = useAnimation();
@@ -102,6 +100,8 @@ export default function Contact() {
   const descAnim = useScrollReveal(0.2);
   const formAnim = useScrollReveal(0.4);
   const contactAnim = useScrollReveal(0.6);
+
+  if (isMaintenance) return <Maintenance />;
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-start px-6 sm:px-10 md:px-20 py-16 bg-gradient-to-b from-purple-50 via-white to-purple-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
@@ -204,7 +204,7 @@ export default function Contact() {
             { icon: <Linkedin />, label: "LinkedIn", href: "https://linkedin.com/" },
             { icon: <Instagram />, label: "Instagram", href: "https://instagram.com/" },
             { icon: <Phone />, label: "WhatsApp", href: "https://wa.me/6281234567890" },
-          ].map((item, i) => (
+          ].map((item) => (
             <motion.a
               key={item.label}
               href={item.href}

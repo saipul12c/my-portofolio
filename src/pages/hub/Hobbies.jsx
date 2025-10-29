@@ -13,15 +13,15 @@ export default function Hobbies() {
   );
 
   // Label acak 35% (diproses sekali aja)
-  const labelTypes = ["🔥 Hot", "🆕 Baru", "⭐ Rekomendasi"];
   const hobbiesWithLabels = useMemo(() => {
+    const labelTypes = ["🔥 Hot", "🆕 Baru", "⭐ Rekomendasi"];
     return hobbiesData.map((h) => {
       const hasLabel = Math.random() < 0.35;
       return hasLabel
         ? { ...h, label: labelTypes[Math.floor(Math.random() * labelTypes.length)] }
         : { ...h, label: null };
     });
-  }, []);
+  }, []); // ✅ sekarang aman, gak ada dependency warning
 
   // Urutkan: label di atas
   const sortedHobbies = useMemo(() => {

@@ -3,71 +3,72 @@ import { Link } from "react-router-dom";
 import { AlertTriangle, RefreshCcw, Mail } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function ServerError() {
-  const messages = [
-    "Ups! Ada yang error di sisi server. Kami sedang memperbaikinya.",
-    "Server kami lagi sedikit pusing... tapi tenang, tim kami sudah turun tangan!",
-    "Terjadi kesalahan di server. Coba lagi sebentar ya.",
-    "Wah, server kami sedang tidak baik-baik saja 😅",
-    "Maaf, ada masalah di sistem kami. Kami sedang memperbaikinya dengan cepat.",
-    "Error 500: Mesin di balik layar lagi ngambek 🤖",
-    "Tenang, bukan kamu kok yang salah — server-nya aja yang lagi sibuk.",
-    "Kayaknya sistem kami butuh kopi dulu ☕",
-    "Server overload! Kami sedang kasih dia waktu buat istirahat 😴",
-    "Permintaanmu bagus, tapi server belum siap menerimanya 😅",
-    "Server lagi ngerestart biar makin segar ✨",
-    "Kami lagi perbaiki sesuatu di balik layar... sabar ya 🙏",
-    "Waduh, ada yang nge-bug. Tapi jangan khawatir, udah kami tangani!",
-    "Server-nya lagi merenung tentang kehidupan digital 💭",
-    "Tenang aja, ini cuma kesalahan sementara.",
-    "Kadang, bahkan server juga butuh waktu untuk introspeksi 😌",
-    "Jaringan stabil, tapi otak server lagi nge-lag 🧠💥",
-    "Ups, ada gangguan teknis — kami segera memperbaikinya!",
-    "Kami lagi ngecek kabel yang longgar 🛠️",
-    "Server kami barusan tersandung error 😅",
-    "Error 500 bukan akhir dunia. Cuma tanda kita perlu istirahat sebentar.",
-    "Mungkin server-nya kepanasan, kami lagi nyalain kipasnya 🔥🌀",
-    "Kayaknya ada byte yang nyasar di dalam sistem 👾",
-    "Server kami lagi reboot. Tunggu sebentar aja ya!",
-    "Masalah internal terdeteksi. Tapi semuanya masih terkendali 💪",
-    "Kami sedang bekerja keras untuk memperbaiki error ini 🧑‍💻",
-    "Sabar ya... sistem kami lagi menata ulang kehidupannya 🧘",
-    "Ups, ada error di balik layar! Tapi kamu tetap luar biasa ❤️",
-    "Kadang kode bisa baper juga 😅",
-    "Server kami sedang belajar dari kesalahan 💡",
-    "Error ini udah dikirim ke tim teknis kami, mereka sedang beraksi ⚙️",
-    "Hmm... sesuatu gak beres, tapi tenang, kami lagi atur ulang datanya.",
-    "Koneksi baik, tapi logika server sedikit tersesat 🤔",
-    "Kayaknya kabelnya ketarik dikit. Kami udah benerin kok 😆",
-    "Server lagi reboot supaya jadi versi yang lebih tangguh 💥",
-    "Server-nya kena drama internal 😭",
-    "Kami tahu ini ganggu banget, makasih udah sabar 💙",
-    "Server lagi melakukan introspeksi digital 🧘‍♂️",
-    "Mungkin ini saat yang tepat buat ngopi dulu ☕",
-    "Ada kesalahan sistem — tapi jangan khawatir, semua bisa diperbaiki 🙌",
-    "Server-nya lagi mikir keras... mungkin terlalu keras 💭",
-    "Tenang aja, tim kami udah bergerak cepat 🚀",
-    "Ups! Kami kehilangan koneksi ke logika 🤖",
-    "Ada yang crash, tapi bukan harapanmu 💫",
-    "Server lagi marah kecil, tapi kami udah minta maaf 😅",
-    "Tunggu sebentar, kami lagi reset server biar balik normal 🔁",
-    "Mungkin ini tanda kamu perlu peregangan dulu 🧍‍♂️",
-    "Server error bukan kesalahanmu. Kamu tetap keren 😎",
-    "Kami lagi sulap sistem supaya normal lagi ✨",
-    "Server-nya lupa script-nya sendiri 😬",
-    "Kabar baik: error sudah kami laporkan ke tim ahli 👨‍🔧",
-  ];
+// 🔧 Pindahkan messages ke luar komponen agar tidak berubah tiap render
+const messages = [
+  "Ups! Ada yang error di sisi server. Kami sedang memperbaikinya.",
+  "Server kami lagi sedikit pusing... tapi tenang, tim kami sudah turun tangan!",
+  "Terjadi kesalahan di server. Coba lagi sebentar ya.",
+  "Wah, server kami sedang tidak baik-baik saja 😅",
+  "Maaf, ada masalah di sistem kami. Kami sedang memperbaikinya dengan cepat.",
+  "Error 500: Mesin di balik layar lagi ngambek 🤖",
+  "Tenang, bukan kamu kok yang salah — server-nya aja yang lagi sibuk.",
+  "Kayaknya sistem kami butuh kopi dulu ☕",
+  "Server overload! Kami sedang kasih dia waktu buat istirahat 😴",
+  "Permintaanmu bagus, tapi server belum siap menerimanya 😅",
+  "Server lagi ngerestart biar makin segar ✨",
+  "Kami lagi perbaiki sesuatu di balik layar... sabar ya 🙏",
+  "Waduh, ada yang nge-bug. Tapi jangan khawatir, udah kami tangani!",
+  "Server-nya lagi merenung tentang kehidupan digital 💭",
+  "Tenang aja, ini cuma kesalahan sementara.",
+  "Kadang, bahkan server juga butuh waktu untuk introspeksi 😌",
+  "Jaringan stabil, tapi otak server lagi nge-lag 🧠💥",
+  "Ups, ada gangguan teknis — kami segera memperbaikinya!",
+  "Kami lagi ngecek kabel yang longgar 🛠️",
+  "Server kami barusan tersandung error 😅",
+  "Error 500 bukan akhir dunia. Cuma tanda kita perlu istirahat sebentar.",
+  "Mungkin server-nya kepanasan, kami lagi nyalain kipasnya 🔥🌀",
+  "Kayaknya ada byte yang nyasar di dalam sistem 👾",
+  "Server kami lagi reboot. Tunggu sebentar aja ya!",
+  "Masalah internal terdeteksi. Tapi semuanya masih terkendali 💪",
+  "Kami sedang bekerja keras untuk memperbaiki error ini 🧑‍💻",
+  "Sabar ya... sistem kami lagi menata ulang kehidupannya 🧘",
+  "Ups, ada error di balik layar! Tapi kamu tetap luar biasa ❤️",
+  "Kadang kode bisa baper juga 😅",
+  "Server kami sedang belajar dari kesalahan 💡",
+  "Error ini udah dikirim ke tim teknis kami, mereka sedang beraksi ⚙️",
+  "Hmm... sesuatu gak beres, tapi tenang, kami lagi atur ulang datanya.",
+  "Koneksi baik, tapi logika server sedikit tersesat 🤔",
+  "Kayaknya kabelnya ketarik dikit. Kami udah benerin kok 😆",
+  "Server lagi reboot supaya jadi versi yang lebih tangguh 💥",
+  "Server-nya kena drama internal 😭",
+  "Kami tahu ini ganggu banget, makasih udah sabar 💙",
+  "Server lagi melakukan introspeksi digital 🧘‍♂️",
+  "Mungkin ini saat yang tepat buat ngopi dulu ☕",
+  "Ada kesalahan sistem — tapi jangan khawatir, semua bisa diperbaiki 🙌",
+  "Server-nya lagi mikir keras... mungkin terlalu keras 💭",
+  "Tenang aja, tim kami udah bergerak cepat 🚀",
+  "Ups! Kami kehilangan koneksi ke logika 🤖",
+  "Ada yang crash, tapi bukan harapanmu 💫",
+  "Server lagi marah kecil, tapi kami udah minta maaf 😅",
+  "Tunggu sebentar, kami lagi reset server biar balik normal 🔁",
+  "Mungkin ini tanda kamu perlu peregangan dulu 🧍‍♂️",
+  "Server error bukan kesalahanmu. Kamu tetap keren 😎",
+  "Kami lagi sulap sistem supaya normal lagi ✨",
+  "Server-nya lupa script-nya sendiri 😬",
+  "Kabar baik: error sudah kami laporkan ke tim ahli 👨‍🔧",
+];
 
+export default function ServerError() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
     const randomMessage = messages[Math.floor(Math.random() * messages.length)];
     setMessage(randomMessage);
-  }, []);
+  }, []); // ✅ Aman, ESLint gak bakal warning lagi
 
   return (
     <div className="relative flex flex-col items-center justify-center min-h-[100vh] text-center px-6 bg-gradient-to-br from-black via-gray-900 to-red-950 text-white overflow-hidden">
-
+      
       {/* Efek latar belakang */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute w-[700px] h-[700px] bg-red-600/10 blur-[140px] rounded-full top-[10%] left-[10%] animate-pulse" />

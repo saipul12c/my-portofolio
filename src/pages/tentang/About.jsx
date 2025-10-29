@@ -18,14 +18,6 @@ export default function About() {
   const [softSkills, setSoftSkills] = useState(null);
   const [interests, setInterests] = useState(null);
 
-  // 🔧 Toggle mode maintenance
-  // const isMaintenance = true; // ubah ke false kalau sudah normal
-  const isMaintenance = false;
-
-  if (isMaintenance) {
-    return <Maintenance />; // langsung tampilkan halaman maintenance
-  }
-
   useEffect(() => {
     async function loadData() {
       try {
@@ -39,7 +31,7 @@ export default function About() {
         ] = await Promise.all([
           fetch("/data/about/profile.json").then((r) => r.json()),
           fetch("/data/about/cards.json").then((r) => r.json()),
-          fetch("/data/about/certificates.json").then((r) => r.json()),
+          fetch("/data/about/certificates.json\n").then((r) => r.json()),
           fetch("/data/about/collaborations.json").then((r) => r.json()),
           fetch("/data/about/softskills.json").then((r) => r.json()),
           fetch("/data/about/interests.json").then((r) => r.json()),
@@ -58,6 +50,14 @@ export default function About() {
 
     loadData();
   }, []);
+
+  // 🔧 Toggle mode maintenance
+  // const isMaintenance = true; // ubah ke false kalau sudah normal
+  const isMaintenance = false;
+
+  if (isMaintenance) {
+    return <Maintenance />; // langsung tampilkan halaman maintenance
+  }
 
   if (
     !profile ||

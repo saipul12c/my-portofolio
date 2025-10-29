@@ -17,6 +17,7 @@ export default function SoftSkillsSearch({ skills = [], onFilterChange, highligh
       const v = localStorage.getItem("ss_recent_search");
       return v ? JSON.parse(v) : [];
     } catch {
+      // intentionally left blank
       return [];
     }
   });
@@ -97,7 +98,9 @@ export default function SoftSkillsSearch({ skills = [], onFilterChange, highligh
           cat.includes(q) ||
           labels.some((l) => l.includes(q));
 
-        const matchCategory = categoryFilter === "All" || (skill.category || "").toLowerCase() === categoryFilter.toLowerCase();
+        const matchCategory =
+          categoryFilter === "All" ||
+          (skill.category || "").toLowerCase() === categoryFilter.toLowerCase();
 
         return matchSearch && matchCategory;
       });
@@ -131,14 +134,16 @@ export default function SoftSkillsSearch({ skills = [], onFilterChange, highligh
       .filter((s) => (s.name || "").toLowerCase().includes(search.toLowerCase()))
       .slice(0, 6);
     setSuggestions(matched);
-    setActiveSuggestion((m) => (matched.length > 0 ? 0 : -1));
+    setActiveSuggestion(matched.length > 0 ? 0 : -1);
   }, [search, skills]);
 
   // Persist recentSearch to localStorage
   useEffect(() => {
     try {
       localStorage.setItem("ss_recent_search", JSON.stringify(recentSearch));
-    } catch {}
+    } catch {
+      // intentionally left blank
+    }
   }, [recentSearch]);
 
   // Suggestion selection helper
@@ -236,7 +241,9 @@ export default function SoftSkillsSearch({ skills = [], onFilterChange, highligh
                   onClick={() => handleSelectSuggestion(s.name)}
                   onMouseEnter={() => setActiveSuggestion(i)}
                   className={`flex items-center justify-between px-4 py-2 cursor-pointer transition-all ${
-                    activeSuggestion === i ? "bg-cyan-600/40 text-white" : "hover:bg-cyan-500/20"
+                    activeSuggestion === i
+                      ? "bg-cyan-600/40 text-white"
+                      : "hover:bg-cyan-500/20"
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -245,10 +252,16 @@ export default function SoftSkillsSearch({ skills = [], onFilterChange, highligh
                     ) : (
                       <Clock className="w-4 h-4 text-gray-400" />
                     )}
-                    <span dangerouslySetInnerHTML={{ __html: highlightText(s.name, search) }} />
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: highlightText(s.name, search),
+                      }}
+                    />
                   </div>
 
-                  {activeSuggestion === i && <ArrowRight className="w-4 h-4 text-cyan-300" />}
+                  {activeSuggestion === i && (
+                    <ArrowRight className="w-4 h-4 text-cyan-300" />
+                  )}
                 </motion.li>
               ))}
             </motion.ul>

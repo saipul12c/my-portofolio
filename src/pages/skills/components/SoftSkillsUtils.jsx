@@ -56,7 +56,8 @@ export const formatYouTubeURL = (url) => {
 
     // No match
     return "";
-  } catch (e) {
+  } catch {
+    // intentionally left blank — return default value below
     return "";
   }
 };

@@ -1,7 +1,6 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-
-const ErrorContext = createContext();
+import { ErrorContext } from "./ErrorContextObject";
 
 export function ErrorProvider({ children }) {
   const [authorizedError, setAuthorizedError] = useState(false);
@@ -17,8 +16,4 @@ export function ErrorProvider({ children }) {
       {children}
     </ErrorContext.Provider>
   );
-}
-
-export function useErrorAuth() {
-  return useContext(ErrorContext);
 }
