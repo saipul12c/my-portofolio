@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Image, UserCheck, Tag } from "lucide-react";
-import albums from "../../data/gallery/albums.json";
+import albums from "../../../data/gallery/albums.json";
 
 export default function GalleryAlbums({ onSelect }) {
   const [visibleCount, setVisibleCount] = useState(6);

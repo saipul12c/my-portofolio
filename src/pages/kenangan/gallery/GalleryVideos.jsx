@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { PlayCircle, UserCheck, Tag } from "lucide-react";
-import videos from "../../data/gallery/videos.json";
+import videos from "../../../data/gallery/videos.json";
 
 export default function GalleryVideos({ onSelect }) {
   const [visibleCount, setVisibleCount] = useState(9);

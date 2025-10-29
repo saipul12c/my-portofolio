@@ -13,13 +13,13 @@ export default function SearchBar({
   const inputRef = useRef(null);
   const listRef = useRef(null);
 
-  // === 📜 Load history dari localStorage ===
+  // === 📜 Load search history ===
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("searchHistory")) || [];
     setSearchHistory(stored);
   }, []);
 
-  // === 💾 Simpan history ke localStorage ===
+  // === 💾 Save search term ===
   const saveToHistory = (term) => {
     if (!term.trim()) return;
     const stored = JSON.parse(localStorage.getItem("searchHistory")) || [];
@@ -28,24 +28,96 @@ export default function SearchBar({
     setSearchHistory(updated);
   };
 
-  // === 🧠 Autocomplete + Smart Suggestions ===
+  // === 🧠 Autocomplete & Smart Suggestions ===
   const suggestions = useMemo(() => {
     if (!searchTerm) return [];
     const lower = searchTerm.toLowerCase();
 
-    const allSuggestions = blogs.flatMap((post) => [
-      { text: post.title, type: "Judul" },
-      { text: post.author, type: "Penulis" },
-      ...(post.labels || []).map((label) => ({ text: label, type: "Label" })),
-    ]);
+    // 🔍 Ambil semua teks dari setiap post (judul, kategori, isi, dll)
+    const extractTexts = (post) => {
+      const texts = [
+        { text: post.title, type: "Judul", icon: "📰" },
+        { text: post.author, type: "Penulis", icon: "✍️" },
+        { text: post.category, type: "Kategori", icon: "🏷️" },
+        ...(post.tags || []).map((tag) => ({
+          text: tag,
+          type: "Tag",
+          icon: "🔖",
+        })),
+        ...(post.labels || []).map((label) => ({
+          text: label,
+          type: "Label",
+          icon: "⭐",
+        })),
+        {
+          text: post.language === "id" ? "Bahasa Indonesia" : "English",
+          type: "Bahasa",
+          icon: "🌐",
+        },
+      ];
 
+      // 💡 Tambahan: dukung sub_bab, sub_materi, dan poin (termasuk isi teks)
+      if (post.sub_bab) {
+        post.sub_bab.forEach((bab) => {
+          texts.push({ text: bab.judul, type: "Sub Bab", icon: "📖" });
+
+          if (bab.isi) {
+            texts.push({ text: bab.isi, type: "Isi Sub Bab", icon: "🪶" });
+          }
+
+          if (bab.sub_materi) {
+            bab.sub_materi.forEach((materi) => {
+              texts.push({ text: materi.judul, type: "Sub Materi", icon: "📚" });
+
+              if (materi.isi) {
+                texts.push({ text: materi.isi, type: "Isi Sub Materi", icon: "🧾" });
+              }
+
+              if (materi.poin) {
+                materi.poin.forEach((p, i) =>
+                  texts.push({
+                    text: typeof p === "string" ? p : p.teks || `Poin ${i + 1}`,
+                    type: "Poin",
+                    icon: "•",
+                  })
+                );
+              }
+            });
+          }
+
+          if (bab.poin) {
+            bab.poin.forEach((p, i) =>
+              texts.push({
+                text: typeof p === "string" ? p : p.teks || `Poin ${i + 1}`,
+                type: "Poin",
+                icon: "•",
+              })
+            );
+          }
+        });
+      }
+
+      // 💬 Tambahan: jika blog punya "content" utama
+      if (post.content && typeof post.content === "string") {
+        texts.push({ text: post.content, type: "Isi Artikel", icon: "📝" });
+      }
+
+      return texts;
+    };
+
+    // Ambil semua teks dari semua blog
+    const allSuggestions = blogs.flatMap(extractTexts);
+
+    // Buat unik (hindari duplikasi)
     const unique = [
-      ...new Map(allSuggestions.map((item) => [item.text, item])).values(),
+      ...new Map(
+        allSuggestions.map((item) => [item.text?.toLowerCase(), item])
+      ).values(),
     ];
 
-    // Sort berdasarkan relevansi (prioritaskan yang diawali dulu)
+    // Filter berdasarkan input
     return unique
-      .filter((s) => s.text.toLowerCase().includes(lower))
+      .filter((s) => s.text && s.text.toLowerCase().includes(lower))
       .sort((a, b) => {
         const aStarts = a.text.toLowerCase().startsWith(lower);
         const bStarts = b.text.toLowerCase().startsWith(lower);
@@ -56,7 +128,7 @@ export default function SearchBar({
       .slice(0, 8);
   }, [searchTerm, blogs]);
 
-  // === ✨ Predicted Term (typeahead) ===
+  // === ✨ Predictive typing ===
   useEffect(() => {
     if (suggestions.length > 0 && searchTerm) {
       setPredictedTerm(suggestions[0].text);
@@ -65,7 +137,7 @@ export default function SearchBar({
     }
   }, [searchTerm, suggestions]);
 
-  // === ⌨️ Keyboard Navigation ===
+  // === ⌨️ Keyboard navigation ===
   const handleKeyDown = (e) => {
     if (!showSuggestions || suggestions.length === 0) return;
 
@@ -90,7 +162,7 @@ export default function SearchBar({
     }
   };
 
-  // === 🖱️ Pilih saran ===
+  // === 🖱️ Select suggestion ===
   const handleSelectSuggestion = (text) => {
     setSearchTerm(text);
     setCurrentPage(1);
@@ -100,7 +172,7 @@ export default function SearchBar({
     saveToHistory(text);
   };
 
-  // === 🔍 Highlight bagian teks yang cocok ===
+  // === 🧩 Highlight matched substring ===
   const highlightMatch = (text) => {
     const lower = searchTerm.toLowerCase();
     const index = text.toLowerCase().indexOf(lower);
@@ -108,7 +180,7 @@ export default function SearchBar({
     return (
       <>
         {text.slice(0, index)}
-        <span className="text-cyan-300 font-medium">
+        <span className="text-cyan-300 font-semibold">
           {text.slice(index, index + searchTerm.length)}
         </span>
         {text.slice(index + searchTerm.length)}
@@ -116,7 +188,6 @@ export default function SearchBar({
     );
   };
 
-  // === ✨ Clear Search ===
   const clearSearch = () => {
     setSearchTerm("");
     setShowSuggestions(false);
@@ -124,16 +195,22 @@ export default function SearchBar({
     inputRef.current.focus();
   };
 
-  // === 🌟 Trending Search (opsional statis) ===
-  const trending = ["React", "UX Design", "Pemrograman", "Web App", "JavaScript"];
+  const trending = useMemo(() => {
+    const tags = blogs.flatMap((b) => b.tags || []);
+    const categories = blogs.map((b) => b.category);
+    const subbab = blogs.flatMap((b) =>
+      (b.sub_bab || []).map((s) => s.judul)
+    );
+    const mix = [...new Set([...tags, ...categories, ...subbab])];
+    return mix.filter(Boolean).sort(() => 0.5 - Math.random()).slice(0, 5);
+  }, [blogs]);
 
   return (
     <div className="max-w-xl mx-auto mb-14 relative">
       <div className="relative">
-        {/* Ghost Typeahead Prediction */}
-        <div className="absolute inset-0 px-5 py-3 text-gray-500 pointer-events-none select-none">
+        <div className="absolute inset-0 px-5 py-3 text-gray-600 pointer-events-none select-none">
           <span className="invisible">{searchTerm}</span>
-          <span className="text-gray-400">
+          <span className="text-gray-500">
             {predictedTerm.slice(searchTerm.length)}
           </span>
         </div>
@@ -151,52 +228,54 @@ export default function SearchBar({
             setHighlightIndex(-1);
           }}
           onKeyDown={handleKeyDown}
-          placeholder="Cari artikel berdasarkan judul, penulis, atau label..."
-          className="w-full px-5 py-3 pr-12 rounded-2xl bg-gray-800/60 border border-white/10 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-200 relative"
+          placeholder="Cari berdasarkan judul, isi, penulis, kategori, tag, atau poin..."
+          className="w-full px-5 py-3 pr-12 rounded-2xl bg-gray-800/60 border border-white/10 
+          text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 
+          focus:ring-cyan-400 focus:border-transparent transition-all duration-200"
         />
 
-        {/* Clear Button */}
         {searchTerm && (
           <button
             onClick={clearSearch}
-            className="absolute right-10 top-3.5 text-gray-400 hover:text-gray-200 transition"
+            className="absolute right-10 top-3.5 text-gray-400 hover:text-gray-100 transition"
           >
             ✕
           </button>
         )}
 
-        <span className="absolute right-4 top-3.5 text-cyan-400 text-lg">
-          🔍
-        </span>
+        <span className="absolute right-4 top-3.5 text-cyan-400 text-lg">🔍</span>
       </div>
 
-      {/* 🔮 Suggestion Dropdown */}
+      {/* Dropdown */}
       {showSuggestions && (
         <ul
           ref={listRef}
-          className="absolute z-20 w-full mt-2 bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 overflow-hidden animate-fade-in"
+          className="absolute z-20 w-full mt-2 bg-gray-900/95 backdrop-blur-xl 
+          rounded-2xl shadow-2xl border border-white/10 overflow-hidden animate-fade-in"
         >
-          {/* Jika sedang mengetik dan ada hasil */}
           {searchTerm && suggestions.length > 0 && (
             <>
               {suggestions.map((s, idx) => (
                 <li
                   key={idx}
                   onMouseDown={() => handleSelectSuggestion(s.text)}
-                  className={`px-5 py-2 text-sm flex justify-between items-center cursor-pointer transition-colors ${
+                  className={`px-5 py-2 text-sm flex justify-between items-center cursor-pointer 
+                  transition-colors ${
                     idx === highlightIndex
                       ? "bg-cyan-500/20 text-white"
                       : "hover:bg-cyan-500/10 text-gray-200"
                   }`}
                 >
-                  <div>{highlightMatch(s.text)}</div>
+                  <div className="flex items-center gap-2">
+                    <span>{s.icon}</span>
+                    <div>{highlightMatch(s.text)}</div>
+                  </div>
                   <span className="text-xs text-gray-500 italic">{s.type}</span>
                 </li>
               ))}
             </>
           )}
 
-          {/* Jika tidak ada hasil */}
           {searchTerm && suggestions.length === 0 && (
             <li className="px-5 py-3 text-sm text-gray-400 italic">
               Tidak ada hasil untuk{" "}
@@ -204,7 +283,6 @@ export default function SearchBar({
             </li>
           )}
 
-          {/* Riwayat pencarian */}
           {!searchTerm && searchHistory.length > 0 && (
             <div className="border-t border-white/10">
               <div className="px-5 py-2 text-xs text-gray-500">
@@ -222,7 +300,6 @@ export default function SearchBar({
             </div>
           )}
 
-          {/* Trending search */}
           {!searchTerm && (
             <div className="border-t border-white/10">
               <div className="px-5 py-2 text-xs text-gray-500">
@@ -241,22 +318,6 @@ export default function SearchBar({
           )}
         </ul>
       )}
-
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(-4px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.15s ease-out forwards;
-        }
-      `}</style>
     </div>
   );
 }

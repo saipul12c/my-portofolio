@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Image, UserCheck, Tag } from "lucide-react";
-import imagesData from "../../data/gallery/images.json";
+import imagesData from "../../../data/gallery/images.json";
 
 // 🔀 Fungsi acak (Fisher-Yates)
 function shuffleArray(array) {

@@ -3,12 +3,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import Maintenance from "../errors/Maintenance";
 import photos from "../../data/foto/photos.json";
 
-import BackgroundGlow from "../../components/foto/BackgroundGlow";
-import PhotoHeader from "../../components/foto/PhotoHeader";
-import PhotoSearch from "../../components/foto/PhotoSearch";
-import PhotoGrid from "../../components/foto/PhotoGrid";
-import PhotoPhilosophy from "../../components/foto/PhotoPhilosophy";
-import PhotoModal from "../../components/foto/PhotoModal";
+import BackgroundGlow from "./foto/BackgroundGlow";
+import PhotoHeader from "./foto/PhotoHeader";
+import PhotoSearch from "./foto/PhotoSearch";
+import PhotoGrid from "./foto/PhotoGrid";
+import PhotoPhilosophy from "./foto/PhotoPhilosophy";
+import PhotoModal from "./foto/PhotoModal";
 
 export default function Photography() {
   const [selectedPhoto, setSelectedPhoto] = useState(null);

@@ -2,13 +2,13 @@ import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import Maintenance from "../errors/Maintenance";
 
-import GalleryImages from "../../components/gallery/GalleryImages";
-import GalleryVideos from "../../components/gallery/GalleryVideos";
-import GalleryShorts from "../../components/gallery/GalleryShorts";
-import GalleryAlbums from "../../components/gallery/GalleryAlbums";
+import GalleryImages from "./gallery/GalleryImages";
+import GalleryVideos from "./gallery/GalleryVideos";
+import GalleryShorts from "./gallery/GalleryShorts";
+import GalleryAlbums from "./gallery/GalleryAlbums";
 
-import GalleryShortModal from "../../components/gallery/modals/GalleryShortModal";
-import GalleryMediaModal from "../../components/gallery/modals/GalleryMediaModal";
+import GalleryShortModal from "./gallery/modals/GalleryShortModal";
+import GalleryMediaModal from "./gallery/modals/GalleryMediaModal";
 
 import { Sparkles } from "lucide-react";
 

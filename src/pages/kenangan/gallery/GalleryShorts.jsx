@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Film, Calendar, MapPin, Tag, Play } from "lucide-react";
-import shortsData from "../../data/gallery/shorts.json";
+import shortsData from "../../../data/gallery/shorts.json";
 
 // 🔀 Acak urutan data
 function shuffleArray(array) {

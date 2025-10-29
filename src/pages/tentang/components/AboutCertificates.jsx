@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Award } from "lucide-react";
+import { Link } from "react-router-dom"; // ✅ Tambahkan ini
 
 export default function AboutCertificates({ certificates }) {
   const [selectedCert, setSelectedCert] = useState(null);
@@ -21,11 +22,19 @@ export default function AboutCertificates({ certificates }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
+        {/* Judul Section yang Dapat Diklik */}
         <div className="block group mb-12 cursor-pointer">
           <Award className="w-12 h-12 text-pink-400 mx-auto mb-3 animate-pulse" />
-          <h3 className="text-3xl sm:text-4xl font-extrabold text-pink-400 group-hover:text-pink-300 transition duration-300">
-            {certificates.sectionTitle}
-          </h3>
+
+          {/* ✅ Bungkus dengan Link */}
+          <Link
+            to="/certificates"
+            className="inline-block"
+          >
+            <h3 className="text-3xl sm:text-4xl font-extrabold text-pink-400 group-hover:text-pink-300 transition duration-300 hover:underline">
+              {certificates.sectionTitle}
+            </h3>
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
@@ -33,18 +42,18 @@ export default function AboutCertificates({ certificates }) {
             // Palet warna tags/skills dengan text yang sesuai
             const tagColors = [
               { bg: "bg-white/90", text: "text-black" },
-              { bg: "bg-blue-400", text: "text-black" }, // ubah text menjadi hitam agar lebih terbaca
+              { bg: "bg-blue-400", text: "text-black" },
               { bg: "bg-yellow-400", text: "text-black" },
             ];
             const getRandomTagColor = () => tagColors[Math.floor(Math.random() * tagColors.length)];
-          
+
             // Palet warna level badge
             const levelColors = {
               Pemula: "bg-green-400 text-black",
               Menengah: "bg-yellow-400 text-black",
               Lanjutan: "bg-red-400 text-white",
             };
-          
+
             return (
               <div
                 key={i}
@@ -57,16 +66,14 @@ export default function AboutCertificates({ certificates }) {
                 <h4 className="text-lg font-bold text-white mb-1">{cert.name}</h4>
                 <p className="text-gray-300 text-sm mb-2">{cert.organization.name}</p>
 
-                {/* Level Badge dengan warna khusus */}
                 <span
                   className={`inline-block text-xs font-semibold px-3 py-1 rounded-full mb-2 ${levelColors[cert.level] || "bg-gray-400 text-black"}`}
                 >
                   {cert.level}
                 </span>
-            
+
                 <p className="text-gray-200 text-sm mt-2 line-clamp-3">{cert.description}</p>
-            
-                {/* Tags & Skills dengan warna acak dari 3 pilihan */}
+
                 <div className="mt-3 flex flex-wrap gap-1">
                   {cert.tags.map((tag, idx) => {
                     const color = getRandomTagColor();
@@ -91,8 +98,10 @@ export default function AboutCertificates({ certificates }) {
                     );
                   })}
                 </div>
-                
-                <span className="text-pink-300 text-xs mt-3 inline-block group-hover:underline">Lihat Detail →</span>
+
+                <span className="text-pink-300 text-xs mt-3 inline-block group-hover:underline">
+                  Lihat Detail →
+                </span>
               </div>
             );
           })}
@@ -116,15 +125,13 @@ export default function AboutCertificates({ certificates }) {
               exit={{ x: -50, opacity: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
             >
-              {/* Close Button */}
               <button
                 onClick={() => setSelectedCert(null)}
                 className="absolute top-4 right-4 text-white hover:text-pink-300"
               >
                 <X className="w-6 h-6" />
               </button>
-        
-              {/* Navigation Buttons */}
+
               {certificates.length > 1 && (
                 <>
                   <button
@@ -142,7 +149,6 @@ export default function AboutCertificates({ certificates }) {
                 </>
               )}
 
-              {/* Organization Logo */}
               <div className="flex items-center justify-center mb-4">
                 <img
                   src={selectedCert.organization.logo}
@@ -150,15 +156,13 @@ export default function AboutCertificates({ certificates }) {
                   className="w-12 h-12 rounded-full shadow-lg"
                 />
               </div>
-            
-              {/* Certificate Info */}
+
               <h4 className="text-2xl font-extrabold mb-1 text-pink-200">{selectedCert.name}</h4>
               <p className="text-gray-200 font-semibold mb-1">{selectedCert.organization.name}</p>
               <p className="text-gray-300 text-sm mb-2">
                 {new Date(selectedCert.dateIssued).toLocaleDateString()}
               </p>
-            
-              {/* Status & Level */}
+
               <div className="flex flex-wrap gap-2 mb-3">
                 <span
                   className="inline-block text-black text-xs font-semibold px-4 py-1 rounded-full"
@@ -179,11 +183,9 @@ export default function AboutCertificates({ certificates }) {
                   {selectedCert.category}
                 </span>
               </div>
-                
-              {/* Description */}
+
               <p className="text-white/90 mb-4">{selectedCert.description}</p>
-                
-              {/* Tags & Skills dengan warna acak */}
+
               <div className="mb-4 flex flex-wrap gap-2">
                 {(() => {
                   const tagColors = [
@@ -218,8 +220,7 @@ export default function AboutCertificates({ certificates }) {
                   );
                 })()}
               </div>
-              
-              {/* Links */}
+
               <div className="flex flex-wrap gap-2 mb-2">
                 {selectedCert.certificateLinks.certificate && (
                   <a

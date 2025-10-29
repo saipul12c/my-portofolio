@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import blogs from "../../data/blog/data.json";
-import SearchBar from "../../components/blog/SearchBar";
-import AiOverview from "../../components/blog/AI/AiOverview"; // ⬅️ Komponen baru
+import SearchBar from "./components/SearchBar";
+import AiOverview from "./components/AI/AiOverview";
 
 export default function Blog() {
   const [selectedPost, setSelectedPost] = useState(null);
@@ -31,13 +31,11 @@ export default function Blog() {
     const withLabels = blogs.map((post) => {
       const postDate = new Date(post.date);
       const labels = [];
+      if (post.featured) labels.push("Rekomendasi");
       if (postDate >= sixMonthsAgo) labels.push("Baru");
+      if (post.views > 2000) labels.push("Hot");
       return { ...post, labels };
     });
-
-    const shuffled = [...withLabels].sort(() => 0.5 - Math.random());
-    shuffled.slice(0, 2).forEach((p) => p.labels.push("Rekomendasi"));
-    shuffled.slice(2, 4).forEach((p) => p.labels.push("Hot"));
 
     return withLabels.sort((a, b) => b.labels.length - a.labels.length);
   }, []);
@@ -48,6 +46,8 @@ export default function Blog() {
     return (
       post.title.toLowerCase().includes(lower) ||
       post.author.toLowerCase().includes(lower) ||
+      post.excerpt.toLowerCase().includes(lower) ||
+      post.tags?.some((tag) => tag.toLowerCase().includes(lower)) ||
       post.labels?.some((label) => label.toLowerCase().includes(lower))
     );
   });
@@ -79,19 +79,14 @@ export default function Blog() {
       {/* === 🤖 AI OVERVIEW SECTION === */}
       {searchTerm && filteredBlogs.length > 0 && (
         <div className="mb-10">
-          <AiOverview
-            searchTerm={searchTerm}
-            filteredBlogs={filteredBlogs}
-          />
+          <AiOverview searchTerm={searchTerm} filteredBlogs={filteredBlogs} />
         </div>
       )}
 
       {/* === ⚠️ Tidak ada hasil === */}
       {filteredBlogs.length === 0 && (
         <div className="text-center py-20">
-          <p className="text-gray-400 text-lg mb-3">
-            😕 Tidak ada hasil ditemukan
-          </p>
+          <p className="text-gray-400 text-lg mb-3">😕 Tidak ada hasil ditemukan</p>
           <p className="text-sm text-gray-500">
             Coba gunakan kata kunci lain atau periksa ejaanmu.
           </p>
@@ -116,7 +111,7 @@ export default function Blog() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-70"></div>
 
               {/* Label */}
-              {post.labels && post.labels.length > 0 && (
+              {post.labels?.length > 0 && (
                 <div className="absolute top-3 left-3 flex flex-wrap gap-2">
                   {post.labels.map((label, idx) => {
                     const color =
@@ -151,9 +146,7 @@ export default function Blog() {
                   year: "numeric",
                 })}
               </p>
-              <p className="text-gray-300 text-sm line-clamp-2 mb-4">
-                {post.excerpt}
-              </p>
+              <p className="text-gray-300 text-sm line-clamp-2 mb-4">{post.excerpt}</p>
               <Link
                 to={`/blog/${post.slug}`}
                 onClick={(e) => e.stopPropagation()}
@@ -209,7 +202,7 @@ export default function Blog() {
               ×
             </button>
 
-            <div className="relative aspect-[16/9] sm:aspect-[21/9] overflow-hidden flex-shrink-0">
+            <div className="relative aspect-[16/9] overflow-hidden flex-shrink-0">
               <img
                 src={selectedPost.imageFull || selectedPost.thumbnail}
                 alt={selectedPost.title}
@@ -228,6 +221,7 @@ export default function Blog() {
             </div>
 
             <div className="p-5 sm:p-8 overflow-y-auto scrollbar-hide flex-grow">
+              {/* Labels */}
               <div className="flex flex-wrap gap-2 mb-4">
                 {selectedPost.labels?.map((label, idx) => (
                   <span
@@ -239,33 +233,67 @@ export default function Blog() {
                 ))}
               </div>
 
+              {/* Meta Info */}
               <div className="flex flex-wrap gap-3 sm:gap-4 text-gray-400 text-xs sm:text-sm mb-6">
                 <span>👁 {selectedPost.views}</span>
                 <span>❤️ {selectedPost.likes}</span>
                 <span>💬 {selectedPost.commentCount || 0}</span>
                 <span>⏱ {selectedPost.readTime}</span>
                 <span>⭐ {selectedPost.rating}</span>
+                <span>📚 {selectedPost.series}</span>
               </div>
 
-              <p className="text-gray-200 leading-relaxed whitespace-pre-line text-sm sm:text-[15px]">
-                {selectedPost.content}
-              </p>
+              {/* Category + Source */}
+              <div className="mb-4 text-xs sm:text-sm text-gray-400">
+                <p>📂 Kategori: {selectedPost.category}</p>
+                <p>📖 Sumber: {selectedPost.source}</p>
+              </div>
+
+              {/* ✅ Konten aman untuk semua tipe */}
+              {selectedPost.content && (
+                typeof selectedPost.content === "object" ? (
+                  Object.entries(selectedPost.content).map(([key, value]) => (
+                    <p key={key} className="text-gray-200 leading-relaxed whitespace-pre-line text-sm sm:text-[15px] mb-6">
+                      <strong className="capitalize">{key}:</strong> {value}
+                    </p>
+                  ))
+                ) : (
+                  <p className="text-gray-200 leading-relaxed whitespace-pre-line text-sm sm:text-[15px] mb-6">
+                    {selectedPost.content}
+                  </p>
+                )
+              )}
+
+              {/* Tags */}
+              {selectedPost.tags && (
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {selectedPost.tags.map((tag, i) => (
+                    <span
+                      key={i}
+                      className="text-xs px-2 py-[3px] rounded-full bg-gray-700/40 border border-gray-600 text-gray-300"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* Canonical */}
+              <div className="mt-6 text-xs text-gray-500 italic">
+                URL Asli:{" "}
+                <a
+                  href={selectedPost.canonicalUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-cyan-400 hover:underline"
+                >
+                  {selectedPost.canonicalUrl}
+                </a>
+              </div>
             </div>
           </div>
         </div>
       )}
-
-      {/* === Animations === */}
-      <style>
-        {`
-          @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-          @keyframes scaleIn { from { transform: scale(0.9); opacity: 0 } to { transform: scale(1); opacity: 1 } }
-          .animate-fadeIn { animation: fadeIn 0.3s ease forwards; }
-          .animate-scaleIn { animation: scaleIn 0.35s ease forwards; }
-          .scrollbar-hide::-webkit-scrollbar { display: none; }
-          .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        `}
-      </style>
     </section>
   );
 }

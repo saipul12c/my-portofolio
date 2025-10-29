@@ -4,7 +4,7 @@ import { Rocket, Star, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import data from "../../data/projects.json";
 import { useErrorAuth } from "../../context/ErrorContext";
-import SearchBar from "../../components/projek/SearchBar";
+import SearchBar from "./pencarian/SearchBar";
 
 export default function Projects() {
   const [searchTerm, setSearchTerm] = useState("");
