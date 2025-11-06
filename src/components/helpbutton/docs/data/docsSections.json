@@ -7,8 +7,13 @@
     "lastUpdated": "2025-11-01",
     "author": "Tim Dokumentasi Portofolio",
     "version": "1.0.3",
+    "estimatedReadTime": "5 menit",
     "tags": ["dasar", "panduan-awal", "pengantar"],
     "content": "Panduan awal untuk memahami dasar penggunaan platform portofolio. Di bagian ini kamu akan belajar cara registrasi, login, serta mengenal fitur utama dan konsep kerja platform. 🌟",
+    "changelog": [
+      { "date": "2025-10-29", "changes": "Penambahan subbagian 'Kebutuhan Sistem' dan update ikon dokumentasi." },
+      { "date": "2025-11-01", "changes": "Perbaikan minor pada contoh langkah login dan wording deskripsi." }
+    ],
     "subsections": [
       {
         "subtitle": "Tujuan Dokumen",
@@ -25,6 +30,19 @@
         "details": "Diperlukan browser modern (Chrome, Edge, Firefox, Safari) dan koneksi internet stabil untuk akses optimal.",
         "warning": "Gunakan versi browser terbaru untuk menghindari bug visual."
       }
+    ],
+    "relatedDocs": ["fitur-utama", "integrasi"],
+    "resources": [
+      {
+        "type": "link",
+        "label": "Panduan Registrasi Akun",
+        "url": "https://docs.portfolio.dev/register"
+      },
+      {
+        "type": "video",
+        "label": "Video Tutorial Awal",
+        "url": "https://youtube.com/watch?v=intro-portofolio"
+      }
     ]
   },
   {
@@ -35,8 +53,13 @@
     "lastUpdated": "2025-11-03",
     "author": "Tim Pengembang UI/UX",
     "version": "2.1.0",
+    "estimatedReadTime": "7 menit",
     "tags": ["fitur", "dashboard", "komunitas"],
     "content": "Penjelasan mendalam tentang fitur utama platform — mulai dari manajemen akun hingga kolaborasi komunitas. 🚀",
+    "changelog": [
+      { "date": "2025-10-30", "changes": "Penambahan endpoint API untuk update profil pengguna." },
+      { "date": "2025-11-03", "changes": "Update dokumentasi interaksi komunitas dengan contoh mention baru." }
+    ],
     "subsections": [
       {
         "subtitle": "Manajemen Akun",
@@ -54,6 +77,19 @@
         "details": "Temukan jawaban atas pertanyaan umum tentang cara penggunaan platform dan pemecahan masalah dasar.",
         "relatedTopics": ["tips-dan-trik"]
       }
+    ],
+    "relatedDocs": ["pendahuluan", "tips-dan-trik"],
+    "resources": [
+      {
+        "type": "api",
+        "label": "API User Management",
+        "url": "https://api.portfolio.dev/docs/user"
+      },
+      {
+        "type": "article",
+        "label": "Cara Maksimalkan Dashboard Komunitas",
+        "url": "https://blog.portfolio.dev/fitur-dashboard"
+      }
     ]
   },
   {
@@ -64,8 +100,13 @@
     "lastUpdated": "2025-11-04",
     "author": "Tim Edukasi Pengguna",
     "version": "1.5.2",
+    "estimatedReadTime": "6 menit",
     "tags": ["efisiensi", "pengalaman-pengguna", "keyboard"],
     "content": "Kumpulan trik dan rahasia kecil untuk meningkatkan pengalaman pengguna di platform. ✨",
+    "changelog": [
+      { "date": "2025-10-27", "changes": "Penambahan shortcut baru untuk navigasi halaman dokumentasi." },
+      { "date": "2025-11-04", "changes": "Penyesuaian gaya penulisan dan tambahan contoh bio profesional." }
+    ],
     "subsections": [
       {
         "subtitle": "Shortcut Keyboard",
@@ -82,6 +123,14 @@
         "details": "Ikuti grup diskusi sesuai minatmu, dari desain UI sampai pengembangan backend.",
         "warning": "Pastikan kamu membaca aturan komunitas sebelum posting pertama."
       }
+    ],
+    "relatedDocs": ["fitur-utama", "integrasi"],
+    "resources": [
+      {
+        "type": "article",
+        "label": "10 Shortcut Produktif di Dashboard",
+        "url": "https://blog.portfolio.dev/shortcut-dashboard"
+      }
     ]
   },
   {
@@ -92,8 +141,13 @@
     "lastUpdated": "2025-11-05",
     "author": "Divisi API & Teknologi",
     "version": "3.0.1",
+    "estimatedReadTime": "8 menit",
     "tags": ["api", "plugin", "keamanan"],
     "content": "Pelajari cara menghubungkan platform dengan layanan eksternal seperti API, plugin, dan tools kolaborasi. 🔌",
+    "changelog": [
+      { "date": "2025-10-31", "changes": "Penambahan dukungan integrasi GitHub dan Notion." },
+      { "date": "2025-11-05", "changes": "Pembaruan detail keamanan token API dan enkripsi data." }
+    ],
     "subsections": [
       {
         "subtitle": "API Publik",
@@ -110,6 +164,19 @@
         "subtitle": "Keamanan & Privasi",
         "details": "Kami menerapkan autentikasi berbasis token (JWT) dan enkripsi data AES-256 untuk memastikan keamanan informasi pengguna.",
         "warning": "Jangan bagikan token API kamu ke publik!"
+      }
+    ],
+    "relatedDocs": ["fitur-utama"],
+    "resources": [
+      {
+        "type": "api",
+        "label": "Dokumentasi API Publik",
+        "url": "https://api.portfolio.dev/docs"
+      },
+      {
+        "type": "link",
+        "label": "Panduan Integrasi GitHub",
+        "url": "https://docs.portfolio.dev/integrasi/github"
       }
     ]
   }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Heart, Sparkles, HandHeart, Users, Globe, Lightbulb, Star } from "lucide-react";
 import { motion } from "framer-motion";
-import commitmentsData from "./data/commitments.json"; // pastikan path sesuai folder kamu
+import commitmentsData from "./data/commitments.json"; 
 
 const iconMap = {
   HandHeart: <HandHeart className="text-pink-400" size={28} />,

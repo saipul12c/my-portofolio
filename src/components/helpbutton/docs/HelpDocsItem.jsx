@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import * as Icons from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import docsData from "./data/docsSections.json"; // pastikan path sesuai
+import docsData from "./data/docsSections.json";
 
 export default function HelpDocsItem() {
   const [openIndex, setOpenIndex] = useState(null);
@@ -77,9 +77,10 @@ export default function HelpDocsItem() {
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="px-5 pb-5 text-gray-600 dark:text-gray-300 space-y-3"
+                    className="px-5 pb-5 text-gray-600 dark:text-gray-300 space-y-4"
                   >
-                    <p className="leading-relaxed">{section.content}</p>
+                    {/* Deskripsi */}
+                    <p className="leading-relaxed text-base">{section.content}</p>
 
                     {/* Metadata */}
                     <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 mt-2">
@@ -93,45 +94,52 @@ export default function HelpDocsItem() {
                           🔖 Versi {section.version}
                         </span>
                       )}
-                      {section.tags && section.tags.length > 0 && (
+                      {section.estimatedReadTime && (
+                        <span className="bg-green-100/50 dark:bg-gray-700 px-2 py-0.5 rounded-full">
+                          ⏱️ {section.estimatedReadTime}
+                        </span>
+                      )}
+                      {section.tags &&
                         section.tags.map((tag, i) => (
-                          <span key={i} className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
+                          <span
+                            key={i}
+                            className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full"
+                          >
                             #{tag}
                           </span>
-                        ))
-                      )}
+                        ))}
                     </div>
 
                     {/* Subsections */}
-                    {section.subsections && section.subsections.length > 0 && (
+                    {section.subsections?.length > 0 && (
                       <div className="mt-4 border-l-2 border-purple-300 dark:border-purple-500 pl-4 space-y-4">
                         {section.subsections.map((sub, subIndex) => (
                           <div key={subIndex}>
-                            <h3 className="font-semibold text-purple-500 mb-1">{sub.subtitle}</h3>
-                            <p className="text-sm text-gray-700 dark:text-gray-300 mb-1">{sub.details}</p>
+                            <h3 className="font-semibold text-purple-500 mb-1">
+                              {sub.subtitle}
+                            </h3>
+                            <p className="text-sm text-gray-700 dark:text-gray-300 mb-1">
+                              {sub.details}
+                            </p>
 
-                            {/* Tips */}
                             {sub.tips && (
                               <p className="text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 p-2 rounded-md border border-blue-200 dark:border-blue-700">
                                 💡 {sub.tips}
                               </p>
                             )}
 
-                            {/* Warning */}
                             {sub.warning && (
                               <p className="text-xs bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-2 rounded-md border border-red-200 dark:border-red-700">
                                 ⚠️ {sub.warning}
                               </p>
                             )}
 
-                            {/* Example */}
                             {sub.examples && (
                               <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded-md text-xs text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 mt-2">
                                 <strong>🧩 Contoh:</strong> {sub.examples}
                               </div>
                             )}
 
-                            {/* Code Snippet */}
                             {sub.codeSnippet && (
                               <pre className="bg-gray-900 text-green-400 text-xs p-3 rounded-lg overflow-x-auto border border-gray-700 mt-2">
                                 <code>{sub.codeSnippet}</code>
@@ -139,6 +147,67 @@ export default function HelpDocsItem() {
                             )}
                           </div>
                         ))}
+                      </div>
+                    )}
+
+                    {/* Changelog */}
+                    {section.changelog?.length > 0 && (
+                      <div className="mt-6">
+                        <h4 className="text-sm font-semibold text-purple-400 mb-2">
+                          📝 Riwayat Pembaruan
+                        </h4>
+                        <ul className="text-xs space-y-1">
+                          {section.changelog.map((log, i) => (
+                            <li key={i}>
+                              <span className="text-gray-400">
+                                {log.date} —{" "}
+                              </span>
+                              {log.changes}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Related Docs */}
+                    {section.relatedDocs?.length > 0 && (
+                      <div className="mt-6">
+                        <h4 className="text-sm font-semibold text-blue-400 mb-2">
+                          🔗 Terkait
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {section.relatedDocs.map((doc, i) => (
+                            <span
+                              key={i}
+                              className="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 text-xs rounded-md border border-blue-200 dark:border-blue-800"
+                            >
+                              {doc}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Resources */}
+                    {section.resources?.length > 0 && (
+                      <div className="mt-6">
+                        <h4 className="text-sm font-semibold text-green-400 mb-2">
+                          📎 Sumber & Referensi
+                        </h4>
+                        <ul className="text-xs space-y-1">
+                          {section.resources.map((res, i) => (
+                            <li key={i}>
+                              <a
+                                href={res.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-500 hover:underline"
+                              >
+                                [{res.type}] {res.label}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     )}
 
