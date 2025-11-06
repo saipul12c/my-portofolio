@@ -5,7 +5,14 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedErrorPage from "./components/ProtectedErrorPage";
 import { ErrorProvider } from "./context/ErrorContext";
-import HelpButton from "./components/HelpButton"; // ✅ Tombol bantuan baru
+
+// tombol bantuan
+import HelpButton from "./components/HelpButton";
+import Doct from "./components/helpbutton/docs/HelpDocsItem.jsx";
+import FAQ from "./components/helpbutton/faq/HelpFAQItem.jsx";
+import Info from "./components/helpbutton/versiWeb/HelpVersionInfo.jsx";
+import Komit from "./components/helpbutton/komit/HelpCommitmentItem.jsx";
+// import Chatbot from "./components/helpbutton/chat/HelpChatbotItem.jsx";
 
 // 🛡️ Tambahan: Launch guard dan halaman launching
 import LaunchGuard from "./components/LaunchGuard";
@@ -67,6 +74,12 @@ export default function App() {
                         <Route path="/photography" element={<Photography />} />
                         <Route path="/gallery" element={<Gallery />} />
                         <Route path="/testimoni" element={<Testimoni />} />
+
+                        <Route path="/help/version" element={<Info />} />
+                        <Route path="/help/docs" element={<Doct />} />
+                        <Route path="/help/faq" element={<FAQ />} />
+                        <Route path="/help/commitment" element={<Komit />} />
+                        {/* <Route path="/chatbot" element={<Chatbot />} /> */}
 
                         {/* 💼 Halaman proyek */}
                         <Route path="/projects" element={<Projects />} />

@@ -1,11 +1,17 @@
-import { ExternalLink, FileText, Info, BookOpen, ShieldCheck } from "lucide-react";
+import React from "react";
+import {
+  ExternalLink,
+  FileText,
+  Info,
+  BookOpen,
+  ShieldCheck,
+  MessageCircle,
+} from "lucide-react";
 
 /**
  * HelpMenu.jsx
- * - Semua item dibuat di sini supaya file ini bisa jalan langsung.
- * - Navigasi otomatis: menuju /help/faq, /help/docs, /help/commitment, /help/version
- *
- * Catatan: kalau kamu pakai Next.js dan mau pakai router.push, saya bisa ubah.
+ * - Menampilkan daftar bantuan dan tombol akses Chatbot Saipul.
+ * - Versi ini: tombol Chatbot nonaktif (muncul pesan notifikasi).
  */
 
 function HelpMenuItem({ title, subtitle, icon: Icon, to, external = false }) {
@@ -15,11 +21,9 @@ function HelpMenuItem({ title, subtitle, icon: Icon, to, external = false }) {
       window.open(to, "_blank", "noopener,noreferrer");
       return;
     }
-    // navigasi sederhana yang aman untuk SPA/SSR
     try {
-      // kalau proyek pakai Next.js dan ada router pada window (rare) ga masalah
       window.location.assign(to);
-    } catch (err) {
+    } catch {
       window.location.href = to;
     }
   };
@@ -31,25 +35,30 @@ function HelpMenuItem({ title, subtitle, icon: Icon, to, external = false }) {
       aria-label={title}
     >
       <div className="w-9 h-9 flex items-center justify-center rounded-md bg-white/5 shrink-0">
-        {Icon ? <Icon size={18} className="text-cyan-300" /> : <FileText size={18} />}
+        {Icon ? (
+          <Icon size={18} className="text-cyan-300" />
+        ) : (
+          <FileText size={18} />
+        )}
       </div>
       <div className="flex-1">
-        <div className="text-sm font-medium text-white/90 leading-tight">{title}</div>
-        {subtitle && <div className="text-xs text-gray-400 mt-0.5">{subtitle}</div>}
+        <div className="text-sm font-medium text-white/90 leading-tight">
+          {title}
+        </div>
+        {subtitle && (
+          <div className="text-xs text-gray-400 mt-0.5">{subtitle}</div>
+        )}
       </div>
-      {external ? <ExternalLink size={14} className="text-gray-400 mt-1" /> : null}
+      {external && <ExternalLink size={14} className="text-gray-400 mt-1" />}
     </button>
   );
 }
 
 function VersionBadge() {
-  // coba ambil versi otomatis dari beberapa sumber umum:
-  const metaVersion = (typeof document !== "undefined" && document.querySelector('meta[name="app-version"]')?.content) || null;
-  const envVersion = (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_APP_VERSION) || null;
-  const runtimeVersion = window?.__APP_VERSION__ || null;
-  const fallback = "v1.0.0";
-
-  const version = metaVersion || envVersion || runtimeVersion || fallback;
+  const version =
+    document.querySelector('meta[name="app-version"]')?.content ||
+    window?.__APP_VERSION__ ||
+    "v1.0.0";
 
   const handleOpenVersionPage = (e) => {
     e.preventDefault();
@@ -67,7 +76,6 @@ function VersionBadge() {
           <div className="text-sm text-white/90 font-medium">{version}</div>
         </div>
       </div>
-
       <button
         onClick={handleOpenVersionPage}
         className="text-xs bg-white/6 px-2 py-1 rounded-md hover:bg-white/10 transition-colors"
@@ -79,7 +87,11 @@ function VersionBadge() {
   );
 }
 
-export default function HelpMenu({ onOpenChatbot }) {
+export default function HelpMenu() {
+  const handleChatbotUnavailable = () => {
+    alert("⚠️ Fitur Chatbot SaipulAI belum tersedia saat ini.");
+  };
+
   return (
     <div
       className="w-72 rounded-2xl border border-white/10 shadow-[0_0_25px_rgba(56,189,248,0.2)]
@@ -111,34 +123,26 @@ export default function HelpMenu({ onOpenChatbot }) {
           icon={ShieldCheck}
           to="/help/commitment"
         />
-        <HelpMenuItem
-          title="Versi & Changelog"
-          subtitle="Riwayat rilis dan perubahan"
-          icon={Info}
-          to="/help/version"
-        />
 
-        {/*
-          Jika ingin memunculkan tombol Chatbot yang memanfaatkan parent handler,
-          panggil onOpenChatbot kalau tersedia.
-        */}
-        {onOpenChatbot && (
+        {/* 🔹 Tombol Chatbot - Nonaktif sementara */}
+        <div className="mt-2 border-t border-gray-700/40 pt-3">
           <button
-            onClick={(e) => {
-              e.preventDefault();
-              onOpenChatbot();
-            }}
-            className="mt-2 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors text-left w-full bg-gradient-to-r from-cyan-600/5 to-blue-500/3"
+            onClick={handleChatbotUnavailable}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors text-left w-full bg-gradient-to-r from-gray-700/10 to-gray-800/10 cursor-not-allowed opacity-70"
           >
-            <div className="w-9 h-9 flex items-center justify-center rounded-md bg-gradient-to-br from-cyan-500 to-blue-600">
-              <BookOpen size={16} className="text-white" />
+            <div className="w-9 h-9 flex items-center justify-center rounded-md bg-gradient-to-br from-gray-500 to-gray-700">
+              <MessageCircle size={16} className="text-white" />
             </div>
             <div className="flex-1">
-              <div className="text-sm font-medium text-white/90">Buka Chatbot</div>
-              <div className="text-xs text-gray-400 mt-0.5">Tanya langsung ke bot</div>
+              <div className="text-sm font-medium text-white/90">
+                Chatbot SaipulAI
+              </div>
+              <div className="text-xs text-gray-400 mt-0.5">
+                (Belum tersedia)
+              </div>
             </div>
           </button>
-        )}
+        </div>
       </div>
 
       <div className="mt-4 pt-3 border-t border-gray-700/40">
@@ -146,7 +150,8 @@ export default function HelpMenu({ onOpenChatbot }) {
       </div>
 
       <div className="text-[10px] text-gray-500 text-center mt-3">
-        © {new Date().getFullYear()} <span className="text-cyan-400">SaipulAI Project</span>
+        © {new Date().getFullYear()}{" "}
+        <span className="text-cyan-400">SaipulAI Project</span>
       </div>
     </div>
   );

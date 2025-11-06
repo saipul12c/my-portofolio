@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { X, Settings, Send, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import aiBase from "../data/AI-base.json";
 
 export function ChatbotWindow({ onClose, onOpenSettings }) {
   const [messages, setMessages] = useState(() => {
@@ -43,11 +44,17 @@ export function ChatbotWindow({ onClose, onOpenSettings }) {
   };
 
   const getSmartReply = (msg) => {
-    const text = msg.toLowerCase();
+    const text = msg.toLowerCase().trim();
 
-    if (text.includes("halo") || text.includes("hai")) {
+    // Cari jawaban dari AI-base.json
+    const foundKey = Object.keys(aiBase).find((q) =>
+      text.includes(q.toLowerCase().replace("?", ""))
+    );
+    if (foundKey) return aiBase[foundKey];
+
+    // Respons bawaan
+    if (text.includes("halo") || text.includes("hai"))
       return "Hai juga! 👋 Senang kamu datang lagi. Ada yang bisa kubantu?";
-    }
     if (text.includes("terima kasih")) return "Sama-sama! 😊 Aku senang bisa bantu kamu.";
     if (text.includes("versi")) return "Kamu ngobrol dengan SaipulAI v3.0 ⚙️";
     if (text.includes("hapus") && text.includes("chat")) {
