@@ -31,7 +31,7 @@ export default function HelpButton() {
   const [showSettings, setShowSettings] = useState(false);
 
   // Mode maintenance — ubah ke true kalau mau tampilin maintenance notice
-  const isMaintenance = false;
+  const isMaintenance = true;
 
   const handleClick = () => {
     if (isMaintenance) {
