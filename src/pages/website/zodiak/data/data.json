@@ -1,0 +1,98 @@
+[
+  {
+    "nama": "Aries",
+    "tanggal": "21 Maret - 19 April",
+    "elemen": "Api",
+    "simbol": "♈",
+    "sifat": "Berani, penuh semangat, dan selalu ingin jadi yang pertama. Aries dikenal spontan dan pantang menyerah.",
+    "prediksi": "Energi kamu lagi membara! Tapi hati-hati, jangan sampai terlalu impulsif hari ini."
+  },
+  {
+    "nama": "Taurus",
+    "tanggal": "20 April - 20 Mei",
+    "elemen": "Tanah",
+    "simbol": "♉",
+    "sifat": "Stabil, sabar, dan menyukai kenyamanan. Taurus punya selera tinggi dan cinta hal-hal indah.",
+    "prediksi": "Waktunya manjain diri sedikit. Kamu pantas dapat reward kecil hari ini!"
+  },
+  {
+    "nama": "Gemini",
+    "tanggal": "21 Mei - 20 Juni",
+    "elemen": "Udara",
+    "simbol": "♊",
+    "sifat": "Pintar, komunikatif, dan serba bisa. Gemini selalu punya dua sisi: serius dan santai.",
+    "prediksi": "Obrolan ringan bisa berubah jadi peluang besar. Jaga mood dan nikmati interaksi sosialmu."
+  },
+  {
+    "nama": "Cancer",
+    "tanggal": "21 Juni - 22 Juli",
+    "elemen": "Air",
+    "simbol": "♋",
+    "sifat": "Peka, penyayang, dan setia. Cancer sangat peduli pada keluarga dan suasana hati.",
+    "prediksi": "Hari ini hati kamu lebih sensitif dari biasanya. Dengarkan intuisi, tapi jangan terlalu baper ya!"
+  },
+  {
+    "nama": "Leo",
+    "tanggal": "23 Juli - 22 Agustus",
+    "elemen": "Api",
+    "simbol": "♌",
+    "sifat": "Percaya diri, karismatik, dan suka menjadi pusat perhatian. Leo terlahir sebagai pemimpin alami.",
+    "prediksi": "Waktunya bersinar! Orang-orang bakal memperhatikan kamu hari ini, jadi gunakan pesonamu dengan bijak."
+  },
+  {
+    "nama": "Virgo",
+    "tanggal": "23 Agustus - 22 September",
+    "elemen": "Tanah",
+    "simbol": "♍",
+    "sifat": "Analitis, perfeksionis, dan peduli detail. Virgo suka hal yang teratur dan efisien.",
+    "prediksi": "Coba jangan terlalu keras sama diri sendiri. Kadang cukup ‘baik’ itu udah luar biasa!"
+  },
+  {
+    "nama": "Libra",
+    "tanggal": "23 September - 22 Oktober",
+    "elemen": "Udara",
+    "simbol": "♎",
+    "sifat": "Harmonis, adil, dan punya selera seni tinggi. Libra benci konflik dan cinta kedamaian.",
+    "prediksi": "Kamu akan jadi penengah yang baik hari ini. Tapi jangan lupakan keputusan untuk dirimu sendiri juga."
+  },
+  {
+    "nama": "Scorpio",
+    "tanggal": "23 Oktober - 21 November",
+    "elemen": "Air",
+    "simbol": "♏",
+    "sifat": "Intens, misterius, dan sangat setia. Scorpio punya emosi dalam dan intuisi kuat.",
+    "prediksi": "Rahasia yang lama disimpan mungkin mulai terungkap. Hadapi dengan kepala dingin dan hati kuat."
+  },
+  {
+    "nama": "Sagitarius",
+    "tanggal": "22 November - 21 Desember",
+    "elemen": "Api",
+    "simbol": "♐",
+    "sifat": "Optimis, petualang, dan suka kebebasan. Sagitarius punya rasa ingin tahu yang tak ada habisnya.",
+    "prediksi": "Spontanitasmu bisa membawa pengalaman baru hari ini. Ayo keluar dari zona nyaman!"
+  },
+  {
+    "nama": "Capricorn",
+    "tanggal": "22 Desember - 19 Januari",
+    "elemen": "Tanah",
+    "simbol": "♑",
+    "sifat": "Ambisius, pekerja keras, dan disiplin. Capricorn tahu cara mencapai tujuan jangka panjang.",
+    "prediksi": "Fokusmu lagi tinggi! Tapi jangan lupa istirahat, produktivitas juga butuh keseimbangan."
+  },
+  {
+    "nama": "Aquarius",
+    "tanggal": "20 Januari - 18 Februari",
+    "elemen": "Udara",
+    "simbol": "♒",
+    "sifat": "Unik, visioner, dan suka hal baru. Aquarius suka berpikir di luar kotak dan peduli kemanusiaan.",
+    "prediksi": "Ide gilamu bisa jadi sesuatu yang besar. Jangan takut tampil beda hari ini!"
+  },
+  {
+    "nama": "Pisces",
+    "tanggal": "19 Februari - 20 Maret",
+    "elemen": "Air",
+    "simbol": "♓",
+    "sifat": "Empatik, imajinatif, dan romantis. Pisces sering hidup di antara realita dan mimpi.",
+    "prediksi": "Kreativitasmu lagi mengalir deras! Manfaatkan energi ini buat hal yang kamu cintai."
+  }
+]

@@ -1,0 +1,142 @@
+[
+  {
+    "id": 1,
+    "nama": "Harimau Putih",
+    "elemen": "Tanah",
+    "deskripsi": "Qodam pelindung yang kuat dan tangguh. Biasanya muncul pada orang dengan jiwa pemimpin.",
+    "kekuatan": "Pertahanan spiritual tinggi"
+  },
+  {
+    "id": 2,
+    "nama": "Naga Emas",
+    "elemen": "Api",
+    "deskripsi": "Qodam langka yang membawa keberuntungan dan kekuatan besar.",
+    "kekuatan": "Mengubah energi negatif jadi aura positif"
+  },
+  {
+    "id": 3,
+    "nama": "Burung Garuda",
+    "elemen": "Angin",
+    "deskripsi": "Qodam kebebasan dan visi luas. Biasanya dimiliki oleh orang yang berpikiran maju.",
+    "kekuatan": "Visi tajam dan intuisi tinggi"
+  },
+  {
+    "id": 4,
+    "nama": "Macan Hitam",
+    "elemen": "Bayangan",
+    "deskripsi": "Qodam penjaga malam yang menjaga dari energi jahat dan pengkhianatan.",
+    "kekuatan": "Kemampuan mendeteksi niat buruk"
+  },
+  {
+    "id": 5,
+    "nama": "Ratu Laut Selatan",
+    "elemen": "Air",
+    "deskripsi": "Qodam penguasa lautan, penuh karisma dan kekuatan tenang yang dalam.",
+    "kekuatan": "Mengendalikan emosi dan intuisi spiritual"
+  },
+  {
+    "id": 6,
+    "nama": "Elang Petir",
+    "elemen": "Listrik",
+    "deskripsi": "Qodam cepat dan tajam, melambangkan fokus serta ambisi tinggi.",
+    "kekuatan": "Reaksi cepat dan penglihatan jauh ke depan"
+  },
+  {
+    "id": 7,
+    "nama": "Ular Naga Hijau",
+    "elemen": "Kayu",
+    "deskripsi": "Qodam pembawa kesuburan dan kebijaksanaan alam.",
+    "kekuatan": "Menyembuhkan energi spiritual lemah"
+  },
+  {
+    "id": 8,
+    "nama": "Serigala Merah",
+    "elemen": "Api",
+    "deskripsi": "Qodam pemberani dan setia, simbol kekuatan kelompok dan loyalitas.",
+    "kekuatan": "Semangat juang tanpa takut bahaya"
+  },
+  {
+    "id": 9,
+    "nama": "Kuda Langit",
+    "elemen": "Angin",
+    "deskripsi": "Qodam kebebasan dan petualangan, cocok bagi jiwa kreatif.",
+    "kekuatan": "Cepat mengambil peluang dan keputusan"
+  },
+  {
+    "id": 10,
+    "nama": "Kura-Kura Emas",
+    "elemen": "Air",
+    "deskripsi": "Qodam ketenangan dan kesabaran, pembawa umur panjang dan kebijaksanaan.",
+    "kekuatan": "Menjaga keseimbangan batin"
+  },
+  {
+    "id": 11,
+    "nama": "Singa Langit",
+    "elemen": "Api",
+    "deskripsi": "Qodam pemimpin spiritual, penuh keberanian dan wibawa alami.",
+    "kekuatan": "Meningkatkan kharisma dan rasa percaya diri"
+  },
+  {
+    "id": 12,
+    "nama": "Harimau Biru",
+    "elemen": "Air",
+    "deskripsi": "Qodam penjaga yang tangguh namun tenang, simbol kekuatan dan kebijaksanaan.",
+    "kekuatan": "Menghapus energi negatif di sekitar"
+  },
+  {
+    "id": 13,
+    "nama": "Naga Hitam",
+    "elemen": "Bayangan",
+    "deskripsi": "Qodam misterius yang kuat, sering muncul pada orang dengan potensi besar tersembunyi.",
+    "kekuatan": "Mengubah kegelapan jadi kekuatan batin"
+  },
+  {
+    "id": 14,
+    "nama": "Rusa Perak",
+    "elemen": "Tanah",
+    "deskripsi": "Qodam kedamaian dan keseimbangan, simbol keanggunan dan empati.",
+    "kekuatan": "Menarik energi damai ke dalam hidup"
+  },
+  {
+    "id": 15,
+    "nama": "Burung Merak",
+    "elemen": "Cahaya",
+    "deskripsi": "Qodam kecantikan, kebijaksanaan, dan keanggunan spiritual.",
+    "kekuatan": "Meningkatkan daya tarik dan kepercayaan diri"
+  },
+  {
+    "id": 16,
+    "nama": "Kijang Hitam",
+    "elemen": "Bayangan",
+    "deskripsi": "Qodam pelindung perjalanan dan penjaga mimpi.",
+    "kekuatan": "Melindungi dari gangguan energi malam"
+  },
+  {
+    "id": 17,
+    "nama": "Naga Putih",
+    "elemen": "Udara",
+    "deskripsi": "Qodam murni yang membawa kedamaian dan pencerahan.",
+    "kekuatan": "Membersihkan aura negatif"
+  },
+  {
+    "id": 18,
+    "nama": "Laba-Laba Kristal",
+    "elemen": "Cahaya",
+    "deskripsi": "Qodam kreatif dan pengatur nasib, cocok bagi orang yang pandai merajut ide.",
+    "kekuatan": "Menyatukan potongan-potongan hidup jadi tujuan besar"
+  },
+  {
+    "id": 19,
+    "nama": "Phoenix Api",
+    "elemen": "Api",
+    "deskripsi": "Qodam kelahiran kembali, simbol kekuatan bangkit dari kegagalan.",
+    "kekuatan": "Membakar hal buruk dan memulai bab baru"
+  },
+  {
+    "id": 20,
+    "nama": "Lelembut Hutan",
+    "elemen": "Kayu",
+    "deskripsi": "Qodam penjaga alam liar, penuh rahasia dan kedamaian.",
+    "kekuatan": "Berkomunikasi dengan energi alam dan roh leluhur"
+  }
+]

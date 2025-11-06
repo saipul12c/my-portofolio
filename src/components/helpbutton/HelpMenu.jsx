@@ -123,35 +123,46 @@ export default function HelpMenu() {
           icon={ShieldCheck}
           to="/help/commitment"
         />
-
         {/* 🔹 Tombol Chatbot - Nonaktif sementara */}
-        <div className="mt-2 border-t border-gray-700/40 pt-3">
+        <div className="mt-2 border-t border-gray-700/40 pt-3 relative">
           <button
             onClick={handleChatbotUnavailable}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors text-left w-full bg-gradient-to-r from-gray-700/10 to-gray-800/10 cursor-not-allowed opacity-70"
+            disabled
+            className="relative flex items-center gap-3 px-3 py-2.5 rounded-xl w-full
+              bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800
+              text-left transition-all duration-500
+              cursor-not-allowed overflow-hidden group opacity-80
+              shadow-md shadow-gray-800/30"
           >
-            <div className="w-9 h-9 flex items-center justify-center rounded-md bg-gradient-to-br from-gray-500 to-gray-700">
-              <MessageCircle size={16} className="text-white" />
+            {/* ✨ Efek shimmer lembut */}
+            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent
+              translate-x-[-200%] group-hover:translate-x-[200%]
+              transition-transform duration-1000 ease-in-out" />
+
+            <div className="w-10 h-10 flex items-center justify-center rounded-lg
+              bg-gradient-to-br from-gray-500 to-gray-700
+              shadow-inner shadow-black/40 group-hover:scale-105 transition-transform duration-300">
+              <MessageCircle size={18} className="text-white/90" />
             </div>
+
             <div className="flex-1">
-              <div className="text-sm font-medium text-white/90">
+              <div className="text-sm font-semibold text-white/90 tracking-wide">
                 Chatbot SaipulAI
               </div>
-              <div className="text-xs text-gray-400 mt-0.5">
-                (Belum tersedia)
+              <div className="text-xs text-gray-400 mt-0.5 italic">
+                🚧 Segera hadir...
               </div>
             </div>
           </button>
         </div>
       </div>
-
       <div className="mt-4 pt-3 border-t border-gray-700/40">
         <VersionBadge />
       </div>
 
       <div className="text-[10px] text-gray-500 text-center mt-3">
         © {new Date().getFullYear()}{" "}
-        <span className="text-cyan-400">SaipulAI Project</span>
+        <span className="text-cyan-400">Project Portofolio</span>
       </div>
     </div>
   );

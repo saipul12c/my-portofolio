@@ -4,44 +4,43 @@
     "title": "Pendahuluan",
     "slug": "pendahuluan",
     "icon": "BookOpen",
-    "lastUpdated": "2025-11-01",
+    "lastUpdated": "2025-11-07",
     "author": "Tim Dokumentasi Portofolio",
-    "version": "1.0.3",
-    "estimatedReadTime": "5 menit",
-    "tags": ["dasar", "panduan-awal", "pengantar"],
-    "content": "Panduan awal untuk memahami dasar penggunaan platform portofolio. Di bagian ini kamu akan belajar cara registrasi, login, serta mengenal fitur utama dan konsep kerja platform. 🌟",
+    "version": "1.1.0",
+    "estimatedReadTime": "6 menit",
+    "tags": ["dasar", "panduan-awal", "pengantar", "pengenalan"],
+    "content": "Selamat datang di dokumentasi platform Portofolio! Panduan ini membantu kamu memahami langkah awal mulai dari registrasi akun hingga menjelajahi fitur profesional. 💼",
     "changelog": [
-      { "date": "2025-10-29", "changes": "Penambahan subbagian 'Kebutuhan Sistem' dan update ikon dokumentasi." },
-      { "date": "2025-11-01", "changes": "Perbaikan minor pada contoh langkah login dan wording deskripsi." }
+      { "date": "2025-11-01", "changes": "Perbaikan struktur navigasi dan konsistensi istilah." },
+      { "date": "2025-11-07", "changes": "Penambahan ringkasan fitur baru dan update visual dokumentasi." }
     ],
     "subsections": [
       {
         "subtitle": "Tujuan Dokumen",
-        "details": "Memberikan panduan terstruktur bagi pengguna baru agar dapat memahami dan memanfaatkan seluruh fitur dengan optimal.",
-        "tips": "Kalau kamu baru pertama kali masuk, ikuti urutan bab ini agar nggak bingung di tengah jalan. 😉"
+        "details": "Menjadi panduan utama bagi pengguna baru maupun pengembang yang ingin mengintegrasikan platform dengan sistem lain.",
+        "tips": "Kalau kamu baru pertama kali buka, ikuti alurnya dari atas ke bawah biar nggak ketinggalan konteks. 😉"
       },
       {
         "subtitle": "Struktur Panduan",
-        "details": "Dokumen ini terdiri dari beberapa bagian utama: Pendahuluan, Fitur Utama, Tips & Trik, dan Integrasi. Setiap bagian punya contoh penerapan langsung.",
-        "relatedTopics": ["fitur-utama", "tips-dan-trik"]
+        "details": "Panduan ini dibagi dalam 6 bagian besar: Pendahuluan, Fitur Utama, Tips & Trik, Integrasi, Halaman Proyek, dan Analitik & Personalisasi."
       },
       {
         "subtitle": "Kebutuhan Sistem",
-        "details": "Diperlukan browser modern (Chrome, Edge, Firefox, Safari) dan koneksi internet stabil untuk akses optimal.",
-        "warning": "Gunakan versi browser terbaru untuk menghindari bug visual."
+        "details": "Gunakan browser modern dan koneksi internet stabil. Direkomendasikan: Chrome 120+, Edge 122+, atau Firefox 118+.",
+        "warning": "Pastikan mode cache browser aktif agar dokumentasi dimuat lebih cepat."
       }
     ],
-    "relatedDocs": ["fitur-utama", "integrasi"],
+    "relatedDocs": ["fitur-utama", "halaman-proyek"],
     "resources": [
       {
         "type": "link",
-        "label": "Panduan Registrasi Akun",
+        "label": "Daftar Akun Portofolio",
         "url": "https://docs.portfolio.dev/register"
       },
       {
         "type": "video",
-        "label": "Video Tutorial Awal",
-        "url": "https://youtube.com/watch?v=intro-portofolio"
+        "label": "Video Tutorial Pengantar",
+        "url": "https://youtube.com/watch?v=portfolio-intro2025"
       }
     ]
   },
@@ -50,45 +49,40 @@
     "title": "Fitur Utama",
     "slug": "fitur-utama",
     "icon": "Sparkles",
-    "lastUpdated": "2025-11-03",
+    "lastUpdated": "2025-11-06",
     "author": "Tim Pengembang UI/UX",
-    "version": "2.1.0",
-    "estimatedReadTime": "7 menit",
-    "tags": ["fitur", "dashboard", "komunitas"],
-    "content": "Penjelasan mendalam tentang fitur utama platform — mulai dari manajemen akun hingga kolaborasi komunitas. 🚀",
+    "version": "2.2.0",
+    "estimatedReadTime": "8 menit",
+    "tags": ["fitur", "dashboard", "komunitas", "notifikasi"],
+    "content": "Temukan semua fitur utama yang membuat platform Portofolio unggul — mulai dari personalisasi profil hingga interaksi komunitas dan dashboard real-time. 🚀",
     "changelog": [
-      { "date": "2025-10-30", "changes": "Penambahan endpoint API untuk update profil pengguna." },
-      { "date": "2025-11-03", "changes": "Update dokumentasi interaksi komunitas dengan contoh mention baru." }
+      { "date": "2025-11-03", "changes": "Penambahan mode kolaborasi antar pengguna." },
+      { "date": "2025-11-06", "changes": "Integrasi penuh dengan sistem notifikasi real-time." }
     ],
     "subsections": [
       {
         "subtitle": "Manajemen Akun",
-        "details": "Kamu bisa atur profil, ganti kata sandi, dan ubah preferensi notifikasi langsung dari dashboard.",
-        "examples": "Klik avatar kamu > pilih 'Pengaturan Akun' > sesuaikan preferensi.",
-        "codeSnippet": "POST /api/user/updateProfile"
+        "details": "Kamu bisa mengatur foto profil, bio, tema warna, dan preferensi notifikasi dengan cepat.",
+        "examples": "Klik avatar kamu > Pengaturan Akun > Sesuaikan preferensi.",
+        "codeSnippet": "PATCH /api/user/settings"
       },
       {
         "subtitle": "Interaksi Komunitas",
-        "details": "Forum diskusi dan fitur komentar memungkinkan pengguna saling berinteraksi, berbagi ide, dan berkolaborasi.",
-        "tips": "Gunakan mention (@username) biar pesanmu lebih cepat dibalas!"
+        "details": "Diskusi, kolaborasi, dan berbagi proyek jadi lebih mudah lewat sistem mention dan komentar langsung di dashboard.",
+        "tips": "Gunakan #tag untuk menemukan topik populer."
       },
       {
-        "subtitle": "Pusat Bantuan (FAQ)",
-        "details": "Temukan jawaban atas pertanyaan umum tentang cara penggunaan platform dan pemecahan masalah dasar.",
-        "relatedTopics": ["tips-dan-trik"]
+        "subtitle": "Mode Kolaborasi",
+        "details": "Kamu bisa undang teman untuk meninjau proyekmu langsung di dashboard, lengkap dengan sistem komentar inline.",
+        "warning": "Pastikan izin proyek diatur ke publik atau undangan spesifik."
       }
     ],
-    "relatedDocs": ["pendahuluan", "tips-dan-trik"],
+    "relatedDocs": ["tips-dan-trik", "integrasi"],
     "resources": [
       {
         "type": "api",
-        "label": "API User Management",
-        "url": "https://api.portfolio.dev/docs/user"
-      },
-      {
-        "type": "article",
-        "label": "Cara Maksimalkan Dashboard Komunitas",
-        "url": "https://blog.portfolio.dev/fitur-dashboard"
+        "label": "Dokumentasi API Fitur Utama",
+        "url": "https://api.portfolio.dev/docs/features"
       }
     ]
   },
@@ -97,39 +91,37 @@
     "title": "Tips & Trik",
     "slug": "tips-dan-trik",
     "icon": "Lightbulb",
-    "lastUpdated": "2025-11-04",
+    "lastUpdated": "2025-11-07",
     "author": "Tim Edukasi Pengguna",
-    "version": "1.5.2",
-    "estimatedReadTime": "6 menit",
-    "tags": ["efisiensi", "pengalaman-pengguna", "keyboard"],
-    "content": "Kumpulan trik dan rahasia kecil untuk meningkatkan pengalaman pengguna di platform. ✨",
+    "version": "1.6.0",
+    "estimatedReadTime": "7 menit",
+    "tags": ["efisiensi", "pengalaman-pengguna", "keyboard", "personal-branding"],
+    "content": "Gunakan tips dan trik berikut untuk meningkatkan produktivitas dan citra profesional kamu di platform ini. ✨",
     "changelog": [
-      { "date": "2025-10-27", "changes": "Penambahan shortcut baru untuk navigasi halaman dokumentasi." },
-      { "date": "2025-11-04", "changes": "Penyesuaian gaya penulisan dan tambahan contoh bio profesional." }
+      { "date": "2025-11-04", "changes": "Penambahan panduan personal branding dan optimasi profil." },
+      { "date": "2025-11-07", "changes": "Penyesuaian contoh bio dan update shortcut baru." }
     ],
     "subsections": [
       {
         "subtitle": "Shortcut Keyboard",
-        "details": "Gunakan kombinasi tombol seperti Ctrl + K untuk pencarian cepat, dan Ctrl + / untuk membuka panel bantuan.",
-        "tips": "Shortcut ini juga berfungsi di mode gelap dan mobile keyboard eksternal."
+        "details": "Kombinasi cepat: Ctrl + K (Pencarian), Ctrl + / (Panel Bantuan), dan Ctrl + P (Navigasi Proyek)."
       },
       {
         "subtitle": "Optimasi Profil",
-        "details": "Tambahkan bio, portofolio, dan tautan sosial agar profil kamu lebih profesional dan menarik.",
-        "examples": "Contoh bio: 'Frontend Developer | Suka ngulik UI yang clean dan interaktif.'"
+        "details": "Lengkapi bio dan tambahkan proyek unggulan agar profilmu tampil profesional di hasil pencarian komunitas."
       },
       {
-        "subtitle": "Gabung Komunitas",
-        "details": "Ikuti grup diskusi sesuai minatmu, dari desain UI sampai pengembangan backend.",
-        "warning": "Pastikan kamu membaca aturan komunitas sebelum posting pertama."
+        "subtitle": "Efisiensi Navigasi",
+        "details": "Gunakan fitur pencarian global dan filter dokumen buat nemuin konten lebih cepat.",
+        "tips": "Tekan dua kali Shift untuk membuka Spotlight Search."
       }
     ],
-    "relatedDocs": ["fitur-utama", "integrasi"],
+    "relatedDocs": ["fitur-utama", "analitik-personalisasi"],
     "resources": [
       {
         "type": "article",
-        "label": "10 Shortcut Produktif di Dashboard",
-        "url": "https://blog.portfolio.dev/shortcut-dashboard"
+        "label": "Panduan Personal Branding Portofolio",
+        "url": "https://blog.portfolio.dev/personal-branding"
       }
     ]
   },
@@ -138,45 +130,113 @@
     "title": "Integrasi",
     "slug": "integrasi",
     "icon": "Plug",
-    "lastUpdated": "2025-11-05",
+    "lastUpdated": "2025-11-07",
     "author": "Divisi API & Teknologi",
-    "version": "3.0.1",
-    "estimatedReadTime": "8 menit",
-    "tags": ["api", "plugin", "keamanan"],
-    "content": "Pelajari cara menghubungkan platform dengan layanan eksternal seperti API, plugin, dan tools kolaborasi. 🔌",
+    "version": "3.1.0",
+    "estimatedReadTime": "9 menit",
+    "tags": ["api", "plugin", "keamanan", "notion", "github"],
+    "content": "Pelajari cara menghubungkan Portofolio dengan berbagai tools eksternal seperti GitHub, Notion, dan Slack. 🔌",
     "changelog": [
-      { "date": "2025-10-31", "changes": "Penambahan dukungan integrasi GitHub dan Notion." },
-      { "date": "2025-11-05", "changes": "Pembaruan detail keamanan token API dan enkripsi data." }
+      { "date": "2025-11-05", "changes": "Penambahan webhook integrasi Slack." },
+      { "date": "2025-11-07", "changes": "Update sistem token API dengan validasi otomatis." }
     ],
     "subsections": [
       {
-        "subtitle": "API Publik",
-        "details": "Gunakan API untuk mengakses data pengguna dan proyek secara programatik. Cocok untuk pengembang yang ingin membuat integrasi khusus.",
-        "codeSnippet": "GET https://api.portfolio.dev/v1/projects",
-        "relatedTopics": ["keamanan-dan-privasi"]
+        "subtitle": "Integrasi GitHub & Notion",
+        "details": "Sinkronkan proyek dan catatan dokumentasimu otomatis.",
+        "tips": "Gunakan `webhook` GitHub untuk commit otomatis ke halaman proyek."
       },
       {
-        "subtitle": "Integrasi Tools",
-        "details": "Dukungan penuh untuk integrasi dengan Slack, Notion, dan GitHub. Kolaborasi lintas platform jadi lebih mudah.",
-        "tips": "Gunakan webhook Notion untuk update otomatis proyek kamu."
+        "subtitle": "Keamanan Token API",
+        "details": "Gunakan autentikasi JWT dan enkripsi AES-256. Token aktif hanya 24 jam untuk keamanan maksimal."
       },
       {
-        "subtitle": "Keamanan & Privasi",
-        "details": "Kami menerapkan autentikasi berbasis token (JWT) dan enkripsi data AES-256 untuk memastikan keamanan informasi pengguna.",
-        "warning": "Jangan bagikan token API kamu ke publik!"
+        "subtitle": "Integrasi Pihak Ketiga",
+        "details": "Platform mendukung plugin eksternal seperti Slack dan Linear.",
+        "warning": "Periksa izin OAuth sebelum mengaktifkan plugin eksternal."
       }
     ],
-    "relatedDocs": ["fitur-utama"],
+    "relatedDocs": ["fitur-utama", "analitik-personalisasi"],
     "resources": [
       {
         "type": "api",
-        "label": "Dokumentasi API Publik",
-        "url": "https://api.portfolio.dev/docs"
+        "label": "Dokumentasi Integrasi API",
+        "url": "https://api.portfolio.dev/docs/integrasi"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Halaman Proyek",
+    "slug": "halaman-proyek",
+    "icon": "FolderKanban",
+    "lastUpdated": "2025-11-07",
+    "author": "Tim Showcase Developer",
+    "version": "1.0.0",
+    "estimatedReadTime": "7 menit",
+    "tags": ["proyek", "showcase", "frontend", "backend"],
+    "content": "Bagian ini menjelaskan cara menampilkan proyekmu di halaman publik, lengkap dengan preview dan statistik pengunjung. 💼",
+    "changelog": [
+      { "date": "2025-11-07", "changes": "Penambahan halaman baru untuk showcase proyek." }
+    ],
+    "subsections": [
+      {
+        "subtitle": "Upload Proyek",
+        "details": "Kamu bisa unggah proyek dengan deskripsi, gambar, dan teknologi yang digunakan."
       },
       {
+        "subtitle": "Statistik Pengunjung",
+        "details": "Setiap proyek punya data view dan like yang diupdate real-time."
+      },
+      {
+        "subtitle": "Mode Preview",
+        "details": "Tampilkan demo langsung via iframe atau tautan eksternal GitHub Pages."
+      }
+    ],
+    "relatedDocs": ["analitik-personalisasi", "fitur-utama"],
+    "resources": [
+      {
         "type": "link",
-        "label": "Panduan Integrasi GitHub",
-        "url": "https://docs.portfolio.dev/integrasi/github"
+        "label": "Panduan Upload Proyek",
+        "url": "https://docs.portfolio.dev/proyek/upload"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Analitik & Personalisasi",
+    "slug": "analitik-personalisasi",
+    "icon": "BarChart3",
+    "lastUpdated": "2025-11-07",
+    "author": "Tim Data & Insight",
+    "version": "1.0.0",
+    "estimatedReadTime": "6 menit",
+    "tags": ["analitik", "tema", "personalisasi", "dark-mode"],
+    "content": "Pelajari cara membaca statistik performa dan mengatur tampilan sesuai preferensimu. 📊",
+    "changelog": [
+      { "date": "2025-11-07", "changes": "Penambahan halaman analitik dan personalisasi tema." }
+    ],
+    "subsections": [
+      {
+        "subtitle": "Analitik Dashboard",
+        "details": "Lihat insight tentang jumlah kunjungan, klik, dan engagement proyekmu."
+      },
+      {
+        "subtitle": "Mode Gelap & Tema",
+        "details": "Kamu bisa beralih antara mode terang dan gelap, serta memilih warna aksen favoritmu."
+      },
+      {
+        "subtitle": "Personalisasi Halaman",
+        "details": "Atur layout dashboard dan urutan konten sesuai gaya kerja kamu.",
+        "tips": "Gunakan tombol ‘Reset Layout’ untuk kembali ke pengaturan default."
+      }
+    ],
+    "relatedDocs": ["halaman-proyek", "fitur-utama"],
+    "resources": [
+      {
+        "type": "article",
+        "label": "Cara Membaca Data Analitik",
+        "url": "https://blog.portfolio.dev/analitik-dashboard"
       }
     ]
   }

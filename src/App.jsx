@@ -18,6 +18,10 @@ import Komit from "./components/helpbutton/komit/HelpCommitmentItem.jsx";
 import LaunchGuard from "./components/LaunchGuard";
 import LaunchingPage from "./pages/LaunchingPage";
 
+// website tammbahaan
+import Qodam from "./pages/website/qodam/Qodam.jsx";
+import Zodiak from "./pages/website/zodiak/Zodiak.jsx";
+
 // 📄 Semua halaman utama
 import Home from "./pages/Home";
 import About from "./pages/tentang/About";
@@ -101,6 +105,10 @@ export default function App() {
                         <Route path="/hobbies" element={<Hobbies />} />
                         <Route path="/blog" element={<Blog />} />
                         <Route path="/blog/:slug" element={<BlogDetail />} />
+
+                        {/* website tambahan */}
+                        <Route path="/qodam" element={<Qodam />} />
+                        <Route path="/zodiak" element={<Zodiak />} />
 
                         {/* ⚠️ Halaman error */}
                         <Route

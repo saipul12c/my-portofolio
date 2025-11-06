@@ -3,9 +3,6 @@ import { HelpCircle, X, Wrench, Info } from "lucide-react";
 import HelpMenu from "./helpbutton/HelpMenu";
 import { ErrorBoundary } from "react-error-boundary";
 
-/**
- * ChatbotErrorFallback - fallback UI saat Chatbot crash
- */
 function ChatbotErrorFallback({ error, resetErrorBoundary }) {
   return (
     <div className="fixed bottom-24 right-6 bg-red-900/90 text-white p-4 rounded-xl shadow-lg max-w-xs">
@@ -44,7 +41,7 @@ export default function HelpButton() {
     const handleOpenChatbot = () => {
       setOpen(false); // Tutup HelpMenu utama
 
-      // Buka jendela Chatbot (bisa ganti path sesuai kebutuhan)
+      // Buka jendela Chatbot 
       const chatWindow = window.open(
         "/chatbot", // route halaman Chatbot
         "SaipulAIChatbot",

@@ -15,6 +15,24 @@ export default function HelpDocsItem() {
     setOpenIndex(openIndex === index ? null : index);
   };
 
+  // 🎨 Warna tag acak tapi konsisten (berdasarkan hash nama tag)
+  const getTagColor = (tag) => {
+    const colors = [
+      "bg-blue-100/60 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border-blue-300 dark:border-blue-700",
+      "bg-purple-100/60 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border-purple-300 dark:border-purple-700",
+      "bg-pink-100/60 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300 border-pink-300 dark:border-pink-700",
+      "bg-green-100/60 text-green-700 dark:bg-green-900/40 dark:text-green-300 border-green-300 dark:border-green-700",
+      "bg-yellow-100/60 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300 border-yellow-300 dark:border-yellow-700",
+      "bg-orange-100/60 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 border-orange-300 dark:border-orange-700",
+      "bg-teal-100/60 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300 border-teal-300 dark:border-teal-700",
+      "bg-red-100/60 text-red-700 dark:bg-red-900/40 dark:text-red-300 border-red-300 dark:border-red-700",
+    ];
+    const index = tag
+      .split("")
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length;
+    return colors[index];
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-950 dark:to-black text-gray-800 dark:text-gray-100 flex flex-col items-center py-20 px-6">
       
@@ -83,32 +101,37 @@ export default function HelpDocsItem() {
                     <p className="leading-relaxed text-base">{section.content}</p>
 
                     {/* Metadata */}
-                    <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 mt-2">
+                    <div className="flex flex-wrap items-center gap-2 text-xs mt-2">
                       {section.author && (
-                        <span className="bg-blue-100/50 dark:bg-gray-700 px-2 py-0.5 rounded-full">
+                        <span className="bg-gradient-to-r from-blue-100/70 to-purple-100/70 dark:from-blue-900/40 dark:to-purple-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full border border-blue-200/60 dark:border-blue-700/50 shadow-sm hover:scale-105 transition-transform">
                           ✍️ {section.author}
                         </span>
                       )}
                       {section.version && (
-                        <span className="bg-purple-100/50 dark:bg-gray-700 px-2 py-0.5 rounded-full">
+                        <span className="bg-gradient-to-r from-pink-100/70 to-orange-100/70 dark:from-pink-900/40 dark:to-orange-900/40 text-pink-700 dark:text-pink-300 px-2 py-0.5 rounded-full border border-pink-200/60 dark:border-pink-700/50 shadow-sm hover:scale-105 transition-transform">
                           🔖 Versi {section.version}
                         </span>
                       )}
                       {section.estimatedReadTime && (
-                        <span className="bg-green-100/50 dark:bg-gray-700 px-2 py-0.5 rounded-full">
+                        <span className="bg-gradient-to-r from-green-100/70 to-teal-100/70 dark:from-green-900/40 dark:to-teal-900/40 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-full border border-green-200/60 dark:border-green-700/50 shadow-sm hover:scale-105 transition-transform">
                           ⏱️ {section.estimatedReadTime}
                         </span>
                       )}
+                    
+                      {/* 🎨 Tag warna-warni */}
                       {section.tags &&
                         section.tags.map((tag, i) => (
                           <span
                             key={i}
-                            className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full"
+                            className={`px-2 py-0.5 border rounded-full transition-transform hover:scale-105 ${getTagColor(
+                              tag
+                            )}`}
                           >
                             #{tag}
                           </span>
                         ))}
                     </div>
+
 
                     {/* Subsections */}
                     {section.subsections?.length > 0 && (
