@@ -1,19 +1,22 @@
 import { useState } from "react";
 import { HelpCircle, X, Wrench, Info } from "lucide-react";
 import HelpMenu from "./helpbutton/HelpMenu";
-import Maintenance from "../pages/errors/Maintenance";
+// Jika kamu punya ChatbotWindow/Settings di project, biarkan. Kalau tidak ada, tombol Chatbot tidak akan muncul.
 import { ChatbotWindow } from "./helpbutton/chat/components/ChatbotWindow";
 import { ChatbotSettings } from "./helpbutton/chat/components/ChatbotSettings";
 import { ErrorBoundary } from "react-error-boundary";
 
+/**
+ * ChatbotErrorFallback - fallback UI saat Chatbot crash
+ */
 function ChatbotErrorFallback({ error, resetErrorBoundary }) {
   return (
-    <div className="fixed bottom-24 right-6 bg-red-900/80 text-white p-4 rounded-xl shadow-lg max-w-xs">
+    <div className="fixed bottom-24 right-6 bg-red-900/90 text-white p-4 rounded-xl shadow-lg max-w-xs">
       <p className="font-semibold">⚠️ Chatbot Error</p>
-      <p className="text-sm mt-1">{error.message}</p>
+      <p className="text-sm mt-1 break-words">{error?.message ?? "Terjadi kesalahan"}</p>
       <button
         onClick={resetErrorBoundary}
-        className="mt-2 text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-md"
+        className="mt-2 text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-md transition-all"
       >
         Reload
       </button>
@@ -27,8 +30,17 @@ export default function HelpButton() {
   const [showChatbot, setShowChatbot] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
-  // 🧩 Maintenance toggle
-  const isMaintenance = true; // ubah ke true jika mode perbaikan
+  // Mode maintenance — ubah ke true kalau mau tampilin maintenance notice
+  const isMaintenance = false;
+
+  const handleClick = () => {
+    if (isMaintenance) {
+      setShowNotice(true);
+      setTimeout(() => setShowNotice(false), 5000);
+      return;
+    }
+    setOpen((s) => !s);
+  };
 
   const handleOpenChatbot = () => {
     setShowChatbot(true);
@@ -39,29 +51,19 @@ export default function HelpButton() {
   const handleOpenSettings = () => setShowSettings(true);
   const handleCloseSettings = () => setShowSettings(false);
 
-  const handleClick = () => {
-    if (isMaintenance) {
-      setShowNotice(true);
-      setTimeout(() => setShowNotice(false), 5000);
-    } else {
-      setOpen(!open);
-    }
-  };
-
   return (
     <div className="fixed bottom-6 right-6 z-[9999]">
-      {/* ===== Floating Button ===== */}
       <div className="relative group">
         <div className="absolute inset-0 rounded-full bg-cyan-500/30 blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-700" />
 
         <button
           onClick={handleClick}
           aria-label="Buka Menu Bantuan"
-          className={`relative flex items-center justify-center w-14 h-14 rounded-full 
+          className={`relative flex items-center justify-center w-14 h-14 rounded-full
             bg-gradient-to-br from-cyan-400/40 to-blue-600/50
-            backdrop-blur-xl border border-white/20
-            text-white shadow-[0_0_25px_rgba(56,189,248,0.5)]
-            transition-all duration-500 ease-out 
+            backdrop-blur-xl border border-white/20 text-white
+            shadow-[0_0_25px_rgba(56,189,248,0.5)]
+            transition-all duration-500 ease-out
             hover:scale-110 hover:shadow-[0_0_35px_rgba(56,189,248,0.7)]
             active:scale-95
             ${open ? "rotate-90" : "rotate-0"}
@@ -84,30 +86,24 @@ export default function HelpButton() {
         )}
       </div>
 
-      {/* ===== Help Menu Popup ===== */}
+      {/* Popup menu */}
       {!isMaintenance && open && (
-        <div
-          className="absolute bottom-16 right-6 animate-fade-up-slow"
-          style={{ transformOrigin: "bottom right" }}
-        >
+        <div className="absolute bottom-16 right-6 animate-fade-up-slow" style={{ transformOrigin: "bottom right" }}>
           <HelpMenu onOpenChatbot={handleOpenChatbot} />
         </div>
       )}
 
-      {/* ===== Chatbot Popup ===== */}
+      {/* Chatbot window (jika tersedia) */}
       {showChatbot && (
         <ErrorBoundary FallbackComponent={ChatbotErrorFallback}>
-          <ChatbotWindow
-            onClose={handleCloseChatbot}
-            onOpenSettings={handleOpenSettings}
-          />
+          <ChatbotWindow onClose={handleCloseChatbot} onOpenSettings={handleOpenSettings} />
         </ErrorBoundary>
       )}
 
-      {/* ===== Settings Popup ===== */}
+      {/* Chatbot settings */}
       {showSettings && <ChatbotSettings onClose={handleCloseSettings} />}
 
-      {/* ===== Notice Popup (Maintenance Mode) ===== */}
+      {/* Maintenance notice */}
       {showNotice && (
         <div
           className="absolute bottom-24 right-0 w-[360px] flex items-start gap-3
@@ -120,9 +116,7 @@ export default function HelpButton() {
             <Info size={22} className="text-white" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-semibold text-white/90">
-              Fitur Dalam Pengembangan 🚧
-            </p>
+            <p className="text-sm font-semibold text-white/90">Fitur Dalam Pengembangan 🚧</p>
             <p className="text-[13px] text-gray-300/90 leading-snug mt-0.5">
               Sistem bantuan sedang dalam tahap penyempurnaan agar lebih stabil dan interaktif.
             </p>
@@ -130,7 +124,7 @@ export default function HelpButton() {
         </div>
       )}
 
-      {/* ===== Decorative Glow FX ===== */}
+      {/* Decorative glows */}
       <div className="absolute -bottom-10 -right-10 w-28 h-28 bg-cyan-500/10 blur-3xl rounded-full pointer-events-none" />
       <div className="absolute -bottom-5 right-20 w-16 h-16 bg-blue-500/10 blur-2xl rounded-full pointer-events-none" />
     </div>

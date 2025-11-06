@@ -1,0 +1,158 @@
+[
+  {
+    "id": 1,
+    "type": "image",
+    "title": "Senja di Pelabuhan",
+    "desc": "Langit jingga memantul di permukaan air, menghadirkan suasana damai dan nostalgia.",
+    "src": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80",
+    "category": "Landscape",
+    "tags": ["senja", "laut", "sunset", "pelabuhan", "relax"],
+    "uploaded_at": "2024-03-15T17:45:00Z",
+
+    "creator": {
+      "username": "syaiful_m",
+      "display_name": "Syaiful Mukmin",
+      "avatar": "https://randomuser.me/api/portraits/men/32.jpg",
+      "verified": true,
+      "followers": 8720,
+      "bio": "Fotografer yang menangkap momen kecil jadi besar 💛",
+      "joined_at": "2020-06-20T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/syaiful_m",
+        "facebook": "https://facebook.com/syaiful.mukmin"
+      }
+    },
+
+    "details": {
+      "camera": "Canon EOS R6",
+      "lens": "24-70mm f/2.8",
+      "location": {
+        "name": "Pelabuhan Sunda Kelapa",
+        "city": "Jakarta",
+        "country": "Indonesia",
+        "geo": { "lat": -6.1325, "lon": 106.8622 }
+      },
+      "resolution": "4000x3000",
+      "mood": ["calm", "nostalgic", "sunset"]
+    },
+
+    "music": {
+      "title": "Evening Breeze",
+      "artist": "Acoustic Vibes",
+      "src": "https://example.com/music/evening-breeze.mp3",
+      "license": "free",
+      "genre": "Acoustic",
+      "bpm": 75,
+      "is_original_audio": true
+    },
+
+    "engagement": {
+      "views": 10245,
+      "likes": 3200,
+      "comments": 48,
+      "shares": 20,
+      "saves": 110
+    },
+
+    "trending": {
+      "is_trending": true,
+      "rank": 15,
+      "trend_category": "Landscape"
+    },
+
+    "comments_preview": [
+      {
+        "user": "lisa_photo",
+        "avatar": "https://randomuser.me/api/portraits/women/45.jpg",
+        "comment": "Warnanya bikin tenang banget 😍",
+        "likes": 12,
+        "posted_at": "2024-03-15T18:00:00Z"
+      },
+      {
+        "user": "budi_travel",
+        "avatar": "https://randomuser.me/api/portraits/men/19.jpg",
+        "comment": "Keren, feelnya dapet banget!",
+        "likes": 9,
+        "posted_at": "2024-03-15T19:20:00Z"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "type": "image",
+    "title": "Harmoni Alam",
+    "desc": "Bidikan sederhana dedaunan hijau yang menyimbolkan ketenangan dan kehidupan.",
+    "src": "https://images.unsplash.com/photo-1521207418485-99c705420785?auto=format&fit=crop&w=900&q=80",
+    "category": "Nature",
+    "tags": ["alam", "daun", "hijau", "nature", "peaceful"],
+    "uploaded_at": "2024-06-12T10:15:00Z",
+
+    "creator": {
+      "username": "syaiful_m",
+      "display_name": "Syaiful Mukmin",
+      "avatar": "https://randomuser.me/api/portraits/men/32.jpg",
+      "verified": true,
+      "followers": 8720,
+      "bio": "Fotografer yang menangkap momen kecil jadi besar 💛",
+      "joined_at": "2020-06-20T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/syaiful_m",
+        "facebook": "https://facebook.com/syaiful.mukmin"
+      }
+    },
+
+    "details": {
+      "camera": "Nikon Z6",
+      "lens": "35mm f/1.8",
+      "location": {
+        "name": "Taman Nasional Gunung Halimun",
+        "city": "Sukabumi",
+        "country": "Indonesia",
+        "geo": { "lat": -6.8169, "lon": 106.9251 }
+      },
+      "resolution": "4000x3000",
+      "mood": ["peaceful", "green", "nature"]
+    },
+
+    "music": {
+      "title": "Forest Whisper",
+      "artist": "Nature Sounds",
+      "src": "https://example.com/music/forest-whisper.mp3",
+      "license": "free",
+      "genre": "Ambient",
+      "bpm": 60,
+      "is_original_audio": true
+    },
+
+    "engagement": {
+      "views": 8430,
+      "likes": 2100,
+      "comments": 35,
+      "shares": 15,
+      "saves": 85
+    },
+
+    "trending": {
+      "is_trending": false,
+      "rank": null,
+      "trend_category": "Nature"
+    },
+
+    "comments_preview": [
+      {
+        "user": "rini_nature",
+        "avatar": "https://randomuser.me/api/portraits/women/22.jpg",
+        "comment": "Hijauannya bikin relax banget 🌿",
+        "likes": 10,
+        "posted_at": "2024-06-12T10:45:00Z"
+      },
+      {
+        "user": "andi_travel",
+        "avatar": "https://randomuser.me/api/portraits/men/21.jpg",
+        "comment": "Sangat menenangkan, love it!",
+        "likes": 7,
+        "posted_at": "2024-06-12T11:10:00Z"
+      }
+    ]
+  }
+]

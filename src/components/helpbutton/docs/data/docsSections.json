@@ -1,0 +1,116 @@
+[
+  {
+    "id": 1,
+    "title": "Pendahuluan",
+    "slug": "pendahuluan",
+    "icon": "BookOpen",
+    "lastUpdated": "2025-11-01",
+    "author": "Tim Dokumentasi Portofolio",
+    "version": "1.0.3",
+    "tags": ["dasar", "panduan-awal", "pengantar"],
+    "content": "Panduan awal untuk memahami dasar penggunaan platform portofolio. Di bagian ini kamu akan belajar cara registrasi, login, serta mengenal fitur utama dan konsep kerja platform. 🌟",
+    "subsections": [
+      {
+        "subtitle": "Tujuan Dokumen",
+        "details": "Memberikan panduan terstruktur bagi pengguna baru agar dapat memahami dan memanfaatkan seluruh fitur dengan optimal.",
+        "tips": "Kalau kamu baru pertama kali masuk, ikuti urutan bab ini agar nggak bingung di tengah jalan. 😉"
+      },
+      {
+        "subtitle": "Struktur Panduan",
+        "details": "Dokumen ini terdiri dari beberapa bagian utama: Pendahuluan, Fitur Utama, Tips & Trik, dan Integrasi. Setiap bagian punya contoh penerapan langsung.",
+        "relatedTopics": ["fitur-utama", "tips-dan-trik"]
+      },
+      {
+        "subtitle": "Kebutuhan Sistem",
+        "details": "Diperlukan browser modern (Chrome, Edge, Firefox, Safari) dan koneksi internet stabil untuk akses optimal.",
+        "warning": "Gunakan versi browser terbaru untuk menghindari bug visual."
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Fitur Utama",
+    "slug": "fitur-utama",
+    "icon": "Sparkles",
+    "lastUpdated": "2025-11-03",
+    "author": "Tim Pengembang UI/UX",
+    "version": "2.1.0",
+    "tags": ["fitur", "dashboard", "komunitas"],
+    "content": "Penjelasan mendalam tentang fitur utama platform — mulai dari manajemen akun hingga kolaborasi komunitas. 🚀",
+    "subsections": [
+      {
+        "subtitle": "Manajemen Akun",
+        "details": "Kamu bisa atur profil, ganti kata sandi, dan ubah preferensi notifikasi langsung dari dashboard.",
+        "examples": "Klik avatar kamu > pilih 'Pengaturan Akun' > sesuaikan preferensi.",
+        "codeSnippet": "POST /api/user/updateProfile"
+      },
+      {
+        "subtitle": "Interaksi Komunitas",
+        "details": "Forum diskusi dan fitur komentar memungkinkan pengguna saling berinteraksi, berbagi ide, dan berkolaborasi.",
+        "tips": "Gunakan mention (@username) biar pesanmu lebih cepat dibalas!"
+      },
+      {
+        "subtitle": "Pusat Bantuan (FAQ)",
+        "details": "Temukan jawaban atas pertanyaan umum tentang cara penggunaan platform dan pemecahan masalah dasar.",
+        "relatedTopics": ["tips-dan-trik"]
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Tips & Trik",
+    "slug": "tips-dan-trik",
+    "icon": "Lightbulb",
+    "lastUpdated": "2025-11-04",
+    "author": "Tim Edukasi Pengguna",
+    "version": "1.5.2",
+    "tags": ["efisiensi", "pengalaman-pengguna", "keyboard"],
+    "content": "Kumpulan trik dan rahasia kecil untuk meningkatkan pengalaman pengguna di platform. ✨",
+    "subsections": [
+      {
+        "subtitle": "Shortcut Keyboard",
+        "details": "Gunakan kombinasi tombol seperti Ctrl + K untuk pencarian cepat, dan Ctrl + / untuk membuka panel bantuan.",
+        "tips": "Shortcut ini juga berfungsi di mode gelap dan mobile keyboard eksternal."
+      },
+      {
+        "subtitle": "Optimasi Profil",
+        "details": "Tambahkan bio, portofolio, dan tautan sosial agar profil kamu lebih profesional dan menarik.",
+        "examples": "Contoh bio: 'Frontend Developer | Suka ngulik UI yang clean dan interaktif.'"
+      },
+      {
+        "subtitle": "Gabung Komunitas",
+        "details": "Ikuti grup diskusi sesuai minatmu, dari desain UI sampai pengembangan backend.",
+        "warning": "Pastikan kamu membaca aturan komunitas sebelum posting pertama."
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Integrasi",
+    "slug": "integrasi",
+    "icon": "Plug",
+    "lastUpdated": "2025-11-05",
+    "author": "Divisi API & Teknologi",
+    "version": "3.0.1",
+    "tags": ["api", "plugin", "keamanan"],
+    "content": "Pelajari cara menghubungkan platform dengan layanan eksternal seperti API, plugin, dan tools kolaborasi. 🔌",
+    "subsections": [
+      {
+        "subtitle": "API Publik",
+        "details": "Gunakan API untuk mengakses data pengguna dan proyek secara programatik. Cocok untuk pengembang yang ingin membuat integrasi khusus.",
+        "codeSnippet": "GET https://api.portfolio.dev/v1/projects",
+        "relatedTopics": ["keamanan-dan-privasi"]
+      },
+      {
+        "subtitle": "Integrasi Tools",
+        "details": "Dukungan penuh untuk integrasi dengan Slack, Notion, dan GitHub. Kolaborasi lintas platform jadi lebih mudah.",
+        "tips": "Gunakan webhook Notion untuk update otomatis proyek kamu."
+      },
+      {
+        "subtitle": "Keamanan & Privasi",
+        "details": "Kami menerapkan autentikasi berbasis token (JWT) dan enkripsi data AES-256 untuk memastikan keamanan informasi pengguna.",
+        "warning": "Jangan bagikan token API kamu ke publik!"
+      }
+    ]
+  }
+]

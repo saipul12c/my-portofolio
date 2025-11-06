@@ -1,0 +1,36 @@
+{
+  "cards": [
+    {
+      "id": 1,
+      "title": "Keahlian Teknis",
+      "icon": "Code2",
+      "color": "cyan",
+      "link": "/SoftSkills",
+      "type": "list",
+      "content": [
+        "React, Tailwind CSS, dan JavaScript",
+        "UI/UX Design & Prototyping",
+        "Desain Visual & Fotografi Digital",
+        "Media Pembelajaran Interaktif"
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Latar Belakang Pendidikan",
+      "icon": "GraduationCap",
+      "color": "blue",
+      "link": "/education",
+      "type": "text",
+      "content": "Mahasiswa aktif di bidang Pendidikan Guru Madrasah Ibtidaiyah, fokus pada integrasi teknologi dalam pendidikan dan pengembangan media pembelajaran digital."
+    },
+    {
+      "id": 3,
+      "title": "Visi Profesional",
+      "icon": "Rocket",
+      "color": "purple",
+      "link": "/visi",
+      "type": "text",
+      "content": "Menjadi pendidik dan pengembang media edukatif yang adaptif terhadap kemajuan teknologi serta menginspirasi melalui pembelajaran kreatif dan berdaya guna."
+    }
+  ]
+}

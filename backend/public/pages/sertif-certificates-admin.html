@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlogKu - Admin Sertifikat</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+  <header>
+    <nav class="navbar container">
+      <a href="/" class="logo" data-link>BlogKu</a>
+      <div class="nav-links">
+        <a href="/" data-link>Beranda</a>
+        <a href="/pages/admin.html" data-link>Admin Posts</a>
+        <a href="/pages/sertif-certificates-admin.html" data-link>Admin Sertifikat</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <h1 class="page-title">Manajemen Sertifikat</h1>
+
+      <section class="form-section">
+        <h2>Tambah/Edit Sertifikat</h2>
+        <form id="certificate-form">
+          <input type="hidden" id="certificate-id" name="id">
+          <label for="title">Judul:</label>
+          <input type="text" id="title" name="title" required>
+
+          <label for="issuer">Penerbit:</label>
+          <input type="text" id="issuer" name="issuer">
+
+          <label for="date">Tanggal:</label>
+          <input type="date" id="date" name="date">
+
+          <label for="image">URL Gambar:</label>
+          <input type="url" id="image" name="image">
+
+          <button type="submit">Simpan Sertifikat</button>
+          <button type="button" id="cancel-edit-btn" style="display:none;">Batal Edit</button>
+        </form>
+      </section>
+
+      <section class="list-section">
+        <h2>Daftar Sertifikat</h2>
+        <ul id="certificate-list"></ul>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 BlogKu. Dibuat dengan ❤️.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="../JS/app.js"></script>
+</body>
+</html>

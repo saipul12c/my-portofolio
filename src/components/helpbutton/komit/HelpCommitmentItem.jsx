@@ -1,34 +1,22 @@
-import { Heart, Sparkles, Users, HandHeart, Globe, Star, Lightbulb } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Heart, Sparkles, HandHeart, Users, Globe, Lightbulb, Star } from "lucide-react";
 import { motion } from "framer-motion";
+import commitmentsData from "./data/commitments.json"; // pastikan path sesuai folder kamu
 
-export default function CommitmentPage() {
-  const commitments = [
-    {
-      icon: <HandHeart className="text-pink-400" size={28} />,
-      title: "Dedikasi Tanpa Batas",
-      desc: "Kami berkomitmen memberikan yang terbaik dengan sepenuh hati 💪. Setiap langkah kecil punya makna besar buat masa depan.",
-    },
-    {
-      icon: <Users className="text-pink-400" size={28} />,
-      title: "Kolaborasi & Kepercayaan",
-      desc: "Kita tumbuh bareng, berbagi ide, dan saling dukung. Karena tim hebat bukan cuma kerja bareng, tapi tumbuh bareng 🌱.",
-    },
-    {
-      icon: <Globe className="text-pink-400" size={28} />,
-      title: "Dampak Positif",
-      desc: "Bukan cuma sukses pribadi, tapi juga buat sekitar. Kecil atau besar, yang penting punya arti ✨.",
-    },
-    {
-      icon: <Lightbulb className="text-pink-400" size={28} />,
-      title: "Inovasi Tanpa Henti",
-      desc: "Kami nggak takut bereksperimen. Setiap ide gila bisa jadi langkah besar menuju masa depan yang keren 🚀.",
-    },
-    {
-      icon: <Star className="text-pink-400" size={28} />,
-      title: "Integritas & Keaslian",
-      desc: "Kami percaya jadi diri sendiri adalah kekuatan. Kejujuran dan ketulusan itu nggak bisa diganti 💫.",
-    },
-  ];
+const iconMap = {
+  HandHeart: <HandHeart className="text-pink-400" size={28} />,
+  Users: <Users className="text-pink-400" size={28} />,
+  Globe: <Globe className="text-pink-400" size={28} />,
+  Lightbulb: <Lightbulb className="text-pink-400" size={28} />,
+  Star: <Star className="text-pink-400" size={28} />
+};
+
+export default function HelpCommitmentItem() {
+  const [commitments, setCommitments] = useState([]);
+
+  useEffect(() => {
+    setCommitments(commitmentsData);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-950 dark:to-black text-gray-800 dark:text-gray-100 flex flex-col items-center py-20 px-6 relative overflow-hidden">
@@ -41,6 +29,7 @@ export default function CommitmentPage() {
         className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(236,72,153,0.2),transparent_60%),radial-gradient(circle_at_80%_80%,rgba(147,51,234,0.2),transparent_60%)]"
       />
 
+      {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -40 }}
         animate={{ opacity: 1, y: 0 }}
@@ -59,6 +48,7 @@ export default function CommitmentPage() {
         </p>
       </motion.div>
 
+      {/* Cards */}
       <div className="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl z-10">
         {commitments.map((item, index) => (
           <motion.div
@@ -72,11 +62,14 @@ export default function CommitmentPage() {
             <div className="mb-4 flex items-center gap-2">
               <motion.div
                 whileHover={{ rotate: 15 }}
-                transition={{ type: "spring", stiffness: 300 }}
+                transition={{ type: 'spring', stiffness: 300 }}
               >
-                {item.icon}
+                {iconMap[item.icon] || <Sparkles className="text-pink-400" size={28} />}
               </motion.div>
-              <Sparkles className="text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" size={16} />
+              <Sparkles
+                className="text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                size={16}
+              />
             </div>
             <h2 className="text-xl font-semibold mb-2 text-pink-500 group-hover:text-purple-500 transition-colors">
               {item.title}
@@ -86,6 +79,7 @@ export default function CommitmentPage() {
         ))}
       </div>
 
+      {/* Footer */}
       <motion.footer
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
