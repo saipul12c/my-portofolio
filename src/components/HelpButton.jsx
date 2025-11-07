@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { HelpCircle, X, Wrench, Info } from "lucide-react";
 import HelpMenu from "./helpbutton/HelpMenu";
 import { ErrorBoundary } from "react-error-boundary";
+import { ChatbotWindow } from "./helpbutton/chat/components/ChatbotWindow";
+import { ChatbotSettings } from "./helpbutton/chat/components/ChatbotSettings";
 
 function ChatbotErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -23,6 +25,8 @@ function ChatbotErrorFallback({ error, resetErrorBoundary }) {
 export default function HelpButton() {
   const [open, setOpen] = useState(false);
   const [showNotice, setShowNotice] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Ubah ke false jika fitur maintenance sudah selesai
   const isMaintenance = false;
@@ -36,32 +40,19 @@ export default function HelpButton() {
     setOpen((s) => !s);
   };
 
-  // 🔹 Event Listener: buka Chatbot di window baru
-  useEffect(() => {
-    const handleOpenChatbot = () => {
-      setOpen(false); // Tutup HelpMenu utama
+  const openChat = () => {
+    setOpen(false); // Tutup menu bantuan utama
+    setIsChatOpen(true);
+  };
 
-      // Buka jendela Chatbot 
-      const chatWindow = window.open(
-        "/chatbot", // route halaman Chatbot
-        "SaipulAIChatbot",
-        "width=420,height=640,resizable=yes,scrollbars=yes"
-      );
+  const closeChat = () => setIsChatOpen(false);
 
-      // Cek setiap 0.5 detik, kalau jendela ditutup, tampilkan kembali menu utama
-      const timer = setInterval(() => {
-        if (chatWindow.closed) {
-          clearInterval(timer);
-          setOpen(true);
-        }
-      }, 500);
-    };
+  const openSettings = () => {
+    closeChat();
+    setIsSettingsOpen(true);
+  };
 
-    window.addEventListener("saipulai:openChatbot", handleOpenChatbot);
-    return () => {
-      window.removeEventListener("saipulai:openChatbot", handleOpenChatbot);
-    };
-  }, []);
+  const closeSettings = () => setIsSettingsOpen(false);
 
   return (
     <div className="fixed bottom-6 right-6 z-[9999]">
@@ -114,8 +105,25 @@ export default function HelpButton() {
           style={{ transformOrigin: "bottom right" }}
         >
           <ErrorBoundary FallbackComponent={ChatbotErrorFallback}>
-            <HelpMenu />
+            <HelpMenu onOpenChat={openChat} />
           </ErrorBoundary>
+        </div>
+      )}
+
+      {/* Popup Chatbot - TERPISAH dari menu bantuan */}
+      {isChatOpen && (
+        <div className="fixed bottom-24 right-80 z-[10000]">
+          <ChatbotWindow
+            onClose={closeChat}
+            onOpenSettings={openSettings}
+          />
+        </div>
+      )}
+
+      {/* Popup Settings */}
+      {isSettingsOpen && (
+        <div className="fixed bottom-24 right-80 z-[10000]">
+          <ChatbotSettings onClose={closeSettings} />
         </div>
       )}
 

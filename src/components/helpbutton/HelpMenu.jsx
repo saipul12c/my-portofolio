@@ -8,12 +8,6 @@ import {
   MessageCircle,
 } from "lucide-react";
 
-/**
- * HelpMenu.jsx
- * - Menampilkan daftar bantuan dan tombol akses Chatbot Saipul.
- * - Versi ini: tombol Chatbot nonaktif (muncul pesan notifikasi).
- */
-
 function HelpMenuItem({ title, subtitle, icon: Icon, to, external = false }) {
   const handleClick = (e) => {
     e.preventDefault();
@@ -87,11 +81,30 @@ function VersionBadge() {
   );
 }
 
-export default function HelpMenu() {
-  const handleChatbotUnavailable = () => {
-    alert("⚠️ Fitur Chatbot SaipulAI belum tersedia saat ini.");
-  };
+// Komponen untuk tombol chatbot di dalam menu
+function HelpChatbotButton({ onOpenChat }) {
+  return (
+    <button
+      onClick={onOpenChat}
+      className="flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors text-left w-full"
+      aria-label="Buka Chatbot SaipulAI"
+    >
+      <div className="w-9 h-9 flex items-center justify-center rounded-md bg-white/5 shrink-0">
+        <MessageCircle size={18} className="text-cyan-300" />
+      </div>
+      <div className="flex-1">
+        <div className="text-sm font-medium text-white/90 leading-tight">
+          Chatbot SaipulAI
+        </div>
+        <div className="text-xs text-gray-400 mt-0.5">
+          Tanya apa saja ke AI
+        </div>
+      </div>
+    </button>
+  );
+}
 
+export default function HelpMenu({ onOpenChat }) {
   return (
     <div
       className="w-72 rounded-2xl border border-white/10 shadow-[0_0_25px_rgba(56,189,248,0.2)]
@@ -123,39 +136,13 @@ export default function HelpMenu() {
           icon={ShieldCheck}
           to="/help/commitment"
         />
-        {/* 🔹 Tombol Chatbot - Nonaktif sementara */}
-        <div className="mt-2 border-t border-gray-700/40 pt-3 relative">
-          <button
-            onClick={handleChatbotUnavailable}
-            disabled
-            className="relative flex items-center gap-3 px-3 py-2.5 rounded-xl w-full
-              bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800
-              text-left transition-all duration-500
-              cursor-not-allowed overflow-hidden group opacity-80
-              shadow-md shadow-gray-800/30"
-          >
-            {/* ✨ Efek shimmer lembut */}
-            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent
-              translate-x-[-200%] group-hover:translate-x-[200%]
-              transition-transform duration-1000 ease-in-out" />
-
-            <div className="w-10 h-10 flex items-center justify-center rounded-lg
-              bg-gradient-to-br from-gray-500 to-gray-700
-              shadow-inner shadow-black/40 group-hover:scale-105 transition-transform duration-300">
-              <MessageCircle size={18} className="text-white/90" />
-            </div>
-
-            <div className="flex-1">
-              <div className="text-sm font-semibold text-white/90 tracking-wide">
-                Chatbot SaipulAI
-              </div>
-              <div className="text-xs text-gray-400 mt-0.5 italic">
-                🚧 Segera hadir...
-              </div>
-            </div>
-          </button>
+        
+        {/* 🔹 Tombol Chatbot - Sederhana tanpa logika state */}
+        <div className="mt-2 border-t border-gray-700/40 pt-3">
+          <HelpChatbotButton onOpenChat={onOpenChat} />
         </div>
       </div>
+      
       <div className="mt-4 pt-3 border-t border-gray-700/40">
         <VersionBadge />
       </div>

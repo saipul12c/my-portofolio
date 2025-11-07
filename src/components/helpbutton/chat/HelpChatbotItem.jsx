@@ -15,18 +15,26 @@ export default function HelpChatbotItem() {
 
   return (
     <>
-      {/* Tombol di menu bantuan */}
-      <li>
-        <button
-          onClick={openChat}
-          className="flex items-center gap-2 text-green-400 hover:text-white transition-all duration-200 w-full text-left"
-        >
-          <MessageCircle size={15} />
-          SaipulAI (Chatbot)
-        </button>
-      </li>
+      {/* Tombol di menu bantuan dengan styling yang konsisten */}
+      <button
+        onClick={openChat}
+        className="flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors text-left w-full"
+        aria-label="Buka Chatbot SaipulAI"
+      >
+        <div className="w-9 h-9 flex items-center justify-center rounded-md bg-white/5 shrink-0">
+          <MessageCircle size={18} className="text-cyan-300" />
+        </div>
+        <div className="flex-1">
+          <div className="text-sm font-medium text-white/90 leading-tight">
+            Chatbot SaipulAI
+          </div>
+          <div className="text-xs text-gray-400 mt-0.5">
+            Tanya apa saja ke AI
+          </div>
+        </div>
+      </button>
 
-      {/* Jendela Chatbot */}
+      {/* Jendela Chatbot - akan muncul sebagai popup terpisah di pojok kanan bawah */}
       {isChatOpen && (
         <ChatbotWindow
           onClose={closeChat}
