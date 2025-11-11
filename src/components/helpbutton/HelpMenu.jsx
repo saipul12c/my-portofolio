@@ -52,7 +52,7 @@ function VersionBadge() {
   const version =
     document.querySelector('meta[name="app-version"]')?.content ||
     window?.__APP_VERSION__ ||
-    "v1.0.0";
+    "v1.16.0";
 
   const handleOpenVersionPage = (e) => {
     e.preventDefault();
