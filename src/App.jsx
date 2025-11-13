@@ -40,6 +40,7 @@ import Visi from "./pages/visi/visi";
 import Hobbies from "./pages/hub/Hobbies";
 import Blog from "./pages/blog/Blog";
 import BlogDetail from "./pages/blog/detail/BlogDetail";
+import Bahasa from "./pages/bahasa/Bahasa";
 
 // ⚠️ Halaman error kustom
 import NotFound from "./pages/errors/NotFound";
@@ -110,6 +111,7 @@ export default function App() {
                         <Route path="/hobbies" element={<Hobbies />} />
                         <Route path="/blog" element={<Blog />} />
                         <Route path="/blog/:slug" element={<BlogDetail />} />
+                        <Route path="/bahasa" element={<Bahasa />} />
 
                         {/* website tambahan */}
                         <Route path="/qodam" element={<Qodam />} />

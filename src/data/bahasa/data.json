@@ -1,0 +1,167 @@
+{
+  "bahasaSehariHari": [
+    {
+      "nama": "Indonesia",
+      "tingkat": "Penutur Asli",
+      "icon": "🇮🇩",
+      "level": 100,
+      "deskripsi": "Kemampuan linguistik setara dengan penutur asli terdidik, menguasai seluruh register bahasa dari percakapan kasual hingga wacana akademis dan sastra.",
+      "warna": "#FF0000",
+      "kemampuan": ["Percakapan Formal & Informal", "Presentasi & Orasi", "Penulisan Kreatif & Teknis", "Debat & Negosiasi", "Penyuntingan Naskah", "Penerjemahan Tepat Nuansa"],
+      "pengalaman": "Digunakan sebagai bahasa primer dalam semua aspek kehidupan selama lebih dari 20 tahun, termasuk pendidikan, pekerjaan, dan kreasi konten.",
+      "detailTambahan": {
+        "aksara": "Aksara Latin & Arab (Gundul)",
+        "dialek": "Menguasai ragam Bahasa Indonesia Formal dan Bahasa Gaul terkini",
+        "pencapaian": "Juara Debat Tingkat Regional, Penulis Konten Profesional"
+      }
+    },
+    {
+      "nama": "English",
+      "tingkat": "Lanjutan (Advanced - C1)",
+      "icon": "🇺🇸",
+      "level": 80,
+      "deskripsi": "Kemampuan komunikasi setara C1 CEFR. Lancar dan akurat dalam konteks profesional, akademis, dan sosial yang kompleks. Dapat mengekspresikan ide secara spontan tanpa kesalahan signifikan yang mengganggu komunikasi.",
+      "warna": "#0000FF",
+      "kemampuan": ["Technical & Scientific Writing", "Presentasi Bisnis & Pitching", "Negosiasi Lintas Budaya", "Academic Research & Paper Writing", "Moderasi Diskusi", "Public Speaking"],
+      "pengalaman": "Penggunaan aktif sebagai bahasa pengantar utama di lingkungan kerja multinasional selama 5+ tahun, termasuk rapat strategis, penulisan dokumen teknis, dan pelatihan internasional.",
+      "sertifikasi": {
+        "nama": "TOEFL PBT",
+        "score": 610,
+        "equivalent": "C1 CEFR"
+      },
+      "detailTambahan": {
+        "kelebihan": "Kosakata teknis yang luas (khususnya di bidang IT dan bisnis), pengucapan (pronunciation) yang jelas.",
+        "areaPengembangan": "Penggunaan idiom yang lebih niche dan aksen regional tertentu."
+      }
+    },
+    {
+      "nama": "Jawa",
+      "tingkat": "Penutur Pasif (Intermediate)",
+      "icon": "🎭",
+      "level": 60,
+      "deskripsi": "Memahami dengan baik percakapan sehari-hari dan budaya Jawa. Dapat berkomunikasi dalam konteks informal, namun memerlukan usaha lebih untuk berbicara secara aktif dan lancar.",
+      "warna": "#654321",
+      "kemampuan": ["Percakapan Informal (Krama Madya & Ngoko)", "Memahami Ungkapan & Paribasan Tradisional", "Membaca Aksara Jawa Dasar (Hanacaraka)", "Menyimak Cerita Wayang"],
+      "keterbatasan": "Kesulitan dengan kosakata teknis/modern, struktur kalimat Krama Inggil yang kompleks, dan menulis esai formal.",
+      "detailTambahan": {
+        "konteksPenggunaan": "Komunikasi dengan keluarga besar dan di lingkungan tradisional (seperti acara adat).",
+        "aksara": "Kemampuan membaca-menulis aksara Jawa sekitar 70%"
+      }
+    },
+    {
+      "nama": "Japan",
+      "tingkat": "Pemula (A1 - A2)",
+      "icon": "🇯🇵",
+      "level": 30,
+      "deskripsi": "Berada di tahap fondasi. Mampu memahami dan menggunakan ekspresi sehari-hari yang sangat dasar dan frasa sederhana yang ditujukan untuk memenuhi kebutuhan konkret.",
+      "warna": "#BC002D",
+      "kemampuan": ["Membaca & Menulis Hiragana & Katakana", "Perkenalan Diri (Jikoshoukai)", "Percakapan Dasar (Memberi Salam, Bertanya Harga, Arah)", "Tata Bahasa Dasar (Pola ~masu, ~desu)"],
+      "target": "Mencapai level N3 JLPT (Komunikasi Percakapan Sehari-hari) dalam 2 tahun ke depan.",
+      "detailTambahan": {
+        "kanjiDikuasai": "Sekitar 80 kanji dasar",
+        "sumberBelajar": "Minna no Nihongo, Duolingo, Kelas Online",
+        "fokusSekarang": "Memperbanyak kosakata (Vocabulary) dan pengenalan Kanji dasar."
+      }
+    }
+  ],
+  
+  "bahasaPemrograman": [
+    {
+      "nama": "JavaScript",
+      "tingkat": "Mahir",
+      "icon": "⚡",
+      "level": 90,
+      "warna": "#F7DF1E",
+      "framework": ["React", "Vue.js", "Node.js", "Express.js"],
+      "tools": ["Webpack", "Vite", "Babel", "Jest", "Cypress", "ESLint", "Prettier"],
+      "pengalaman": "4+ tahun pengembangan aplikasi enterprise skala penuh (full-stack). Memimpin arsitektur front-end untuk aplikasi dengan jutaan pengguna.",
+      "projectContoh": "Sistem Manajemen Inventari Real-time dengan WebSocket & IndexedDB",
+      "detailTambahan": {
+        "expertise": ["ES6+ Modern Syntax", "Async/Await & Promises", "Web Performance Optimization", "SPA & PWA Development"],
+        "cicd": "GitHub Actions, Jenkins"
+      }
+    },
+    {
+      "nama": "Python",
+      "tingkat": "Lanjutan",
+      "icon": "🐍",
+      "level": 85,
+      "warna": "#3776AB",
+      "framework": ["Django", "Flask", "FastAPI"],
+      "libraries": ["Pandas", "NumPy", "Scikit-learn", "TensorFlow", "Matplotlib", "Requests", "BeautifulSoup"],
+      "pengalaman": "3+ tahun dalam Data Analysis, Automation Scripting, dan Backend Development. Membangun dan mengoptimalkan pipeline data.",
+      "projectContoh": "Sistem Rekomendasi Produk E-commerce menggunakan Collaborative Filtering",
+      "detailTambahan": {
+        "expertise": ["REST API Development", "Data Wrangling & Visualization", "Basic Machine Learning Models", "Web Scraping"],
+        "environment": "Jupyter Notebook, PyCharm, Virtualenv"
+      }
+    },
+    {
+      "nama": "Java",
+      "tingkat": "Menengah-Atas",
+      "icon": "☕",
+      "level": 70,
+      "warna": "#ED8B00",
+      "framework": ["Spring Boot", "Spring MVC", "Hibernate/JPA"],
+      "tools": ["Maven", "Gradle", "JUnit", "Mockito"],
+      "pengalaman": "2 tahun pengembangan aplikasi Android native dan sistem backend enterprise untuk perbankan.",
+      "projectContoh": "Aplikasi Mobile Banking dengan fitur transfer, pembayaran, dan investasi",
+      "detailTambahan": {
+        "expertise": ["OOP Principles", "RESTful Services", "Basic Microservices", "Database Integration"],
+        "areaPengembangan": "Spring Cloud, Reactive Programming"
+      }
+    },
+    {
+      "nama": "PHP",
+      "tingkat": "Menengah-Atas",
+      "icon": "🐘",
+      "level": 75,
+      "warna": "#777BB4",
+      "framework": ["Laravel", "CodeIgniter"],
+      "tools": ["Composer", "PHPUnit", "Xdebug"],
+      "pengalaman": "Pengembangan dan maintenance CMS custom serta platform e-commerce dengan fokus pada keamanan dan performa.",
+      "projectContoh": "Platform E-learning dengan fitur video streaming, kuis, dan sertifikasi",
+      "detailTambahan": {
+        "expertise": ["MVC Architecture", "Eloquent ORM", "API Integration", "Payment Gateway"],
+        "database": "MySQL, Redis"
+      }
+    },
+    {
+      "nama": "SQL",
+      "tingkat": "Lanjutan",
+      "icon": "🗄️",
+      "level": 80,
+      "warna": "#4479A1",
+      "variasi": ["MySQL", "PostgreSQL", "SQL Server", "SQLite"],
+      "kemampuan": ["Query Optimization & Indexing", "Database Normalization & Design", "Stored Procedures & Functions", "Complex Joins & Subqueries", "Transaction Management"],
+      "pengalaman": "Merancang, mengimplementasikan, dan memelihara skema database untuk aplikasi dengan data transaksional tinggi.",
+      "detailTambahan": {
+        "tools": ["phpMyAdmin", "pgAdmin", "HeidiSQL"],
+        "expertise": ["Membangun ETL Pipeline Sederhana", "Pemahaman Mendalam tentang ACID Properties"]
+      }
+    },
+    {
+      "nama": "React",
+      "tingkat": "Mahir",
+      "icon": "⚛️",
+      "level": 88,
+      "warna": "#61DAFB",
+      "ecosystem": ["Redux & Redux Toolkit", "React Router", "Styled-Components", "React Query", "Formik"],
+      "tools": ["Next.js", "React Testing Library", "Storybook"],
+      "pengalaman": "Membangun dan memimpin pengembangan 10+ aplikasi React production-ready, dari konsep hingga deployment dan maintenance.",
+      "keahlianKhusus": ["Advanced State Management", "Performance Optimization (Memo, useCallback)", "Custom Hooks", "Component Composition & Design Patterns", "SSR/SSG dengan Next.js"],
+      "detailTambahan": {
+        "testing": "Unit Test, Integration Test, End-to-End Test",
+        "architecture": "Feature-Based Structure, Atomic Design"
+      }
+    }
+  ],
+
+  "metadata": {
+    "lastUpdated": "2024-01-15",
+    "version": "2.1", 
+    "totalSkills": 10,
+    "categories": ["bahasaSehariHari", "bahasaPemrograman"],
+    "catatan": "Data telah diperkaya dengan detail tambahan seperti level CEFR untuk bahasa, tools spesifik, area keahlian, dan konteks pengalaman yang lebih mendalam."
+  }
+}

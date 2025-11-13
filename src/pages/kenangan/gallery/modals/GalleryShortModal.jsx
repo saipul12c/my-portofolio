@@ -41,46 +41,45 @@ export default function GalleryShortModal({
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4"
+        className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-2 sm:p-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
-        {/* Tombol Tutup */}
+        {/* Close Button */}
         <button
           onClick={() => setSelectedMedia(null)}
-          className="absolute top-5 right-5 text-gray-300 hover:text-white transition z-50"
+          className="absolute top-3 right-3 z-50 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition"
         >
-          <X size={28} />
+          <X size={24} />
         </button>
 
-        {/* Tombol Navigasi Kiri */}
+        {/* Navigation Buttons */}
         <button
           onClick={handlePrev}
-          className="absolute left-5 text-gray-400 hover:text-white transition z-50 hidden md:block"
+          className="absolute left-2 sm:left-4 text-white bg-black/50 hover:bg-black/70 p-2 rounded-full transition z-50 hidden sm:block"
         >
-          <ChevronLeft size={38} />
+          <ChevronLeft size={28} />
         </button>
 
-        {/* Tombol Navigasi Kanan */}
         <button
           onClick={handleNext}
-          className="absolute right-5 text-gray-400 hover:text-white transition z-50 hidden md:block"
+          className="absolute right-2 sm:right-4 text-white bg-black/50 hover:bg-black/70 p-2 rounded-full transition z-50 hidden sm:block"
         >
-          <ChevronRight size={38} />
+          <ChevronRight size={28} />
         </button>
 
-        {/* Kontainer Utama */}
+        {/* Main Container */}
         <motion.div
-          className="relative bg-[#1a1a1a]/95 border border-white/10 rounded-2xl overflow-hidden shadow-2xl w-full max-w-4xl flex flex-col md:flex-row"
+          className="relative bg-[#1a1a1a]/95 border border-white/10 rounded-2xl overflow-hidden shadow-2xl w-full max-w-4xl h-full max-h-[95vh] flex flex-col md:flex-row"
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ type: "spring", stiffness: 100, damping: 20 }}
         >
-          {/* Area Video */}
-          <div className="w-full md:w-[55%] bg-black flex items-center justify-center p-3">
-            <div className="relative w-full max-w-[320px] aspect-[9/16] flex items-center justify-center">
+          {/* Video Area */}
+          <div className="w-full md:w-[55%] bg-black flex items-center justify-center p-2 sm:p-4">
+            <div className="relative w-full max-w-[280px] sm:max-w-[320px] aspect-[9/16] flex items-center justify-center">
               <video
                 ref={localVideoRef}
                 src={selectedMedia.src}
@@ -93,22 +92,27 @@ export default function GalleryShortModal({
                 onMouseLeave={handleVideoLeave}
               />
 
-              {/* Tombol Mute / Unmute */}
+              {/* Mute/Unmute Button */}
               <button
                 onClick={() => setIsMuted(!isMuted)}
-                className="absolute bottom-3 right-3 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition"
+                className="absolute bottom-2 right-2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition"
               >
-                {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
               </button>
+
+              {/* Mobile Navigation Hints */}
+              <div className="absolute bottom-2 left-2 text-white/70 text-xs sm:hidden">
+                ← Swipe →
+              </div>
             </div>
           </div>
 
-          {/* Informasi Video */}
-          <div className="w-full md:w-[45%] bg-[#111] text-gray-200 p-5 flex flex-col justify-start gap-3 overflow-y-auto max-h-[75vh]">
-            <h2 className="text-base font-bold text-white leading-tight">
+          {/* Video Information */}
+          <div className="w-full md:w-[45%] bg-[#111] text-gray-200 p-4 sm:p-6 flex flex-col gap-3 overflow-y-auto">
+            <h2 className="text-base sm:text-lg font-bold text-white leading-tight">
               {selectedMedia.title}
             </h2>
-            <p className="text-sm text-gray-300 leading-snug">
+            <p className="text-sm text-gray-300 leading-snug line-clamp-3">
               {selectedMedia.desc}
             </p>
 
@@ -126,11 +130,11 @@ export default function GalleryShortModal({
               </div>
             )}
 
-            {/* Musik */}
+            {/* Music */}
             {selectedMedia.music && (
               <div className="flex items-center gap-2 mt-2 text-xs text-gray-300">
-                <Music size={14} className="text-cyan-400" />
-                <span>
+                <Music size={14} className="text-cyan-400 flex-shrink-0" />
+                <span className="truncate">
                   {selectedMedia.music.title || "Unknown"} —{" "}
                   <span className="text-gray-400">
                     {selectedMedia.music.artist || "Unknown"}
@@ -139,9 +143,9 @@ export default function GalleryShortModal({
               </div>
             )}
 
-            {/* Engagement */}
+            {/* Engagement Stats */}
             {selectedMedia.engagement && (
-              <div className="flex items-center gap-3 mt-3 text-xs text-gray-400 flex-wrap">
+              <div className="flex items-center gap-3 sm:gap-4 mt-3 text-xs text-gray-400 flex-wrap">
                 <span className="flex items-center gap-1">
                   <Heart size={14} className="text-pink-400" />{" "}
                   {selectedMedia.engagement.likes?.toLocaleString()}
@@ -160,8 +164,36 @@ export default function GalleryShortModal({
                 </span>
               </div>
             )}
+
+            {/* Mobile Action Buttons */}
+            <div className="flex gap-3 pt-4 mt-4 border-t border-white/10 md:hidden">
+              <button className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 py-2 rounded-lg text-sm transition flex items-center justify-center gap-2">
+                <Heart size={16} />
+                Like
+              </button>
+              <button className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 py-2 rounded-lg text-sm transition flex items-center justify-center gap-2">
+                <Share2 size={16} />
+                Share
+              </button>
+            </div>
           </div>
         </motion.div>
+
+        {/* Mobile Navigation Buttons */}
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-8 sm:hidden">
+          <button
+            onClick={handlePrev}
+            className="bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <button
+            onClick={handleNext}
+            className="bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition"
+          >
+            <ChevronRight size={24} />
+          </button>
+        </div>
       </motion.div>
     </AnimatePresence>
   );

@@ -18,7 +18,7 @@ export default function Footer() {
     { to: "/SoftSkills", label: "Soft Skills" },
     { to: "/education", label: "Pendidikan" },
     { to: "/testimoni", label: "Testimonials" },
-    { to: "/contact", label: "Contact" },
+    { to: "/bahasa", label: "Kemampuan Bahasa" },
   ];
 
   return (

@@ -112,16 +112,17 @@ export default function SoftSkills() {
       .map((skill) => {
         const labels = [...(skill.labels || [])];
 
+        // Hanya tambahkan label "Baru" jika skill ditambahkan dalam 1 tahun terakhir
         if (skill.dateAdded) {
           const addedDate = new Date(skill.dateAdded);
           if (addedDate > oneYearAgo && !labels.includes("Baru"))
             labels.push("Baru");
         }
 
-        // Tambahkan label random ringan
-        ["Populer", "Hot"].forEach((label) => {
-          if (!labels.includes(label) && Math.random() < 0.25) labels.push(label);
-        });
+        // ❌ DIHAPUS: Penambahan label random "Populer" dan "Hot" yang berlebihan
+        // ["Populer", "Hot"].forEach((label) => {
+        //   if (!labels.includes(label) && Math.random() < 0.25) labels.push(label);
+        // });
 
         const labelColorMap = {};
         labels.forEach((label) => {
@@ -140,6 +141,7 @@ export default function SoftSkills() {
         };
       });
 
+    // Urutkan berdasarkan jumlah label (yang punya label lebih banyak di atas)
     processed.sort((a, b) => (b.labels?.length || 0) - (a.labels?.length || 0));
 
     setSkills(processed);

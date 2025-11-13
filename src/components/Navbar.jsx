@@ -6,7 +6,6 @@ export default function Navbar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
-  // Tambahkan link baru untuk halaman portofolio
   const links = [
     { to: "/", label: "Home" },
     { to: "/about", label: "About" },
@@ -17,7 +16,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="backdrop-blur-md bg-[#0f172a]/70 text-white sticky top-0 z-50 shadow-md border-b border-blue-900/30">
+    <nav className="backdrop-blur-md bg-[#0f172a]/90 text-white sticky top-0 z-50 shadow-md border-b border-blue-900/30">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
         {/* LOGO */}
         <Link
@@ -57,11 +56,11 @@ export default function Navbar() {
 
       {/* Menu Mobile */}
       <div
-        className={`md:hidden fixed top-0 right-0 h-full w-3/4 sm:w-2/5 bg-[#0f172a]/95 backdrop-blur-xl shadow-xl transform transition-transform duration-300 ease-in-out ${
+        className={`md:hidden fixed top-0 right-0 h-full w-3/4 sm:w-2/5 bg-[#0f172a] backdrop-blur-lg shadow-2xl border-l border-blue-900/40 transform transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex justify-between items-center px-6 py-4 border-b border-blue-900/40">
+        <div className="flex justify-between items-center px-6 py-4 border-b border-blue-900/40 bg-[#0f172a]/95">
           <Link
             to="/"
             className="text-xl font-bold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent"
@@ -77,16 +76,16 @@ export default function Navbar() {
           </button>
         </div>
 
-        <ul className="flex flex-col items-start px-6 py-6 space-y-5">
+        <ul className="flex flex-col items-start px-6 py-6 space-y-5 bg-[#0f172a]">
           {links.map((item) => (
             <li key={item.to} className="w-full">
               <Link
                 to={item.to}
                 onClick={() => setIsOpen(false)}
-                className={`block w-full text-lg font-medium px-2 py-1 rounded-md transition-all ${
+                className={`block w-full text-lg font-medium px-4 py-3 rounded-lg transition-all ${
                   location.pathname === item.to
-                    ? "text-cyan-400 bg-blue-900/40"
-                    : "text-gray-200 hover:text-cyan-300 hover:bg-blue-900/30"
+                    ? "text-cyan-400 bg-blue-900/60 border border-blue-700/50"
+                    : "text-gray-200 hover:text-cyan-300 hover:bg-blue-900/40 border border-transparent"
                 }`}
               >
                 {item.label}
