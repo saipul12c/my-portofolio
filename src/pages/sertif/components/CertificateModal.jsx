@@ -28,14 +28,9 @@ const CertificateModal = ({
   handleTestimonialClick,
   renderStars
 }) => {
-  if (!selected) return null;
-
+  // Semua React Hook harus dipanggil di awal, sebelum conditional return
   const [isMobile, setIsMobile] = useState(false);
   const [activeSection, setActiveSection] = useState(null);
-
-  const relatedSkills = findRelatedSkills(selected.tags, skills);
-  const relatedProjects = findRelatedProjects(selected.tags, projects);
-  const relatedTestimonials = findRelatedTestimonials(selected.tags, testimonials);
 
   // Detect mobile screen
   useEffect(() => {
@@ -50,14 +45,21 @@ const CertificateModal = ({
 
   // Reset active section when modal opens
   useEffect(() => {
-    if (isMobile) {
+    if (isMobile && selected) {
       setActiveSection('details');
     }
   }, [isMobile, selected]);
 
+  // Conditional return harus setelah semua hook
+  if (!selected) return null;
+
   const toggleSection = (section) => {
     setActiveSection(activeSection === section ? null : section);
   };
+
+  const relatedSkills = findRelatedSkills(selected.tags, skills);
+  const relatedProjects = findRelatedProjects(selected.tags, projects);
+  const relatedTestimonials = findRelatedTestimonials(selected.tags, testimonials);
 
   const sectionContent = {
     details: (

@@ -12,8 +12,7 @@ const SearchBar = ({
   activeIndex,
   ghostText,
   suggestionRef,
-  handleKeyDown,
-  highlightMatch
+  handleKeyDown
 }) => {
   return (
     <div className="relative w-full max-w-3xl mb-10">
