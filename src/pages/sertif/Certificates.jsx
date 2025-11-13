@@ -1,279 +1,158 @@
 "use client";
 import { LazyMotion, m, AnimatePresence, domAnimation } from "framer-motion";
-import { useEffect, useState, useCallback, useMemo, useRef } from "react";
-import { X, Search, Sparkles, ShieldCheck, Clock } from "lucide-react";
-import data from "../../data/sertif/certificates.json";
+import { useEffect } from "react";
+import { Star, Sparkles, Rocket } from "lucide-react";
 
-const certificates = data.certificates;
-const tagColors = data.tagColors;
+// Import hooks
+import { useCertificatesData } from "./hooks/useCertificatesData";
+import { useCertificatesSearch } from "./hooks/useCertificatesSearch";
+import { useCertificatesUI } from "./hooks/useCertificatesUI";
 
-// === Fuzzy Smart Search ===
-const smartFilter = (certs, query, category) => {
-  if (!query && category === "All") return certs;
-  const q = query.toLowerCase().trim();
+// Import components
+import CertificateCard from "./components/CertificateCard";
+import CertificateModal from "./components/CertificateModal";
+import SearchBar from "./components/SearchBar";
+import Pagination from "./components/Pagination";
 
-  const scoreItem = (cert) => {
-    let score = 0;
-    const boost = (field, weight = 1) => {
-      const text = field.toLowerCase();
-      if (text.startsWith(q)) score += 5 * weight;
-      else if (text.includes(q)) score += 3 * weight;
-      else if (q.split(" ").every((w) => text.includes(w))) score += 2 * weight;
-    };
-
-    boost(cert.title, 2);
-    boost(cert.issuer);
-    cert.tags.forEach((t) => boost(t));
-    if (category !== "All" && cert.category !== category) score -= 5;
-
-    return score;
-  };
-
-  return certs
-    .map((c) => ({ ...c, score: scoreItem(c) }))
-    .filter((c) => c.score > 0)
-    .sort((a, b) => b.score - a.score);
-};
-
-// === Animasi ===
-const cardAnim = {
-  hidden: { opacity: 0, y: 60 },
-  show: { opacity: 1, y: 0 },
-};
+// Import utils
+import { highlightMatch } from "./utils/searchUtils";
 
 export default function Certificates() {
-  const [selected, setSelected] = useState(null);
-  const [search, setSearch] = useState("");
-  const [filterCategory, setFilterCategory] = useState("All");
-  const [activeIndex, setActiveIndex] = useState(-1);
-  const suggestionRef = useRef(null);
+  // Data hooks
+  const { certificates, tagColors, skills, projects, testimonials } = useCertificatesData();
+  
+  // Search hooks
+  const {
+    search,
+    setSearch,
+    filterCategory,
+    setFilterCategory,
+    activeIndex,
+    setActiveIndex,
+    currentPage,
+    setCurrentPage,
+    categories,
+    filteredCertificates,
+    currentCertificates,
+    totalPages,
+    suggestions,
+    ghostText,
+    suggestionRef,
+    handleKeyDown,
+  } = useCertificatesSearch(certificates);
+  
+  // UI hooks
+  const {
+    selected,
+    setSelected,
+    closePopup,
+    handleSkillClick,
+    handleProjectClick,
+    handleTestimonialClick
+  } = useCertificatesUI();
 
-  const categories = useMemo(
-    () => ["All", ...new Set(certificates.map((c) => c.category))],
-    []
-  );
-
-  const closePopup = useCallback(() => setSelected(null), []);
-
+  // Scroll to top when page changes
   useEffect(() => {
-    document.body.style.overflow = selected ? "hidden" : "";
-  }, [selected]);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
 
-  useEffect(() => {
-    const handleEsc = (e) => e.key === "Escape" && closePopup();
-    window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
-  }, [closePopup]);
-
-  // === Smart Filtering ===
-  const filteredCertificates = useMemo(
-    () => smartFilter(certificates, search, filterCategory),
-    [search, filterCategory]
-  );
-
-  // === Suggestion Dropdown ===
-  const suggestions = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return [];
-    const all = certificates.flatMap((c) => [
-      { type: "title", value: c.title },
-      { type: "issuer", value: c.issuer },
-      ...c.tags.map((t) => ({ type: "tag", value: t })),
-    ]);
-    const unique = Array.from(new Set(all.map((a) => a.value)));
-    return unique
-      .filter((v) => v.toLowerCase().includes(q))
-      .slice(0, 6)
-      .map((v) => ({ value: v }));
-  }, [search]);
-
-  // === Ghost Autocomplete ===
-  const ghostText = useMemo(() => {
-    if (!search.trim()) return "";
-    const q = search.toLowerCase();
-    const match = certificates
-      .flatMap((c) => [c.title, c.issuer, ...c.tags])
-      .find((v) => v.toLowerCase().startsWith(q));
-    if (!match) return "";
-    return match.slice(search.length);
-  }, [search]);
-
-  // === Keyboard navigation ===
-  const handleKeyDown = (e) => {
-    if (!suggestions.length) return;
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setActiveIndex((prev) => (prev + 1) % suggestions.length);
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setActiveIndex((prev) =>
-        prev <= 0 ? suggestions.length - 1 : prev - 1
+  // === Render stars untuk rating ===
+  const renderStars = (rating) => {
+    if (!rating) return null;
+    const stars = [];
+    const full = Math.floor(rating);
+    const half = rating % 1 >= 0.5;
+    for (let i = 0; i < full; i++)
+      stars.push(
+        <Star
+          key={i}
+          className="w-4 h-4 text-yellow-400 fill-yellow-400 drop-shadow-sm"
+        />
       );
-    } else if (e.key === "Enter" && activeIndex >= 0) {
-      setSearch(suggestions[activeIndex].value);
-      setActiveIndex(-1);
-    }
+    if (half)
+      stars.push(<Star key="half" className="w-4 h-4 text-yellow-400/60" />);
+    return stars;
   };
 
-  // === Highlight pencarian ===
-  const highlightMatch = (text, query) => {
-    if (!text) return "";
-    if (!query) return text;
-    const regex = new RegExp(`(${query})`, "gi");
-    return text.replace(
-      regex,
-      "<mark class='bg-cyan-400/30 text-cyan-200'>$1</mark>"
-    );
+  // === Pagination numbers ===
+  const getVisiblePages = () => {
+    const maxPagesToShow = 10;
+    if (totalPages <= maxPagesToShow)
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+
+    let startPage = Math.max(currentPage - 4, 1);
+    let endPage = startPage + maxPagesToShow - 1;
+    if (endPage > totalPages) {
+      endPage = totalPages;
+      startPage = endPage - maxPagesToShow + 1;
+    }
+    return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
   };
 
   return (
     <LazyMotion features={domAnimation}>
       <main className="min-h-screen bg-[#0a0f1a] text-white py-24 px-6 flex flex-col items-center select-none">
-        {/* Header */}
+        {/* 🌈 Background efek seperti Projects */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-0 left-0 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-10 right-10 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl animate-pulse" />
+        </div>
+
+        {/* Header dengan animasi seperti Projects */}
         <m.div
-          initial={{ opacity: 0, y: 30 }}
+          className="text-center max-w-3xl mx-auto space-y-6 mb-10"
+          initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-12"
         >
-          <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-400 drop-shadow-lg">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent flex justify-center items-center gap-3">
+            <Rocket className="w-10 h-10 text-cyan-400" />
             Sertifikat & Penghargaan
           </h1>
-          <p className="text-gray-300 mt-3 max-w-2xl mx-auto">
-            Koleksi profesional kredibel dan dapat diverifikasi langsung.
+          <p className="text-gray-300 text-lg sm:text-xl leading-relaxed">
+            Koleksi profesional kredibel dan dapat{" "}
+            <span className="text-cyan-400 font-semibold">diverifikasi langsung</span>.
+            Eksplorasi pencapaian di bidang{" "}
+            <span className="text-blue-400 font-semibold">teknologi</span>,{" "}
+            <span className="text-purple-400 font-semibold">sertifikasi</span>, dan{" "}
+            <span className="text-emerald-400 font-semibold">pengembangan skill</span>.
           </p>
         </m.div>
 
         {/* Search + Filter */}
-        <div className="relative w-full max-w-3xl mb-10">
-          <div className="flex flex-col md:flex-row gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-3 text-gray-300" size={18} />
+        <SearchBar
+          search={search}
+          setSearch={setSearch}
+          filterCategory={filterCategory}
+          setFilterCategory={setFilterCategory}
+          categories={categories}
+          suggestions={suggestions}
+          activeIndex={activeIndex}
+          ghostText={ghostText}
+          suggestionRef={suggestionRef}
+          handleKeyDown={handleKeyDown}
+          highlightMatch={highlightMatch}
+        />
 
-              {/* Ghost Text */}
-              <div className="absolute inset-0 flex items-center pl-10 pointer-events-none">
-                <span className="text-gray-500/40 select-none">
-                  {search}
-                  <span className="text-gray-500/20">{ghostText}</span>
-                </span>
-              </div>
-
-              {/* Input */}
-              <input
-                type="text"
-                placeholder="Cari sertifikat, penerbit, atau tag..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="w-full bg-white/10 border border-white/20 px-10 py-3 rounded-xl focus:ring-2 focus:ring-cyan-400 outline-none transition relative z-10 text-transparent caret-cyan-400"
-                style={{ textShadow: "0 0 0 #fff" }}
-              />
-
-              {/* Dropdown */}
-              <AnimatePresence>
-                {suggestions.length > 0 && (
-                  <m.ul
-                    ref={suggestionRef}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute top-12 left-0 right-0 bg-[#101726]/90 backdrop-blur-md border border-white/10 rounded-xl shadow-lg overflow-hidden z-30"
-                  >
-                    {suggestions.map((s, i) => (
-                      <li
-                        key={`${s.value}-${i}`}
-                        onClick={() => setSearch(s.value)}
-                        className={`px-4 py-2 text-sm cursor-pointer transition-colors ${
-                          i === activeIndex
-                            ? "bg-cyan-500/20 text-cyan-300"
-                            : "hover:bg-white/10"
-                        }`}
-                        dangerouslySetInnerHTML={{
-                          __html: highlightMatch(s.value, search),
-                        }}
-                      />
-                    ))}
-                  </m.ul>
-                )}
-              </AnimatePresence>
-            </div>
-
-            <select
-              className="bg-white/10 border border-white/20 px-4 py-3 rounded-xl cursor-pointer focus:ring-2 focus:ring-cyan-400 outline-none transition"
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-            >
-              {categories.map((cat, i) => (
-                <option key={i} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Grid Sertifikat */}
-        <AnimatePresence>
-          {filteredCertificates.length > 0 ? (
+        {/* Grid Sertifikat dengan hover effect seperti Projects */}
+        <AnimatePresence mode="wait">
+          {currentCertificates.length > 0 ? (
             <m.div
-              variants={cardAnim}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ staggerChildren: 0.1 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl w-full"
+              key={currentPage}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-7xl"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -40 }}
+              transition={{ duration: 0.5 }}
             >
-              {filteredCertificates.map((cert) => (
-                <m.article
+              {currentCertificates.map((cert) => (
+                <CertificateCard
                   key={cert.id}
-                  variants={cardAnim}
-                  whileHover={{ scale: 1.05, y: -3 }}
-                  transition={{ duration: 0.3 }}
-                  style={{
-                    borderColor: cert.themeColor || "#22d3ee",
-                    boxShadow: `0 0 20px -5px ${cert.themeColor || "#22d3ee"}40`,
-                  }}
-                  className="bg-white/5 border rounded-3xl shadow-lg overflow-hidden hover:shadow-cyan-500/20 backdrop-blur-xl transition"
-                >
-                  <img
-                    src={cert.image}
-                    alt={cert.title}
-                    className="w-full h-56 object-cover hover:brightness-110 transition cursor-pointer"
-                    onClick={() => setSelected(cert)}
-                  />
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-cyan-300">
-                      {cert.title}
-                    </h3>
-                    <p className="text-gray-400 text-sm mt-1">
-                      {cert.issuer} · {cert.year}
-                    </p>
-                    <div className="flex items-center gap-3 text-sm text-gray-400 mt-2">
-                      <Clock size={14} className="text-cyan-400" />
-                      <span>{cert.duration}</span>
-                      <span>•</span>
-                      <span className="capitalize">{cert.difficulty}</span>
-                    </div>
-                    {cert.verified && (
-                      <div className="flex items-center text-emerald-400 text-xs mt-1">
-                        <ShieldCheck size={14} className="mr-1" /> Tersertifikasi
-                      </div>
-                    )}
-                    <div className="flex gap-2 flex-wrap mt-3">
-                      {cert.tags.map((tag, i) => (
-                        <span
-                          key={`${tag}-${cert.id}-${i}`}
-                          className={`px-3 py-1 text-xs font-medium rounded-full ${
-                            tagColors[(i + cert.id) % tagColors.length]
-                          }`}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </m.article>
+                  cert={cert}
+                  tagColors={tagColors}
+                  onSelect={setSelected}
+                  renderStars={renderStars}
+                />
               ))}
             </m.div>
           ) : (
@@ -285,98 +164,33 @@ export default function Certificates() {
               <Sparkles className="w-10 h-10 text-cyan-400 mb-2" />
               <p>Tidak ada hasil yang cocok 😢</p>
               <p className="text-sm text-gray-500">
-                Coba ketik kata lain atau pilih kategori “All”.
+                Coba ketik kata lain atau pilih kategori "All".
               </p>
             </m.div>
           )}
         </AnimatePresence>
 
-        {/* Modal Detail */}
-        <AnimatePresence>
-          {selected && (
-            <m.div
-              className="fixed inset-0 bg-black/70 backdrop-blur-xl z-50 flex items-center justify-center p-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={closePopup}
-            >
-              <m.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.95, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                onClick={(e) => e.stopPropagation()}
-                style={{
-                  borderColor: selected.themeColor,
-                  boxShadow: `0 0 40px -5px ${selected.themeColor}60`,
-                }}
-                className="bg-[#141c2c] border rounded-3xl overflow-hidden shadow-[0_0_40px_-5px_cyan] max-w-md w-full relative"
-              >
-                <button
-                  onClick={closePopup}
-                  className="absolute top-3 right-3 bg-black/40 rounded-full p-1 hover:bg-black/60 transition"
-                >
-                  <X size={22} />
-                </button>
+        {/* 🔢 Pagination seperti Projects */}
+        <Pagination
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          totalPages={totalPages}
+          getVisiblePages={getVisiblePages}
+        />
 
-                <img
-                  src={selected.image}
-                  alt={selected.title}
-                  className="w-full h-80 object-cover"
-                />
-
-                <div className="p-6 max-h-72 overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-600/50 scrollbar-track-transparent">
-                  <h2 className="text-2xl font-bold">{selected.title}</h2>
-                  <p className="text-gray-400 text-sm mb-3">
-                    {selected.issuer} · {selected.year}
-                  </p>
-
-                  <div className="flex items-center gap-3 text-sm text-gray-300 mb-2">
-                    <Clock size={14} className="text-cyan-400" />
-                    <span>{selected.duration}</span>
-                    <span>•</span>
-                    <span className="capitalize">{selected.difficulty}</span>
-                    {selected.verified && (
-                      <>
-                        <span>•</span>
-                        <span className="text-emerald-400 flex items-center gap-1">
-                          <ShieldCheck size={14} /> Verified
-                        </span>
-                      </>
-                    )}
-                  </div>
-
-                  <p className="text-gray-200 leading-relaxed">
-                    {selected.description}
-                  </p>
-
-                  <div className="flex gap-2 flex-wrap mt-4">
-                    {selected.tags.map((tag, i) => (
-                      <span
-                        key={`${tag}-${selected.id}-${i}`}
-                        className={`px-3 py-1 text-xs rounded-full border border-white/10 ${
-                          tagColors[(i + selected.id) % tagColors.length]
-                        }`}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  <a
-                    href={selected.urlCertificate}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block mt-5 text-center bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-xl font-semibold transition"
-                  >
-                    Lihat Sertifikat
-                  </a>
-                </div>
-              </m.div>
-            </m.div>
-          )}
-        </AnimatePresence>
+        {/* Enhanced Modal Detail dengan Skills, Projects, dan Testimonials Terkait */}
+        <CertificateModal
+          selected={selected}
+          tagColors={tagColors}
+          skills={skills}
+          projects={projects}
+          testimonials={testimonials}
+          closePopup={closePopup}
+          handleSkillClick={handleSkillClick}
+          handleProjectClick={handleProjectClick}
+          handleTestimonialClick={handleTestimonialClick}
+          renderStars={renderStars}
+        />
       </main>
     </LazyMotion>
   );

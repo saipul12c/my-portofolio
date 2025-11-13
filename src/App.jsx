@@ -77,18 +77,23 @@ export default function App() {
                         <Route path="/contact" element={<Contact />} />
                         <Route path="/photography" element={<Photography />} />
                         <Route path="/gallery" element={<Gallery />} />
-                        <Route path="/testimoni" element={<Testimoni />} />
 
+                        {/* 💬 Halaman testimoni */}
+                        <Route path="/testimoni" element={<Testimoni />} />
+                        <Route path="/testimoni/:id" element={<Testimoni />} />
+
+                        {/* ❓ Halaman bantuan */}
                         <Route path="/help/version" element={<Info />} />
                         <Route path="/help/docs" element={<Doct />} />
                         <Route path="/help/faq" element={<FAQ />} />
                         <Route path="/help/commitment" element={<Komit />} />
                         {/* <Route path="/chatbot" element={<Chatbot />} /> */}
 
-                        {/* 💼 Halaman proyek */}
+                        {/* 💼 Halaman proyek - DUAL ROUTE SUPPORT */}
                         <Route path="/projects" element={<Projects />} />
+                        <Route path="/projects/:id" element={<Projects />} />
                         <Route
-                          path="/projects/:id"
+                          path="/project-detail/:id"
                           element={<ProjectDetail />}
                         />
 
