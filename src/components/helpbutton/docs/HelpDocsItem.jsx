@@ -1,263 +1,658 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef, memo } from "react";
 import * as Icons from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import docsData from "./data/docsSections.json";
 
+// Virtualized list component untuk render performa tinggi
+const VirtualizedList = ({ items, renderItem, itemHeight, containerHeight, overscan = 5 }) => {
+  const [scrollTop, setScrollTop] = useState(0);
+  const containerRef = useRef();
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => setScrollTop(container.scrollTop);
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const totalHeight = items.length * itemHeight;
+  const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
+  const endIndex = Math.min(
+    items.length - 1,
+    Math.floor((scrollTop + containerHeight) / itemHeight) + overscan
+  );
+
+  const visibleItems = useMemo(() => {
+    const items = [];
+    for (let i = startIndex; i <= endIndex; i++) {
+      items.push(renderItem(i));
+    }
+    return items;
+  }, [startIndex, endIndex, renderItem]);
+
+  return (
+    <div
+      ref={containerRef}
+      style={{ height: containerHeight, overflow: 'auto' }}
+      className="virtualized-container"
+    >
+      <div style={{ height: totalHeight, position: 'relative' }}>
+        <div style={{ transform: `translateY(${startIndex * itemHeight}px)` }}>
+          {visibleItems}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Optimized section component dengan memo
+const SectionItem = memo(({ 
+  section, 
+  index, 
+  isOpen, 
+  onToggle,
+  getStatusColor,
+  getVersionTypeColor,
+  getTagColor 
+}) => {
+  const IconComponent = Icons[section.icon] || Icons.BookOpen;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      viewport={{ once: true }}
+      className="group"
+    >
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-lg hover:shadow-xl border border-gray-200/60 dark:border-gray-700/60 transition-all duration-300 hover:border-blue-300/30 dark:hover:border-blue-500/30 overflow-hidden">
+        
+        <button
+          onClick={() => onToggle(index)}
+          className="w-full flex justify-between items-start p-6 text-left group"
+        >
+          <div className="flex items-start gap-4 flex-1">
+            <div className="flex-shrink-0 mt-1">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <IconComponent className="text-white" size={24} />
+              </div>
+            </div>
+            
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-3 mb-2">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  {section.title}
+                </h2>
+                
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getVersionTypeColor(section.versionType)}`}>
+                  v{section.version}
+                </span>
+                
+                {section.releaseChannel && (
+                  <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs font-medium border border-gray-300 dark:border-gray-600">
+                    {section.releaseChannel}
+                  </span>
+                )}
+              </div>
+              
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-3">
+                {section.content}
+              </p>
+              
+              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                <div className="flex items-center gap-1">
+                  <Icons.User size={14} />
+                  <span>{section.author}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Icons.Calendar size={14} />
+                  <span>{section.lastUpdated}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Icons.Clock size={14} />
+                  <span>{section.estimatedReadTime}</span>
+                </div>
+              </div>
+              
+              <div className="flex flex-wrap gap-2 mt-3">
+                {section.tags.map((tag, i) => (
+                  <span
+                    key={i}
+                    className={`px-3 py-1 rounded-full text-xs font-medium transition-all hover:scale-105 ${getTagColor(tag)}`}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          <motion.div
+            animate={{ rotate: isOpen ? 180 : 0 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            className="flex-shrink-0 ml-4 mt-2 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors"
+          >
+            <Icons.ChevronDown size={20} className="text-gray-600 dark:text-gray-400" />
+          </motion.div>
+        </button>
+
+        <AnimatePresence>
+          {isOpen && (
+            <SectionContent section={section} getStatusColor={getStatusColor} getVersionTypeColor={getVersionTypeColor} />
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+});
+
+// Memisahkan konten section untuk optimasi
+const SectionContent = memo(({ section, getStatusColor, getVersionTypeColor }) => (
+  <motion.div
+    initial={{ height: 0, opacity: 0 }}
+    animate={{ height: "auto", opacity: 1 }}
+    exit={{ height: 0, opacity: 0 }}
+    transition={{ duration: 0.4, ease: "easeInOut" }}
+    className="border-t border-gray-200 dark:border-gray-700"
+  >
+    <div className="p-6 space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-4">
+          <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <Icons.History size={18} />
+            Version History
+          </h3>
+          <div className="space-y-3">
+            {section.versionHistory?.map((version, i) => (
+              <div key={i} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-sm font-medium">v{version.version}</span>
+                  <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(version.status)}`}>
+                    {version.status}
+                  </span>
+                </div>
+                <span className="text-sm text-gray-500 dark:text-gray-400">{version.date}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {section.compatibility && (
+          <div className="space-y-4">
+            <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+              <Icons.Settings size={18} />
+              Compatibility
+            </h3>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between">
+                <span>Min Required:</span>
+                <span className="font-mono">v{section.compatibility.minRequired}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Tested Up To:</span>
+                <span className="font-mono">v{section.compatibility.testedUpTo}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>API Version:</span>
+                <span className="font-mono">{section.compatibility.apiCompatibility}</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Subsections dengan lazy loading */}
+      {section.subsections?.length > 0 && (
+        <LazySubsections subsections={section.subsections} />
+      )}
+
+      {section.changelog?.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <Icons.GitPullRequest size={18} />
+            Changelog
+          </h3>
+          <div className="space-y-3">
+            {section.changelog.map((log, i) => (
+              <div key={i} className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                <div className={`flex-shrink-0 w-2 h-2 mt-2 rounded-full ${
+                  log.type === 'feature' ? 'bg-green-500' :
+                  log.type === 'improvement' ? 'bg-blue-500' :
+                  log.type === 'security' ? 'bg-red-500' :
+                  log.type === 'performance' ? 'bg-teal-500' : 'bg-gray-500'
+                }`} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <span className="font-mono text-sm font-medium">v{log.version}</span>
+                    <span className={`px-2 py-1 rounded-full text-xs ${getVersionTypeColor(log.type)}`}>
+                      {log.type}
+                    </span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{log.date}</span>
+                  </div>
+                  <p className="text-gray-700 dark:text-gray-300">{log.changes}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {section.relatedDocs?.length > 0 && (
+          <div className="space-y-4">
+            <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+              <Icons.Link size={18} />
+              Related Documentation
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {section.relatedDocs.map((doc, i) => (
+                <span
+                  key={i}
+                  className="px-3 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg text-sm font-medium border border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors cursor-pointer"
+                >
+                  {doc}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {section.resources?.length > 0 && (
+          <div className="space-y-4">
+            <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+              <Icons.Download size={18} />
+              Resources
+            </h3>
+            <div className="space-y-2">
+              {section.resources.map((res, i) => (
+                <a
+                  key={i}
+                  href={res.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 transition-colors group"
+                >
+                  <Icons.ExternalLink size={16} className="text-gray-400 group-hover:text-blue-500 transition-colors" />
+                  <div>
+                    <p className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      {res.label}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">{res.type}</p>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  </motion.div>
+));
+
+// Lazy loaded subsections untuk performa
+const LazySubsections = memo(({ subsections }) => {
+  const [visibleCount, setVisibleCount] = useState(5);
+
+  const loadMore = useCallback(() => {
+    setVisibleCount(prev => Math.min(prev + 5, subsections.length));
+  }, [subsections.length]);
+
+  return (
+    <div className="space-y-6">
+      <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+        <Icons.ListTodo size={18} />
+        Contents
+      </h3>
+      <div className="grid gap-4">
+        {subsections.slice(0, visibleCount).map((sub, subIndex) => (
+          <div key={subIndex} className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+            <h4 className="font-semibold text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2">
+              <Icons.ChevronRight size={16} className="flex-shrink-0" />
+              {sub.subtitle}
+            </h4>
+            <p className="text-gray-700 dark:text-gray-300 mb-3">
+              {sub.details}
+            </p>
+
+            <div className="space-y-2">
+              {sub.tips && (
+                <div className="flex items-start gap-2 text-sm bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 p-3 rounded-lg border border-blue-200 dark:border-blue-700">
+                  <Icons.Lightbulb size={16} className="flex-shrink-0 mt-0.5" />
+                  <span>{sub.tips}</span>
+                </div>
+              )}
+
+              {sub.warning && (
+                <div className="flex items-start gap-2 text-sm bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 p-3 rounded-lg border border-yellow-200 dark:border-yellow-700">
+                  <Icons.AlertTriangle size={16} className="flex-shrink-0 mt-0.5" />
+                  <span>{sub.warning}</span>
+                </div>
+              )}
+
+              {sub.examples && (
+                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">Example:</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">{sub.examples}</p>
+                </div>
+              )}
+
+              {sub.codeSnippet && (
+                <div className="bg-gray-900 rounded-lg overflow-hidden border border-gray-700">
+                  <div className="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700">
+                    <span className="text-xs font-medium text-gray-300">Code Snippet</span>
+                    <Icons.Copy size={14} className="text-gray-400 hover:text-white cursor-pointer" />
+                  </div>
+                  <pre className="p-4 text-sm text-green-400 overflow-x-auto">
+                    <code>{sub.codeSnippet}</code>
+                  </pre>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      {visibleCount < subsections.length && (
+        <div className="flex justify-center">
+          <button
+            onClick={loadMore}
+            className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors font-medium"
+          >
+            Load More ({subsections.length - visibleCount} remaining)
+          </button>
+        </div>
+      )}
+    </div>
+  );
+});
+
+// Main component dengan optimasi
 export default function HelpDocsItem() {
   const [openIndex, setOpenIndex] = useState(null);
   const [docsSections, setDocsSections] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [displayMode, setDisplayMode] = useState('virtualized'); // 'virtualized' or 'paginated'
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
+  // Debounce search input
   useEffect(() => {
-    setDocsSections(docsData);
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setCurrentPage(1); // Reset to first page on new search
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Load data dengan chunking untuk data besar
+  useEffect(() => {
+    const loadData = async () => {
+      // Simulate loading large data in chunks
+      setDocsSections(docsData);
+    };
+
+    loadData();
   }, []);
 
-  const toggleSection = (index) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
+  // Optimized search dengan useMemo
+  const filteredSections = useMemo(() => {
+    if (!debouncedSearch.trim()) {
+      return docsSections;
+    }
 
-  // 🎨 Warna tag acak tapi konsisten (berdasarkan hash nama tag)
-  const getTagColor = (tag) => {
+    const query = debouncedSearch.toLowerCase();
+    return docsSections.filter(section => 
+      section.title.toLowerCase().includes(query) ||
+      section.content.toLowerCase().includes(query) ||
+      section.tags.some(tag => tag.toLowerCase().includes(query)) ||
+      section.subsections?.some(sub => 
+        sub.subtitle.toLowerCase().includes(query) ||
+        sub.details.toLowerCase().includes(query)
+      )
+    );
+  }, [debouncedSearch, docsSections]);
+
+  // Paginated data
+  const paginatedSections = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredSections.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredSections, currentPage]);
+
+  const totalPages = Math.ceil(filteredSections.length / itemsPerPage);
+
+  const toggleSection = useCallback((index) => {
+    setOpenIndex(openIndex === index ? null : index);
+  }, [openIndex]);
+
+  // Color functions dengan useCallback
+  const getStatusColor = useCallback((status) => {
+    switch (status) {
+      case 'current': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
+      case 'supported': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+      case 'deprecated': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
+      case 'archived': return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
+    }
+  }, []);
+
+  const getVersionTypeColor = useCallback((type) => {
+    switch (type) {
+      case 'major': return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
+      case 'stable': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
+      case 'feature': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+      case 'improvement': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300';
+      case 'security': return 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300';
+      case 'performance': return 'bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
+    }
+  }, []);
+
+  const getTagColor = useCallback((tag) => {
     const colors = [
-      "bg-blue-100/60 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border-blue-300 dark:border-blue-700",
-      "bg-purple-100/60 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border-purple-300 dark:border-purple-700",
-      "bg-pink-100/60 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300 border-pink-300 dark:border-pink-700",
-      "bg-green-100/60 text-green-700 dark:bg-green-900/40 dark:text-green-300 border-green-300 dark:border-green-700",
-      "bg-yellow-100/60 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300 border-yellow-300 dark:border-yellow-700",
-      "bg-orange-100/60 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 border-orange-300 dark:border-orange-700",
-      "bg-teal-100/60 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300 border-teal-300 dark:border-teal-700",
-      "bg-red-100/60 text-red-700 dark:bg-red-900/40 dark:text-red-300 border-red-300 dark:border-red-700",
+      "bg-blue-100/80 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 border border-blue-200 dark:border-blue-700",
+      "bg-purple-100/80 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300 border border-purple-200 dark:border-purple-700",
+      "bg-pink-100/80 text-pink-700 dark:bg-pink-900/50 dark:text-pink-300 border border-pink-200 dark:border-pink-700",
+      "bg-green-100/80 text-green-700 dark:bg-green-900/50 dark:text-green-300 border border-green-200 dark:border-green-700",
+      "bg-yellow-100/80 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-700",
+      "bg-orange-100/80 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300 border border-orange-200 dark:border-orange-700",
+      "bg-teal-100/80 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300 border border-teal-200 dark:border-teal-700",
+      "bg-red-100/80 text-red-700 dark:bg-red-900/50 dark:text-red-300 border border-red-200 dark:border-red-700",
     ];
     const index = tag
       .split("")
       .reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length;
     return colors[index];
-  };
+  }, []);
+
+  // Virtualized list render item
+  const renderVirtualizedItem = useCallback((index) => (
+    <div
+      key={filteredSections[index].id || index}
+      style={{
+        position: 'absolute',
+        top: index * 400,
+        width: '100%',
+        height: 400
+      }}
+    >
+      <SectionItem
+        section={filteredSections[index]}
+        index={index}
+        isOpen={openIndex === index}
+        onToggle={toggleSection}
+        getStatusColor={getStatusColor}
+        getVersionTypeColor={getVersionTypeColor}
+        getTagColor={getTagColor}
+      />
+    </div>
+  ), [filteredSections, openIndex, toggleSection, getStatusColor, getVersionTypeColor, getTagColor]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-950 dark:to-black text-gray-800 dark:text-gray-100 flex flex-col items-center py-20 px-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-gray-900 dark:via-gray-950 dark:to-blue-900/10 text-gray-800 dark:text-gray-100 flex flex-col items-center py-12 px-4 sm:px-6">
       
       {/* Header */}
       <motion.div
-        initial={{ opacity: 0, y: -40 }}
+        initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="text-center max-w-3xl mb-12"
+        transition={{ duration: 0.7 }}
+        className="text-center max-w-4xl mb-16"
       >
-        <div className="flex justify-center mb-4">
-          <Icons.BookOpen className="text-blue-400 animate-pulse" size={40} />
+        <div className="flex justify-center mb-6">
+          <div className="relative">
+            <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full"></div>
+            <Icons.BookText className="text-blue-500 relative z-10" size={48} />
+          </div>
         </div>
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent drop-shadow-sm">
-          Dokumentasi 📚
+        <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent bg-size-200 animate-gradient">
+          Documentation Hub
         </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-          Semua panduan dan insight buat kamu memahami platform ini — dari dasar, fitur, sampai integrasi tingkat lanjut.
+        <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto mb-8">
+          Comprehensive guides, API references, and best practices to help you master our platform
         </p>
+
+        {/* Enhanced Search Bar */}
+        <div className="relative max-w-2xl mx-auto mb-8">
+          <Icons.Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <input
+            type="text"
+            placeholder="Search documentation, APIs, features..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-12 pr-4 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+          />
+        </div>
+
+        {/* Display Controls */}
+        <div className="flex flex-wrap justify-center gap-4 mb-8">
+          <button
+            onClick={() => setDisplayMode('virtualized')}
+            className={`px-4 py-2 rounded-lg transition-colors ${
+              displayMode === 'virtualized' 
+                ? 'bg-blue-500 text-white' 
+                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+            }`}
+          >
+            Virtualized List
+          </button>
+          <button
+            onClick={() => setDisplayMode('paginated')}
+            className={`px-4 py-2 rounded-lg transition-colors ${
+              displayMode === 'paginated' 
+                ? 'bg-blue-500 text-white' 
+                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+            }`}
+          >
+            Paginated View
+          </button>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="flex justify-center gap-6 mt-8 text-sm text-gray-500 dark:text-gray-400">
+          <div className="flex items-center gap-2">
+            <Icons.BookOpen size={16} />
+            <span>{filteredSections.length} Sections</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Icons.Clock size={16} />
+            <span>Updated Daily</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Icons.Code size={16} />
+            <span>API v4 Ready</span>
+          </div>
+        </div>
       </motion.div>
 
-      {/* Docs Sections */}
-      <div className="w-full max-w-3xl space-y-4">
-        {docsSections.map((section, index) => {
-          const IconComponent = Icons[section.icon] || Icons.BookOpen;
+      {/* Results Count */}
+      {debouncedSearch && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="w-full max-w-4xl mb-6"
+        >
+          <p className="text-gray-600 dark:text-gray-400">
+            Found {filteredSections.length} results for "<span className="font-semibold">{debouncedSearch}</span>"
+          </p>
+        </motion.div>
+      )}
 
-          return (
-            <motion.div
-              key={section.id || index}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white/70 dark:bg-gray-800/50 rounded-xl shadow-lg backdrop-blur-md border border-blue-100/30 overflow-hidden"
-            >
-              {/* Section Header */}
+      {/* Docs Display */}
+      {displayMode === 'virtualized' ? (
+        <div className="w-full max-w-4xl">
+          <VirtualizedList
+            items={filteredSections}
+            renderItem={renderVirtualizedItem}
+            itemHeight={400}
+            containerHeight={600}
+            overscan={3}
+          />
+        </div>
+      ) : (
+        <>
+          {/* Paginated View */}
+          <div className="w-full max-w-4xl grid gap-6">
+            {paginatedSections.map((section, index) => {
+              const actualIndex = (currentPage - 1) * itemsPerPage + index;
+              return (
+                <SectionItem
+                  key={section.id || actualIndex}
+                  section={section}
+                  index={actualIndex}
+                  isOpen={openIndex === actualIndex}
+                  onToggle={toggleSection}
+                  getStatusColor={getStatusColor}
+                  getVersionTypeColor={getVersionTypeColor}
+                  getTagColor={getTagColor}
+                />
+              );
+            })}
+          </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-4 mt-8">
               <button
-                onClick={() => toggleSection(index)}
-                className="w-full flex justify-between items-center p-4 text-left group"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg disabled:opacity-50 transition-colors"
               >
-                <div className="flex items-center gap-3">
-                  <IconComponent className="text-blue-400" size={22} />
-                  <span className="text-lg font-semibold text-blue-500 group-hover:text-purple-500 transition-colors">
-                    {section.title}
-                  </span>
-                </div>
-                <motion.div
-                  animate={{ rotate: openIndex === index ? 180 : 0 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <Icons.ChevronDown size={20} className="text-blue-400" />
-                </motion.div>
+                Previous
               </button>
+              
+              <span className="text-gray-600 dark:text-gray-400">
+                Page {currentPage} of {totalPages}
+              </span>
+              
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg disabled:opacity-50 transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
+      )}
 
-              {/* Expandable Content */}
-              <AnimatePresence>
-                {openIndex === index && (
-                  <motion.div
-                    key="content"
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="px-5 pb-5 text-gray-600 dark:text-gray-300 space-y-4"
-                  >
-                    {/* Deskripsi */}
-                    <p className="leading-relaxed text-base">{section.content}</p>
-
-                    {/* Metadata */}
-                    <div className="flex flex-wrap items-center gap-2 text-xs mt-2">
-                      {section.author && (
-                        <span className="bg-gradient-to-r from-blue-100/70 to-purple-100/70 dark:from-blue-900/40 dark:to-purple-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full border border-blue-200/60 dark:border-blue-700/50 shadow-sm hover:scale-105 transition-transform">
-                          ✍️ {section.author}
-                        </span>
-                      )}
-                      {section.version && (
-                        <span className="bg-gradient-to-r from-pink-100/70 to-orange-100/70 dark:from-pink-900/40 dark:to-orange-900/40 text-pink-700 dark:text-pink-300 px-2 py-0.5 rounded-full border border-pink-200/60 dark:border-pink-700/50 shadow-sm hover:scale-105 transition-transform">
-                          🔖 Versi {section.version}
-                        </span>
-                      )}
-                      {section.estimatedReadTime && (
-                        <span className="bg-gradient-to-r from-green-100/70 to-teal-100/70 dark:from-green-900/40 dark:to-teal-900/40 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-full border border-green-200/60 dark:border-green-700/50 shadow-sm hover:scale-105 transition-transform">
-                          ⏱️ {section.estimatedReadTime}
-                        </span>
-                      )}
-                    
-                      {/* 🎨 Tag warna-warni */}
-                      {section.tags &&
-                        section.tags.map((tag, i) => (
-                          <span
-                            key={i}
-                            className={`px-2 py-0.5 border rounded-full transition-transform hover:scale-105 ${getTagColor(
-                              tag
-                            )}`}
-                          >
-                            #{tag}
-                          </span>
-                        ))}
-                    </div>
-
-
-                    {/* Subsections */}
-                    {section.subsections?.length > 0 && (
-                      <div className="mt-4 border-l-2 border-purple-300 dark:border-purple-500 pl-4 space-y-4">
-                        {section.subsections.map((sub, subIndex) => (
-                          <div key={subIndex}>
-                            <h3 className="font-semibold text-purple-500 mb-1">
-                              {sub.subtitle}
-                            </h3>
-                            <p className="text-sm text-gray-700 dark:text-gray-300 mb-1">
-                              {sub.details}
-                            </p>
-
-                            {sub.tips && (
-                              <p className="text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 p-2 rounded-md border border-blue-200 dark:border-blue-700">
-                                💡 {sub.tips}
-                              </p>
-                            )}
-
-                            {sub.warning && (
-                              <p className="text-xs bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-2 rounded-md border border-red-200 dark:border-red-700">
-                                ⚠️ {sub.warning}
-                              </p>
-                            )}
-
-                            {sub.examples && (
-                              <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded-md text-xs text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 mt-2">
-                                <strong>🧩 Contoh:</strong> {sub.examples}
-                              </div>
-                            )}
-
-                            {sub.codeSnippet && (
-                              <pre className="bg-gray-900 text-green-400 text-xs p-3 rounded-lg overflow-x-auto border border-gray-700 mt-2">
-                                <code>{sub.codeSnippet}</code>
-                              </pre>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Changelog */}
-                    {section.changelog?.length > 0 && (
-                      <div className="mt-6">
-                        <h4 className="text-sm font-semibold text-purple-400 mb-2">
-                          📝 Riwayat Pembaruan
-                        </h4>
-                        <ul className="text-xs space-y-1">
-                          {section.changelog.map((log, i) => (
-                            <li key={i}>
-                              <span className="text-gray-400">
-                                {log.date} —{" "}
-                              </span>
-                              {log.changes}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* Related Docs */}
-                    {section.relatedDocs?.length > 0 && (
-                      <div className="mt-6">
-                        <h4 className="text-sm font-semibold text-blue-400 mb-2">
-                          🔗 Terkait
-                        </h4>
-                        <div className="flex flex-wrap gap-2">
-                          {section.relatedDocs.map((doc, i) => (
-                            <span
-                              key={i}
-                              className="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 text-xs rounded-md border border-blue-200 dark:border-blue-800"
-                            >
-                              {doc}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Resources */}
-                    {section.resources?.length > 0 && (
-                      <div className="mt-6">
-                        <h4 className="text-sm font-semibold text-green-400 mb-2">
-                          📎 Sumber & Referensi
-                        </h4>
-                        <ul className="text-xs space-y-1">
-                          {section.resources.map((res, i) => (
-                            <li key={i}>
-                              <a
-                                href={res.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-500 hover:underline"
-                              >
-                                [{res.type}] {res.label}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* Info tambahan */}
-                    <div className="pt-3 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200/50 mt-4">
-                      <p>🕒 Terakhir diperbarui: {section.lastUpdated}</p>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          );
-        })}
-      </div>
-
-      {/* Footer */}
-      <motion.footer
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
-        className="mt-20 text-sm text-gray-500 dark:text-gray-400 text-center"
-      >
-        <p>
-          Dibuat dengan <span className="text-blue-400">💙</span> dan sedikit{" "}
-          <span className="text-purple-400">✨ keajaiban ✨</span> oleh tim yang peduli pengalaman pengguna.
-        </p>
-      </motion.footer>
+      {/* No Results */}
+      {filteredSections.length === 0 && debouncedSearch && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center py-12"
+        >
+          <Icons.SearchX size={48} className="text-gray-400 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No results found</h3>
+          <p className="text-gray-600 dark:text-gray-400">
+            Try adjusting your search terms or browse all documentation sections.
+          </p>
+        </motion.div>
+      )}
     </div>
   );
 }

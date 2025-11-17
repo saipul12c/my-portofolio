@@ -1,200 +1,301 @@
-import { Info, Calendar, User, Sparkles, Zap, TrendingUp, Smartphone, Monitor, Tablet } from "lucide-react";
+import { useState } from "react";
+import { 
+  Rocket, 
+  Calendar, 
+  Users, 
+  Cpu, 
+  Shield, 
+  Globe, 
+  Download,
+  Zap,
+  TrendingUp,
+  Code2,
+  Layers,
+  Smartphone,
+  Monitor
+} from "lucide-react";
 import docsData from "../docs/data/docsSections.json";
 
 export default function HelpVersionInfo() {
-  // Ambil versi terbaru dari semua dokumen dengan data enhanced
-  const latestSection = docsData?.[docsData.length - 1] || {};
+  const [isHovered, setIsHovered] = useState(false);
   
-  // Extract data dari struktur JSON terbaru
+  // Ambil data terbaru dan hitung statistik
+  const latestSection = docsData?.[docsData.length - 1] || {};
+  const totalSections = docsData?.length || 0;
+  
+  // Hitung jumlah versi major
+  const majorVersions = docsData?.filter(doc => 
+    doc.versionType === 'major' || doc.version?.startsWith('2.')
+  ).length || 0;
+
+  // Extract data
   const versiWebsite = latestSection.version || "v1.0.0";
   const versionCode = latestSection.versionCode || "build-unknown";
   const versionType = latestSection.versionType || "stable";
-  const releaseChannel = latestSection.releaseChannel || "production";
   const lastUpdated = latestSection.lastUpdated || "Belum ada data";
   const author = latestSection.author || "Tim Dokumentasi";
+  const estimatedReadTime = latestSection.estimatedReadTime || "5 menit";
   
-  // Data compatibility dari JSON terbaru
+  // Data compatibility
   const compatibility = latestSection.compatibility || {};
   const minRequired = compatibility.minRequired || "1.0.0";
+  const testedUpTo = compatibility.testedUpTo || "1.0.0";
   const browserSupport = compatibility.browserSupport || ["chrome 120+", "firefox 118+"];
+  const apiCompatibility = compatibility.apiCompatibility || "v1";
 
-  // Dapatkan versi tertinggi dari semua dokumen
-  const allVersions = docsData?.map(doc => doc.version) || [];
-  const highestVersion = allVersions.sort((a, b) => {
-    const numA = parseFloat(a.replace('v', ''));
-    const numB = parseFloat(b.replace('v', ''));
-    return numB - numA;
-  })[0] || versiWebsite;
+  // Status warna berdasarkan version type
+  const getVersionColor = () => {
+    switch (versionType) {
+      case 'major': return 'from-red-500 to-orange-500';
+      case 'stable': return 'from-green-500 to-emerald-500';
+      case 'beta': return 'from-blue-500 to-cyan-500';
+      case 'alpha': return 'from-purple-500 to-pink-500';
+      default: return 'from-gray-500 to-gray-600';
+    }
+  };
+
+  const getStatusColor = () => {
+    switch (versionType) {
+      case 'major': return 'bg-red-500/20 text-red-300 border-red-500/30';
+      case 'stable': return 'bg-green-500/20 text-green-300 border-green-500/30';
+      case 'beta': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+      case 'alpha': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
+      default: return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+    }
+  };
 
   return (
     <section
-      className="relative overflow-hidden rounded-2xl border-2 border-gray-800 
-                 bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900 p-4 
-                 sm:p-6 shadow-2xl transition-all duration-500 hover:scale-[1.01]
-                 hover:border-purple-500/50 hover:shadow-purple-500/20
-                 max-w-md mx-auto sm:max-w-lg lg:max-w-xl"
+      className="relative overflow-hidden rounded-3xl border border-gray-700/50 
+                 bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 p-6 
+                 shadow-2xl transition-all duration-500 hover:shadow-purple-500/10
+                 max-w-2xl mx-auto backdrop-blur-sm"
       style={{
         backgroundImage: `
-          radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
-          radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.08) 0%, transparent 50%),
-          linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%)
+          radial-gradient(circle at 0% 0%, rgba(120, 119, 198, 0.03) 0%, transparent 50%),
+          radial-gradient(circle at 100% 0%, rgba(255, 119, 198, 0.03) 0%, transparent 50%),
+          radial-gradient(circle at 100% 100%, rgba(120, 220, 198, 0.02) 0%, transparent 50%),
+          radial-gradient(circle at 0% 100%, rgba(255, 220, 100, 0.02) 0%, transparent 50%)
         `
       }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Animated Background Elements - Optimized for mobile */}
+      {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-8 -left-8 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-lg sm:blur-xl opacity-20 animate-pulse" />
-        <div className="absolute -bottom-8 -right-8 w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-lg sm:blur-xl opacity-20 animate-pulse delay-1000" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-r from-green-400 to-blue-500 rounded-full blur-2xl sm:blur-3xl opacity-10" />
+        <div 
+          className={`absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-3xl opacity-5 transition-all duration-1000 ${
+            isHovered ? 'scale-150 opacity-10' : ''
+          }`}
+        />
+        <div 
+          className={`absolute -bottom-20 -right-20 w-40 h-40 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-3xl opacity-5 transition-all duration-1000 delay-300 ${
+            isHovered ? 'scale-150 opacity-10' : ''
+          }`}
+        />
       </div>
 
-      {/* Floating Particles - Reduced count for mobile */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(3)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-white rounded-full opacity-20 animate-float"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${3 + Math.random() * 4}s`
-            }}
-          />
-        ))}
-      </div>
+      {/* Grid Pattern */}
+      <div className="absolute inset-0 opacity-[0.02] pointer-events-none" 
+           style={{
+             backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+             backgroundSize: '50px 50px'
+           }} 
+      />
 
-      {/* Header dengan gaya fresh - Responsive */}
-      <header className="relative mb-4 sm:mb-6">
-        <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg blur opacity-75 animate-pulse" />
-            <Sparkles className="relative text-white p-1 sm:p-1.5 bg-gray-900 rounded-lg border border-gray-700" 
-                     size={18} />
+      {/* Header Section */}
+      <header className="relative mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className={`absolute inset-0 bg-gradient-to-r ${getVersionColor()} rounded-xl blur-md opacity-60 ${
+                isHovered ? 'scale-110' : ''
+              } transition-transform duration-300`} />
+              <div className="relative p-2 bg-gray-800/80 rounded-xl border border-gray-600/50 backdrop-blur-sm">
+                <Rocket className="text-white" size={20} />
+              </div>
+            </div>
+            <div>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                System Version
+              </h1>
+              <p className="text-sm text-gray-400">Platform Documentation</p>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <h2 className="text-base sm:text-lg font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent tracking-tight truncate">
-              Versi Terbaru 🚀
-            </h2>
-            <p className="text-xs text-gray-400 font-medium mt-0.5 truncate">
-              {versionType} • {releaseChannel}
-            </p>
+          
+          <div className={`px-3 py-1 rounded-full border backdrop-blur-sm text-xs font-medium transition-all duration-300 ${
+            getStatusColor()
+          } ${isHovered ? 'scale-105' : ''}`}>
+            {versionType.toUpperCase()}
+          </div>
+        </div>
+
+        {/* Version Badge */}
+        <div className="relative group">
+          <div className={`absolute inset-0 bg-gradient-to-r ${getVersionColor()} rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-all duration-500`} />
+          <div className="relative bg-gray-800/60 backdrop-blur-sm rounded-2xl p-4 border border-gray-600/50 group-hover:border-gray-500/50 transition-all duration-300">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Code2 className="text-gray-400" size={16} />
+                  <span className="text-sm text-gray-400 font-mono">Build</span>
+                </div>
+                <p className="text-lg font-bold text-white font-mono">{versionCode}</p>
+              </div>
+              
+              <div className="text-right">
+                <div className="flex items-center gap-2 justify-end mb-1">
+                  <span className="text-sm text-gray-400">Release</span>
+                  <Zap className="text-yellow-400" size={16} />
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl font-black bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                    {versiWebsite}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Konten utama dengan layout modern - Fully responsive */}
-      <div className="relative space-y-3 sm:space-y-4">
-        {/* Versi Card - Highlight */}
-        <div className="group relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl blur transition-all group-hover:blur-sm" />
-          <div className="relative bg-gray-800/40 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-gray-700/50 group-hover:border-purple-500/30 transition-all duration-300">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-purple-500/20 rounded-lg">
-                  <Zap className="text-purple-400" size={14} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-200 truncate">Current Version</p>
-                  <p className="text-xs text-gray-400 truncate">{versionCode}</p>
-                </div>
-              </div>
-              <div className="flex flex-col sm:items-end gap-1">
-                <span className="px-2 sm:px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-bold rounded-full border border-purple-400/50 shadow-lg text-center">
-                  {versiWebsite}
-                </span>
-                <span className="text-[10px] text-gray-400 text-center sm:text-right">
-                  Min: {minRequired}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Info Grid - Responsive layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+      {/* Main Content Grid */}
+      <div className="relative grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        {/* Stats Column */}
+        <div className="space-y-4">
           {/* Last Updated */}
-          <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-2 sm:p-3 border border-gray-700/50 hover:border-green-500/30 transition-all duration-300 group">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="p-1 sm:p-1.5 bg-green-500/20 rounded-lg group-hover:scale-110 transition-transform flex-shrink-0">
-                <Calendar className="text-green-400" size={12} />
+          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl p-4 border border-gray-600/50 hover:border-green-500/30 transition-all duration-300 group">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-green-500/20 rounded-lg group-hover:scale-110 transition-transform">
+                <Calendar className="text-green-400" size={16} />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-gray-400 font-medium truncate">Last Updated</p>
-                <p className="text-sm font-semibold text-green-300 truncate">{lastUpdated}</p>
+              <div>
+                <p className="text-sm text-gray-400">Last Updated</p>
+                <p className="text-base font-semibold text-green-300">{lastUpdated}</p>
               </div>
             </div>
           </div>
 
-          {/* Author */}
-          <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-2 sm:p-3 border border-gray-700/50 hover:border-blue-500/30 transition-all duration-300 group">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="p-1 sm:p-1.5 bg-blue-500/20 rounded-lg group-hover:scale-110 transition-transform flex-shrink-0">
-                <User className="text-blue-400" size={12} />
+          {/* Author Team */}
+          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl p-4 border border-gray-600/50 hover:border-blue-500/30 transition-all duration-300 group">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-blue-500/20 rounded-lg group-hover:scale-110 transition-transform">
+                <Users className="text-blue-400" size={16} />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-gray-400 font-medium truncate">Managed By</p>
-                <p className="text-sm font-semibold text-blue-300 truncate">{author}</p>
+              <div>
+                <p className="text-sm text-gray-400">Development Team</p>
+                <p className="text-base font-semibold text-blue-300 truncate">{author}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Browser Compatibility */}
-        <div className="bg-gray-800/20 rounded-xl p-2 sm:p-3 border border-gray-700/50">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-gray-400 font-medium">Browser Support</span>
-            <div className="flex gap-1">
-              <Smartphone size={12} className="text-gray-400" />
-              <Tablet size={12} className="text-gray-400" />
-              <Monitor size={12} className="text-gray-400" />
+        {/* Compatibility Column */}
+        <div className="space-y-4">
+          {/* API Version */}
+          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl p-4 border border-gray-600/50 hover:border-purple-500/30 transition-all duration-300 group">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-purple-500/20 rounded-lg group-hover:scale-110 transition-transform">
+                <Cpu className="text-purple-400" size={16} />
+              </div>
+              <div>
+                <p className="text-sm text-gray-400">API Compatibility</p>
+                <p className="text-base font-semibold text-purple-300">{apiCompatibility}</p>
+              </div>
             </div>
           </div>
-          <div className="flex flex-wrap gap-1">
-            {browserSupport.slice(0, 3).map((browser, index) => (
-              <span 
-                key={index}
-                className="px-2 py-1 bg-gray-700/50 rounded-lg text-xs text-gray-300"
-              >
-                {browser}
-              </span>
-            ))}
-            {browserSupport.length > 3 && (
-              <span className="px-2 py-1 bg-gray-700/50 rounded-lg text-xs text-gray-300">
-                +{browserSupport.length - 3}
-              </span>
-            )}
-          </div>
-        </div>
 
-        {/* Progress Indicator */}
-        <div className="bg-gray-800/20 rounded-xl p-2 sm:p-3 border border-gray-700/50">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-gray-400 font-medium">System Status</span>
-            <TrendingUp className="text-green-400" size={12} />
-          </div>
-          <div className="w-full bg-gray-700/50 rounded-full h-1.5">
-            <div 
-              className="bg-gradient-to-r from-green-400 to-cyan-400 h-1.5 rounded-full animate-pulse"
-              style={{ width: '95%' }}
-            />
-          </div>
-          <div className="flex justify-between mt-1">
-            <span className="text-[10px] text-gray-400">Stable</span>
-            <span className="text-[10px] text-gray-400">v{highestVersion}</span>
+          {/* Read Time */}
+          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl p-4 border border-gray-600/50 hover:border-orange-500/30 transition-all duration-300 group">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-orange-500/20 rounded-lg group-hover:scale-110 transition-transform">
+                <TrendingUp className="text-orange-400" size={16} />
+              </div>
+              <div>
+                <p className="text-sm text-gray-400">Estimated Read</p>
+                <p className="text-base font-semibold text-orange-300">{estimatedReadTime}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Footer dengan gaya modern - Responsive */}
-      <footer className="relative mt-4 sm:mt-6 pt-3 border-t border-gray-700/30">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
-          <div className="flex items-center gap-2 justify-center sm:justify-start">
-            <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-ping" />
-            <span className="text-xs text-gray-400 font-medium">All systems operational</span>
+      {/* System Requirements */}
+      <div className="relative mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <Shield className="text-gray-400" size={18} />
+          <h3 className="text-sm font-semibold text-gray-300">System Requirements</h3>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="bg-gray-800/30 rounded-xl p-3 border border-gray-600/50">
+            <div className="flex items-center gap-2 mb-2">
+              <Download className="text-gray-400" size={14} />
+              <span className="text-xs text-gray-400 font-medium">Min Required</span>
+            </div>
+            <p className="text-sm font-mono text-white">{minRequired}</p>
           </div>
-          <span className="text-[10px] text-gray-500 font-mono text-center sm:text-right">
-            ©{new Date().getFullYear()} DOCS • {versionType}
+          
+          <div className="bg-gray-800/30 rounded-xl p-3 border border-gray-600/50">
+            <div className="flex items-center gap-2 mb-2">
+              <Layers className="text-gray-400" size={14} />
+              <span className="text-xs text-gray-400 font-medium">Tested Up To</span>
+            </div>
+            <p className="text-sm font-mono text-white">{testedUpTo}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Browser Support */}
+      <div className="relative mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <Globe className="text-gray-400" size={18} />
+          <h3 className="text-sm font-semibold text-gray-300">Browser Support</h3>
+        </div>
+        
+        <div className="flex flex-wrap gap-2">
+          {browserSupport.map((browser, index) => (
+            <div 
+              key={index}
+              className="flex items-center gap-2 px-3 py-2 bg-gray-800/40 rounded-lg border border-gray-600/50 hover:border-gray-500/50 transition-all duration-300 group"
+            >
+              <div className="flex items-center gap-1">
+                {browser.includes('chrome') && <Monitor className="text-red-400" size={12} />}
+                {browser.includes('firefox') && <Globe className="text-orange-400" size={12} />}
+                {browser.includes('safari') && <Smartphone className="text-blue-400" size={12} />}
+                {browser.includes('edge') && <Monitor className="text-blue-300" size={12} />}
+              </div>
+              <span className="text-xs font-medium text-gray-300">{browser}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Footer Stats */}
+      <footer className="relative pt-4 border-t border-gray-700/30">
+        <div className="grid grid-cols-3 gap-4 text-center">
+          <div>
+            <p className="text-2xl font-bold text-white">{totalSections}</p>
+            <p className="text-xs text-gray-400">Sections</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-green-400">{majorVersions}</p>
+            <p className="text-xs text-gray-400">Major Releases</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-blue-400">{docsData?.length || 0}</p>
+            <p className="text-xs text-gray-400">Total Docs</p>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-700/30">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+            <span className="text-xs text-gray-400">All systems operational</span>
+          </div>
+          <span className="text-xs text-gray-500 font-mono">
+            {new Date().getFullYear()} • v{versiWebsite}
           </span>
         </div>
       </footer>

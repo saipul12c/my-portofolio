@@ -6,7 +6,7 @@
     "icon": "BookOpen",
     "lastUpdated": "2025-11-07",
     "author": "Tim Dokumentasi Portofolio",
-    "version": "1.1.0",
+    "version": "1.0.0",
     "versionCode": "build-2025.11.07.001",
     "versionType": "stable",
     "releaseChannel": "production",
@@ -93,7 +93,7 @@
     "icon": "Sparkles",
     "lastUpdated": "2025-11-06",
     "author": "Tim Pengembang UI/UX",
-    "version": "1.12.0",
+    "version": "1.5.0",
     "versionCode": "build-2025.11.06.002",
     "versionType": "stable",
     "releaseChannel": "production",
@@ -177,7 +177,7 @@
     "icon": "Lightbulb",
     "lastUpdated": "2025-11-07",
     "author": "Tim Edukasi Pengguna",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "versionCode": "build-2025.11.07.003",
     "versionType": "stable",
     "releaseChannel": "production",
@@ -258,7 +258,7 @@
     "icon": "Plug",
     "lastUpdated": "2025-11-07",
     "author": "Divisi API & Teknologi",
-    "version": "1.15.0",
+    "version": "1.8.0",
     "versionCode": "build-2025.11.07.004",
     "versionType": "major",
     "releaseChannel": "production",
@@ -340,7 +340,7 @@
     "icon": "FolderKanban",
     "lastUpdated": "2025-11-07",
     "author": "Tim Showcase Developer",
-    "version": "1.3.0",
+    "version": "1.9.0",
     "versionCode": "build-2025.11.07.005",
     "versionType": "stable",
     "releaseChannel": "production",
@@ -426,7 +426,7 @@
     "icon": "BarChart3",
     "lastUpdated": "2025-11-07",
     "author": "Tim Data & Insight",
-    "version": "1.16.0",
+    "version": "1.10.0",
     "versionCode": "build-2025.11.07.006",
     "versionType": "major",
     "releaseChannel": "production",
@@ -497,6 +497,403 @@
         "type": "article",
         "label": "Cara Membaca Data Analitik",
         "url": "https://blog.portfolio.dev/analitik-dashboard"
+      }
+    ]
+  },
+    {
+    "id": 7,
+    "title": "Fitur AI & Pencarian Cerdas",
+    "slug": "fitur-ai-pencarian",
+    "icon": "Brain",
+    "lastUpdated": "2025-11-20",
+    "author": "Tim AI & Machine Learning",
+    "version": "1.11.0",
+    "versionCode": "build-2025.11.20.007",
+    "versionType": "major",
+    "releaseChannel": "production",
+    "estimatedReadTime": "8 menit",
+    "tags": ["ai", "pencarian", "nlp", "machine-learning", "assistant"],
+    "content": "Temukan kekuatan AI dalam platform Portofolio - dari pencarian cerdas yang memahami konteks hingga asisten AI yang mampu menganalisis dan menjawab pertanyaan kompleks. 🧠",
+    "changelog": [
+      { 
+        "date": "2025-11-20", 
+        "version": "2.0.0",
+        "changes": "Peluncuran fitur AI Overview dengan kemampuan question-answering dan semantic analysis.",
+        "type": "major"
+      },
+      { 
+        "date": "2025-11-18", 
+        "version": "1.8.0",
+        "changes": "Implementasi predictive search dan smart suggestions.",
+        "type": "feature"
+      },
+      { 
+        "date": "2025-11-15", 
+        "version": "1.7.0",
+        "changes": "Integrasi NLP library untuk analisis konten otomatis.",
+        "type": "enhancement"
+      }
+    ],
+    "versionHistory": [
+      {
+        "version": "2.0.0",
+        "date": "2025-11-20",
+        "status": "current",
+        "breakingChanges": true,
+        "migrationRequired": true
+      },
+      {
+        "version": "1.8.0",
+        "date": "2025-11-18",
+        "status": "supported",
+        "breakingChanges": false,
+        "migrationRequired": false
+      },
+      {
+        "version": "1.7.0",
+        "date": "2025-11-15",
+        "status": "deprecated",
+        "breakingChanges": false,
+        "migrationRequired": false
+      }
+    ],
+    "compatibility": {
+      "minRequired": "2.0.0",
+      "testedUpTo": "2.3.0",
+      "browserSupport": ["chrome 120+", "firefox 118+", "safari 16+", "edge 122+"],
+      "apiCompatibility": "v4"
+    },
+    "subsections": [
+      {
+        "subtitle": "AI Overview & Question Answering",
+        "details": "Asisten AI mampu menganalisis konten artikel dan memberikan jawaban kontekstual berdasarkan pertanyaan pengguna.",
+        "examples": "Tanyakan 'Apa itu fotografi?' dan AI akan memberikan ringkasan dari semua artikel terkait fotografi.",
+        "tips": "Gunakan pertanyaan spesifik seperti 'Bagaimana cara mengatur aperture?' untuk hasil yang lebih akurat."
+      },
+      {
+        "subtitle": "Smart Search dengan Predictive Text",
+        "details": "Sistem pencarian yang memahami intent pengguna dengan autocomplete cerdas dan predictive typing.",
+        "codeSnippet": "GET /api/search?q=photography&predictive=true"
+      },
+      {
+        "subtitle": "Semantic Analysis & Context Understanding",
+        "details": "AI menganalisis hubungan semantik antara kata kunci untuk memberikan hasil yang lebih relevan.",
+        "warning": "Kualitas analisis tergantung pada kelengkapan dan struktur konten artikel."
+      },
+      {
+        "subtitle": "Confidence Scoring System",
+        "details": "Setiap jawaban AI dilengkapi dengan indikator keyakinan untuk transparansi akurasi.",
+        "tips": "Jawaban dengan confidence 'Tinggi' biasanya lebih dapat diandalkan."
+      }
+    ],
+    "relatedDocs": ["fitur-utama", "integrasi"],
+    "resources": [
+      {
+        "type": "api",
+        "label": "Dokumentasi AI Search API",
+        "url": "https://api.portfolio.dev/docs/ai-search"
+      },
+      {
+        "type": "article",
+        "label": "Cara Mengoptimalkan Konten untuk AI",
+        "url": "https://blog.portfolio.dev/ai-content-optimization"
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "title": "Optimasi Mobile & Responsive Design",
+    "slug": "optimasi-mobile",
+    "icon": "Smartphone",
+    "lastUpdated": "2025-11-19",
+    "author": "Tim Mobile Experience",
+    "version": "1.13.0",
+    "versionCode": "build-2025.11.19.008",
+    "versionType": "stable",
+    "releaseChannel": "production",
+    "estimatedReadTime": "7 menit",
+    "tags": ["mobile", "responsive", "ux", "performance", "touch"],
+    "content": "Pelajari bagaimana platform Portofolio dioptimalkan untuk pengalaman terbaik di semua perangkat mobile dan desktop. 📱",
+    "changelog": [
+      { 
+        "date": "2025-11-19", 
+        "version": "1.9.0",
+        "changes": "Optimasi layout search bar dan komponen AI untuk mobile.",
+        "type": "improvement"
+      },
+      { 
+        "date": "2025-11-17", 
+        "version": "1.8.0",
+        "changes": "Implementasi touch-friendly interactions dan gesture controls.",
+        "type": "feature"
+      },
+      { 
+        "date": "2025-11-14", 
+        "version": "1.7.0",
+        "changes": "Perbaikan responsive grid system dan typography scaling.",
+        "type": "enhancement"
+      }
+    ],
+    "versionHistory": [
+      {
+        "version": "1.9.0",
+        "date": "2025-11-19",
+        "status": "current",
+        "breakingChanges": false,
+        "migrationRequired": false
+      },
+      {
+        "version": "1.8.0",
+        "date": "2025-11-17",
+        "status": "supported",
+        "breakingChanges": false,
+        "migrationRequired": false
+      },
+      {
+        "version": "1.7.0",
+        "date": "2025-11-14",
+        "status": "deprecated",
+        "breakingChanges": false,
+        "migrationRequired": false
+      }
+    ],
+    "compatibility": {
+      "minRequired": "1.5.0",
+      "testedUpTo": "2.1.0",
+      "browserSupport": ["chrome 120+", "firefox 118+", "safari 16+", "edge 122+", "safari-ios 16+", "chrome-android 120+"],
+      "apiCompatibility": "v3"
+    },
+    "subsections": [
+      {
+        "subtitle": "Mobile-First Design System",
+        "details": "Seluruh komponen dirancang dengan pendekatan mobile-first untuk memastikan pengalaman optimal di perangkat kecil.",
+        "tips": "Test di berbagai screen size untuk memastikan konsistensi visual."
+      },
+      {
+        "subtitle": "Touch-Optimized Interactions",
+        "details": "Button sizes, spacing, dan gesture controls yang dioptimalkan untuk touch devices.",
+        "examples": "Minimum touch target size 44px untuk memenuhi accessibility guidelines."
+      },
+      {
+        "subtitle": "Responsive Typography & Spacing",
+        "details": "Font sizes dan spacing yang menyesuaikan secara proporsional berdasarkan viewport size.",
+        "codeSnippet": "text-sm sm:text-base lg:text-lg"
+      },
+      {
+        "subtitle": "Performance Optimization",
+        "details": "Lazy loading images, code splitting, dan optimized bundles untuk loading cepat di jaringan mobile.",
+        "warning": "Hindari heavy computations di main thread untuk mencegah jank."
+      }
+    ],
+    "relatedDocs": ["fitur-utama", "fitur-ai-pencarian"],
+    "resources": [
+      {
+        "type": "article",
+        "label": "Mobile Performance Best Practices",
+        "url": "https://blog.portfolio.dev/mobile-performance"
+      },
+      {
+        "type": "video",
+        "label": "Mobile UX Testing Tutorial",
+        "url": "https://youtube.com/watch?v=portfolio-mobile-ux"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "title": "Advanced Component Architecture",
+    "slug": "advanced-components",
+    "icon": "Puzzle",
+    "lastUpdated": "2025-11-18",
+    "author": "Tim Frontend Architecture",
+    "version": "1.15.0",
+    "versionCode": "build-2025.11.18.009",
+    "versionType": "major",
+    "releaseChannel": "production",
+    "estimatedReadTime": "9 menit",
+    "tags": ["components", "architecture", "react", "performance", "reusability"],
+    "content": "Dive deep into the component architecture powering Portofolio - from reusable UI patterns to performance optimizations. 🧩",
+    "changelog": [
+      { 
+        "date": "2025-11-18", 
+        "version": "2.1.0",
+        "changes": "Refactor komponen SearchBar dan AiOverview untuk better reusability.",
+        "type": "major"
+      },
+      { 
+        "date": "2025-11-16", 
+        "version": "2.0.0",
+        "changes": "Implementasi compound components pattern untuk complex UI.",
+        "type": "feature"
+      },
+      { 
+        "date": "2025-11-13", 
+        "version": "1.9.0",
+        "changes": "Optimasi re-renders dengan React.memo dan useMemo.",
+        "type": "performance"
+      }
+    ],
+    "versionHistory": [
+      {
+        "version": "2.1.0",
+        "date": "2025-11-18",
+        "status": "current",
+        "breakingChanges": true,
+        "migrationRequired": true
+      },
+      {
+        "version": "2.0.0",
+        "date": "2025-11-16",
+        "status": "supported",
+        "breakingChanges": true,
+        "migrationRequired": true
+      },
+      {
+        "version": "1.9.0",
+        "date": "2025-11-13",
+        "status": "deprecated",
+        "breakingChanges": false,
+        "migrationRequired": false
+      }
+    ],
+    "compatibility": {
+      "minRequired": "2.0.0",
+      "testedUpTo": "2.5.0",
+      "browserSupport": ["chrome 120+", "firefox 118+", "safari 16+", "edge 122+"],
+      "apiCompatibility": "v4"
+    },
+    "subsections": [
+      {
+        "subtitle": "Component Composition Patterns",
+        "details": "Menggunakan compound components dan render props untuk fleksibilitas maksimal.",
+        "examples": "SearchBar component dengan predictive text dan suggestions sebagai composable features."
+      },
+      {
+        "subtitle": "Performance Optimizations",
+        "details": "Memoization, lazy loading, dan efficient re-renders untuk smooth user experience.",
+        "codeSnippet": "const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);"
+      },
+      {
+        "subtitle": "State Management Architecture",
+        "details": "Local state, lifted state, dan context API digunakan secara strategis berdasarkan scope.",
+        "tips": "Gunakan local state untuk UI state, lifted state untuk shared data."
+      },
+      {
+        "subtitle": "Custom Hooks & Logic Reusability",
+        "details": "Ekstrak business logic ke custom hooks untuk maintainability dan testability.",
+        "warning": "Hindari custom hooks yang melakukan terlalu banyak hal (single responsibility principle)."
+      }
+    ],
+    "relatedDocs": ["integrasi", "optimasi-mobile"],
+    "resources": [
+      {
+        "type": "api",
+        "label": "Component API Documentation",
+        "url": "https://api.portfolio.dev/docs/components"
+      },
+      {
+        "type": "article",
+        "label": "React Performance Optimization Guide",
+        "url": "https://blog.portfolio.dev/react-performance"
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "title": "Testing & Quality Assurance",
+    "slug": "testing-qa",
+    "icon": "TestTube",
+    "lastUpdated": "2025-11-17",
+    "author": "Tim Quality Engineering",
+    "version": "1.17.0",
+    "versionCode": "build-2025.11.17.010",
+    "versionType": "stable",
+    "releaseChannel": "production",
+    "estimatedReadTime": "8 menit",
+    "tags": ["testing", "qa", "jest", "cypress", "accessibility"],
+    "content": "Memastikan kualitas dan keandalan platform melalui comprehensive testing strategies dan quality assurance processes. 🧪",
+    "changelog": [
+      { 
+        "date": "2025-11-17", 
+        "version": "1.7.0",
+        "changes": "Implementasi AI component testing dengan mocked NLP responses.",
+        "type": "feature"
+      },
+      { 
+        "date": "2025-11-15", 
+        "version": "1.6.0",
+        "changes": "Penambahan accessibility testing dengan axe-core.",
+        "type": "enhancement"
+      },
+      { 
+        "date": "2025-11-12", 
+        "version": "1.5.0",
+        "changes": "Setup end-to-end testing dengan Cypress untuk critical user flows.",
+        "type": "feature"
+      }
+    ],
+    "versionHistory": [
+      {
+        "version": "1.7.0",
+        "date": "2025-11-17",
+        "status": "current",
+        "breakingChanges": false,
+        "migrationRequired": false
+      },
+      {
+        "version": "1.6.0",
+        "date": "2025-11-15",
+        "status": "supported",
+        "breakingChanges": false,
+        "migrationRequired": false
+      },
+      {
+        "version": "1.5.0",
+        "date": "2025-11-12",
+        "status": "deprecated",
+        "breakingChanges": false,
+        "migrationRequired": false
+      }
+    ],
+    "compatibility": {
+      "minRequired": "1.3.0",
+      "testedUpTo": "2.0.0",
+      "browserSupport": ["chrome 120+", "firefox 118+", "safari 16+", "edge 122+"],
+      "apiCompatibility": "v3"
+    },
+    "subsections": [
+      {
+        "subtitle": "Unit Testing dengan Jest & React Testing Library",
+        "details": "Testing individual components dan utilities untuk memastikan fungsionalitas dasar.",
+        "examples": "SearchBar component test dengan berbagai user interaction scenarios."
+      },
+      {
+        "subtitle": "Integration Testing untuk AI Features",
+        "details": "Testing AI components dengan mocked NLP responses dan berbagai search scenarios.",
+        "codeSnippet": "jest.mock('compromise', () => mockNLP)"
+      },
+      {
+        "subtitle": "End-to-End Testing dengan Cypress",
+        "details": "Testing complete user flows dari search sampai article consumption.",
+        "tips": "Gunakan data-testid attributes untuk reliable element selection."
+      },
+      {
+        "subtitle": "Accessibility Testing",
+        "details": "Memastikan platform accessible untuk semua users dengan automated a11y tests.",
+        "warning": "Automated tests hanya menangkap ~30% accessibility issues, manual testing tetap diperlukan."
+      }
+    ],
+    "relatedDocs": ["advanced-components", "optimasi-mobile"],
+    "resources": [
+      {
+        "type": "article",
+        "label": "Testing Strategy for AI Applications",
+        "url": "https://blog.portfolio.dev/ai-testing"
+      },
+      {
+        "type": "link",
+        "label": "Testing Checklist & Best Practices",
+        "url": "https://docs.portfolio.dev/testing-checklist"
       }
     ]
   }

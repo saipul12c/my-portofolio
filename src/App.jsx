@@ -12,7 +12,7 @@ import Doct from "./components/helpbutton/docs/HelpDocsItem.jsx";
 import FAQ from "./components/helpbutton/faq/HelpFAQItem.jsx";
 import Info from "./components/helpbutton/versiWeb/HelpVersionInfo.jsx";
 import Komit from "./components/helpbutton/komit/HelpCommitmentItem.jsx";
-// import Chatbot from "./components/helpbutton/chat/HelpChatbotItem.jsx";
+import DetailCommitment from "./components/helpbutton/komit/detail/DetailCommitment.jsx";
 
 // 🛡️ Tambahan: Launch guard dan halaman launching
 import LaunchGuard from "./components/LaunchGuard";
@@ -40,6 +40,7 @@ import Visi from "./pages/visi/visi";
 import Hobbies from "./pages/hub/Hobbies";
 import Blog from "./pages/blog/Blog";
 import BlogDetail from "./pages/blog/detail/BlogDetail";
+import DetailProjek from "./pages/blog/users/DetailProfile.jsx";
 import Bahasa from "./pages/bahasa/Bahasa";
 
 // ⚠️ Halaman error kustom
@@ -87,7 +88,9 @@ export default function App() {
                         <Route path="/help/version" element={<Info />} />
                         <Route path="/help/docs" element={<Doct />} />
                         <Route path="/help/faq" element={<FAQ />} />
+
                         <Route path="/help/commitment" element={<Komit />} />
+                         <Route path="/commitment/:id" element={<DetailCommitment />} />
                         {/* <Route path="/chatbot" element={<Chatbot />} /> */}
 
                         {/* 💼 Halaman proyek - DUAL ROUTE SUPPORT */}
@@ -109,8 +112,11 @@ export default function App() {
                         <Route path="/education" element={<Education />} />
                         <Route path="/visi" element={<Visi />} />
                         <Route path="/hobbies" element={<Hobbies />} />
+
                         <Route path="/blog" element={<Blog />} />
                         <Route path="/blog/:slug" element={<BlogDetail />} />
+                        <Route path="/blog/authors/:slug" element={<DetailProjek />} />
+
                         <Route path="/bahasa" element={<Bahasa />} />
 
                         {/* website tambahan */}

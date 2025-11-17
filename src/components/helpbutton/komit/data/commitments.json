@@ -1,27 +1,93 @@
-[
-  {
-    "icon": "HandHeart",
-    "title": "Dedikasi Tanpa Batas",
-    "desc": "Kami berkomitmen memberikan yang terbaik dengan sepenuh hati 💪. Setiap langkah kecil punya makna besar buat masa depan."
-  },
-  {
-    "icon": "Users",
-    "title": "Kolaborasi & Kepercayaan",
-    "desc": "Kita tumbuh bareng, berbagi ide, dan saling dukung. Karena tim hebat bukan cuma kerja bareng, tapi tumbuh bareng 🌱."
-  },
-  {
-    "icon": "Globe",
-    "title": "Dampak Positif",
-    "desc": "Bukan cuma sukses pribadi, tapi juga buat sekitar. Kecil atau besar, yang penting punya arti ✨."
-  },
-  {
-    "icon": "Lightbulb",
-    "title": "Inovasi Tanpa Henti",
-    "desc": "Kami nggak takut bereksperimen. Setiap ide gila bisa jadi langkah besar menuju masa depan yang keren 🚀."
-  },
-  {
-    "icon": "Star",
-    "title": "Integritas & Keaslian",
-    "desc": "Kami percaya jadi diri sendiri adalah kekuatan. Kejujuran dan ketulusan itu nggak bisa diganti 💫."
+{
+  "section_title": "Nilai & Komitmen Kami",
+  "section_subtitle": "Lebih dari sekadar kata-kata, ini adalah fondasi yang membentuk setiap langkah perjalanan kami",
+  "commitments": [
+    {
+      "id": 1,
+      "icon": "HandHeart",
+      "title": "Dedikasi Tanpa Batas",
+      "short_desc": "Memberikan yang terbaik dengan sepenuh hati dalam setiap aspek",
+      "desc": "Komitmen kami adalah fondasi dari setiap tindakan. Kami memberikan tidak hanya 100%, tetapi 110% dalam setiap proyek, layanan, dan interaksi. Bagi kami, ini lebih dari sekadar tugas; ini adalah panggilan hati. Kami percaya bahwa ketekunan dan perhatian terhadap detail kecil adalah yang membedakan yang baik dari yang luar biasa. Setiap langkah, sekecil apa pun, dilakukan dengan kesadaran penuh bahwa itu berkontribusi pada perjalanan besar menuju kesuksesan dan kepuasan klien yang hakiki.",
+      "key_points": [
+        "Pemberian 110% dalam setiap proyek",
+        "Perhatian terhadap detail terkecil",
+        "Pendekatan berbasis passion dan dedikasi",
+        "Komitmen jangka panjang"
+      ],
+      "color_scheme": "primary",
+      "cta_text": "Pelajari Pendekatan Kami",
+      "cta_link": "/tentang/pendekatan"
+    },
+    {
+      "id": 2,
+      "icon": "Users",
+      "title": "Kolaborasi & Kepercayaan",
+      "short_desc": "Tumbuh bersama melalui kerjasama tim yang solid",
+      "desc": "Kami memandang kemitraan sebagai sebuah ekosistem yang saling menguatkan. Di sini, kami membangun fondasi yang kokoh berdasarkan kepercayaan (trust) dan komunikasi transparan. Setiap suara didengar, setiap ide dihargai, dan setiap keberhasilan adalah hasil dari sinergi tim. Kami tidak hanya sekadar 'bekerja bersama', tetapi 'berproses bersama'—saling menginspirasi, mendukung dalam tantangan, dan tumbuh secara kolektif. Bagi kami, tim yang hebat adalah tempat individu-individu berkembang lebih cepat dan lebih jauh daripada yang bisa mereka capai sendiri.",
+      "key_points": [
+        "Komunikasi transparan dan terbuka",
+        "Saling menghargai setiap kontribusi",
+        "Lingkungan yang mendukung pertumbuhan",
+        "Sinergi tim yang optimal"
+      ],
+      "color_scheme": "secondary",
+      "cta_text": "Bergabung dengan Tim",
+      "cta_link": "/karir"
+    },
+    {
+      "id": 3,
+      "icon": "Globe",
+      "title": "Dampak Positif yang Berkelanjutan",
+      "short_desc": "Menciptakan nilai yang berarti untuk masyarakat dan lingkungan",
+      "desc": "Visi kami melampaui pencapaian bisnis semata. Kami bertekad untuk meninggalkan jejak yang berarti dan bertanggung jawab bagi komunitas, sosial, dan lingkungan. Setiap keputusan dan inovasi dievaluasi berdasarkan nilai ganda: tidak hanya untuk keuntungan, tetapi juga untuk kontribusinya pada kesejahteraan yang lebih luas. Kami berkomitmen untuk menciptakan solusi yang berkelanjutan, memberdayakan pihak yang terlibat, dan memastikan bahwa kesuksesan kami juga membawa cahaya dan manfaat bagi sekeliling kita.",
+      "key_points": [
+        "Pendekatan berkelanjutan dalam semua operasi",
+        "Kontribusi untuk komunitas dan lingkungan",
+        "Nilai ganda: bisnis dan sosial",
+        "Tanggung jawab sosial perusahaan"
+      ],
+      "color_scheme": "success",
+      "cta_text": "Lihat Dampak Kami",
+      "cta_link": "/dampak-sosial"
+    },
+    {
+      "id": 4,
+      "icon": "Lightbulb",
+      "title": "Inovasi Tanpa Henti",
+      "short_desc": "Terus mendorong batas untuk menciptakan solusi masa depan",
+      "desc": "Status quo adalah titik awal, bukan tujuan akhir. Kami membudayakan pola pikir yang selalu mempertanyakan, mengeksplorasi, dan mendobrak batas-batas kemungkinan. Ruang kami adalah labirin kreativitas di mana setiap 'kegagalan' dilihat sebagai pelajaran berharga dan setiap 'ide gila' disambut sebagai benih potensial untuk terobosan besar. Kami tidak hanya mengikuti tren; kami aktif menciptakannya, dengan berani melangkah ke depan untuk membentuk masa depan yang lebih cerdas dan efisien.",
+      "key_points": [
+        "Budaya eksperimen dan pembelajaran",
+        "Menerima kegagalan sebagai bagian proses",
+        "Inovasi berkelanjutan dalam produk dan layanan",
+        "Visioner dan forward-thinking"
+      ],
+      "color_scheme": "warning",
+      "cta_text": "Jelajahi Inovasi Kami",
+      "cta_link": "/inovasi"
+    },
+    {
+      "id": 5,
+      "icon": "Star",
+      "title": "Integritas & Keaslian",
+      "short_desc": "Menjadi diri sendiri dengan nilai-nilai yang tidak tergoyahkan",
+      "desc": "Dalam dunia yang penuh dengan facade, kami memilih untuk berdiri teguh dengan nilai-nilai inti dan identitas kami yang paling otentik. Integritas adalah kompas kami dalam setiap pengambilan keputusan—kami melakukan yang benar, bahkan ketika tidak ada yang mengawasi. Kejujuran, etika, dan konsistensi antara kata dan perbuatan adalah janji kami yang tak tergoyahkan. Kami percaya bahwa menjadi diri sendiri yang terbaik adalah kekuatan super yang membangun hubungan jangka panjang dan rasa hormat yang mendalam.",
+      "key_points": [
+        "Konsistensi antara kata dan perbuatan",
+        "Etika bisnis yang tidak dapat ditawar",
+        "Transparansi dan kejujuran mutlak",
+        "Nilai inti yang tidak berkompromi"
+      ],
+      "color_scheme": "info",
+      "cta_text": "Kenali Nilai Kami",
+      "cta_link": "/tentang/nilai"
+    }
+  ],
+  "meta": {
+    "version": "2.0",
+    "last_updated": "2024-12-19",
+    "total_commitments": 5,
+    "category": "company-values",
+    "language": "indonesian"
   }
-]
+}
