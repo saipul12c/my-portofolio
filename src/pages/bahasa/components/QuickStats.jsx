@@ -1,33 +1,39 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 
 export const QuickStats = React.memo(({ bahasaSehariHari, bahasaPemrograman }) => {
-  const stats = [
-    { 
-      label: "Total Bahasa", 
-      value: bahasaSehariHari.length + bahasaPemrograman.length,
-      icon: "🌐",
-      color: "from-cyan-400 to-blue-500"
-    },
-    { 
-      label: "Kemahiran Rata-rata", 
-      value: `${Math.round([...bahasaSehariHari, ...bahasaPemrograman].reduce((acc, b) => acc + b.level, 0) / (bahasaSehariHari.length + bahasaPemrograman.length))}%`,
-      icon: "📊",
-      color: "from-green-400 to-cyan-500"
-    },
-    { 
-      label: "Teknologi", 
-      value: bahasaPemrograman.length,
-      icon: "💻",
-      color: "from-purple-400 to-pink-500"
-    },
-    { 
-      label: "Bahasa Komunikasi", 
-      value: bahasaSehariHari.length,
-      icon: "🗣️",
-      color: "from-orange-400 to-red-500"
-    }
-  ];
+  // Memoize stats calculation untuk menghindari recalculation
+  const stats = useMemo(() => {
+    const allBahasa = [...bahasaSehariHari, ...bahasaPemrograman];
+    const totalLevel = allBahasa.reduce((acc, b) => acc + b.level, 0);
+    
+    return [
+      { 
+        label: "Total Bahasa", 
+        value: bahasaSehariHari.length + bahasaPemrograman.length,
+        icon: "🌐",
+        color: "from-cyan-400 to-blue-500"
+      },
+      { 
+        label: "Kemahiran Rata-rata", 
+        value: `${Math.round(totalLevel / allBahasa.length)}%`,
+        icon: "📊",
+        color: "from-green-400 to-cyan-500"
+      },
+      { 
+        label: "Teknologi", 
+        value: bahasaPemrograman.length,
+        icon: "💻",
+        color: "from-purple-400 to-pink-500"
+      },
+      { 
+        label: "Bahasa Komunikasi", 
+        value: bahasaSehariHari.length,
+        icon: "🗣️",
+        color: "from-orange-400 to-red-500"
+      }
+    ];
+  }, [bahasaSehariHari, bahasaPemrograman]);
 
   return (
     <motion.div

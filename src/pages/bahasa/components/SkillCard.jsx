@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import { ProgressBar } from "./ProgressBar";
 import { SkillTags } from "./SkillTags";
@@ -12,7 +12,11 @@ export const SkillCard = React.memo(({
   expandedTags,
   toggleExpandedTags 
 }) => {
-  const skillId = `${bahasa.nama}-${isProgramming ? 'prog' : 'lang'}`;
+  const skillId = useMemo(() => `${bahasa.nama}-${isProgramming ? 'prog' : 'lang'}`, [bahasa.nama, isProgramming]);
+
+  const handleClick = useCallback(() => {
+    setSelectedSkill({...bahasa, isProgramming});
+  }, [bahasa, isProgramming, setSelectedSkill]);
 
   const CardContent = () => (
     <>
@@ -145,8 +149,8 @@ export const SkillCard = React.memo(({
         hover:border-cyan-500/40 hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300
         ${isList ? "p-4 sm:p-6" : "p-4 sm:p-6 shadow-lg"}
       `}
-      onClick={() => setSelectedSkill({...bahasa, isProgramming})}
-      style={{ animationDelay: `${delay}ms` }}
+      onClick={handleClick}
+      style={{ animationDelay: `${delay}ms`, willChange: "transform" }}
     >
       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       <div className="relative z-10">

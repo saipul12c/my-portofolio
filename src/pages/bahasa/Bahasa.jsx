@@ -1,14 +1,19 @@
-import React, { useState, useRef, useMemo, useCallback } from "react";
+import React, { useState, useRef, useMemo, useCallback, lazy, Suspense } from "react";
 import dataBahasa from "../../data/bahasa/data.json";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { ArrowUp } from "lucide-react";
 
 // Import komponen dan hooks
 import { useScroll } from "./hooks/useScroll";
+import { useDebounce } from "./hooks/useDebounce";
 import { SearchFilterBar } from "./components/SearchFilterBar";
 import { QuickStats } from "./components/QuickStats";
 import { LanguageSection } from "./components/LanguageSection";
-import { DetailTooltip } from "./components/DetailTooltip";
+
+// Lazy load DetailTooltip untuk mengurangi bundle size
+const DetailTooltip = lazy(() => 
+  import("./components/DetailTooltip").then(module => ({ default: module.DetailTooltip }))
+);
 
 const Bahasa = () => {
   const { bahasaSehariHari, bahasaPemrograman } = dataBahasa;
@@ -21,13 +26,16 @@ const Bahasa = () => {
   const isInView = useInView(sectionRef, { once: true, margin: "-50px" });
   const { showScrollTop } = useScroll();
 
+  // Debounce search untuk mengurangi re-renders
+  const debouncedSearchTerm = useDebounce(searchTerm, 200);
+
   // Optimized filtering dengan useMemo
   const filteredData = useMemo(() => {
     const filterCondition = (bahasa) => {
-      const matchesSearch = bahasa.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           bahasa.tingkat.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      const matchesSearch = bahasa.nama.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+                           bahasa.tingkat.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
                            (bahasa.kemampuan && bahasa.kemampuan.some(skill => 
-                             skill.toLowerCase().includes(searchTerm.toLowerCase())
+                             skill.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
                            ));
       const matchesLevel = 
         filterLevel === "all" ||
@@ -42,13 +50,13 @@ const Bahasa = () => {
       sehariHari: bahasaSehariHari.filter(filterCondition),
       pemrograman: bahasaPemrograman.filter(filterCondition)
     };
-  }, [bahasaSehariHari, bahasaPemrograman, searchTerm, filterLevel]);
+  }, [bahasaSehariHari, bahasaPemrograman, debouncedSearchTerm, filterLevel]);
 
   const scrollToTop = useCallback(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  // Toggle expanded tags
+  // Toggle expanded tags dengan optimized state update
   const toggleExpandedTags = useCallback((skillId) => {
     setExpandedTags(prev => ({
       ...prev,
@@ -56,7 +64,7 @@ const Bahasa = () => {
     }));
   }, []);
 
-  // Animation variants yang lebih ringan
+  // Animation variants yang lebih ringan dengan transition yang di-optimize
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -68,11 +76,20 @@ const Bahasa = () => {
     }
   };
 
+  // Memoize detail modal untuk menghindari re-render unnecessary
+  const detailModal = useMemo(() => selectedSkill ? (
+    <DetailTooltip 
+      bahasa={selectedSkill}
+      isProgramming={selectedSkill.isProgramming}
+      onClose={() => setSelectedSkill(null)}
+    />
+  ) : null, [selectedSkill]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e1b4b] to-[#0f172a] py-4 sm:py-8 px-3 sm:px-4 relative overflow-hidden">
-      {/* Optimized Background Elements */}
-      <div className="absolute top-10 left-5 sm:left-10 w-48 h-48 sm:w-72 sm:h-72 bg-cyan-500/10 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-10 right-5 sm:right-10 w-64 h-64 sm:w-96 sm:h-96 bg-blue-500/10 rounded-full blur-2xl sm:blur-3xl animate-pulse delay-700"></div>
+      {/* Optimized Background Elements dengan will-change untuk performa */}
+      <div className="absolute top-10 left-5 sm:left-10 w-48 h-48 sm:w-72 sm:h-72 bg-cyan-500/10 rounded-full blur-2xl sm:blur-3xl animate-pulse" style={{willChange: "transform"}}></div>
+      <div className="absolute bottom-10 right-5 sm:right-10 w-64 h-64 sm:w-96 sm:h-96 bg-blue-500/10 rounded-full blur-2xl sm:blur-3xl animate-pulse delay-700" style={{willChange: "transform"}}></div>
 
       <div className="max-w-7xl mx-auto relative z-10" ref={sectionRef}>
         
@@ -209,16 +226,12 @@ const Bahasa = () => {
         )}
       </AnimatePresence>
 
-      {/* Detail Modal */}
-      <AnimatePresence>
-        {selectedSkill && (
-          <DetailTooltip 
-            bahasa={selectedSkill}
-            isProgramming={selectedSkill.isProgramming}
-            onClose={() => setSelectedSkill(null)}
-          />
-        )}
-      </AnimatePresence>
+      {/* Detail Modal dengan Suspense untuk lazy loading */}
+      <Suspense fallback={null}>
+        <AnimatePresence>
+          {detailModal}
+        </AnimatePresence>
+      </Suspense>
 
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar {

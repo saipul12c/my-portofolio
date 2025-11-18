@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Target, Sparkles, Zap, Code, Globe, X } from "lucide-react";
 import { ProgressBar } from "./ProgressBar";
 import { generateColor } from "../utils/colorGenerator";
 
 export const DetailTooltip = React.memo(({ bahasa, isProgramming, onClose }) => {
-  const renderSection = (title, icon, content, color = "cyan", isArray = true) => {
+  const renderSection = useCallback((title, icon, content, color = "cyan", isArray = true) => {
     if (!content || (Array.isArray(content) && content.length === 0)) return null;
     
     return (
@@ -38,7 +38,7 @@ export const DetailTooltip = React.memo(({ bahasa, isProgramming, onClose }) => 
         )}
       </motion.div>
     );
-  };
+  }, []);
 
   return (
     <motion.div
@@ -90,7 +90,7 @@ export const DetailTooltip = React.memo(({ bahasa, isProgramming, onClose }) => 
         </div>
 
         {/* Content */}
-        <div className="p-4 sm:p-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
+        <div className="p-4 sm:p-6 max-h-[60vh] overflow-y-auto custom-scrollbar" style={{willChange: "scroll-position"}}>
           <div className="space-y-4 sm:space-y-6">
             {/* Progress */}
             <div className="space-y-3">

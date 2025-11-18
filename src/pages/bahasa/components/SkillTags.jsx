@@ -1,11 +1,21 @@
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import { generateColor } from "../utils/colorGenerator";
 
 export const SkillTags = React.memo(({ skills, skillId, expandedTags, toggleExpandedTags }) => {
   const isExpanded = expandedTags[skillId] || false;
-  const displaySkills = isExpanded ? skills : (skills || []).slice(0, 4);
-  const hiddenCount = (skills || []).length - 4;
+  
+  // Memoize display logic untuk menghindari unnecessary calculations
+  const { displaySkills, hiddenCount } = useMemo(() => {
+    const display = isExpanded ? skills : (skills || []).slice(0, 4);
+    const hidden = (skills || []).length - 4;
+    return { displaySkills: display, hiddenCount: hidden };
+  }, [skills, isExpanded]);
+
+  const handleToggle = useCallback((e) => {
+    e.stopPropagation();
+    toggleExpandedTags(skillId);
+  }, [skillId, toggleExpandedTags]);
 
   if (!skills || skills.length === 0) return null;
 
@@ -29,10 +39,7 @@ export const SkillTags = React.memo(({ skills, skillId, expandedTags, toggleExpa
         <motion.button
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleExpandedTags(skillId);
-          }}
+          onClick={handleToggle}
           className="bg-gray-500/20 text-gray-300 text-xs px-2 py-1 rounded-lg border border-gray-500/30 hover:bg-gray-500/30 transition-all duration-200 backdrop-blur-sm"
         >
           +{hiddenCount}
