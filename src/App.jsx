@@ -30,7 +30,10 @@ import Photography from "./pages/foto/Photography";
 import Projects from "./pages/projek/Projects";
 import ProjectDetail from "./pages/projek/detail/ProjectDetail";
 import Gallery from "./pages/kenangan/Gallery";
+
 import Testimoni from "./pages/pengalaman/Testimoni";
+import DetailPenggunaPage from "./pages/pengalaman/users/DetailPenggunaPage";
+import DetailPerusahaanPage from "./pages/pengalaman/company/DetailPerusahaanPage";
 
 // 📄 Halaman tambahan
 import Certificates from "./pages/sertif/Certificates";
@@ -40,7 +43,7 @@ import Visi from "./pages/visi/visi";
 import Hobbies from "./pages/hub/Hobbies";
 import Blog from "./pages/blog/Blog";
 import BlogDetail from "./pages/blog/detail/BlogDetail";
-import DetailProjek from "./pages/blog/users/DetailProfile.jsx";
+import Detailusers from  "./pages/blog/users/DetailProfile";
 import Bahasa from "./pages/bahasa/Bahasa";
 
 // ⚠️ Halaman error kustom
@@ -83,6 +86,8 @@ export default function App() {
                         {/* 💬 Halaman testimoni */}
                         <Route path="/testimoni" element={<Testimoni />} />
                         <Route path="/testimoni/:id" element={<Testimoni />} />
+                        <Route path="/testimoni/authors/:slug" element={<DetailPenggunaPage />} />
+                        <Route path="/testimoni/perusahan/:slug" element={<DetailPerusahaanPage />} />
 
                         {/* ❓ Halaman bantuan */}
                         <Route path="/help/version" element={<Info />} />
@@ -115,7 +120,7 @@ export default function App() {
 
                         <Route path="/blog" element={<Blog />} />
                         <Route path="/blog/:slug" element={<BlogDetail />} />
-                        <Route path="/blog/authors/:slug" element={<DetailProjek />} />
+                        <Route path="/blog/authors/:slug" element={<Detailusers />} />
 
                         <Route path="/bahasa" element={<Bahasa />} />
 

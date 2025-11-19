@@ -248,16 +248,16 @@ export default function TestimoniSearchFilter({
     str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-4 sm:space-y-6 mb-12 relative">
+    <div className="w-full max-w-4xl mx-auto space-y-3 sm:space-y-4 md:space-y-5 lg:space-y-6 mb-8 sm:mb-12 relative px-2 sm:px-0">
       {/* Search */}
       <div className="relative" ref={inputRef}>
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-300 z-30" />
+        <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-cyan-300 z-30 w-4 h-4 sm:w-5 sm:h-5" />
 
         <div className="relative w-full">
           {/* Ghost text */}
           {ghostText && (
             <div
-              className="absolute inset-0 flex items-center pl-12 pr-4 pointer-events-none z-10 font-medium text-gray-400 text-base"
+              className="absolute inset-0 flex items-center pl-10 sm:pl-12 pr-3 sm:pr-4 pointer-events-none z-10 font-medium text-gray-400 text-sm sm:text-base"
               style={{ whiteSpace: "nowrap", overflow: "hidden" }}
             >
               {ghostText.toLowerCase().startsWith(searchQuery.toLowerCase()) ? (
@@ -287,7 +287,7 @@ export default function TestimoniSearchFilter({
               setFocusedIndex(-1);
             }}
             onKeyDown={handleKeyDown}
-            className="w-full bg-transparent border border-cyan-400/30 rounded-full py-3 pl-12 pr-4 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-cyan-400 relative z-20 font-medium tracking-wide"
+            className="w-full bg-transparent border border-cyan-400/30 rounded-full py-2 sm:py-3 pl-10 sm:pl-12 pr-3 sm:pr-4 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-cyan-400 relative z-20 font-medium tracking-wide text-sm sm:text-base"
           />
         </div>
 
@@ -299,7 +299,7 @@ export default function TestimoniSearchFilter({
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 6 }}
-              className="absolute top-14 w-full bg-[#1e293b]/95 border border-cyan-400/20 rounded-xl shadow-xl z-40 max-h-60 overflow-y-auto"
+              className="absolute top-12 sm:top-14 left-0 right-0 bg-[#1e293b]/95 border border-cyan-400/20 rounded-lg sm:rounded-xl shadow-xl z-40 max-h-48 sm:max-h-60 overflow-y-auto"
             >
               {sortedSuggestions.map((s, i) => {
                 const regex = new RegExp(`(${escapeRegex(searchQuery)})`, "gi");
@@ -318,7 +318,7 @@ export default function TestimoniSearchFilter({
                       addToHistory(s.name);
                       setShowSuggestions(false);
                     }}
-                    className={`px-4 py-3 cursor-pointer text-sm ${
+                    className={`px-3 sm:px-4 py-2 sm:py-3 cursor-pointer text-xs sm:text-sm transition-colors ${
                       i === focusedIndex
                         ? "bg-cyan-500/30"
                         : "hover:bg-white/10"
@@ -328,9 +328,9 @@ export default function TestimoniSearchFilter({
                       className="font-medium"
                       dangerouslySetInnerHTML={{ __html: highlighted }}
                     />
-                    <span className="text-cyan-300 text-xs ml-2">{s.role}</span>
+                    <span className="text-cyan-300 text-xs ml-1 sm:ml-2">{s.role}</span>
                     {s.company && (
-                      <span className="text-gray-400 text-[11px] ml-2">
+                      <span className="text-gray-400 text-[10px] sm:text-[11px] ml-1 sm:ml-2">
                         {s.company}
                       </span>
                     )}
@@ -343,13 +343,13 @@ export default function TestimoniSearchFilter({
       </div>
 
       {/* Filter */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="flex items-center gap-2 px-4 py-2 bg-[#1e293b]/85 border border-cyan-400/30 rounded-full">
-          <Filter size={16} className="text-cyan-300" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 md:gap-4">
+        <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-[#1e293b]/85 border border-cyan-400/30 rounded-lg sm:rounded-full text-sm">
+          <Filter size={16} className="text-cyan-300 flex-shrink-0" />
           <select
             value={minRating}
             onChange={(e) => setMinRating(Number(e.target.value))}
-            className="bg-transparent text-gray-100 w-full outline-none cursor-pointer"
+            className="bg-transparent text-gray-100 w-full outline-none cursor-pointer text-sm"
           >
             <option value="0">Semua Rating</option>
             <option value="4">Minimal 4 ⭐</option>
@@ -361,7 +361,7 @@ export default function TestimoniSearchFilter({
         <select
           value={selectedTag}
           onChange={(e) => setSelectedTag(e.target.value)}
-          className="bg-[#1e293b]/85 border border-cyan-400/30 rounded-full px-4 py-2 text-gray-100 outline-none cursor-pointer focus:ring-2 focus:ring-cyan-400"
+          className="bg-[#1e293b]/85 border border-cyan-400/30 rounded-lg sm:rounded-full px-3 sm:px-4 py-2 sm:py-2.5 text-gray-100 outline-none cursor-pointer focus:ring-2 focus:ring-cyan-400 text-sm"
         >
           {tags.map((tag) => (
             <option key={tag} value={tag} className="bg-[#0f172a]">

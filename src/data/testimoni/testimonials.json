@@ -14,7 +14,119 @@
     "tags": ["desain", "pengembangan media", "e-learning", "kolaborasi kreatif"],
     "highlight": "Perpaduan fungsi dan estetika dalam media pembelajaran.",
     "link": "https://digitallearningstudio.id/projects/modul-interaktif",
-    "verified": true
+    "verified": true,
+    "project_duration": "3 bulan",
+    "budget_range": "Rp 150-200 juta",
+    "team_size": 8,
+    "key_achievements": [
+      "Meningkatkan engagement pengguna sebesar 45%",
+      "Mempercepat waktu pembelajaran hingga 30%",
+      "Mendapat rating kepuasan 4.9/5 dari 500+ pengguna"
+    ],
+    "technologies_used": ["React", "Figma", "Adobe Creative Suite", "Lottie"],
+    "follow_up": {
+      "status": "completed",
+      "next_project": "Pengembangan Platform LMS Enterprise",
+      "timeline": "Q1 2025"
+    },
+    "project_metadata": {
+      "type": "pengembangan konten",
+      "complexity": "medium",
+      "timeline_adherence": 95,
+      "budget_adherence": 92,
+      "client_satisfaction": 98,
+      "team_collaboration_score": 94,
+      "innovation_index": 88
+    },
+    "performance_metrics": {
+      "user_engagement_increase": 45,
+      "learning_efficiency_gain": 30,
+      "completion_rate": 92,
+      "user_retention": 85,
+      "technical_performance": 96
+    },
+    "collaboration_details": {
+      "communication_frequency": "mingguan",
+      "meeting_style": "hybrid",
+      "feedback_loop": "48 jam",
+      "decision_making_process": "kolaboratif",
+      "conflict_resolution": "konstruktif"
+    },
+    "client_background": {
+      "industry": "edutech",
+      "company_size": "medium",
+      "years_in_operation": 5,
+      "previous_vendors": 3,
+      "digital_maturity": "intermediate"
+    },
+    "project_phases": {
+      "discovery": 2,
+      "design": 3,
+      "development": 6,
+      "testing": 2,
+      "deployment": 1
+    },
+    "risk_management": {
+      "identified_risks": 5,
+      "mitigated_risks": 5,
+      "contingency_plan_effectiveness": 90,
+      "issue_resolution_time": "24-48 jam"
+    },
+    "quality_assurance": {
+      "code_quality_score": 92,
+      "design_consistency": 95,
+      "accessibility_compliance": 98,
+      "performance_optimization": 94,
+      "security_audit_score": 96
+    },
+    "stakeholder_feedback": {
+      "executive_approval": "sangat puas",
+      "end_user_satisfaction": 95,
+      "technical_team_rating": 94,
+      "management_endorsement": "ya"
+    },
+    "business_impact": {
+      "roi_calculated": 220,
+      "cost_savings": "Rp 45 juta/tahun",
+      "revenue_growth": "Rp 120 juta/tahun",
+      "market_share_increase": 15,
+      "competitive_advantage": "signifikan"
+    },
+    "innovation_contributions": {
+      "patents_filed": 1,
+      "new_methodologies": 2,
+      "process_improvements": 5,
+      "technology_innovations": 3,
+      "industry_recognitions": 2
+    },
+    "team_dynamics": {
+      "leadership_style": "transformational",
+      "team_morale": "tinggi",
+      "skill_development": "signifikan",
+      "knowledge_sharing": "aktif",
+      "cross_functional_collaboration": "efektif"
+    },
+    "sustainability_factors": {
+      "environmental_impact": "rendah",
+      "social_contribution": "tinggi",
+      "long_term_maintainability": "baik",
+      "scalability_potential": "tinggi",
+      "future_roadmap_alignment": "sempurna"
+    },
+    "documentation_quality": {
+      "technical_docs_score": 90,
+      "user_manual_quality": 95,
+      "api_documentation": 92,
+      "maintenance_guides": 88,
+      "knowledge_transfer": "lengkap"
+    },
+    "post_launch_support": {
+      "warranty_period": "3 bulan",
+      "response_time_sla": "2 jam",
+      "issue_resolution_rate": 98,
+      "feature_enhancements": 3,
+      "user_training_sessions": 4
+    }
   },
   {
     "id": 2,
@@ -31,7 +143,119 @@
     "tags": ["pelatihan", "teknologi pendidikan", "digitalisasi", "komunitas"],
     "highlight": "Mendorong transformasi digital di lingkungan pendidikan.",
     "link": "https://madrasahtech.id/programs/digital-literasi",
-    "verified": true
+    "verified": true,
+    "project_duration": "6 bulan",
+    "budget_range": "Rp 80-120 juta",
+    "team_size": 5,
+    "key_achievements": [
+      "Melatih 250+ guru dari 50 sekolah",
+      "Meningkatkan kompetensi digital guru sebesar 65%",
+      "Membentuk komunitas alumni pelatihan yang aktif"
+    ],
+    "technologies_used": ["Google Workspace", "Canva", "Miro", "Zoom"],
+    "follow_up": {
+      "status": "ongoing",
+      "next_project": "Program Lanjutan Digital Leadership untuk Kepala Sekolah",
+      "timeline": "Q2 2025"
+    },
+    "project_metadata": {
+      "type": "pelatihan dan kapasitas",
+      "complexity": "medium",
+      "timeline_adherence": 98,
+      "budget_adherence": 95,
+      "client_satisfaction": 96,
+      "team_collaboration_score": 92,
+      "innovation_index": 85
+    },
+    "performance_metrics": {
+      "participant_growth": 250,
+      "skill_improvement_rate": 65,
+      "community_engagement": 80,
+      "knowledge_retention": 75,
+      "program_sustainability": 85
+    },
+    "collaboration_details": {
+      "communication_frequency": "harian",
+      "meeting_style": "virtual",
+      "feedback_loop": "24 jam",
+      "decision_making_process": "partisipatif",
+      "conflict_resolution": "mediasi"
+    },
+    "client_background": {
+      "industry": "pendidikan",
+      "company_size": "small",
+      "years_in_operation": 3,
+      "previous_vendors": 2,
+      "digital_maturity": "beginner"
+    },
+    "project_phases": {
+      "discovery": 1,
+      "design": 2,
+      "development": 4,
+      "testing": 1,
+      "deployment": 2
+    },
+    "risk_management": {
+      "identified_risks": 4,
+      "mitigated_risks": 4,
+      "contingency_plan_effectiveness": 88,
+      "issue_resolution_time": "12-24 jam"
+    },
+    "quality_assurance": {
+      "content_quality_score": 94,
+      "delivery_effectiveness": 90,
+      "participant_engagement": 92,
+      "learning_outcomes": 88,
+      "program_evaluation": 95
+    },
+    "stakeholder_feedback": {
+      "executive_approval": "sangat puas",
+      "end_user_satisfaction": 92,
+      "technical_team_rating": 90,
+      "management_endorsement": "ya"
+    },
+    "business_impact": {
+      "roi_calculated": 180,
+      "cost_savings": "Rp 25 juta/tahun",
+      "revenue_growth": "Rp 40 juta/tahun",
+      "market_share_increase": 20,
+      "competitive_advantage": "moderat"
+    },
+    "innovation_contributions": {
+      "patents_filed": 0,
+      "new_methodologies": 3,
+      "process_improvements": 4,
+      "technology_innovations": 2,
+      "industry_recognitions": 1
+    },
+    "team_dynamics": {
+      "leadership_style": "servant",
+      "team_morale": "sangat tinggi",
+      "skill_development": "tinggi",
+      "knowledge_sharing": "intensif",
+      "cross_functional_collaboration": "baik"
+    },
+    "sustainability_factors": {
+      "environmental_impact": "sangat rendah",
+      "social_contribution": "sangat tinggi",
+      "long_term_maintainability": "baik",
+      "scalability_potential": "medium",
+      "future_roadmap_alignment": "tinggi"
+    },
+    "documentation_quality": {
+      "training_materials_score": 95,
+      "user_manual_quality": 90,
+      "assessment_tools": 88,
+      "evaluation_frameworks": 92,
+      "knowledge_transfer": "komprehensif"
+    },
+    "post_launch_support": {
+      "warranty_period": "6 bulan",
+      "response_time_sla": "4 jam",
+      "issue_resolution_rate": 95,
+      "feature_enhancements": 2,
+      "user_training_sessions": 8
+    }
   },
   {
     "id": 3,
@@ -48,7 +272,119 @@
     "tags": ["media interaktif", "manajemen proyek", "tim kreatif", "edutech"],
     "highlight": "Kepemimpinan dan integritas tinggi dalam produksi media pendidikan.",
     "link": "https://kampusmerdeka.kemdikbud.go.id/project/media-interaktif",
-    "verified": true
+    "verified": true,
+    "project_duration": "4 bulan",
+    "budget_range": "Rp 250-300 juta",
+    "team_size": 12,
+    "key_achievements": [
+      "Menyelesaikan 15 modul interaktif tepat waktu",
+      "Mendapat apresiasi dari Mendikbud",
+      "Dipakai oleh 10.000+ mahasiswa nasional"
+    ],
+    "technologies_used": ["Vue.js", "Three.js", "Adobe XD", "WebGL"],
+    "follow_up": {
+      "status": "planning",
+      "next_project": "Expansion ke 50 perguruan tinggi",
+      "timeline": "Q3 2025"
+    },
+    "project_metadata": {
+      "type": "pengembangan media",
+      "complexity": "high",
+      "timeline_adherence": 92,
+      "budget_adherence": 90,
+      "client_satisfaction": 95,
+      "team_collaboration_score": 96,
+      "innovation_index": 92
+    },
+    "performance_metrics": {
+      "module_completion_rate": 100,
+      "user_adoption": 95,
+      "technical_reliability": 98,
+      "content_quality": 94,
+      "system_performance": 96
+    },
+    "collaboration_details": {
+      "communication_frequency": "harian",
+      "meeting_style": "hybrid",
+      "feedback_loop": "24 jam",
+      "decision_making_process": "agile",
+      "conflict_resolution": "proaktif"
+    },
+    "client_background": {
+      "industry": "pemerintah",
+      "company_size": "large",
+      "years_in_operation": 4,
+      "previous_vendors": 4,
+      "digital_maturity": "advanced"
+    },
+    "project_phases": {
+      "discovery": 3,
+      "design": 4,
+      "development": 8,
+      "testing": 3,
+      "deployment": 2
+    },
+    "risk_management": {
+      "identified_risks": 8,
+      "mitigated_risks": 8,
+      "contingency_plan_effectiveness": 92,
+      "issue_resolution_time": "12-36 jam"
+    },
+    "quality_assurance": {
+      "media_quality_score": 96,
+      "interactivity_level": 94,
+      "user_experience": 95,
+      "content_accuracy": 98,
+      "technical_excellence": 94
+    },
+    "stakeholder_feedback": {
+      "executive_approval": "sangat puas",
+      "end_user_satisfaction": 96,
+      "technical_team_rating": 95,
+      "management_endorsement": "ya"
+    },
+    "business_impact": {
+      "roi_calculated": 280,
+      "cost_savings": "Rp 75 juta/tahun",
+      "revenue_growth": "Rp 200 juta/tahun",
+      "market_share_increase": 25,
+      "competitive_advantage": "signifikan"
+    },
+    "innovation_contributions": {
+      "patents_filed": 2,
+      "new_methodologies": 4,
+      "process_improvements": 6,
+      "technology_innovations": 5,
+      "industry_recognitions": 3
+    },
+    "team_dynamics": {
+      "leadership_style": "agile",
+      "team_morale": "tinggi",
+      "skill_development": "signifikan",
+      "knowledge_sharing": "sistematis",
+      "cross_functional_collaboration": "sangat efektif"
+    },
+    "sustainability_factors": {
+      "environmental_impact": "rendah",
+      "social_contribution": "tinggi",
+      "long_term_maintainability": "sangat baik",
+      "scalability_potential": "tinggi",
+      "future_roadmap_alignment": "sempurna"
+    },
+    "documentation_quality": {
+      "technical_docs_score": 94,
+      "user_manual_quality": 96,
+      "api_documentation": 92,
+      "maintenance_guides": 90,
+      "knowledge_transfer": "sistematis"
+    },
+    "post_launch_support": {
+      "warranty_period": "6 bulan",
+      "response_time_sla": "2 jam",
+      "issue_resolution_rate": 97,
+      "feature_enhancements": 5,
+      "user_training_sessions": 6
+    }
   },
   {
     "id": 4,
@@ -65,7 +401,119 @@
     "tags": ["kampanye edukasi", "literasi digital", "strategi konten", "kolaborasi nasional"],
     "highlight": "Menerjemahkan konsep menjadi kampanye edukatif berdampak nasional.",
     "link": "https://eduverse.id/literasi-digital-2025",
-    "verified": true
+    "verified": true,
+    "project_duration": "5 bulan",
+    "budget_range": "Rp 500-600 juta",
+    "team_size": 15,
+    "key_achievements": [
+      "Menjangkau 1 juta+ peserta kampanye",
+      "Viral di media sosial dengan 5 juta+ impressions",
+      "Kolaborasi dengan 20 influencer pendidikan"
+    ],
+    "technologies_used": ["Next.js", "GSAP", "Cloudinary", "Social Media APIs"],
+    "follow_up": {
+      "status": "completed",
+      "next_project": "Literasi Digital untuk Daerah 3T",
+      "timeline": "Q4 2025"
+    },
+    "project_metadata": {
+      "type": "kampanye digital",
+      "complexity": "high",
+      "timeline_adherence": 90,
+      "budget_adherence": 88,
+      "client_satisfaction": 97,
+      "team_collaboration_score": 93,
+      "innovation_index": 95
+    },
+    "performance_metrics": {
+      "audience_reach": 1000000,
+      "engagement_rate": 25,
+      "conversion_rate": 15,
+      "brand_awareness": 85,
+      "social_media_impact": 95
+    },
+    "collaboration_details": {
+      "communication_frequency": "harian",
+      "meeting_style": "hybrid",
+      "feedback_loop": "12 jam",
+      "decision_making_process": "strategis",
+      "conflict_resolution": "profesional"
+    },
+    "client_background": {
+      "industry": "edutech",
+      "company_size": "medium",
+      "years_in_operation": 6,
+      "previous_vendors": 5,
+      "digital_maturity": "advanced"
+    },
+    "project_phases": {
+      "discovery": 2,
+      "design": 3,
+      "development": 5,
+      "testing": 2,
+      "deployment": 3
+    },
+    "risk_management": {
+      "identified_risks": 7,
+      "mitigated_risks": 7,
+      "contingency_plan_effectiveness": 90,
+      "issue_resolution_time": "6-18 jam"
+    },
+    "quality_assurance": {
+      "campaign_quality_score": 96,
+      "content_relevance": 94,
+      "visual_impact": 98,
+      "message_clarity": 95,
+      "audience_resonance": 92
+    },
+    "stakeholder_feedback": {
+      "executive_approval": "sangat puas",
+      "end_user_satisfaction": 94,
+      "technical_team_rating": 96,
+      "management_endorsement": "ya"
+    },
+    "business_impact": {
+      "roi_calculated": 320,
+      "cost_savings": "Rp 90 juta/tahun",
+      "revenue_growth": "Rp 280 juta/tahun",
+      "market_share_increase": 30,
+      "competitive_advantage": "sangat signifikan"
+    },
+    "innovation_contributions": {
+      "patents_filed": 1,
+      "new_methodologies": 5,
+      "process_improvements": 7,
+      "technology_innovations": 4,
+      "industry_recognitions": 4
+    },
+    "team_dynamics": {
+      "leadership_style": "visionary",
+      "team_morale": "sangat tinggi",
+      "skill_development": "luar biasa",
+      "knowledge_sharing": "intensif",
+      "cross_functional_collaboration": "sangat efektif"
+    },
+    "sustainability_factors": {
+      "environmental_impact": "sangat rendah",
+      "social_contribution": "sangat tinggi",
+      "long_term_maintainability": "baik",
+      "scalability_potential": "sangat tinggi",
+      "future_roadmap_alignment": "tinggi"
+    },
+    "documentation_quality": {
+      "campaign_docs_score": 92,
+      "analytics_reports": 95,
+      "performance_dashboards": 94,
+      "strategy_documents": 90,
+      "knowledge_transfer": "komprehensif"
+    },
+    "post_launch_support": {
+      "warranty_period": "4 bulan",
+      "response_time_sla": "4 jam",
+      "issue_resolution_rate": 96,
+      "feature_enhancements": 4,
+      "user_training_sessions": 5
+    }
   },
   {
     "id": 5,
@@ -82,6 +530,1515 @@
     "tags": ["manajemen konten", "UX desain", "implementasi sistem", "pengembangan produk"],
     "highlight": "Profesional adaptif dengan fokus pada hasil dan inovasi desain.",
     "link": "https://nusantaraedutech.id/projects/platform-terpadu",
-    "verified": true
+    "verified": true,
+    "project_duration": "8 bulan",
+    "budget_range": "Rp 1-1.2 miliar",
+    "team_size": 20,
+    "key_achievements": [
+      "Mengurangi bounce rate hingga 40%",
+      "Meningkatkan conversion rate sebesar 35%",
+      "Integrasi dengan 5 sistem legacy yang berbeda"
+    ],
+    "technologies_used": ["React Native", "Node.js", "MongoDB", "AWS"],
+    "follow_up": {
+      "status": "ongoing",
+      "next_project": "AI-Powered Learning Analytics",
+      "timeline": "Q1 2026"
+    },
+    "project_metadata": {
+      "type": "pengembangan platform",
+      "complexity": "very high",
+      "timeline_adherence": 88,
+      "budget_adherence": 85,
+      "client_satisfaction": 96,
+      "team_collaboration_score": 95,
+      "innovation_index": 94
+    },
+    "performance_metrics": {
+      "system_uptime": 99.9,
+      "user_satisfaction": 94,
+      "performance_improvement": 60,
+      "integration_success": 100,
+      "scalability_achieved": 95
+    },
+    "collaboration_details": {
+      "communication_frequency": "harian",
+      "meeting_style": "hybrid",
+      "feedback_loop": "24 jam",
+      "decision_making_process": "data-driven",
+      "conflict_resolution": "strategis"
+    },
+    "client_background": {
+      "industry": "edutech",
+      "company_size": "large",
+      "years_in_operation": 8,
+      "previous_vendors": 6,
+      "digital_maturity": "advanced"
+    },
+    "project_phases": {
+      "discovery": 4,
+      "design": 6,
+      "development": 12,
+      "testing": 4,
+      "deployment": 4
+    },
+    "risk_management": {
+      "identified_risks": 12,
+      "mitigated_risks": 12,
+      "contingency_plan_effectiveness": 88,
+      "issue_resolution_time": "24-72 jam"
+    },
+    "quality_assurance": {
+      "platform_stability": 98,
+      "user_experience": 96,
+      "security_implementation": 97,
+      "performance_optimization": 95,
+      "code_maintainability": 92
+    },
+    "stakeholder_feedback": {
+      "executive_approval": "sangat puas",
+      "end_user_satisfaction": 95,
+      "technical_team_rating": 96,
+      "management_endorsement": "ya"
+    },
+    "business_impact": {
+      "roi_calculated": 350,
+      "cost_savings": "Rp 150 juta/tahun",
+      "revenue_growth": "Rp 450 juta/tahun",
+      "market_share_increase": 35,
+      "competitive_advantage": "sangat signifikan"
+    },
+    "innovation_contributions": {
+      "patents_filed": 3,
+      "new_methodologies": 6,
+      "process_improvements": 8,
+      "technology_innovations": 7,
+      "industry_recognitions": 5
+    },
+    "team_dynamics": {
+      "leadership_style": "transformational",
+      "team_morale": "tinggi",
+      "skill_development": "signifikan",
+      "knowledge_sharing": "sistematis",
+      "cross_functional_collaboration": "sangat efektif"
+    },
+    "sustainability_factors": {
+      "environmental_impact": "rendah",
+      "social_contribution": "tinggi",
+      "long_term_maintainability": "sangat baik",
+      "scalability_potential": "sangat tinggi",
+      "future_roadmap_alignment": "sempurna"
+    },
+    "documentation_quality": {
+      "technical_docs_score": 95,
+      "user_manual_quality": 94,
+      "api_documentation": 96,
+      "architecture_documents": 92,
+      "knowledge_transfer": "komprehensif"
+    },
+    "post_launch_support": {
+      "warranty_period": "12 bulan",
+      "response_time_sla": "1 jam",
+      "issue_resolution_rate": 99,
+      "feature_enhancements": 8,
+      "user_training_sessions": 12
+    }
+  },
+  {
+    "id": 6,
+    "title": "Transformasi Digital Sekolah Islam Terpadu",
+    "name": "Al-Falah Islamic School",
+    "role": "Kepala Sekolah",
+    "company": "Sekolah Islam Terpadu Al-Falah",
+    "project": "Digital Transformation Roadmap 2024-2026",
+    "location": "Bogor, Indonesia",
+    "text": "Syaiful tidak hanya memberikan solusi teknis, tetapi juga memahami nilai-nilai pendidikan Islam yang kami anut. Hasil karyanya memadukan teknologi modern dengan prinsip pendidikan berbasis akhlak.",
+    "image": "https://i.pravatar.cc/150?img=65",
+    "rating": 5,
+    "date": "2024-09-15",
+    "tags": ["transformasi digital", "pendidikan islam", "manajemen perubahan", "konsultasi strategis"],
+    "highlight": "Memadukan teknologi dengan nilai-nilai pendidikan Islami.",
+    "link": "https://alfalah.sch.id/digital-transformation",
+    "verified": true,
+    "project_duration": "12 bulan",
+    "budget_range": "Rp 300-400 juta",
+    "team_size": 8,
+    "key_achievements": [
+      "Digitalisasi 90% proses administratif",
+      "Pelatihan 100% staff dan guru",
+      "Penghematan biaya operasional 25%"
+    ],
+    "technologies_used": ["Microsoft 365", "Power BI", "Custom ERP", "Mobile Apps"],
+    "follow_up": {
+      "status": "phase_2",
+      "next_project": "Smart Classroom Implementation",
+      "timeline": "Q2 2025"
+    },
+    "project_metadata": {
+      "type": "konsultasi transformasi",
+      "complexity": "high",
+      "timeline_adherence": 94,
+      "budget_adherence": 92,
+      "client_satisfaction": 98,
+      "team_collaboration_score": 96,
+      "innovation_index": 90
+    },
+    "performance_metrics": {
+      "digital_adoption_rate": 90,
+      "process_efficiency": 60,
+      "cost_reduction": 25,
+      "staff_competency": 85,
+      "stakeholder_satisfaction": 95
+    },
+    "collaboration_details": {
+      "communication_frequency": "mingguan",
+      "meeting_style": "onsite",
+      "feedback_loop": "48 jam",
+      "decision_making_process": "konsensus",
+      "conflict_resolution": "kultural"
+    },
+    "client_background": {
+      "industry": "pendidikan",
+      "company_size": "medium",
+      "years_in_operation": 15,
+      "previous_vendors": 4,
+      "digital_maturity": "beginner"
+    },
+    "project_phases": {
+      "discovery": 3,
+      "design": 4,
+      "development": 8,
+      "testing": 2,
+      "deployment": 3
+    },
+    "risk_management": {
+      "identified_risks": 6,
+      "mitigated_risks": 6,
+      "contingency_plan_effectiveness": 92,
+      "issue_resolution_time": "24-48 jam"
+    },
+    "quality_assurance": {
+      "transformation_success": 95,
+      "cultural_alignment": 98,
+      "technical_implementation": 92,
+      "change_management": 94,
+      "strategic_alignment": 96
+    },
+    "stakeholder_feedback": {
+      "executive_approval": "sangat puas",
+      "end_user_satisfaction": 93,
+      "technical_team_rating": 92,
+      "management_endorsement": "ya"
+    },
+    "business_impact": {
+      "roi_calculated": 240,
+      "cost_savings": "Rp 80 juta/tahun",
+      "revenue_growth": "Rp 60 juta/tahun",
+      "market_share_increase": 18,
+      "competitive_advantage": "signifikan"
+    },
+    "innovation_contributions": {
+      "patents_filed": 0,
+      "new_methodologies": 4,
+      "process_improvements": 7,
+      "technology_innovations": 3,
+      "industry_recognitions": 2
+    },
+    "team_dynamics": {
+      "leadership_style": "servant",
+      "team_morale": "sangat tinggi",
+      "skill_development": "tinggi",
+      "knowledge_sharing": "aktif",
+      "cross_functional_collaboration": "efektif"
+    },
+    "sustainability_factors": {
+      "environmental_impact": "rendah",
+      "social_contribution": "sangat tinggi",
+      "long_term_maintainability": "baik",
+      "scalability_potential": "medium",
+      "future_roadmap_alignment": "tinggi"
+    },
+    "documentation_quality": {
+      "strategy_docs_score": 96,
+      "implementation_guides": 92,
+      "training_materials": 94,
+      "policy_documents": 90,
+      "knowledge_transfer": "komprehensif"
+    },
+    "post_launch_support": {
+      "warranty_period": "8 bulan",
+      "response_time_sla": "4 jam",
+      "issue_resolution_rate": 96,
+      "feature_enhancements": 3,
+      "user_training_sessions": 10
+    }
+  },
+  {
+    "id": 7,
+    "title": "Pengembangan Game Edukasi Anak Usia Dini",
+    "name": "EduPlay Games",
+    "role": "CEO & Founder",
+    "company": "PT EduPlay Games Indonesia",
+    "project": "Seri Game Edukasi 'Petualangan Nusantara'",
+    "location": "Denpasar, Bali",
+    "text": "Kreativitas Syaiful dalam merancang pengalaman belajar melalui game benar-benar luar biasa. Game yang dikembangkan tidak hanya edukatif tetapi juga sangat menghibur untuk anak-anak.",
+    "image": "https://i.pravatar.cc/150?img=33",
+    "rating": 5,
+    "date": "2024-12-10",
+    "tags": ["game edukasi", "anak usia dini", "gamifikasi", "pengembangan mobile"],
+    "highlight": "Menciptakan pengalaman belajar yang menyenangkan melalui gamifikasi.",
+    "link": "https://eduplaygames.id/series/petualangan-nusantara",
+    "verified": true,
+    "project_duration": "6 bulan",
+    "budget_range": "Rp 200-250 juta",
+    "team_size": 6,
+    "key_achievements": [
+      "100.000+ downloads di 3 bulan pertama",
+      "Rating 4.8/5 di App Store dan Play Store",
+      "Featured oleh Google Play Indonesia"
+    ],
+    "technologies_used": ["Unity", "C#", "Blender", "Firebase"],
+    "follow_up": {
+      "status": "planning",
+      "next_project": "AR Educational Games Series",
+      "timeline": "Q3 2025"
+    },
+    "project_metadata": {
+      "type": "pengembangan game",
+      "complexity": "medium",
+      "timeline_adherence": 96,
+      "budget_adherence": 94,
+      "client_satisfaction": 97,
+      "team_collaboration_score": 95,
+      "innovation_index": 92
+    },
+    "performance_metrics": {
+      "download_growth": 100000,
+      "user_retention": 75,
+      "educational_impact": 88,
+      "monetization_rate": 20,
+      "store_ratings": 4.8
+    },
+    "collaboration_details": {
+      "communication_frequency": "harian",
+      "meeting_style": "virtual",
+      "feedback_loop": "24 jam",
+      "decision_making_process": "iteratif",
+      "conflict_resolution": "kreatif"
+    },
+    "client_background": {
+      "industry": "gaming",
+      "company_size": "small",
+      "years_in_operation": 2,
+      "previous_vendors": 3,
+      "digital_maturity": "intermediate"
+    },
+    "project_phases": {
+      "discovery": 2,
+      "design": 3,
+      "development": 8,
+      "testing": 3,
+      "deployment": 2
+    },
+    "risk_management": {
+      "identified_risks": 5,
+      "mitigated_risks": 5,
+      "contingency_plan_effectiveness": 90,
+      "issue_resolution_time": "18-36 jam"
+    },
+    "quality_assurance": {
+      "game_quality_score": 95,
+      "educational_value": 92,
+      "entertainment_factor": 96,
+      "technical_performance": 94,
+      "user_engagement": 93
+    },
+    "stakeholder_feedback": {
+      "executive_approval": "sangat puas",
+      "end_user_satisfaction": 96,
+      "technical_team_rating": 94,
+      "management_endorsement": "ya"
+    },
+    "business_impact": {
+      "roi_calculated": 280,
+      "cost_savings": "Rp 35 juta/tahun",
+      "revenue_growth": "Rp 180 juta/tahun",
+      "market_share_increase": 22,
+      "competitive_advantage": "signifikan"
+    },
+    "innovation_contributions": {
+      "patents_filed": 1,
+      "new_methodologies": 3,
+      "process_improvements": 5,
+      "technology_innovations": 4,
+      "industry_recognitions": 3
+    },
+    "team_dynamics": {
+      "leadership_style": "creative",
+      "team_morale": "sangat tinggi",
+      "skill_development": "tinggi",
+      "knowledge_sharing": "intensif",
+      "cross_functional_collaboration": "efektif"
+    },
+    "sustainability_factors": {
+      "environmental_impact": "sangat rendah",
+      "social_contribution": "tinggi",
+      "long_term_maintainability": "baik",
+      "scalability_potential": "tinggi",
+      "future_roadmap_alignment": "tinggi"
+    },
+    "documentation_quality": {
+      "game_design_docs": 94,
+      "technical_specs": 92,
+      "user_guides": 90,
+      "api_documentation": 88,
+      "knowledge_transfer": "komprehensif"
+    },
+    "post_launch_support": {
+      "warranty_period": "6 bulan",
+      "response_time_sla": "6 jam",
+      "issue_resolution_rate": 95,
+      "feature_enhancements": 4,
+      "user_training_sessions": 3
+    }
+  },
+  {
+    "id": 8,
+    "title": "Sistem Manajemen Pembelajaran Corporate",
+    "name": "BUMN Tech Solutions",
+    "role": "Head of Learning & Development",
+    "company": "PT BUMN Tech Solutions",
+    "project": "Corporate Learning Management System",
+    "location": "Tangerang, Indonesia",
+    "text": "Professionalisme dan kedalaman teknis Syaiful sangat mengesankan. Ia berhasil membangun sistem yang scalable dan user-friendly untuk 5.000+ karyawan kami dengan hasil yang exceptional.",
+    "image": "https://i.pravatar.cc/150?img=19",
+    "rating": 4.9,
+    "date": "2025-03-18",
+    "tags": ["corporate training", "LMS", "enterprise solution", "scalability"],
+    "highlight": "Membangun sistem enterprise yang scalable dan user-friendly.",
+    "link": "https://bumntechsolutions.co.id/lms-project",
+    "verified": true,
+    "project_duration": "9 bulan",
+    "budget_range": "Rp 800-900 juta",
+    "team_size": 10,
+    "key_achievements": [
+      "Mengurangi biaya training external sebesar 40%",
+      "98% uptime system availability",
+      "90% employee adoption rate dalam 2 bulan"
+    ],
+    "technologies_used": ["Laravel", "Vue.js", "MySQL", "Docker", "Redis"],
+    "follow_up": {
+      "status": "maintenance",
+      "next_project": "AI-Powered Skill Gap Analysis",
+      "timeline": "Q4 2025"
+    },
+    "project_metadata": {
+      "type": "enterprise solution",
+      "complexity": "very high",
+      "timeline_adherence": 90,
+      "budget_adherence": 88,
+      "client_satisfaction": 96,
+      "team_collaboration_score": 94,
+      "innovation_index": 90
+    },
+    "performance_metrics": {
+      "system_reliability": 99.8,
+      "user_adoption": 95,
+      "training_efficiency": 50,
+      "cost_savings": 40,
+      "employee_satisfaction": 92
+    },
+    "collaboration_details": {
+      "communication_frequency": "harian",
+      "meeting_style": "hybrid",
+      "feedback_loop": "24 jam",
+      "decision_making_process": "structured",
+      "conflict_resolution": "professional"
+    },
+    "client_background": {
+      "industry": "corporate",
+      "company_size": "enterprise",
+      "years_in_operation": 25,
+      "previous_vendors": 8,
+      "digital_maturity": "advanced"
+    },
+    "project_phases": {
+      "discovery": 4,
+      "design": 5,
+      "development": 10,
+      "testing": 4,
+      "deployment": 3
+    },
+    "risk_management": {
+      "identified_risks": 10,
+      "mitigated_risks": 10,
+      "contingency_plan_effectiveness": 92,
+      "issue_resolution_time": "12-48 jam"
+    },
+    "quality_assurance": {
+      "enterprise_ready_score": 96,
+      "security_compliance": 98,
+      "performance_scalability": 95,
+      "integration_capability": 94,
+      "user_experience": 92
+    },
+    "stakeholder_feedback": {
+      "executive_approval": "sangat puas",
+      "end_user_satisfaction": 94,
+      "technical_team_rating": 95,
+      "management_endorsement": "ya"
+    },
+    "business_impact": {
+      "roi_calculated": 380,
+      "cost_savings": "Rp 320 juta/tahun",
+      "revenue_growth": "Rp 150 juta/tahun",
+      "market_share_increase": 28,
+      "competitive_advantage": "sangat signifikan"
+    },
+    "innovation_contributions": {
+      "patents_filed": 2,
+      "new_methodologies": 5,
+      "process_improvements": 8,
+      "technology_innovations": 6,
+      "industry_recognitions": 4
+    },
+    "team_dynamics": {
+      "leadership_style": "strategic",
+      "team_morale": "tinggi",
+      "skill_development": "signifikan",
+      "knowledge_sharing": "sistematis",
+      "cross_functional_collaboration": "sangat efektif"
+    },
+    "sustainability_factors": {
+      "environmental_impact": "rendah",
+      "social_contribution": "medium",
+      "long_term_maintainability": "sangat baik",
+      "scalability_potential": "sangat tinggi",
+      "future_roadmap_alignment": "sempurna"
+    },
+    "documentation_quality": {
+      "enterprise_docs_score": 96,
+      "compliance_documents": 98,
+      "security_docs": 97,
+      "integration_guides": 94,
+      "knowledge_transfer": "komprehensif"
+    },
+    "post_launch_support": {
+      "warranty_period": "18 bulan",
+      "response_time_sla": "1 jam",
+      "issue_resolution_rate": 99,
+      "feature_enhancements": 6,
+      "user_training_sessions": 15
+    }
+  },
+  {
+    "id": 9,
+    "title": "Platform Belajar Bahasa Asing Berbasis AI",
+    "name": "LinguaLearn AI",
+    "role": "Product Manager",
+    "company": "LinguaLearn AI Singapore",
+    "project": "AI-Powered Language Learning Platform",
+    "location": "Singapore (Remote Collaboration)",
+    "text": "Working with Syaiful across borders was seamless. His technical expertise in AI integration and user experience design helped us create a truly innovative language learning product that stands out in the market.",
+    "image": "https://i.pravatar.cc/150?img=28",
+    "rating": 5,
+    "date": "2025-01-22",
+    "tags": ["AI integration", "language learning", "international collaboration", "product development"],
+    "highlight": "Expertise dalam integrasi AI untuk platform belajar bahasa yang inovatif.",
+    "link": "https://lingualearn.ai/platform",
+    "verified": true,
+    "project_duration": "7 bulan",
+    "budget_range": "SGD 50,000-70,000",
+    "team_size": 8,
+    "key_achievements": [
+      "AI accuracy rate 92% in speech recognition",
+      "50,000+ active users in first 6 months",
+      "Featured in EdTech Asia 2025"
+    ],
+    "technologies_used": ["Python", "TensorFlow", "React", "WebRTC", "Google Cloud"],
+    "follow_up": {
+      "status": "phase_2",
+      "next_project": "Multi-language Expansion & Mobile App",
+      "timeline": "Q3 2025"
+    },
+    "project_metadata": {
+      "type": "AI platform",
+      "complexity": "very high",
+      "timeline_adherence": 92,
+      "budget_adherence": 90,
+      "client_satisfaction": 97,
+      "team_collaboration_score": 93,
+      "innovation_index": 96
+    },
+    "performance_metrics": {
+      "ai_accuracy": 92,
+      "user_growth": 50000,
+      "learning_efficiency": 45,
+      "platform_performance": 95,
+      "international_reach": 85
+    },
+    "collaboration_details": {
+      "communication_frequency": "harian",
+      "meeting_style": "virtual",
+      "feedback_loop": "12 jam",
+      "decision_making_process": "agile",
+      "conflict_resolution": "professional"
+    },
+    "client_background": {
+      "industry": "edutech international",
+      "company_size": "medium",
+      "years_in_operation": 4,
+      "previous_vendors": 5,
+      "digital_maturity": "advanced"
+    },
+    "project_phases": {
+      "discovery": 3,
+      "design": 4,
+      "development": 10,
+      "testing": 4,
+      "deployment": 2
+    },
+    "risk_management": {
+      "identified_risks": 9,
+      "mitigated_risks": 9,
+      "contingency_plan_effectiveness": 90,
+      "issue_resolution_time": "18-48 jam"
+    },
+    "quality_assurance": {
+      "ai_performance": 94,
+      "user_experience": 96,
+      "multilingual_support": 92,
+      "technical_architecture": 95,
+      "innovation_quality": 98
+    },
+    "stakeholder_feedback": {
+      "executive_approval": "sangat puas",
+      "end_user_satisfaction": 95,
+      "technical_team_rating": 96,
+      "management_endorsement": "ya"
+    },
+    "business_impact": {
+      "roi_calculated": 420,
+      "cost_savings": "SGD 40,000/tahun",
+      "revenue_growth": "SGD 120,000/tahun",
+      "market_share_increase": 32,
+      "competitive_advantage": "sangat signifikan"
+    },
+    "innovation_contributions": {
+      "patents_filed": 3,
+      "new_methodologies": 6,
+      "process_improvements": 7,
+      "technology_innovations": 8,
+      "industry_recognitions": 5
+    },
+    "team_dynamics": {
+      "leadership_style": "innovative",
+      "team_morale": "tinggi",
+      "skill_development": "luar biasa",
+      "knowledge_sharing": "intensif",
+      "cross_functional_collaboration": "sangat efektif"
+    },
+    "sustainability_factors": {
+      "environmental_impact": "rendah",
+      "social_contribution": "tinggi",
+      "long_term_maintainability": "baik",
+      "scalability_potential": "sangat tinggi",
+      "future_roadmap_alignment": "tinggi"
+    },
+    "documentation_quality": {
+      "ai_docs_score": 95,
+      "api_documentation": 96,
+      "research_papers": 92,
+      "technical_specs": 94,
+      "knowledge_transfer": "komprehensif"
+    },
+    "post_launch_support": {
+      "warranty_period": "9 bulan",
+      "response_time_sla": "2 jam",
+      "issue_resolution_rate": 97,
+      "feature_enhancements": 5,
+      "user_training_sessions": 8
+    }
+  },
+  {
+    "id": 10,
+    "title": "Sistem Assessment Digital Berbasis Kompetensi",
+    "name": "Vocational Education Board",
+    "role": "Director of Digital Transformation",
+    "company": "National Vocational Education Board",
+    "project": "Digital Competency Assessment System",
+    "location": "Jakarta, Indonesia",
+    "text": "Syaiful menunjukkan pemahaman mendalam tentang assessment berbasis kompetensi. Sistem yang dibangun tidak hanya teknis sempurna tetapi juga memenuhi standar nasional dan kebutuhan industri.",
+    "image": "https://i.pravatar.cc/150?img=42",
+    "rating": 4.8,
+    "date": "2025-06-08",
+    "tags": ["vocational education", "assessment system", "competency based", "national standard"],
+    "highlight": "Memahami kebutuhan assessment kompetensi untuk pendidikan vokasi.",
+    "link": "https://vocationalboard.go.id/digital-assessment",
+    "verified": true,
+    "project_duration": "10 bulan",
+    "budget_range": "Rp 600-700 juta",
+    "team_size": 12,
+    "key_achievements": [
+      "Digunakan oleh 200+ SMK nasional",
+      "Integrasi dengan 15 skema sertifikasi kompetensi",
+      "Reduksi waktu assessment hingga 60%"
+    ],
+    "technologies_used": ["Java Spring Boot", "Angular", "PostgreSQL", "Redis Cache"],
+    "follow_up": {
+      "status": "expansion",
+      "next_project": "Industry Partnership Integration",
+      "timeline": "Q1 2026"
+    },
+    "project_metadata": {
+      "type": "government system",
+      "complexity": "high",
+      "timeline_adherence": 91,
+      "budget_adherence": 89,
+      "client_satisfaction": 95,
+      "team_collaboration_score": 93,
+      "innovation_index": 88
+    },
+    "performance_metrics": {
+      "system_adoption": 95,
+      "assessment_efficiency": 60,
+      "standard_compliance": 98,
+      "industry_alignment": 92,
+      "stakeholder_satisfaction": 94
+    },
+    "collaboration_details": {
+      "communication_frequency": "mingguan",
+      "meeting_style": "hybrid",
+      "feedback_loop": "48 jam",
+      "decision_making_process": "bureaucratic",
+      "conflict_resolution": "diplomatic"
+    },
+    "client_background": {
+      "industry": "government",
+      "company_size": "large",
+      "years_in_operation": 20,
+      "previous_vendors": 7,
+      "digital_maturity": "intermediate"
+    },
+    "project_phases": {
+      "discovery": 4,
+      "design": 5,
+      "development": 12,
+      "testing": 4,
+      "deployment": 3
+    },
+    "risk_management": {
+      "identified_risks": 8,
+      "mitigated_risks": 8,
+      "contingency_plan_effectiveness": 90,
+      "issue_resolution_time": "24-72 jam"
+    },
+    "quality_assurance": {
+      "system_reliability": 97,
+      "compliance_score": 99,
+      "assessment_accuracy": 96,
+      "security_standards": 98,
+      "integration_quality": 94
+    },
+    "stakeholder_feedback": {
+      "executive_approval": "sangat puas",
+      "end_user_satisfaction": 93,
+      "technical_team_rating": 95,
+      "management_endorsement": "ya"
+    },
+    "business_impact": {
+      "roi_calculated": 310,
+      "cost_savings": "Rp 180 juta/tahun",
+      "revenue_growth": "Rp 90 juta/tahun",
+      "market_share_increase": 26,
+      "competitive_advantage": "signifikan"
+    },
+    "innovation_contributions": {
+      "patents_filed": 1,
+      "new_methodologies": 4,
+      "process_improvements": 6,
+      "technology_innovations": 5,
+      "industry_recognitions": 3
+    },
+    "team_dynamics": {
+      "leadership_style": "structured",
+      "team_morale": "tinggi",
+      "skill_development": "signifikan",
+      "knowledge_sharing": "sistematis",
+      "cross_functional_collaboration": "efektif"
+    },
+    "sustainability_factors": {
+      "environmental_impact": "rendah",
+      "social_contribution": "tinggi",
+      "long_term_maintainability": "sangat baik",
+      "scalability_potential": "tinggi",
+      "future_roadmap_alignment": "sempurna"
+    },
+    "documentation_quality": {
+      "government_docs_score": 98,
+      "compliance_documents": 99,
+      "technical_specs": 94,
+      "policy_guides": 96,
+      "knowledge_transfer": "komprehensif"
+    },
+    "post_launch_support": {
+      "warranty_period": "15 bulan",
+      "response_time_sla": "3 jam",
+      "issue_resolution_rate": 98,
+      "feature_enhancements": 4,
+      "user_training_sessions": 20
+    }
+  },
+  {
+    "id": 11,
+    "title": "Platform Microlearning untuk Perusahaan Fintech",
+    "name": "FinLearn Technologies",
+    "role": "Chief Learning Officer",
+    "company": "PT FinLearn Technologies",
+    "project": "Microlearning Platform for Financial Literacy",
+    "location": "Jakarta, Indonesia",
+    "text": "Syaiful berhasil menciptakan platform microlearning yang revolusioner untuk industri fintech kami. Kemampuannya dalam memahami kebutuhan pembelajaran yang cepat dan efektif benar-benar luar biasa.",
+    "image": "https://i.pravatar.cc/150?img=15",
+    "rating": 5,
+    "date": "2025-08-14",
+    "tags": ["microlearning", "fintech", "financial literacy", "mobile learning"],
+    "highlight": "Revolusi pembelajaran cepat untuk literasi keuangan digital.",
+    "link": "https://finlearn.tech/microlearning-platform",
+    "verified": true,
+    "project_duration": "5 bulan",
+    "budget_range": "Rp 350-400 juta",
+    "team_size": 7,
+    "key_achievements": [
+      "90% completion rate untuk modul 5-menit",
+      "40% peningkatan pengetahuan produk",
+      "Integrasi dengan 8 sistem fintech existing"
+    ],
+    "technologies_used": ["Flutter", "Node.js", "MongoDB", "AWS Lambda"],
+    "follow_up": {
+      "status": "ongoing",
+      "next_project": "AI-Powered Learning Path Personalization",
+      "timeline": "Q4 2025"
+    },
+    "project_metadata": {
+      "type": "mobile learning platform",
+      "complexity": "medium",
+      "timeline_adherence": 96,
+      "budget_adherence": 94,
+      "client_satisfaction": 98,
+      "team_collaboration_score": 95,
+      "innovation_index": 93
+    },
+    "performance_metrics": {
+      "completion_rate": 90,
+      "knowledge_improvement": 40,
+      "engagement_duration": 85,
+      "mobile_adoption": 95,
+      "content_effectiveness": 92
+    },
+    "collaboration_details": {
+      "communication_frequency": "harian",
+      "meeting_style": "hybrid",
+      "feedback_loop": "24 jam",
+      "decision_making_process": "agile",
+      "conflict_resolution": "konstruktif"
+    },
+    "client_background": {
+      "industry": "fintech",
+      "company_size": "medium",
+      "years_in_operation": 6,
+      "previous_vendors": 4,
+      "digital_maturity": "advanced"
+    },
+    "project_phases": {
+      "discovery": 2,
+      "design": 3,
+      "development": 6,
+      "testing": 2,
+      "deployment": 2
+    },
+    "risk_management": {
+      "identified_risks": 6,
+      "mitigated_risks": 6,
+      "contingency_plan_effectiveness": 92,
+      "issue_resolution_time": "12-36 jam"
+    },
+    "quality_assurance": {
+      "mobile_experience": 96,
+      "content_quality": 94,
+      "technical_performance": 95,
+      "security_standards": 98,
+      "user_satisfaction": 97
+    },
+    "stakeholder_feedback": {
+      "executive_approval": "sangat puas",
+      "end_user_satisfaction": 96,
+      "technical_team_rating": 95,
+      "management_endorsement": "ya"
+    },
+    "business_impact": {
+      "roi_calculated": 290,
+      "cost_savings": "Rp 65 juta/tahun",
+      "revenue_growth": "Rp 140 juta/tahun",
+      "market_share_increase": 24,
+      "competitive_advantage": "signifikan"
+    },
+    "innovation_contributions": {
+      "patents_filed": 2,
+      "new_methodologies": 4,
+      "process_improvements": 5,
+      "technology_innovations": 4,
+      "industry_recognitions": 3
+    },
+    "team_dynamics": {
+      "leadership_style": "agile",
+      "team_morale": "sangat tinggi",
+      "skill_development": "tinggi",
+      "knowledge_sharing": "intensif",
+      "cross_functional_collaboration": "efektif"
+    },
+    "sustainability_factors": {
+      "environmental_impact": "sangat rendah",
+      "social_contribution": "tinggi",
+      "long_term_maintainability": "baik",
+      "scalability_potential": "tinggi",
+      "future_roadmap_alignment": "tinggi"
+    },
+    "documentation_quality": {
+      "mobile_docs_score": 94,
+      "api_documentation": 92,
+      "content_guides": 96,
+      "integration_docs": 90,
+      "knowledge_transfer": "komprehensif"
+    },
+    "post_launch_support": {
+      "warranty_period": "7 bulan",
+      "response_time_sla": "3 jam",
+      "issue_resolution_rate": 97,
+      "feature_enhancements": 4,
+      "user_training_sessions": 6
+    }
+  },
+  {
+    "id": 12,
+    "title": "Sistem VR untuk Pelatihan Safety Industri",
+    "name": "Industrial Safety Pro",
+    "role": "Head of Innovation",
+    "company": "PT Industrial Safety Pro",
+    "project": "Virtual Reality Safety Training System",
+    "location": "Bekasi, Indonesia",
+    "text": "Inovasi Syaiful dalam mengembangkan sistem VR untuk pelatihan safety mengubah paradigma training kami. Pengalaman immersive yang diciptakan meningkatkan retention dan efektivitas training secara dramatis.",
+    "image": "https://i.pravatar.cc/150?img=8",
+    "rating": 4.9,
+    "date": "2025-09-20",
+    "tags": ["virtual reality", "safety training", "industrial", "immersive learning"],
+    "highlight": "Transformasi pelatihan safety melalui pengalaman VR yang immersive.",
+    "link": "https://industrialsafetypro.id/vr-training",
+    "verified": true,
+    "project_duration": "8 bulan",
+    "budget_range": "Rp 450-500 juta",
+    "team_size": 9,
+    "key_achievements": [
+      "85% improvement in knowledge retention",
+      "70% reduction in training accidents",
+      "Implementation across 15 industrial sites"
+    ],
+    "technologies_used": ["Unity", "Oculus SDK", "C#", "Blender", "AWS"],
+    "follow_up": {
+      "status": "expansion",
+      "next_project": "AR Maintenance Training Modules",
+      "timeline": "Q1 2026"
+    },
+    "project_metadata": {
+      "type": "VR training system",
+      "complexity": "high",
+      "timeline_adherence": 93,
+      "budget_adherence": 91,
+      "client_satisfaction": 96,
+      "team_collaboration_score": 94,
+      "innovation_index": 97
+    },
+    "performance_metrics": {
+      "retention_improvement": 85,
+      "safety_incident_reduction": 70,
+      "training_efficiency": 75,
+      "user_engagement": 92,
+      "system_reliability": 95
+    },
+    "collaboration_details": {
+      "communication_frequency": "mingguan",
+      "meeting_style": "hybrid",
+      "feedback_loop": "36 jam",
+      "decision_making_process": "iteratif",
+      "conflict_resolution": "teknis"
+    },
+    "client_background": {
+      "industry": "industrial safety",
+      "company_size": "medium",
+      "years_in_operation": 12,
+      "previous_vendors": 5,
+      "digital_maturity": "intermediate"
+    },
+    "project_phases": {
+      "discovery": 3,
+      "design": 4,
+      "development": 10,
+      "testing": 4,
+      "deployment": 3
+    },
+    "risk_management": {
+      "identified_risks": 7,
+      "mitigated_risks": 7,
+      "contingency_plan_effectiveness": 91,
+      "issue_resolution_time": "24-48 jam"
+    },
+    "quality_assurance": {
+      "vr_experience_quality": 96,
+      "safety_accuracy": 98,
+      "technical_performance": 94,
+      "content_authenticity": 97,
+      "user_immersion": 95
+    },
+    "stakeholder_feedback": {
+      "executive_approval": "sangat puas",
+      "end_user_satisfaction": 95,
+      "technical_team_rating": 96,
+      "management_endorsement": "ya"
+    },
+    "business_impact": {
+      "roi_calculated": 340,
+      "cost_savings": "Rp 120 juta/tahun",
+      "revenue_growth": "Rp 200 juta/tahun",
+      "market_share_increase": 28,
+      "competitive_advantage": "sangat signifikan"
+    },
+    "innovation_contributions": {
+      "patents_filed": 3,
+      "new_methodologies": 5,
+      "process_improvements": 6,
+      "technology_innovations": 7,
+      "industry_recognitions": 4
+    },
+    "team_dynamics": {
+      "leadership_style": "innovative",
+      "team_morale": "tinggi",
+      "skill_development": "signifikan",
+      "knowledge_sharing": "intensif",
+      "cross_functional_collaboration": "sangat efektif"
+    },
+    "sustainability_factors": {
+      "environmental_impact": "rendah",
+      "social_contribution": "sangat tinggi",
+      "long_term_maintainability": "baik",
+      "scalability_potential": "tinggi",
+      "future_roadmap_alignment": "tinggi"
+    },
+    "documentation_quality": {
+      "vr_docs_score": 93,
+      "safety_protocols": 98,
+      "technical_manuals": 92,
+      "training_guides": 96,
+      "knowledge_transfer": "komprehensif"
+    },
+    "post_launch_support": {
+      "warranty_period": "10 bulan",
+      "response_time_sla": "4 jam",
+      "issue_resolution_rate": 96,
+      "feature_enhancements": 5,
+      "user_training_sessions": 8
+    }
+  },
+    {
+    "id": 14,
+    "title": "Sistem Manajemen Aset Digital Perusahaan",
+    "name": "Corporate Solutions Group",
+    "role": "Head of IT",
+    "company": "PT Corporate Solutions Group",
+    "project": "Enterprise Digital Asset Management System",
+    "location": "Jakarta, Indonesia",
+    "text": "Professionalisme Syaiful dalam mengembangkan sistem manajemen aset digital untuk perusahaan kami sangat luar biasa. Sistem yang dibuat scalable dan mudah diintegrasikan dengan infrastruktur existing.",
+    "image": "https://i.pravatar.cc/150?img=41",
+    "rating": 5,
+    "date": "2025-11-20",
+    "tags": ["enterprise", "digital asset management", "cloud infrastructure", "security"],
+    "highlight": "Sistem DAM enterprise yang scalable dan secure.",
+    "link": "https://corporate-solutions.co.id/dam-system",
+    "verified": true,
+    "project_duration": "9 bulan",
+    "budget_range": "Rp 700-800 juta",
+    "team_size": 14,
+    "key_achievements": [
+      "Mengelola 50.000+ aset digital",
+      "Reduksi waktu pencarian aset dari 15 menit ke 30 detik",
+      "Integrasi dengan 8 sistem corporate existing"
+    ],
+    "technologies_used": ["Python Django", "React", "AWS S3", "Elasticsearch", "Docker"],
+    "follow_up": {
+      "status": "completed",
+      "next_project": "AI-Powered Asset Tagging System",
+      "timeline": "Q2 2026"
+    },
+    "project_metadata": {
+      "type": "enterprise system",
+      "complexity": "very high",
+      "timeline_adherence": 91,
+      "budget_adherence": 89,
+      "client_satisfaction": 97,
+      "team_collaboration_score": 95,
+      "innovation_index": 87
+    },
+    "performance_metrics": {
+      "system_availability": 99.9,
+      "search_performance": 98,
+      "storage_efficiency": 85,
+      "user_adoption": 92,
+      "security_compliance": 99
+    },
+    "collaboration_details": {
+      "communication_frequency": "mingguan",
+      "meeting_style": "hybrid",
+      "feedback_loop": "48 jam",
+      "decision_making_process": "structured",
+      "conflict_resolution": "professional"
+    },
+    "client_background": {
+      "industry": "corporate services",
+      "company_size": "enterprise",
+      "years_in_operation": 15,
+      "previous_vendors": 6,
+      "digital_maturity": "advanced"
+    },
+    "project_phases": {
+      "discovery": 4,
+      "design": 5,
+      "development": 12,
+      "testing": 4,
+      "deployment": 3
+    },
+    "risk_management": {
+      "identified_risks": 11,
+      "mitigated_risks": 11,
+      "contingency_plan_effectiveness": 94,
+      "issue_resolution_time": "24-48 jam"
+    },
+    "quality_assurance": {
+      "security_score": 99,
+      "performance_score": 97,
+      "scalability_test": 96,
+      "integration_test": 95,
+      "user_acceptance": 98
+    },
+    "stakeholder_feedback": {
+      "executive_approval": "sangat puas",
+      "end_user_satisfaction": 96,
+      "technical_team_rating": 97,
+      "management_endorsement": "ya"
+    },
+    "business_impact": {
+      "roi_calculated": 350,
+      "cost_savings": "Rp 200 juta/tahun",
+      "revenue_growth": "Rp 150 juta/tahun",
+      "market_share_increase": 18,
+      "competitive_advantage": "signifikan"
+    },
+    "innovation_contributions": {
+      "patents_filed": 2,
+      "new_methodologies": 4,
+      "process_improvements": 7,
+      "technology_innovations": 5,
+      "industry_recognitions": 3
+    },
+    "team_dynamics": {
+      "leadership_style": "strategic",
+      "team_morale": "tinggi",
+      "skill_development": "signifikan",
+      "knowledge_sharing": "sistematis",
+      "cross_functional_collaboration": "sangat efektif"
+    },
+    "sustainability_factors": {
+      "environmental_impact": "rendah",
+      "social_contribution": "medium",
+      "long_term_maintainability": "sangat baik",
+      "scalability_potential": "sangat tinggi",
+      "future_roadmap_alignment": "sempurna"
+    },
+    "documentation_quality": {
+      "technical_docs_score": 96,
+      "api_documentation": 95,
+      "security_docs": 98,
+      "admin_guides": 94,
+      "knowledge_transfer": "komprehensif"
+    },
+    "post_launch_support": {
+      "warranty_period": "12 bulan",
+      "response_time_sla": "2 jam",
+      "issue_resolution_rate": 98,
+      "feature_enhancements": 5,
+      "user_training_sessions": 12
+    },
+    "account_details": {
+      "user_type": "enterprise_client",
+      "membership_tier": "enterprise",
+      "account_age": "4 tahun",
+      "project_history_count": 9,
+      "payment_terms": "net_60",
+      "preferred_communication": "teams_email"
+    },
+    "company_profile": {
+      "industry_focus": ["corporate_services", "consulting"],
+      "employee_count": 250,
+      "annual_revenue": "Rp 150-200 miliar",
+      "founding_year": 2008,
+      "operating_regions": ["nasional", "singapore", "malaysia"],
+      "certifications": ["ISO 27001", "ISO 9001", "Company Listed"]
+    },
+    "security_compliance": {
+      "data_encryption": "AES-256",
+      "compliance_standards": ["ISO 27001", "PDPA"],
+      "access_control": "RBAC",
+      "audit_trail": "fully_implemented",
+      "data_retention_policy": "5 years"
+    },
+    "infrastructure_details": {
+      "hosting_environment": "private_cloud",
+      "database_cluster": "active_active",
+      "backup_strategy": "multi_region",
+      "disaster_recovery": "rto_4h_rpo_1h",
+      "monitoring_system": "prometheus_grafana"
+    }
+  },
+    {
+    "id": 15,
+    "title": "Aplikasi Mobile Banking untuk UMKM",
+    "name": "Bank UMKM Nasional",
+    "role": "Head of Digital Banking",
+    "company": "Bank UMKM Nasional",
+    "project": "Mobile Banking Application for SMEs",
+    "location": "Jakarta, Indonesia",
+    "text": "Syaiful berhasil mengembangkan aplikasi mobile banking yang user-friendly untuk segmen UMKM. Perhatiannya terhadap detail keamanan dan pengalaman pengguna sangat mengesankan.",
+    "image": "https://i.pravatar.cc/150?img=23",
+    "rating": 4.8,
+    "date": "2025-04-10",
+    "tags": ["mobile banking", "fintech", "UMKM", "security"],
+    "highlight": "Aplikasi banking yang aman dan mudah digunakan untuk UMKM.",
+    "link": "https://bumnasional.co.id/mobile-banking",
+    "verified": true,
+    "project_duration": "6 bulan",
+    "budget_range": "Rp 550-650 juta",
+    "team_size": 12,
+    "key_achievements": [
+      "100.000+ download dalam 3 bulan pertama",
+      "Transaksi harian Rp 25 miliar",
+      "Rating 4.7 di app stores"
+    ],
+    "account_details": {
+      "user_type": "banking_institution",
+      "membership_tier": "enterprise",
+      "account_age": "5 tahun",
+      "project_history_count": 12,
+      "payment_terms": "net_45",
+      "preferred_communication": "formal_meeting_email"
+    },
+    "company_profile": {
+      "industry_focus": ["banking", "financial_services"],
+      "employee_count": 1200,
+      "annual_revenue": "Rp 2.5 triliun",
+      "founding_year": 1995,
+      "operating_regions": ["nasional"],
+      "certifications": ["OJK Licensed", "ISO 27001"]
+    }
+  },
+
+  {
+    "id": 16,
+    "title": "Platform Crowdfunding untuk Proyek Sosial",
+    "name": "SocialFund Indonesia",
+    "role": "Executive Director",
+    "company": "Yayasan SocialFund Indonesia",
+    "project": "Social Project Crowdfunding Platform",
+    "location": "Bandung, Indonesia",
+    "text": "Syaiful menunjukkan empati dan pemahaman mendalam tentang kebutuhan platform crowdfunding sosial. Hasilnya adalah platform yang tidak hanya teknis sempurna tapi juga mudah diakses oleh berbagai kalangan.",
+    "image": "https://i.pravatar.cc/150?img=29",
+    "rating": 5,
+    "date": "2025-01-30",
+    "tags": ["crowdfunding", "social project", "non-profit", "community"],
+    "highlight": "Platform crowdfunding yang inklusif untuk proyek sosial.",
+    "link": "https://socialfund.id/platform",
+    "verified": true,
+    "project_duration": "5 bulan",
+    "budget_range": "Rp 180-220 juta",
+    "team_size": 6,
+    "key_achievements": [
+      "Membantu 150+ proyek sosial terkumpul dana",
+      "Total dana terkumpul Rp 3.5 miliar",
+      "Komunitas 25.000+ donor aktif"
+    ],
+    "account_details": {
+      "user_type": "non_profit",
+      "membership_tier": "basic",
+      "account_age": "2 tahun",
+      "project_history_count": 4,
+      "payment_terms": "net_30",
+      "preferred_communication": "whatsapp_email"
+    },
+    "company_profile": {
+      "industry_focus": ["social_enterprise", "community_development"],
+      "employee_count": 8,
+      "annual_revenue": "non_profit",
+      "founding_year": 2020,
+      "operating_regions": ["Jawa Barat", "Banten", "Jakarta"],
+      "certifications": ["Social Enterprise Certified", "Non-Profit Organization"]
+    }
+  },
+
+  {
+    "id": 17,
+    "title": "Sistem IoT untuk Smart Farming",
+    "name": "AgriTech Solutions",
+    "role": "Founder & CEO",
+    "company": "PT AgriTech Solutions Indonesia",
+    "project": "IoT-Based Smart Farming System",
+    "location": "Malang, Indonesia",
+    "text": "Inovasi Syaiful dalam mengembangkan sistem IoT untuk pertanian modern membantu petani meningkatkan produktivitas. Kemampuannya mengintegrasikan hardware dan software sangat mengagumkan.",
+    "image": "https://i.pravatar.cc/150?img=37",
+    "rating": 4.9,
+    "date": "2025-07-22",
+    "tags": ["IoT", "smart farming", "agriculture", "sensor technology"],
+    "highlight": "Integrasi hardware dan software untuk solusi pertanian pintar.",
+    "link": "https://agritech-solutions.id/iot-farming",
+    "verified": true,
+    "project_duration": "8 bulan",
+    "budget_range": "Rp 320-380 juta",
+    "team_size": 8,
+    "key_achievements": [
+      "Meningkatkan hasil panen 35%",
+      "Mengurangi penggunaan air 40%",
+      "Diadopsi 500+ petani di Jawa Timur"
+    ],
+    "account_details": {
+      "user_type": "agritech_startup",
+      "membership_tier": "premium",
+      "account_age": "3 tahun",
+      "project_history_count": 6,
+      "payment_terms": "net_30",
+      "preferred_communication": "telegram_email"
+    },
+    "company_profile": {
+      "industry_focus": ["agritech", "IoT", "sustainable_agriculture"],
+      "employee_count": 15,
+      "annual_revenue": "Rp 5-7 miliar",
+      "founding_year": 2021,
+      "operating_regions": ["Jawa Timur", "Bali", "Lombok"],
+      "certifications": ["Agriculture Tech License", "Innovation Award 2024"]
+    }
+  },
+
+  {
+    "id": 18,
+    "title": "Platform Edukasi Coding untuk Anak",
+    "name": "CodeKids Indonesia",
+    "role": "Education Director",
+    "company": "PT CodeKids Edu Indonesia",
+    "project": "Interactive Coding Platform for Children",
+    "location": "Jakarta, Indonesia",
+    "text": "Syaiful berhasil menciptakan platform coding yang menyenangkan dan edukatif untuk anak-anak. Pendekatannya yang kreatif membuat pembelajaran programming menjadi pengalaman yang mengasyikkan.",
+    "image": "https://i.pravatar.cc/150?img=44",
+    "rating": 5,
+    "date": "2025-03-15",
+    "tags": ["coding for kids", "educational technology", "game-based learning", "programming"],
+    "highlight": "Platform coding interaktif yang menyenangkan untuk anak-anak.",
+    "link": "https://codekids.id/platform",
+    "verified": true,
+    "project_duration": "7 bulan",
+    "budget_range": "Rp 280-330 juta",
+    "team_size": 9,
+    "key_achievements": [
+      "10.000+ siswa aktif",
+      "85% completion rate untuk kursus beginner",
+      "Partnership dengan 50 sekolah dasar"
+    ],
+    "account_details": {
+      "user_type": "edutech_startup",
+      "membership_tier": "premium",
+      "account_age": "2.5 tahun",
+      "project_history_count": 7,
+      "payment_terms": "net_30",
+      "preferred_communication": "slack_email"
+    },
+    "company_profile": {
+      "industry_focus": ["edutech", "children_education", "coding"],
+      "employee_count": 22,
+      "annual_revenue": "Rp 4-6 miliar",
+      "founding_year": 2022,
+      "operating_regions": ["Jakarta", "Surabaya", "Bandung"],
+      "certifications": ["Education Ministry Certified", "EdTech Award 2024"]
+    }
+  },
+
+  {
+    "id": 19,
+    "title": "Sistem Manajemen Rantai Pasok Digital",
+    "name": "SupplyChain Pro",
+    "role": "Operations Director",
+    "company": "PT SupplyChain Pro Indonesia",
+    "project": "Digital Supply Chain Management System",
+    "location": "Tangerang, Indonesia",
+    "text": "Kemampuan Syaiful dalam mengembangkan sistem manajemen rantai pasok yang kompleks sangat mengesankan. Sistem yang dibuat mampu mengoptimalkan seluruh proses logistics perusahaan kami.",
+    "image": "https://i.pravatar.cc/150?img=51",
+    "rating": 4.8,
+    "date": "2025-09-05",
+    "tags": ["supply chain", "logistics", "inventory management", "enterprise"],
+    "highlight": "Sistem manajemen rantai pasok yang terintegrasi dan efisien.",
+    "link": "https://supplychainpro.id/digital-system",
+    "verified": true,
+    "project_duration": "10 bulan",
+    "budget_range": "Rp 650-750 juta",
+    "team_size": 11,
+    "key_achievements": [
+      "Mengurangi waktu proses 45%",
+      "Optimasi inventory turnover 30%",
+      "Integrasi dengan 20 vendor utama"
+    ],
+    "account_details": {
+      "user_type": "logistics_company",
+      "membership_tier": "enterprise",
+      "account_age": "4 tahun",
+      "project_history_count": 8,
+      "payment_terms": "net_45",
+      "preferred_communication": "email_meeting"
+    },
+    "company_profile": {
+      "industry_focus": ["logistics", "supply_chain", "enterprise"],
+      "employee_count": 85,
+      "annual_revenue": "Rp 85-100 miliar",
+      "founding_year": 2018,
+      "operating_regions": ["nasional", "export"],
+      "certifications": ["ISO 9001", "Logistics License", "Customs Bonded"]
+    }
+  },
+
+  {
+    "id": 20,
+    "title": "Platform Mental Health dan Wellness",
+    "name": "MindCare Indonesia",
+    "role": "Clinical Director",
+    "company": "PT MindCare Digital Health",
+    "project": "Mental Health and Wellness Platform",
+    "location": "Jakarta, Indonesia",
+    "text": "Sensitivitas dan empati Syaiful dalam mengembangkan platform kesehatan mental sangat terlihat. Ia berhasil menciptakan pengalaman digital yang supportive dan aman bagi pengguna.",
+    "image": "https://i.pravatar.cc/150?img=26",
+    "rating": 5,
+    "date": "2025-05-18",
+    "tags": ["mental health", "healthtech", "wellness", "telemedicine"],
+    "highlight": "Platform kesehatan mental yang supportive dan confidential.",
+    "link": "https://mindcare.id/platform",
+    "verified": true,
+    "project_duration": "8 bulan",
+    "budget_range": "Rp 380-450 juta",
+    "team_size": 10,
+    "key_achievements": [
+      "50.000+ pengguna terdaftar",
+      "Network 150+ professional therapist",
+      "Rating kepuasan 4.9/5 dari users"
+    ],
+    "account_details": {
+      "user_type": "healthtech_startup",
+      "membership_tier": "premium",
+      "account_age": "3 tahun",
+      "project_history_count": 5,
+      "payment_terms": "net_30",
+      "preferred_communication": "secure_portal_email"
+    },
+    "company_profile": {
+      "industry_focus": ["healthtech", "mental_health", "wellness"],
+      "employee_count": 35,
+      "annual_revenue": "Rp 12-15 miliar",
+      "founding_year": 2021,
+      "operating_regions": ["nasional"],
+      "certifications": ["Ministry of Health Licensed", "HIPAA Compliant", "Clinical Certified"]
+    }
+  },
+
+  {
+    "id": 21,
+    "title": "Sistem Real Estate Property Management",
+    "name": "PropertyHub Indonesia",
+    "role": "Technology Head",
+    "company": "PT PropertyHub Digital",
+    "project": "Real Estate Property Management System",
+    "location": "Jakarta, Indonesia",
+    "text": "Syaiful menunjukkan pemahaman mendalam tentang industri real estate dalam mengembangkan sistem property management. Solusi yang diberikan sangat comprehensive dan scalable.",
+    "image": "https://i.pravatar.cc/150?img=35",
+    "rating": 4.9,
+    "date": "2025-08-12",
+    "tags": ["real estate", "property management", "CRM", "enterprise"],
+    "highlight": "Sistem property management yang comprehensive untuk real estate.",
+    "link": "https://propertyhub.id/management-system",
+    "verified": true,
+    "project_duration": "9 bulan",
+    "budget_range": "Rp 520-600 juta",
+    "team_size": 13,
+    "key_achievements": [
+      "Mengelola 5.000+ properti",
+      "Automation 80% proses administratif",
+      "Integration dengan 10 banking partners"
+    ],
+    "account_details": {
+      "user_type": "proptech_company",
+      "membership_tier": "enterprise",
+      "account_age": "3.5 tahun",
+      "project_history_count": 11,
+      "payment_terms": "net_45",
+      "preferred_communication": "email_meeting"
+    },
+    "company_profile": {
+      "industry_focus": ["proptech", "real_estate", "property_management"],
+      "employee_count": 68,
+      "annual_revenue": "Rp 45-55 miliar",
+      "founding_year": 2019,
+      "operating_regions": ["Jakarta", "Surabaya", "Bali", "Bandung"],
+      "certifications": ["Real Estate License", "ISO 9001", "Property Tech Award"]
+    }
+  },
+
+  {
+    "id": 22,
+    "title": "Platform E-Learning untuk Disabilitas",
+    "name": "InclusiveEdu Foundation",
+    "role": "Program Director",
+    "company": "Yayasan InclusiveEdu Indonesia",
+    "project": "Accessible E-Learning Platform for Disabilities",
+    "location": "Yogyakarta, Indonesia",
+    "text": "Komitmen Syaiful terhadap inklusivitas terlihat dalam pengembangan platform e-learning untuk disabilitas. Perhatiannya terhadap accessibility standards sangat luar biasa dan impactful.",
+    "image": "https://i.pravatar.cc/150?img=48",
+    "rating": 5,
+    "date": "2025-02-28",
+    "tags": ["inclusive education", "accessibility", "disability", "e-learning"],
+    "highlight": "Platform e-learning yang fully accessible untuk berbagai disabilitas.",
+    "link": "https://inclusiveedu.id/platform",
+    "verified": true,
+    "project_duration": "7 bulan",
+    "budget_range": "Rp 220-280 juta",
+    "team_size": 8,
+    "key_achievements": [
+      "Mendukung 8 jenis disabilitas berbeda",
+      "5.000+ users dengan berbagai kebutuhan",
+      "WCAG 2.1 AA compliance 100%"
+    ],
+    "account_details": {
+      "user_type": "non_profit_foundation",
+      "membership_tier": "basic",
+      "account_age": "2 tahun",
+      "project_history_count": 4,
+      "payment_terms": "net_30",
+      "preferred_communication": "email_whatsapp"
+    },
+    "company_profile": {
+      "industry_focus": ["inclusive_education", "disability_support", "non_profit"],
+      "employee_count": 12,
+      "annual_revenue": "grant_funded",
+      "founding_year": 2020,
+      "operating_regions": ["nasional"],
+      "certifications": ["Social Foundation", "Education Ministry Partner", "Disability Alliance"]
+    }
   }
 ]

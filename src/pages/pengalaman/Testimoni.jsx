@@ -1,4 +1,3 @@
-"use client";
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
@@ -8,6 +7,10 @@ import TestimoniSearchFilter from "./components/pencarian/TestimoniSearchFilter"
 import TestimoniGrid from "./components/grid/TestimoniGrid";
 import TestimoniModal from "./components/popup/TestimoniModal";
 import { formatTanggal, similarity } from "./components/utilsTestimoni";
+
+// Constants
+const ITEMS_PER_PAGE = 6;
+const DEBOUNCE_DELAY = 200;
 
 export default function Testimoni() {
   const { id } = useParams();
@@ -20,22 +23,18 @@ export default function Testimoni() {
   const [currentPage, setCurrentPage] = useState(1);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [isNavigatingFromUrl, setIsNavigatingFromUrl] = useState(false);
   const inputRef = useRef(null);
   const suggestionRef = useRef(null);
-
-  const itemsPerPage = 6;
+  const debounceTimerRef = useRef(null);
 
   // Handle URL parameter untuk auto-open modal
   useEffect(() => {
     if (id) {
-      const testimonialId = parseInt(id);
+      const testimonialId = parseInt(id, 10);
       if (!isNaN(testimonialId)) {
         const foundTestimonial = testimonialsData.find(t => t.id === testimonialId);
         if (foundTestimonial) {
-          setIsNavigatingFromUrl(true);
           setSelected(foundTestimonial);
-          // Scroll ke atas saat modal dibuka dari URL
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       }
@@ -45,11 +44,8 @@ export default function Testimoni() {
   // Handle close modal dengan update URL
   const handleCloseModal = useCallback(() => {
     setSelected(null);
-    if (isNavigatingFromUrl) {
-      navigate('/testimoni', { replace: true });
-      setIsNavigatingFromUrl(false);
-    }
-  }, [navigate, isNavigatingFromUrl]);
+    navigate('/testimoni', { replace: true });
+  }, [navigate]);
 
   // Handle select testimonial dengan update URL
   const handleSelectTestimonial = useCallback((testimonial) => {
@@ -57,14 +53,28 @@ export default function Testimoni() {
     navigate(`/testimoni/${testimonial.id}`, { replace: true });
   }, [navigate]);
 
-  // debounce search
+  // Optimized debounce search
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(searchQuery.trim()), 200);
-    return () => clearTimeout(t);
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    debounceTimerRef.current = setTimeout(() => {
+      setDebouncedQuery(searchQuery.trim());
+    }, DEBOUNCE_DELAY);
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
   }, [searchQuery]);
 
-  useEffect(() => setCurrentPage(1), [debouncedQuery, minRating, selectedTag]);
+  // Reset pagination saat filter berubah
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedQuery, minRating, selectedTag]);
 
+  // Close suggestions when clicking outside
   useEffect(() => {
     const handler = (e) => {
       if (
@@ -79,37 +89,35 @@ export default function Testimoni() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Handle escape key untuk close modal
+  // Handle escape key dan body scroll
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === 'Escape' && selected) {
         handleCloseModal();
       }
     };
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
-  }, [selected, handleCloseModal]);
 
-  // Prevent body scroll ketika modal terbuka
-  useEffect(() => {
     if (selected) {
       document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', handleEsc);
     } else {
       document.body.style.overflow = '';
     }
+
     return () => {
       document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleEsc);
     };
-  }, [selected]);
+  }, [selected, handleCloseModal]);
 
-  // tags
+  // Kalkulasi tags dari data
   const tags = useMemo(() => {
     const t = new Set();
     testimonialsData.forEach((i) => i.tags?.forEach((tag) => t.add(tag)));
-    return ["all", ...t];
+    return ["all", ...Array.from(t)];
   }, []);
 
-  // proses data & urutkan
+  // Process & sort testimonials (hanya 1x saat mount atau data berubah)
   const processedTestimonials = useMemo(
     () =>
       testimonialsData
@@ -126,7 +134,7 @@ export default function Testimoni() {
     []
   );
 
-  // suggestions
+  // Generate suggestions hanya saat debouncedQuery berubah
   const suggestions = useMemo(() => {
     const q = debouncedQuery.toLowerCase();
     if (!q) return [];
@@ -141,7 +149,7 @@ export default function Testimoni() {
       .slice(0, 8);
   }, [debouncedQuery, processedTestimonials]);
 
-  // filtering
+  // Filter testimonials berdasarkan kriteria
   const filtered = useMemo(() => {
     const q = (debouncedQuery || "").toLowerCase();
     return processedTestimonials.filter((t) => {
@@ -157,12 +165,14 @@ export default function Testimoni() {
     });
   }, [processedTestimonials, debouncedQuery, minRating, selectedTag]);
 
-  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  // Pagination
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
   );
 
+  // Calculate average rating
   const avgRating = useMemo(() => {
     const ratedTestimonials = testimonialsData.filter(t => t.rating);
     if (ratedTestimonials.length === 0) return "0.00";
@@ -170,7 +180,7 @@ export default function Testimoni() {
     return (total / ratedTestimonials.length).toFixed(2);
   }, []);
 
-  // Enhanced search function dengan URL support
+  // Handle search selection
   const handleSearchSelect = useCallback((value) => {
     setSearchQuery(value);
     setDebouncedQuery(value);
@@ -178,20 +188,22 @@ export default function Testimoni() {
     setFocusedIndex(-1);
   }, []);
 
-  // Enhanced tag filter dengan URL reset
+  // Handle tag selection
   const handleTagSelect = useCallback((tag) => {
     setSelectedTag(tag);
     setCurrentPage(1);
-    // Reset URL jika sedang melihat detail testimonial
     if (selected) {
       navigate('/testimoni', { replace: true });
     }
   }, [selected, navigate]);
 
   return (
-    <main className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center px-4 sm:px-10 py-12 sm:py-24">
-      <TestimoniHeader avgRating={avgRating} />
-      <TestimoniSearchFilter
+    <main className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center px-3 sm:px-6 md:px-10 lg:px-12 py-8 sm:py-12 md:py-16 lg:py-24">
+      <div className="w-full max-w-7xl">
+        <TestimoniHeader avgRating={avgRating} />
+      </div>
+      <div className="w-full max-w-7xl">
+        <TestimoniSearchFilter
         {...{
           searchQuery,
           setSearchQuery,
@@ -212,17 +224,20 @@ export default function Testimoni() {
           onSearchSelect: handleSearchSelect,
         }}
       />
-      <TestimoniGrid
-        paginated={paginated}
-        filtered={filtered}
-        totalPages={totalPages}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        setSelected={handleSelectTestimonial}
-        debouncedQuery={debouncedQuery}
-        searchQuery={searchQuery}
-        selectedId={selected?.id}
-      />
+      </div>
+      <div className="w-full max-w-7xl">
+        <TestimoniGrid
+          paginated={paginated}
+          filtered={filtered}
+          totalPages={totalPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          setSelected={handleSelectTestimonial}
+          debouncedQuery={debouncedQuery}
+          searchQuery={searchQuery}
+          selectedId={selected?.id}
+        />
+      </div>
       <AnimatePresence>
         {selected && (
           <TestimoniModal
@@ -230,7 +245,6 @@ export default function Testimoni() {
             onClose={handleCloseModal}
             debouncedQuery={debouncedQuery}
             searchQuery={searchQuery}
-            isFromUrl={isNavigatingFromUrl}
           />
         )}
       </AnimatePresence>
