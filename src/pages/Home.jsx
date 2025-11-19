@@ -4,12 +4,34 @@ import {
   BookOpen, Award, Lightbulb, Heart, 
   Github, ExternalLink, ChevronRight,
   BarChart3, Users, Zap, Star, TrendingUp,
-  Briefcase, MapPin, Calendar, Rocket, CheckCircle
+  Briefcase, MapPin, Calendar, Rocket, CheckCircle,
+  Eye, MessageCircle, Share2, Clock, Tag
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Maintenance from "./errors/Maintenance"; // 🧩 impor halaman Maintenance
 
+// 📊 Import data files
+import projectsData from "../data/projects.json";
+import blogData from "../data/blog/data.json";
+import galleryData from "../data/galleryData.json";
+
 export default function Home() {
+  const [projects, setProjects] = useState([]);
+  const [blogs, setBlogs] = useState([]);
+  const [gallery, setGallery] = useState([]);
+
+  // 🔄 Load data dari JSON
+  useEffect(() => {
+    try {
+      setProjects(projectsData.projects?.slice(0, 3) || []);
+      setBlogs(blogData?.slice(0, 3) || []);
+      setGallery(galleryData?.slice(0, 6) || []);
+    } catch (error) {
+      console.error("Error loading data:", error);
+    }
+  }, []);
+
   const isMaintenance = false; // ubah ke false jika sudah normal
   // const isMaintenance = true;
 
@@ -17,11 +39,11 @@ export default function Home() {
     return <Maintenance />; // 🚧 tampilkan halaman Maintenance
   }
 
-  // 📊 Statistik Portfolio
+  // 📊 Statistik Portfolio (dinamis dari data)
   const stats = [
-    { icon: Code2, label: "Proyek Selesai", value: "15+", color: "cyan" },
-    { icon: Camera, label: "Foto Dokumentasi", value: "200+", color: "purple" },
-    { icon: BookOpen, label: "Artikel Blog", value: "20+", color: "blue" },
+    { icon: Code2, label: "Proyek Selesai", value: `${projects.length || 15}+`, color: "cyan" },
+    { icon: Camera, label: "Foto Dokumentasi", value: `${gallery.length * 30 || 200}+`, color: "purple" },
+    { icon: BookOpen, label: "Artikel Blog", value: `${blogs.length * 5 || 20}+`, color: "blue" },
     { icon: Award, label: "Sertifikasi", value: "5+", color: "emerald" },
   ];
 
@@ -193,7 +215,7 @@ export default function Home() {
             Lihat Proyek <ArrowRight className="w-5 h-5" />
           </Link>
           <Link
-            to="/tentang"
+            to="/about"
             className="bg-white/10 hover:bg-white/20 border border-cyan-400 text-cyan-300 px-8 py-3 rounded-xl font-semibold transition-all hover:scale-105"
           >
             Pelajari Lebih Lanjut
@@ -508,6 +530,234 @@ export default function Home() {
           </Link>
         </div>
       </motion.section>
+
+      {/* ━━━ FEATURED PROJECTS SECTION ━━━ */}
+      {projects.length > 0 && (
+        <motion.section
+          className="max-w-6xl mx-auto w-full py-16"
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex items-center justify-between mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text">
+              🚀 Proyek Unggulan
+            </h2>
+            <Link
+              to="/projects"
+              className="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-2 transition-colors"
+            >
+              Lihat Semua <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid sm:grid-cols-1 lg:grid-cols-3 gap-6">
+            {projects.map((project, i) => (
+              <Link key={project.id} to={`/projects/${project.id}`}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  viewport={{ once: true }}
+                  whileHover={{ scale: 1.05 }}
+                  className="bg-white/5 hover:bg-white/10 border border-white/20 hover:border-cyan-500/50 backdrop-blur-xl rounded-2xl overflow-hidden transition-all group"
+                >
+                  {/* Project Image */}
+                  <div className="relative h-48 overflow-hidden bg-gradient-to-br from-cyan-500/20 to-purple-500/20">
+                    <img
+                      src={project.image || "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=900&q=80"}
+                      alt={project.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all" />
+                    {project.label && (
+                      <div className="absolute top-3 right-3 bg-cyan-500/90 text-white px-3 py-1 rounded-full text-xs font-bold">
+                        {project.label}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Project Info */}
+                  <div className="p-6">
+                    <h3 className="text-lg font-bold mb-2 group-hover:text-cyan-300 transition-colors">
+                      {project.title}
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+                      {project.overview || project.description}
+                    </p>
+
+                    {/* Tech Stack */}
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {project.tech?.slice(0, 2).map((tech, j) => (
+                        <span key={j} className="text-xs bg-cyan-500/20 text-cyan-300 px-2 py-1 rounded border border-cyan-500/30">
+                          {tech}
+                        </span>
+                      ))}
+                      {project.tech?.length > 2 && (
+                        <span className="text-xs text-gray-400 px-2 py-1">
+                          +{project.tech.length - 2} more
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Stats */}
+                    <div className="flex items-center justify-between text-xs text-gray-400">
+                      <span className="flex items-center gap-1">
+                        <Star className="w-3 h-3 text-yellow-400" />
+                        {project.rating || "N/A"}
+                      </span>
+                      <span>{project.category}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              </Link>
+            ))}
+          </div>
+        </motion.section>
+      )}
+
+      {/* ━━━ FEATURED BLOG POSTS SECTION ━━━ */}
+      {blogs.length > 0 && (
+        <motion.section
+          className="max-w-6xl mx-auto w-full py-16"
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex items-center justify-between mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text">
+              📝 Artikel Terbaru
+            </h2>
+            <Link
+              to="/blog"
+              className="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-2 transition-colors"
+            >
+              Lihat Semua <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid sm:grid-cols-1 lg:grid-cols-3 gap-6">
+            {blogs.map((blog, i) => (
+              <Link key={blog.id} to={blog.url || `/blog/${blog.slug}`}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  viewport={{ once: true }}
+                  whileHover={{ scale: 1.05 }}
+                  className="bg-white/5 hover:bg-white/10 border border-white/20 hover:border-blue-500/50 backdrop-blur-xl rounded-2xl overflow-hidden transition-all group h-full flex flex-col"
+                >
+                  {/* Blog Thumbnail */}
+                  <div className="relative h-40 overflow-hidden bg-gradient-to-br from-blue-500/20 to-purple-500/20">
+                    <img
+                      src={blog.thumbnail || "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=900&q=80"}
+                      alt={blog.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all" />
+                    {blog.featured && (
+                      <div className="absolute top-3 left-3 bg-blue-500/90 text-white px-3 py-1 rounded-full text-xs font-bold">
+                        Featured
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Blog Info */}
+                  <div className="p-5 flex-grow flex flex-col">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Tag className="w-3 h-3 text-blue-400" />
+                      <span className="text-xs text-blue-400 font-semibold">{blog.category}</span>
+                    </div>
+                    <h3 className="text-lg font-bold mb-2 group-hover:text-cyan-300 transition-colors line-clamp-2">
+                      {blog.title}
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4 line-clamp-2 flex-grow">
+                      {blog.excerpt || blog.description}
+                    </p>
+
+                    {/* Meta Info */}
+                    <div className="flex items-center justify-between text-xs text-gray-400 pt-3 border-t border-white/10">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {blog.readTime}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Eye className="w-3 h-3" />
+                        {blog.views || "0"}
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              </Link>
+            ))}
+          </div>
+        </motion.section>
+      )}
+
+      {/* ━━━ GALLERY PREVIEW SECTION ━━━ */}
+      {gallery.length > 0 && (
+        <motion.section
+          className="max-w-6xl mx-auto w-full py-16"
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex items-center justify-between mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text">
+              📸 Galeri Fotografi
+            </h2>
+            <Link
+              to="/photography"
+              className="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-2 transition-colors"
+            >
+              Lihat Galeri <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {gallery.map((item, i) => (
+              <Link key={item.id} to="/photography">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: i * 0.05 }}
+                  viewport={{ once: true }}
+                  whileHover={{ scale: 1.08 }}
+                  className="relative h-56 rounded-xl overflow-hidden group cursor-pointer"
+                >
+                  {/* Image */}
+                  <img
+                    src={item.src}
+                    alt={item.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/60 transition-all duration-300 flex flex-col justify-end p-4">
+                    <div className="transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                      <h3 className="text-white font-bold text-sm mb-1">{item.title}</h3>
+                      <div className="flex items-center justify-between text-xs text-gray-300">
+                        <span className="flex items-center gap-1">
+                          <Tag className="w-3 h-3" />
+                          {item.category}
+                        </span>
+                        {item.type === "video" && (
+                          <span className="bg-cyan-500/80 text-white px-2 py-0.5 rounded text-xs font-semibold">
+                            {item.duration}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </Link>
+            ))}
+          </div>
+        </motion.section>
+      )}
 
       {/* ━━━ CALL TO ACTION FINAL SECTION ━━━ */}
       <motion.section
