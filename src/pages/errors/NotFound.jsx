@@ -1,10 +1,30 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Search, Compass, Home, RefreshCw, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useMemo } from "react";
 
+// 📍 Daftar lengkap semua rute yang tersedia
+const AVAILABLE_ROUTES = [
+  { path: "/", label: "🏠 Beranda", category: "utama" },
+  { path: "/about", label: "👤 Tentang Saya", category: "utama" },
+  { path: "/contact", label: "📧 Kontak", category: "utama" },
+  { path: "/photography", label: "📸 Fotografi", category: "galeri" },
+  { path: "/gallery", label: "🖼️ Galeri", category: "galeri" },
+  { path: "/projects", label: "💼 Proyek", category: "portofolio" },
+  { path: "/certificates", label: "🏆 Sertifikat", category: "pencapaian" },
+  { path: "/SoftSkills", label: "🧠 Soft Skills", category: "skill" },
+  { path: "/education", label: "🎓 Pendidikan", category: "pendidikan" },
+  { path: "/visi", label: "🎯 Visi & Misi", category: "info" },
+  { path: "/hobbies", label: "🎨 Hobi", category: "personal" },
+  { path: "/blog", label: "📝 Blog", category: "konten" },
+  { path: "/bahasa", label: "🌐 Bahasa", category: "skill" },
+  { path: "/testimoni", label: "⭐ Testimoni", category: "pengalaman" },
+];
+
 export default function NotFound() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const previousPath = location.state?.from || "/";
   const messages = useMemo(
     () => [
       "Halaman ini seperti ninja, cepat dan lenyap tanpa jejak! 🥷",
@@ -48,6 +68,19 @@ export default function NotFound() {
     explore: false,
   });
 
+  // 🎲 Ambil rute random berbeda dari halaman sebelumnya
+  const randomRoutes = useMemo(() => {
+    const filtered = AVAILABLE_ROUTES.filter((route) => route.path !== previousPath);
+    const shuffled = [...filtered].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 3); // Ambil 3 rute random
+  }, [previousPath]);
+
+  // Rute yang di-highlight untuk tombol explore
+  const featuredRoute = useMemo(
+    () => randomRoutes[Math.floor(Math.random() * randomRoutes.length)] || { path: "/projects", label: "🌍 Jelajahi" },
+    [randomRoutes]
+  );
+
   // Ganti pesan otomatis
   useEffect(() => {
     const interval = setInterval(() => {
@@ -78,11 +111,11 @@ export default function NotFound() {
       await action();
     } catch (err) {
       console.error(`Gagal menjalankan aksi ${type}:`, err);
-      alert("Aksi gagal dijalankan. Coba lagi nanti.");
     } finally {
+      // Hanya reset loading state jika diperlukan
       setTimeout(() => {
         setButtonState((prev) => ({ ...prev, [type]: false }));
-      }, 1000); // cooldown ringan biar smooth
+      }, 500);
     }
   };
 
@@ -113,8 +146,8 @@ export default function NotFound() {
         transition={{ duration: 1 }}
         className="relative flex flex-col items-center space-y-4 z-10"
       >
-        <Sparkles className="w-16 h-16 text-cyan-400 drop-shadow-[0_0_20px_#22d3ee]" />
-        <Search className="w-20 h-20 text-cyan-400 animate-pulse drop-shadow-[0_0_20px_#22d3ee]" />
+        <Sparkles className="w-12 h-12 md:w-16 md:h-16 text-cyan-400 drop-shadow-[0_0_20px_#22d3ee]" />
+        <Search className="w-16 h-16 md:w-20 md:h-20 text-cyan-400 animate-pulse drop-shadow-[0_0_20px_#22d3ee]" />
       </motion.div>
 
       {/* 🧭 Judul */}
@@ -122,13 +155,13 @@ export default function NotFound() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 1 }}
-        className="text-6xl md:text-7xl font-extrabold mt-6 bg-gradient-to-r from-cyan-400 to-teal-300 bg-clip-text text-transparent"
+        className="text-4xl md:text-6xl lg:text-7xl font-extrabold mt-6 bg-gradient-to-r from-cyan-400 to-teal-300 bg-clip-text text-transparent px-4"
       >
         404 - Halaman Tidak Ditemukan
       </motion.h1>
 
       {/* 💬 Pesan berubah otomatis */}
-      <div className="relative h-12 mt-4">
+      <div className="relative h-16 mt-4 px-4">
         <AnimatePresence mode="wait">
           <motion.p
             key={index}
@@ -136,7 +169,7 @@ export default function NotFound() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.6 }}
-            className="text-gray-300 text-lg px-4 max-w-xl leading-relaxed"
+            className="text-gray-300 text-sm md:text-lg px-4 max-w-2xl leading-relaxed text-center"
           >
             {messages[index]}
           </motion.p>
@@ -148,7 +181,7 @@ export default function NotFound() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1, duration: 1 }}
-        className="bg-slate-800/50 backdrop-blur-md rounded-2xl p-5 mt-6 shadow-lg border border-slate-700/50 text-left text-gray-300 max-w-md text-sm space-y-1"
+        className="bg-slate-800/50 backdrop-blur-md rounded-2xl p-4 md:p-5 mt-6 shadow-lg border border-slate-700/50 text-left text-gray-300 max-w-md text-xs md:text-sm space-y-1 mx-4"
       >
         <p>🔹 Pastikan alamat web yang kamu masukkan sudah benar.</p>
         <p>🔹 Gunakan tombol di bawah untuk kembali ke jalur aman.</p>
@@ -160,20 +193,20 @@ export default function NotFound() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2 }}
-        className="flex flex-wrap gap-4 justify-center mt-8"
+        className="flex flex-wrap gap-2 md:gap-4 justify-center mt-8 px-4"
       >
         {/* Home */}
         <button
           onClick={() => handleAction("home", () => navigate("/"))}
           disabled={buttonState.home}
-          className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold shadow-lg transition-all ${
+          className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-xl font-semibold shadow-lg transition-all text-sm md:text-base ${
             buttonState.home
               ? "bg-cyan-700 text-gray-300 cursor-not-allowed animate-pulse"
               : "bg-cyan-500 hover:bg-cyan-600 text-white hover:shadow-cyan-400/40"
           }`}
         >
-          <Home size={18} />
-          {buttonState.home ? "Menuju..." : "Kembali ke Beranda"}
+          <Home size={16} className="md:w-5 md:h-5" />
+          {buttonState.home ? "Menuju..." : "Beranda"}
         </button>
 
         {/* Reload */}
@@ -182,29 +215,83 @@ export default function NotFound() {
             handleAction("reload", () => Promise.resolve(window.location.reload()))
           }
           disabled={buttonState.reload}
-          className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold shadow-lg transition-all ${
+          className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-xl font-semibold shadow-lg transition-all text-sm md:text-base ${
             buttonState.reload
               ? "bg-slate-600 text-gray-300 cursor-not-allowed animate-pulse"
               : "bg-slate-700 hover:bg-slate-600 text-gray-200"
           }`}
         >
-          <RefreshCw size={18} />
-          {buttonState.reload ? "Memuat..." : "Coba Muat Ulang"}
+          <RefreshCw size={16} className="md:w-5 md:h-5" />
+          {buttonState.reload ? "Memuat..." : "Muat Ulang"}
         </button>
 
-        {/* Explore */}
+        {/* Explore Random */}
         <button
-          onClick={() => handleAction("explore", () => navigate("/explore"))}
+          onClick={() =>
+            handleAction("explore", () => navigate(featuredRoute.path))
+          }
           disabled={buttonState.explore}
-          className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold shadow-lg transition-all ${
+          className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-xl font-semibold shadow-lg transition-all text-sm md:text-base ${
             buttonState.explore
               ? "bg-teal-700 text-gray-300 cursor-not-allowed animate-pulse"
               : "bg-teal-600 hover:bg-teal-700 text-gray-200"
           }`}
         >
-          <Compass size={18} />
-          {buttonState.explore ? "Membuka..." : "Jelajahi Halaman Lain"}
+          <Compass size={16} className="md:w-5 md:h-5" />
+          {buttonState.explore ? "Membuka..." : featuredRoute.label}
         </button>
+      </motion.div>
+
+      {/* 🌐 Halaman lain yang bisa dikunjungi */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.4, duration: 1 }}
+        className="mt-10 max-w-4xl w-full px-4"
+      >
+        <p className="text-center text-gray-400 text-xs md:text-sm mb-4 font-semibold">
+          ✨ Atau coba jelajahi halaman-halaman menarik lainnya:
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
+          {randomRoutes.map((route) => (
+            <motion.button
+              key={route.path}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() =>
+                handleAction("explore", () => navigate(route.path))
+              }
+              disabled={buttonState.explore}
+              className={`px-3 md:px-4 py-2 rounded-lg font-medium text-xs md:text-sm transition-all ${
+                buttonState.explore
+                  ? "bg-gray-700 text-gray-400 cursor-not-allowed"
+                  : "bg-gray-800 hover:bg-purple-600 text-gray-200 hover:text-white shadow-md"
+              }`}
+            >
+              {route.label}
+            </motion.button>
+          ))}
+          {AVAILABLE_ROUTES.slice(randomRoutes.length, randomRoutes.length + 4)
+            .filter((route) => route.path !== previousPath)
+            .map((route) => (
+              <motion.button
+                key={route.path}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() =>
+                  handleAction("explore", () => navigate(route.path))
+                }
+                disabled={buttonState.explore}
+                className={`px-3 md:px-4 py-2 rounded-lg font-medium text-xs md:text-sm transition-all ${
+                  buttonState.explore
+                    ? "bg-gray-700 text-gray-400 cursor-not-allowed"
+                    : "bg-gray-800 hover:bg-indigo-600 text-gray-200 hover:text-white shadow-md"
+                }`}
+              >
+                {route.label}
+              </motion.button>
+            ))}
+        </div>
       </motion.div>
 
       {/* 📜 Catatan bawah */}
@@ -212,9 +299,9 @@ export default function NotFound() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.9 }}
         transition={{ delay: 1.5, duration: 1 }}
-        className="text-sm text-gray-500 mt-10 italic"
+        className="text-xs md:text-sm text-gray-500 mt-8 md:mt-10 italic px-4"
       >
-        “Jangan takut tersesat — setiap klik adalah cerita.” 🌠
+        "Jangan takut tersesat — setiap klik adalah cerita." 🌠
       </motion.p>
 
       {/* 🎞️ Keyframes tambahan */}

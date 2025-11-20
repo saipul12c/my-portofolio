@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Award } from "lucide-react";
-import { Link } from "react-router-dom"; // ✅ Tambahkan ini
+import { Link } from "react-router-dom"; 
 
 export default function AboutCertificates({ certificates }) {
   const [selectedCert, setSelectedCert] = useState(null);

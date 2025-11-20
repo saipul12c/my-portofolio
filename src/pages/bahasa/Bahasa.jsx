@@ -9,6 +9,7 @@ import { useDebounce } from "./hooks/useDebounce";
 import { SearchFilterBar } from "./components/SearchFilterBar";
 import { QuickStats } from "./components/QuickStats";
 import { LanguageSection } from "./components/LanguageSection";
+import { PageConnections } from "./components/PageConnections";
 
 // Lazy load DetailTooltip untuk mengurangi bundle size
 const DetailTooltip = lazy(() => 
@@ -207,6 +208,9 @@ const Bahasa = () => {
             </div>
           </div>
         </motion.div>
+
+        {/* Page Connections */}
+        <PageConnections />
       </div>
 
       {/* Scroll to Top */}

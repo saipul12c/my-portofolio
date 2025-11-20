@@ -2,9 +2,18 @@ import React, { useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Target, Sparkles, Zap, Code, Globe, X } from "lucide-react";
 import { ProgressBar } from "./ProgressBar";
+import { RelatedItems } from "./RelatedItems";
+import { SkillResources } from "./SkillResources";
 import { generateColor } from "../utils/colorGenerator";
+import { useRelatedProjects } from "../hooks/useRelatedProjects";
+import { useRelatedSkills } from "../hooks/useRelatedSkills";
+import { useRelatedBlogPosts } from "../hooks/useRelatedBlogPosts";
 
 export const DetailTooltip = React.memo(({ bahasa, isProgramming, onClose }) => {
+  // Fetch related content
+  const relatedProjects = useRelatedProjects(bahasa.nama);
+  const relatedSkills = useRelatedSkills(bahasa.nama, isProgramming);
+  const relatedBlogPosts = useRelatedBlogPosts(bahasa.nama);
   const renderSection = useCallback((title, icon, content, color = "cyan", isArray = true) => {
     if (!content || (Array.isArray(content) && content.length === 0)) return null;
     
@@ -146,6 +155,22 @@ export const DetailTooltip = React.memo(({ bahasa, isProgramming, onClose }) => 
 
             {/* Learning Goals */}
             {bahasa.target && renderSection("Target Belajar", <Target className="w-4 h-4 sm:w-5 sm:h-5" />, bahasa.target, "cyan", false)}
+
+            {/* Related Items Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="pt-4 sm:pt-6 border-t border-cyan-500/20"
+            >
+              <SkillResources skillName={bahasa.nama} isProgramming={isProgramming} />
+              <RelatedItems 
+                projects={relatedProjects}
+                blogPosts={relatedBlogPosts}
+                skills={relatedSkills}
+                skillName={bahasa.nama}
+              />
+            </motion.div>
           </div>
         </div>
       </motion.div>
