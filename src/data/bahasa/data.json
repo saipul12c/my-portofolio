@@ -154,6 +154,381 @@
         "testing": "Unit Test, Integration Test, End-to-End Test",
         "architecture": "Feature-Based Structure, Atomic Design"
       }
+    },
+    {
+      "nama": "Go",
+      "tingkat": "Lanjutan",
+      "icon": "🐹",
+      "level": 82,
+      "warna": "#00ADD8",
+      "framework": ["Gin", "Echo", "Fiber"],
+      "tools": ["Go Modules", "Testify", "Viper", "Cobra"],
+      "pengalaman": "2+ tahun pengembangan microservices dan CLI tools untuk sistem distributed. Optimasi performa high-throughput aplikasi backend.",
+      "projectContoh": "API Gateway dengan load balancing dan rate limiting untuk 10k+ RPS",
+      "detailTambahan": {
+        "expertise": ["Concurrency Patterns", "Memory Optimization", "Cross-Compilation", "GRPC Protobuf"],
+        "deployment": "Docker, Kubernetes, AWS ECS"
+      }
+    },
+    {
+      "nama": "Rust",
+      "tingkat": "Menengah",
+      "icon": "🦀",
+      "level": 68,
+      "warna": "#DEA584",
+      "framework": ["Actix-web", "Rocket", "Tokio"],
+      "libraries": ["Serde", "Tokio", "Reqwest", "Clap"],
+      "pengalaman": "Pengembangan sistem performa kritis dan WebAssembly. Membuat parser custom dan tools sistem dengan memory safety.",
+      "projectContoh": "Real-time Data Processing Engine dengan zero-copy parsing",
+      "detailTambahan": {
+        "expertise": ["Ownership System", "Fearless Concurrency", "WebAssembly Compilation", "FFI Binding"],
+        "toolchain": "Cargo, Rustup, WASM-Pack"
+      }
+    },
+    {
+      "nama": "Kotlin",
+      "tingkat": "Lanjutan",
+      "icon": "🅱️",
+      "level": 78,
+      "warna": "#7F52FF",
+      "framework": ["Spring Boot", "Ktor", "Compose Multiplatform"],
+      "tools": ["Gradle", "Dokka", "Detekt"],
+      "pengalaman": "Pengembangan aplikasi Android native dan backend sistem payment. Migrasi codebase Java ke Kotlin dengan coroutines.",
+      "projectContoh": "Aplikasi Fintech dengan coroutines flow dan biometric authentication",
+      "detailTambahan": {
+        "expertise": ["Coroutines & Flow", "Null Safety", "Extension Functions", "DSL Building"],
+        "platform": "Android, JVM, Server-side"
+      }
+    },
+    {
+      "nama": "Dart",
+      "tingkat": "Lanjutan",
+      "icon": "🎯",
+      "level": 79,
+      "warna": "#0175C2",
+      "framework": ["Flutter", "AngularDart"],
+      "tools": ["Flutter SDK", "Dart DevTools", "Firebase"],
+      "pengalaman": "2+ tahun pengembangan aplikasi cross-platform untuk mobile dan web. Membangun aplikasi dengan smooth animation dan responsive design.",
+      "projectContoh": "Aplikasi E-commerce dengan real-time chat dan push notification",
+      "detailTambahan": {
+        "expertise": ["Widget Composition", "State Management", "Platform Channels", "Custom Painters"],
+        "deployment": "Google Play Store, Apple App Store, Web"
+      }
+    },
+    {
+      "nama": "Swift",
+      "tingkat": "Menengah-Atas",
+      "icon": "🐦",
+      "level": 72,
+      "warna": "#F05138",
+      "framework": ["SwiftUI", "UIKit", "Vapor"],
+      "tools": ["Xcode", "Swift Package Manager", "CocoaPods"],
+      "pengalaman": "Pengembangan aplikasi iOS native dan prototyping macOS apps. Integrasi dengan Apple ecosystem dan services.",
+      "projectContoh": "Aplikasi Health & Fitness tracker dengan HealthKit integration",
+      "detailTambahan": {
+        "expertise": ["MVVM Architecture", "Combine Framework", "Core Data", "ARKit Basics"],
+        "platform": "iOS, iPadOS, macOS"
+      }
+    },
+    {
+      "nama": "C#",
+      "tingkat": "Lanjutan",
+      "icon": "🔷",
+      "level": 81,
+      "warna": "#239120",
+      "framework": [".NET Core", "ASP.NET MVC", "Entity Framework", "Xamarin"],
+      "tools": ["Visual Studio", "NuGet", "MSBuild"],
+      "pengalaman": "3+ tahun pengembangan enterprise applications untuk financial services dan gaming industry.",
+      "projectContoh": "Sistem Trading Platform dengan real-time market data processing",
+      "detailTambahan": {
+        "expertise": ["LINQ", "Async Programming", "Dependency Injection", "Windows Services"],
+        "specialization": "Game Development dengan Unity"
+      }
+    },
+    {
+      "nama": "Ruby",
+      "tingkat": "Menengah",
+      "icon": "💎",
+      "level": 65,
+      "warna": "#CC342D",
+      "framework": ["Ruby on Rails", "Sinatra"],
+      "tools": ["Bundler", "Rake", "RSpec"],
+      "pengalaman": "Pengembangan web applications dan automation scripts. Fokus pada clean code dan developer productivity.",
+      "projectContoh": "SaaS Platform untuk project management dengan subscription billing",
+      "detailTambahan": {
+        "expertise": ["Metaprogramming", "Block & Procs", "RESTful APIs", "MVC Pattern"],
+        "testing": "RSpec, Capybara, Factory Bot"
+      }
+    },
+    {
+      "nama": "Kubernetes",
+      "tingkat": "Menengah-Atas",
+      "icon": "⚓",
+      "level": 76,
+      "warna": "#326CE5",
+      "concepts": ["Pods", "Services", "Deployments", "StatefulSets", "Ingress"],
+      "tools": ["kubectl", "Helm", "k9s", "Lens"],
+      "pengalaman": "Deployment dan management containerized applications pada production environment. Setup cluster dan monitoring.",
+      "projectContoh": "Multi-tier web application dengan auto-scaling dan service mesh",
+      "detailTambahan": {
+        "expertise": ["Cluster Networking", "Storage Management", "Security Policies", "Resource Optimization"],
+        "environment": "AWS EKS, Google GKE, On-premise"
+      }
+    },
+    {
+      "nama": "Docker",
+      "tingkat": "Mahir",
+      "icon": "🐳",
+      "level": 87,
+      "warna": "#2496ED",
+      "components": ["Dockerfile", "Docker Compose", "Docker Swarm", "Docker Registry"],
+      "tools": ["Docker CLI", "Docker Desktop", "Portainer"],
+      "pengalaman": "4+ tahun containerization applications dari development sampai production. Optimasi image size dan security.",
+      "projectContoh": "Microservices architecture dengan 50+ containers pada production cluster",
+      "detailTambahan": {
+        "expertise": ["Multi-stage Builds", "Volume Management", "Network Configuration", "Security Scanning"],
+        "bestPractices": "Minimal Images, Non-root Users, Image Layering"
+      }
+    },
+    {
+      "nama": "TensorFlow",
+      "tingkat": "Menengah",
+      "icon": "🧠",
+      "level": 69,
+      "warna": "#FF6F00",
+      "libraries": ["Keras", "TensorFlow.js", "TF Lite"],
+      "tools": ["TensorBoard", "Colab", "Jupyter"],
+      "pengalaman": "Pengembangan machine learning models untuk computer vision dan natural language processing.",
+      "projectContoh": "Image classification system untuk quality control manufacturing",
+      "detailTambahan": {
+        "expertise": ["Neural Networks", "Transfer Learning", "Model Optimization", "Data Pipeline"],
+        "deployment": "TensorFlow Serving, Mobile Deployment, Web Deployment"
+      }
+    },
+    {
+      "nama": "React Native",
+      "tingkat": "Lanjutan",
+      "icon": "⚛️",
+      "level": 84,
+      "warna": "#61DAFB",
+      "framework": ["Expo", "React Navigation"],
+      "libraries": ["Redux", "Axios", "React Query", "Native Base"],
+      "pengalaman": "3+ tahun membangun mobile apps untuk iOS dan Android dari single codebase. Performance optimization.",
+      "projectContoh": "Social Media App dengan video streaming dan real-time interactions",
+      "detailTambahan": {
+        "expertise": ["Cross-platform Development", "Native Modules", "Performance Tuning", "Offline First"],
+        "architecture": "Component-driven, Hooks Pattern, Context API"
+      }
+    },
+    {
+      "nama": "GraphQL",
+      "tingkat": "Lanjutan",
+      "icon": "📊",
+      "level": 80,
+      "warna": "#E10098",
+      "tools": ["Apollo Server", "Apollo Client", "GraphQL Yoga", "Hasura"],
+      "libraries": ["Relay", "Urql", "GraphQL Code Generator"],
+      "pengalaman": "Implementasi GraphQL APIs untuk complex data requirements dan mobile clients.",
+      "projectContoh": "Unified API Gateway untuk aggregate multiple backend services",
+      "detailTambahan": {
+        "expertise": ["Schema Design", "Query Optimization", "Caching Strategies", "Error Handling"],
+        "security": "Authentication, Authorization, Query Depth Limiting"
+      }
+    },
+    {
+      "nama": "Elixir",
+      "tingkat": "Menengah",
+      "icon": "🧪",
+      "level": 67,
+      "warna": "#4B275F",
+      "framework": ["Phoenix", "Plug", "Ecto"],
+      "tools": ["Mix", "Hex", "IEx"],
+      "pengalaman": "Pengembangan high-concurrency applications dan real-time features. Functional programming paradigm.",
+      "projectContoh": "Real-time collaboration tool dengan presence tracking dan live updates",
+      "detailTambahan": {
+        "expertise": ["OTP Principles", "Process Supervision", "Pattern Matching", "Pipe Operator"],
+        "strengths": "Fault Tolerance, Scalability, Maintainability"
+      }
+    },
+    {
+      "nama": "Vue.js",
+      "tingkat": "Mahir",
+      "icon": "🟢",
+      "level": 89,
+      "warna": "#4FC08D",
+      "ecosystem": ["Vuex", "Vue Router", "Vue CLI", "Vite"],
+      "tools": ["Vue DevTools", "Vue Test Utils", "Storybook"],
+      "pengalaman": "4+ tahun membangun large-scale SPA dan enterprise applications. Vue 2 dan 3 migration experience.",
+      "projectContoh": "Admin Dashboard dengan real-time analytics dan modular component system",
+      "detailTambahan": {
+        "expertise": ["Composition API", "Reactivity System", "Custom Directives", "Plugin Development"],
+        "patterns": "Atomic Design, Renderless Components, Scoped Slots"
+      }
+    },
+    {
+      "nama": "MongoDB",
+      "tingkat": "Lanjutan",
+      "icon": "🍃",
+      "level": 78,
+      "warna": "#47A248",
+      "operations": ["Aggregation", "Indexing", "Transactions", "Replication"],
+      "tools": ["MongoDB Compass", "MongoDB Atlas", "Mongo Shell"],
+      "pengalaman": "Design dan optimization database schema untuk unstructured data dan high-write workloads.",
+      "projectContoh": "IoT Platform handling 1M+ sensor readings per day",
+      "detailTambahan": {
+        "expertise": ["Data Modeling", "Query Performance", "Sharding Strategies", "Backup Recovery"],
+        "useCases": "Content Management, Catalogs, Real-time Analytics"
+      }
+    },
+    {
+      "nama": "Redis",
+      "tingkat": "Menengah-Atas",
+      "icon": "🔴",
+      "level": 74,
+      "warna": "#DC382D",
+      "useCases": ["Caching", "Session Storage", "Message Broker", "Real-time Features"],
+      "tools": ["Redis CLI", "Redis Insight", "Redis-Benchmark"],
+      "pengalaman": "Implementasi caching layer dan real-time features untuk high-traffic web applications.",
+      "projectContoh": "Distributed cache system mengurangi database load hingga 70%",
+      "detailTambahan": {
+        "expertise": ["Data Structures", "Memory Optimization", "Persistence", "Cluster Management"],
+        "patterns": "Cache-Aside, Write-Through, Pub/Sub, Leaderboard"
+      }
+    },
+    {
+      "nama": "AWS",
+      "tingkat": "Lanjutan",
+      "icon": "☁️",
+      "level": 83,
+      "warna": "#FF9900",
+      "services": ["EC2", "S3", "Lambda", "RDS", "DynamoDB", "CloudFront"],
+      "tools": ["AWS CLI", "CloudFormation", "AWS SDK"],
+      "pengalaman": "3+ tahun design dan deployment cloud infrastructure untuk startups dan enterprises.",
+      "projectContoh": "Serverless e-commerce platform dengan auto-scaling dan global CDN",
+      "detailTambahan": {
+        "expertise": ["Infrastructure as Code", "Cost Optimization", "Security Groups", "Disaster Recovery"],
+        "certifications": "AWS Solutions Architect Associate"
+      }
+    },
+    {
+      "nama": "Git",
+      "tingkat": "Mahir",
+      "icon": "📚",
+      "level": 92,
+      "warna": "#F05032",
+      "workflows": ["GitFlow", "Feature Branch", "Forking", "Trunk-based"],
+      "tools": ["Git CLI", "GitHub", "GitLab", "SourceTree"],
+      "pengalaman": "5+ tahun version control management untuk teams dari 5 hingga 50 developers.",
+      "projectContoh": "Mentoring team migration dari SVN ke Git dengan customized workflow",
+      "detailTambahan": {
+        "expertise": ["Branching Strategies", "Merge Conflicts", "Rebase vs Merge", "Hooks Scripting"],
+        "advanced": "Interactive Rebase, Cherry-picking, Submodules, Bisect"
+      }
+    },
+    {
+      "nama": "SASS/SCSS",
+      "tingkat": "Mahir",
+      "icon": "🎨",
+      "level": 88,
+      "warna": "#CF649A",
+      "features": ["Variables", "Mixins", "Functions", "Nesting", "Modules"],
+      "tools": ["Dart Sass", "Node Sass", "Webpack Loader"],
+      "pengalaman": "4+ tahun maintainable CSS architecture dan design systems untuk large codebases.",
+      "projectContoh": "Enterprise Design System dengan theming dan accessibility compliance",
+      "detailTambahan": {
+        "expertise": ["BEM Methodology", "Responsive Mixins", "Color Functions", "Utility Classes"],
+        "architecture": "7-1 Pattern, ITCSS, Component-based Styling"
+      }
+    },
+    {
+      "nama": "Jest",
+      "tingkat": "Lanjutan",
+      "icon": "🃏",
+      "level": 82,
+      "warna": "#99425B",
+      "features": ["Unit Testing", "Integration Testing", "Snapshot Testing", "Mocking"],
+      "tools": ["Jest CLI", "Jest Runner", "Coverage Reports"],
+      "pengalaman": "Comprehensive testing strategy untuk JavaScript/TypeScript projects dari unit sampai integration.",
+      "projectContoh": "Test suite untuk financial calculator dengan 95%+ code coverage",
+      "detailTambahan": {
+        "expertise": ["Async Testing", "Mock Functions", "Custom Matchers", "Setup/Teardown"],
+        "integration": "React Testing, Vue Test Utils, Enzyme"
+      }
+    },
+    {
+      "nama": "Webpack",
+      "tingkat": "Lanjutan",
+      "icon": "📦",
+      "level": 79,
+      "warna": "#8DD6F9",
+      "concepts": ["Entry/Output", "Loaders", "Plugins", "Code Splitting"],
+      "tools": ["webpack-cli", "webpack-dev-server", "Bundle Analyzer"],
+      "pengalaman": "Optimization build process untuk large-scale applications dengan complex dependency graphs.",
+      "projectContoh": "Custom webpack configuration mengurangi bundle size hingga 40%",
+      "detailTambahan": {
+        "expertise": ["Performance Optimization", "Tree Shaking", "Hot Module Replacement", "Asset Management"],
+        "advanced": "Custom Loaders, Plugin Development, Multiple Configs"
+      }
+    },
+    {
+      "nama": "Figma",
+      "tingkat": "Lanjutan",
+      "icon": "🎯",
+      "level": 77,
+      "warna": "#F24E1E",
+      "features": ["Components", "Auto Layout", "Prototyping", "Design Systems"],
+      "tools": ["Figma Plugins", "Figma API", "Dev Mode"],
+      "pengalaman": "Collaborative UI/UX design dan handoff to development teams. Design system management.",
+      "projectContoh": "Enterprise design system dengan comprehensive component library",
+      "detailTambahan": {
+        "expertise": ["Design Tokens", "Variants", "Interactive Prototypes", "Developer Handoff"],
+        "workflow": "Component-driven Design, Version Control, Team Libraries"
+      }
+    },
+    {
+      "nama": "Cybersecurity",
+      "tingkat": "Menengah",
+      "icon": "🛡️",
+      "level": 71,
+      "warna": "#3949AB",
+      "domains": ["Web Security", "Network Security", "Application Security"],
+      "tools": ["Burp Suite", "Nmap", "OWASP ZAP", "Metasploit"],
+      "pengalaman": "Security assessment dan penetration testing untuk web applications dan network infrastructure.",
+      "projectContoh": "Vulnerability assessment untuk banking application identifying critical flaws",
+      "detailTambahan": {
+        "expertise": ["OWASP Top 10", "Security Headers", "Encryption", "Access Control"],
+        "certifications": "CEH, Security+"
+      }
+    },
+  {
+    "nama": "TypeScript",
+    "tingkat": "Mahir",
+    "icon": "📘",
+    "level": 88,
+    "warna": "#3178C6",
+    "framework": ["Angular", "Next.js", "NestJS"],
+    "tools": ["TypeScript Compiler", "ts-node", "Prisma"],
+    "pengalaman": "4+ tahun membangun scalable enterprise applications dengan type safety. Lead developer untuk codebase monorepo dengan 500k+ LOC.",
+    "projectContoh": "Sistem Design System dengan automated type generation dan monorepo architecture",
+    "detailTambahan": {
+      "expertise": ["Advanced Type System", "Decorators", "Generic Programming", "Type Inference"],
+      "architecture": "Micro-frontends, Monorepo (NX), Module Federation"
+    }
+  },
+  {
+      "nama": "Cloud Architecture",
+      "tingkat": "Lanjutan",
+      "icon": "☁️",
+      "level": 85,
+      "warna": "#FF9900",
+      "platform": ["AWS", "GCP", "Azure"],
+      "layanan": ["EC2 & Lambda", "S3 & Cloud Storage", "RDS & Cloud SQL", "Kubernetes Engine"],
+      "pengalaman": "3+ tahun mendesain dan mengimplementasikan cloud infrastructure untuk aplikasi scalable. Specialized dalam containerization dan serverless.",
+      "projectContoh": "Multi-region deployment dengan auto-scaling dan disaster recovery system",
+      "detailTambahan": {
+        "expertise": ["Infrastructure as Code", "CI/CD Pipeline", "Cost Optimization", "Security Hardening"],
+        "tools": "Terraform, Docker, Helm Charts, Grafana"
+      }
     }
   ],
 

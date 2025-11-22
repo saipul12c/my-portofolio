@@ -5,8 +5,14 @@ import {
   Github, ExternalLink, ChevronRight,
   BarChart3, Users, Zap, Star, TrendingUp,
   Briefcase, MapPin, Calendar, Rocket, CheckCircle,
-  Eye, MessageCircle, Share2, Clock, Tag
+  Eye, MessageCircle, Share2, Clock, Tag,
+  Clock3, Users2, Video, Upload, MessageSquare
 } from "lucide-react";
+import { 
+  FaRocket, FaUsers, FaVideo, FaUpload, FaCode,
+  FaTwitter, FaGithub, FaLinkedin, FaInstagram, FaYoutube,
+  FaFacebook, FaDiscord 
+} from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Maintenance from "./errors/Maintenance"; // 🧩 impor halaman Maintenance
@@ -15,11 +21,17 @@ import Maintenance from "./errors/Maintenance"; // 🧩 impor halaman Maintenanc
 import projectsData from "../data/projects.json";
 import blogData from "../data/blog/data.json";
 import galleryData from "../data/galleryData.json";
+import comingSoonData from "../data/comingsoon/data.json"; // 🆕 Import data coming soon
 
 export default function Home() {
   const [projects, setProjects] = useState([]);
   const [blogs, setBlogs] = useState([]);
   const [gallery, setGallery] = useState([]);
+  const [comingSoon, setComingSoon] = useState([]);
+  const [days, setDays] = useState(0);
+  const [hours, setHours] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+  const [seconds, setSeconds] = useState(0);
 
   // 🔄 Load data dari JSON
   useEffect(() => {
@@ -27,10 +39,35 @@ export default function Home() {
       setProjects(projectsData.projects?.slice(0, 3) || []);
       setBlogs(blogData?.slice(0, 3) || []);
       setGallery(galleryData?.slice(0, 6) || []);
+      // Pastikan comingSoon adalah array
+      setComingSoon(Array.isArray(comingSoonData) ? comingSoonData : []);
     } catch (error) {
       console.error("Error loading data:", error);
     }
   }, []);
+
+  // 🕒 Countdown timer untuk coming soon
+  useEffect(() => {
+    if (!comingSoon || comingSoon.length === 0 || !comingSoon[0]?.launchDate) return;
+
+    const launchDate = new Date(comingSoon[0].launchDate).getTime();
+    
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = launchDate - now;
+
+      if (distance > 0) {
+        setDays(Math.floor(distance / (1000 * 60 * 60 * 24)));
+        setHours(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+        setMinutes(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)));
+        setSeconds(Math.floor((distance % (1000 * 60)) / 1000));
+      } else {
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [comingSoon]);
 
   const isMaintenance = false; // ubah ke false jika sudah normal
   // const isMaintenance = true;
@@ -38,6 +75,16 @@ export default function Home() {
   if (isMaintenance) {
     return <Maintenance />; // 🚧 tampilkan halaman Maintenance
   }
+
+  // Fungsi getIconComponent untuk mapping icon
+  const getIconComponent = (iconName) => {
+    const iconMap = {
+      FaRocket, FaUsers, FaVideo, FaUpload, FaCode,
+      FaTwitter, FaGithub, FaLinkedin, FaInstagram, FaYoutube,
+      FaFacebook, FaDiscord
+    };
+    return iconMap[iconName] || FaRocket;
+  };
 
   // 📊 Statistik Portfolio (dinamis dari data)
   const stats = [
@@ -614,6 +661,246 @@ export default function Home() {
               </Link>
             ))}
           </div>
+        </motion.section>
+      )}
+
+      {/* ━━━ COMING SOON PROJECT SECTION ━━━ */}
+      {comingSoon && comingSoon.length > 0 && (
+        <motion.section
+          className="max-w-6xl mx-auto w-full py-16"
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              🚀 Proyek Mendatang
+            </h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              Bersiaplah untuk pengalaman platform konten kreator terbaru yang revolusioner
+            </p>
+          </div>
+      
+          {comingSoon.map((project) => {
+            // Safe access dengan optional chaining
+            const brandLogo = project?.brand?.logo || "FaRocket";
+            const communityIcon = project?.pages?.community?.icon || "FaUsers";
+            const livestreamIcon = project?.pages?.livestream?.icon || "FaVideo";
+            
+            const IconComponent = getIconComponent(brandLogo);
+            const CommunityIcon = getIconComponent(communityIcon);
+            const LivestreamIcon = getIconComponent(livestreamIcon);
+            
+            return (
+              <div key={project?.id || 'default'} className="bg-gradient-to-br from-orange-500/20 via-purple-500/10 to-red-500/20 border border-orange-500/30 backdrop-blur-xl rounded-2xl p-8 hover:shadow-2xl transition-all group relative overflow-hidden mb-8">
+                {/* Background Effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 transform scale-150 opacity-10"></div>
+
+                <div className="grid lg:grid-cols-2 gap-8 items-center relative">
+                  {/* Left Content */}
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-orange-500/20 rounded-lg group-hover:scale-110 transition-transform">
+                          <IconComponent className="w-6 h-6 text-orange-400" />
+                        </div>
+                        <div>
+                          <h3 className="text-2xl font-bold text-white">{project?.brand?.name || "Project Name"}</h3>
+                          <p className="text-orange-300 text-sm">{project?.brand?.slogan || "Exciting project coming soon"}</p>
+                        </div>
+                      </div>
+                      <span className="px-3 py-1 bg-orange-500/20 text-orange-300 text-sm rounded-full border border-orange-500/30">
+                        Coming Soon
+                      </span>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h4 className="text-xl font-semibold text-orange-300">
+                        {project?.content?.title || "Revolutionary Platform"}
+                      </h4>
+                      <p className="text-gray-300 leading-relaxed text-lg">
+                        {project?.content?.description || "A new platform that will change the way creators share content"}
+                      </p>
+                    </div>
+          
+                    {/* Features Preview */}
+                    {project?.content?.features && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {project.content.features.slice(0, 2).map((feature, index) => {
+                          const featureIcon = feature?.icon || "FaRocket";
+                          const FeatureIcon = getIconComponent(featureIcon);
+                          return (
+                            <div key={index} className="bg-black/20 rounded-lg p-3 border border-orange-500/20">
+                              <div className="flex items-center gap-2">
+                                <FeatureIcon className="w-4 h-4 text-orange-400" />
+                                <span className="text-sm text-white font-medium">{feature?.title || "Feature"}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+          
+                    {/* Countdown Timer */}
+                    <div className="bg-black/30 rounded-xl p-6 border border-orange-500/20">
+                      <div className="flex items-center gap-2 justify-center mb-4">
+                        <IconComponent className="w-4 h-4 text-orange-300" />
+                        <p className="text-sm text-orange-300 font-semibold text-center">
+                          ⏰ Launch Countdown
+                        </p>
+                      </div>
+                      <div className="grid grid-cols-4 gap-3 text-center">
+                        {[
+                          { value: days, label: project?.countdownLabels?.days || "Days" },
+                          { value: hours, label: project?.countdownLabels?.hours || "Hours" },
+                          { value: minutes, label: project?.countdownLabels?.minutes || "Minutes" },
+                          { value: seconds, label: project?.countdownLabels?.seconds || "Seconds" }
+                        ].map((item, index) => (
+                          <div key={index} className="bg-orange-500/10 rounded-lg p-3 border border-orange-500/20 hover:bg-orange-500/20 transition-colors">
+                            <div className="text-2xl font-bold text-white">{item.value}</div>
+                            <div className="text-xs text-orange-300 mt-1">{item.label}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                      
+                    {/* CTA Button */}
+                    <div className="flex gap-3 pt-4">
+                      <Link 
+                        to="/coming-soon" 
+                        className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-center py-3 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-lg hover:shadow-orange-500/25 flex items-center justify-center gap-2"
+                      >
+                        <IconComponent className="w-4 h-4" />
+                        🎯 Lihat Detail Lengkap
+                      </Link>
+                    </div>
+                  </div>
+                      
+                  {/* Right Content - Features Preview */}
+                  <div className="space-y-6">
+                    {/* Community Features */}
+                    <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/5 rounded-xl p-5 border border-green-500/20 hover:border-green-500/40 transition-all">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-green-500/20 rounded-lg">
+                          <CommunityIcon className="w-5 h-5 text-green-400" />
+                        </div>
+                        <div>
+                          <span className="font-semibold text-green-400 text-lg">
+                            {project?.pages?.community?.title || "Community"}
+                          </span>
+                          <p className="text-sm text-gray-400 mt-1">
+                            {project?.pages?.community?.description || "Join our growing community"}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-center">
+                        <div className="bg-black/20 rounded-lg p-2">
+                          <div className="text-green-400 font-bold text-sm">
+                            {(project?.pages?.community?.sections?.memberStats?.totalMembers || 1000)?.toLocaleString()}
+                          </div>
+                          <div className="text-xs text-gray-400">Members</div>
+                        </div>
+                        <div className="bg-black/20 rounded-lg p-2">
+                          <div className="text-green-400 font-bold text-sm">
+                            {project?.pages?.community?.sections?.forum?.categories?.length || 5}
+                          </div>
+                          <div className="text-xs text-gray-400">Forums</div>
+                        </div>
+                        <div className="bg-black/20 rounded-lg p-2">
+                          <div className="text-green-400 font-bold text-sm">
+                            {project?.pages?.community?.sections?.events?.upcomingEvents?.length || 3}
+                          </div>
+                          <div className="text-xs text-gray-400">Events</div>
+                        </div>
+                      </div>
+                    </div>
+                      
+                    {/* Livestream Features */}
+                    <div className="bg-gradient-to-br from-red-500/10 to-pink-500/5 rounded-xl p-5 border border-red-500/20 hover:border-red-500/40 transition-all">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-red-500/20 rounded-lg">
+                          <LivestreamIcon className="w-5 h-5 text-red-400" />
+                        </div>
+                        <div>
+                          <span className="font-semibold text-red-400 text-lg">
+                            {project?.pages?.livestream?.title || "Livestream"}
+                          </span>
+                          <p className="text-sm text-gray-400 mt-1">
+                            {project?.pages?.livestream?.description || "Live streaming features"}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {(project?.pages?.livestream?.contentCategories?.slice(0, 3) || []).map((category, index) => {
+                          const categoryIcon = category?.icon || "FaVideo";
+                          const CategoryIcon = getIconComponent(categoryIcon);
+                          return (
+                            <span 
+                              key={index} 
+                              className="text-xs bg-red-500/20 text-red-300 px-3 py-1 rounded-full border border-red-500/30 hover:bg-red-500/30 transition-colors flex items-center gap-1"
+                            >
+                              <CategoryIcon className="w-3 h-3" />
+                              {category?.name || "Category"}
+                            </span>
+                          );
+                        })}
+                      </div>
+                      <div className="flex items-center gap-4 text-xs text-gray-400">
+                        <span className="flex items-center gap-1">
+                          <LivestreamIcon className="w-3 h-3" />
+                          {project?.pages?.livestream?.features?.livestream?.qualityOptions?.length || 4} Qualities
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <FaUpload className="w-3 h-3" />
+                          {project?.pages?.livestream?.features?.videoUpload?.maxSize || "2GB"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Technology Preview */}
+                    {project?.technology && (
+                      <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/5 rounded-xl p-5 border border-blue-500/20 hover:border-blue-500/40 transition-all">
+                        <div className="flex items-center gap-3 mb-3">
+                          <FaCode className="w-5 h-5 text-blue-400" />
+                          <span className="font-semibold text-blue-400 text-lg">Tech Stack</span>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded border border-blue-500/30">
+                            {project.technology.frontend?.framework || "React"}
+                          </span>
+                          <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded border border-blue-500/30">
+                            {project.technology.backend?.framework || "Node.js"}
+                          </span>
+                          <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded border border-blue-500/30">
+                            {project.technology.backend?.database || "MongoDB"}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                      
+                    {/* Social Links */}
+                    <div className="flex justify-center gap-3 pt-4">
+                      {(project?.socialLinks?.slice(0, 5) || []).map((social, index) => {
+                        const socialIcon = social?.icon || "FaTwitter";
+                        const SocialIcon = getIconComponent(socialIcon);
+                        return (
+                          <a
+                            key={index}
+                            href={social?.url || "#"}
+                            className="p-2 bg-black/30 hover:bg-orange-500/20 rounded-lg transition-all transform hover:scale-110 group"
+                            title={`Follow ${project?.brand?.name || "Project"} on ${social?.name || "Social Media"}`}
+                          >
+                            <SocialIcon className="w-4 h-4 text-gray-400 group-hover:text-orange-400 transition-colors" />
+                          </a>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </motion.section>
       )}
 

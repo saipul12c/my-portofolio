@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
-import { X, MapPin, Calendar } from "lucide-react";
+import { X, MapPin, Calendar, FileText, Image, Zap } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function PhotoModal({ photo, onClose }) {
+  const navigate = useNavigate();
   return (
     <motion.div
       className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
@@ -74,6 +76,39 @@ export default function PhotoModal({ photo, onClose }) {
 
           <div className="pt-4 border-t border-white/10 text-xs text-gray-500 text-center italic mt-6">
             © Syaiful Mukmin Photography
+          </div>
+
+          {/* 🔗 Navigation Links Section */}
+          <div className="pt-4 border-t border-white/10 mt-6">
+            <p className="text-xs text-gray-400 mb-3 font-medium tracking-wide">Jelajahi Konten Terkait:</p>
+            <div className="grid grid-cols-1 gap-2">
+              <motion.button
+                whileHover={{ x: 4 }}
+                onClick={() => navigate("/gallery")}
+                className="flex items-center gap-2 px-3 py-2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-400/30 hover:border-blue-400/60 rounded-lg transition-all text-xs text-blue-300"
+              >
+                <Image size={14} />
+                <span>Galeri Kenangan</span>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ x: 4 }}
+                onClick={() => navigate("/blog")}
+                className="flex items-center gap-2 px-3 py-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-400/30 hover:border-purple-400/60 rounded-lg transition-all text-xs text-purple-300"
+              >
+                <FileText size={14} />
+                <span>Blog & Cerita</span>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ x: 4 }}
+                onClick={() => navigate("/projects")}
+                className="flex items-center gap-2 px-3 py-2 bg-green-500/10 hover:bg-green-500/20 border border-green-400/30 hover:border-green-400/60 rounded-lg transition-all text-xs text-green-300"
+              >
+                <Zap size={14} />
+                <span>Proyek & Portfolio</span>
+              </motion.button>
+            </div>
           </div>
         </div>
       </motion.div>

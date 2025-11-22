@@ -9,6 +9,9 @@ import PhotoSearch from "./foto/PhotoSearch";
 import PhotoGrid from "./foto/PhotoGrid";
 import PhotoPhilosophy from "./foto/PhotoPhilosophy";
 import PhotoModal from "./foto/PhotoModal";
+import PhotoRelatedContent from "./foto/PhotoRelatedContent";
+import PhotoBreadcrumb from "./foto/PhotoBreadcrumb";
+import PhotoSearchRelated from "./foto/PhotoSearchRelated";
 
 export default function Photography() {
   const [selectedPhoto, setSelectedPhoto] = useState(null);
@@ -60,6 +63,7 @@ export default function Photography() {
   return (
     <main className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center px-6 sm:px-10 md:px-20 py-20 relative overflow-hidden">
       <BackgroundGlow />
+      <PhotoBreadcrumb />
       <PhotoHeader />
       <PhotoSearch onSearch={handleSearch} allPhotos={photos} />
 
@@ -79,6 +83,15 @@ export default function Photography() {
           </p>
         )}
       </motion.div>
+
+      {/* 🔗 Saran konten terkait saat pencarian tidak ada hasil */}
+      {searchTerm && currentPhotos.length === 0 && (
+        <PhotoSearchRelated 
+          searchTerm={searchTerm} 
+          filteredPhotos={currentPhotos} 
+          allPhotos={photos} 
+        />
+      )}
 
       {/* Loader (trigger infinite scroll) */}
       <div ref={loaderRef} className="h-20 flex items-center justify-center text-gray-400 mt-8">
@@ -103,6 +116,9 @@ export default function Photography() {
       </div>
 
       <PhotoPhilosophy />
+
+      {/* 🌍 Konten Terkait dari Halaman Lain */}
+      <PhotoRelatedContent />
 
       {/* Modal Foto */}
       <AnimatePresence>

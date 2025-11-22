@@ -12,7 +12,6 @@
     ],
     "tags": ["portrait", "happiness", "album", "smile", "lifestyle"],
     "uploaded_at": "2024-05-10T14:30:00Z",
-    
     "creator": {
       "username": "syaiful_m",
       "display_name": "Syaiful Mukmin",
@@ -26,7 +25,6 @@
         "facebook": "https://facebook.com/syaiful.mukmin"
       }
     },
-
     "details": {
       "platform": "Instagram Album",
       "location": {
@@ -39,7 +37,6 @@
       "resolution": "1080x1080",
       "mood": ["happy", "bright", "inspiring"]
     },
-
     "music": {
       "title": "Sunny Day",
       "artist": "Acoustic Vibes",
@@ -49,7 +46,6 @@
       "bpm": 90,
       "is_original_audio": true
     },
-
     "engagement": {
       "views": 15832,
       "likes": 4200,
@@ -57,13 +53,11 @@
       "shares": 45,
       "saves": 210
     },
-
     "trending": {
       "is_trending": true,
       "rank": 8,
       "trend_category": "Lifestyle"
     },
-
     "comments_preview": [
       {
         "user": "lisa_photo",
@@ -78,6 +72,1147 @@
         "comment": "Warna dan moodnya keren banget!",
         "likes": 31,
         "posted_at": "2024-05-10T16:20:00Z"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "type": "video",
+    "title": "Senja di Pantai Sanur",
+    "desc": "Video time-lapse sunset dengan warna langit yang memukau",
+    "category": "Nature",
+    "src": [
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["sunset", "beach", "timelapse", "nature"],
+    "uploaded_at": "2024-05-15T09:20:00Z",
+    "creator": {
+      "username": "dian_photography",
+      "display_name": "Dian Sastrowardoyo",
+      "avatar": "https://randomuser.me/api/portraits/women/28.jpg",
+      "verified": true,
+      "followers": 15200,
+      "bio": "Natural landscape photographer | Bali based",
+      "joined_at": "2019-03-12T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/dian_photo",
+        "youtube": "https://youtube.com/dian_photography"
+      }
+    },
+    "details": {
+      "platform": "YouTube Shorts",
+      "location": {
+        "city": "Denpasar",
+        "country": "Indonesia",
+        "geo": { "lat": -8.6705, "lon": 115.2126 }
+      },
+      "language": "id",
+      "aspect_ratio": "9:16",
+      "resolution": "1080x1920",
+      "mood": ["calm", "peaceful", "aesthetic"]
+    },
+    "music": {
+      "title": "Ocean Breeze",
+      "artist": "Nature Sounds",
+      "src": "https://example.com/music/oceanbreeze.mp3",
+      "license": "royalty-free",
+      "genre": "Ambient",
+      "bpm": 65,
+      "is_original_audio": false
+    },
+    "engagement": {
+      "views": 89234,
+      "likes": 12500,
+      "comments": 342,
+      "shares": 567,
+      "saves": 892
+    },
+    "trending": {
+      "is_trending": true,
+      "rank": 3,
+      "trend_category": "Nature"
+    },
+    "comments_preview": [
+      {
+        "user": "bayu_sky",
+        "avatar": "https://randomuser.me/api/portraits/men/33.jpg",
+        "comment": "Warnanya amazing banget!",
+        "likes": 89,
+        "posted_at": "2024-05-15T10:30:00Z"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "type": "album",
+    "title": "Street Photography Jakarta",
+    "desc": "Potret kehidupan urban di ibu kota",
+    "category": "Street",
+    "src": [
+      "https://images.unsplash.com/photo-1552564433-f5dc17b9d6a4?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1552564433-21b7e4ec31e1?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["street", "urban", "city", "jakarta"],
+    "uploaded_at": "2024-05-12T11:15:00Z",
+    "creator": {
+      "username": "jakarta_eye",
+      "display_name": "Rizky Pratama",
+      "avatar": "https://randomuser.me/api/portraits/men/45.jpg",
+      "verified": false,
+      "followers": 3200,
+      "bio": "Street photographer | Jakarta",
+      "joined_at": "2021-08-15T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/jakarta_eye"
+      }
+    },
+    "details": {
+      "platform": "Instagram Album",
+      "location": {
+        "city": "Jakarta",
+        "country": "Indonesia",
+        "geo": { "lat": -6.2088, "lon": 106.8456 }
+      },
+      "language": "id",
+      "aspect_ratio": "1:1",
+      "resolution": "1080x1080",
+      "mood": ["urban", "dynamic", "gritty"]
+    },
+    "music": null,
+    "engagement": {
+      "views": 15678,
+      "likes": 2345,
+      "comments": 67,
+      "shares": 23,
+      "saves": 156
+    },
+    "trending": {
+      "is_trending": false,
+      "rank": null,
+      "trend_category": null
+    },
+    "comments_preview": []
+  },
+  {
+    "id": 4,
+    "type": "video",
+    "title": "Tutorial Edit Foto Lightroom",
+    "desc": "Step by step editing portrait photography",
+    "category": "Tutorial",
+    "src": [
+      "https://images.unsplash.com/photo-1554048612-b6a482bc67e5?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["tutorial", "lightroom", "editing", "photography"],
+    "uploaded_at": "2024-05-18T14:00:00Z",
+    "creator": {
+      "username": "photo_master",
+      "display_name": "Ahmad Wijaya",
+      "avatar": "https://randomuser.me/api/portraits/men/22.jpg",
+      "verified": true,
+      "followers": 45600,
+      "bio": "Professional photographer & educator",
+      "joined_at": "2018-11-05T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/photo_master",
+        "youtube": "https://youtube.com/photomaster",
+        "website": "https://photomaster.com"
+      }
+    },
+    "details": {
+      "platform": "YouTube",
+      "location": {
+        "city": "Surabaya",
+        "country": "Indonesia",
+        "geo": { "lat": -7.2504, "lon": 112.7688 }
+      },
+      "language": "id",
+      "aspect_ratio": "16:9",
+      "resolution": "1920x1080",
+      "mood": ["educational", "professional", "clear"]
+    },
+    "music": {
+      "title": "Background Vibe",
+      "artist": "Studio Tools",
+      "src": "https://example.com/music/backgroundvibe.mp3",
+      "license": "royalty-free",
+      "genre": "Electronic",
+      "bpm": 110,
+      "is_original_audio": false
+    },
+    "engagement": {
+      "views": 124500,
+      "likes": 15600,
+      "comments": 423,
+      "shares": 289,
+      "saves": 1567
+    },
+    "trending": {
+      "is_trending": true,
+      "rank": 5,
+      "trend_category": "Education"
+    },
+    "comments_preview": [
+      {
+        "user": "learning_photo",
+        "avatar": "https://randomuser.me/api/portraits/women/32.jpg",
+        "comment": "Terima kasih tutorialnya, sangat membantu!",
+        "likes": 156,
+        "posted_at": "2024-05-18T15:30:00Z"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "type": "album",
+    "title": "Wildlife Safari Adventure",
+    "desc": "Dokumentasi perjalanan safari di Afrika Selatan",
+    "category": "Wildlife",
+    "src": [
+      "https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1531494399776-4cec4d1a4a90?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["wildlife", "safari", "africa", "animals"],
+    "uploaded_at": "2024-05-20T08:45:00Z",
+    "creator": {
+      "username": "wildlife_explorer",
+      "display_name": "Sarah Johnson",
+      "avatar": "https://randomuser.me/api/portraits/women/56.jpg",
+      "verified": true,
+      "followers": 78900,
+      "bio": "Wildlife photographer | Conservationist",
+      "joined_at": "2017-05-20T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/wildlife_explorer",
+        "website": "https://sarahjohnsonphoto.com"
+      }
+    },
+    "details": {
+      "platform": "Instagram Album",
+      "location": {
+        "city": "Kruger National Park",
+        "country": "South Africa",
+        "geo": { "lat": -24.3675, "lon": 31.3369 }
+      },
+      "language": "en",
+      "aspect_ratio": "3:2",
+      "resolution": "1200x800",
+      "mood": ["adventure", "wild", "awe-inspiring"]
+    },
+    "music": null,
+    "engagement": {
+      "views": 234567,
+      "likes": 45678,
+      "comments": 1234,
+      "shares": 567,
+      "saves": 2345
+    },
+    "trending": {
+      "is_trending": true,
+      "rank": 2,
+      "trend_category": "Adventure"
+    },
+    "comments_preview": [
+      {
+        "user": "nature_lover",
+        "avatar": "https://randomuser.me/api/portraits/men/61.jpg",
+        "comment": "Incredible shots! The lion close-up is stunning",
+        "likes": 234,
+        "posted_at": "2024-05-20T10:20:00Z"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "type": "video",
+    "title": "Morning Coffee Ritual",
+    "desc": "ASMR video proses membuat kopi manual brew",
+    "category": "Food & Drink",
+    "src": [
+      "https://images.unsplash.com/photo-1561047029-3000c68339ca?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["coffee", "asmr", "morning", "ritual"],
+    "uploaded_at": "2024-05-14T07:30:00Z",
+    "creator": {
+      "username": "coffee_crafter",
+      "display_name": "Budi Santoso",
+      "avatar": "https://randomuser.me/api/portraits/men/38.jpg",
+      "verified": false,
+      "followers": 8900,
+      "bio": "Coffee enthusiast | Barista",
+      "joined_at": "2022-01-15T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/coffee_crafter"
+      }
+    },
+    "details": {
+      "platform": "TikTok",
+      "location": {
+        "city": "Yogyakarta",
+        "country": "Indonesia",
+        "geo": { "lat": -7.7971, "lon": 110.3705 }
+      },
+      "language": "id",
+      "aspect_ratio": "9:16",
+      "resolution": "720x1280",
+      "mood": ["relaxing", "satisfying", "cozy"]
+    },
+    "music": {
+      "title": "Morning Brew",
+      "artist": "Chill Beats",
+      "src": "https://example.com/music/morningbrew.mp3",
+      "license": "free",
+      "genre": "Lo-fi",
+      "bpm": 75,
+      "is_original_audio": false
+    },
+    "engagement": {
+      "views": 456789,
+      "likes": 67890,
+      "comments": 2345,
+      "shares": 1234,
+      "saves": 5678
+    },
+    "trending": {
+      "is_trending": true,
+      "rank": 1,
+      "trend_category": "ASMR"
+    },
+    "comments_preview": [
+      {
+        "user": "asmr_fan",
+        "avatar": "https://randomuser.me/api/portraits/women/29.jpg",
+        "comment": "Suara grindernya puas banget dengernya!",
+        "likes": 567,
+        "posted_at": "2024-05-14T08:15:00Z"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "type": "album",
+    "title": "Architecture Modern",
+    "desc": "Koleksi foto bangunan modern dengan desain minimalis",
+    "category": "Architecture",
+    "src": [
+      "https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1487958449943-2429e8be8626?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["architecture", "modern", "minimalist", "building"],
+    "uploaded_at": "2024-05-16T13:20:00Z",
+    "creator": {
+      "username": "archi_vision",
+      "display_name": "Lisa Anderson",
+      "avatar": "https://randomuser.me/api/portraits/women/44.jpg",
+      "verified": true,
+      "followers": 34500,
+      "bio": "Architecture photographer | Design lover",
+      "joined_at": "2019-09-10T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/archi_vision",
+        "website": "https://archivision.com"
+      }
+    },
+    "details": {
+      "platform": "Instagram Album",
+      "location": {
+        "city": "Singapore",
+        "country": "Singapore",
+        "geo": { "lat": 1.3521, "lon": 103.8198 }
+      },
+      "language": "en",
+      "aspect_ratio": "4:5",
+      "resolution": "1080x1350",
+      "mood": ["clean", "modern", "geometric"]
+    },
+    "music": null,
+    "engagement": {
+      "views": 67890,
+      "likes": 12345,
+      "comments": 234,
+      "shares": 89,
+      "saves": 456
+    },
+    "trending": {
+      "is_trending": false,
+      "rank": null,
+      "trend_category": null
+    },
+    "comments_preview": []
+  },
+  {
+    "id": 8,
+    "type": "video",
+    "title": "Behind The Scene Fashion Shoot",
+    "desc": "Proses kreatif pemotetan fashion di studio",
+    "category": "Fashion",
+    "src": [
+      "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["fashion", "bts", "studio", "photoshoot"],
+    "uploaded_at": "2024-05-19T16:45:00Z",
+    "creator": {
+      "username": "fashion_glam",
+      "display_name": "Maya Sari",
+      "avatar": "https://randomuser.me/api/portraits/women/33.jpg",
+      "verified": true,
+      "followers": 56700,
+      "bio": "Fashion photographer | Creative director",
+      "joined_at": "2018-07-22T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/fashion_glam",
+        "youtube": "https://youtube.com/fashionglam"
+      }
+    },
+    "details": {
+      "platform": "YouTube",
+      "location": {
+        "city": "Jakarta",
+        "country": "Indonesia",
+        "geo": { "lat": -6.2088, "lon": 106.8456 }
+      },
+      "language": "id",
+      "aspect_ratio": "16:9",
+      "resolution": "1920x1080",
+      "mood": ["creative", "professional", "glamorous"]
+    },
+    "music": {
+      "title": "Runway Beat",
+      "artist": "Fashion Sound",
+      "src": "https://example.com/music/runwaybeat.mp3",
+      "license": "royalty-free",
+      "genre": "Electronic",
+      "bpm": 120,
+      "is_original_audio": false
+    },
+    "engagement": {
+      "views": 89012,
+      "likes": 12345,
+      "comments": 567,
+      "shares": 234,
+      "saves": 678
+    },
+    "trending": {
+      "is_trending": true,
+      "rank": 12,
+      "trend_category": "Fashion"
+    },
+    "comments_preview": [
+      {
+        "user": "style_hunter",
+        "avatar": "https://randomuser.me/api/portraits/women/25.jpg",
+        "comment": "Lighting setupnya keren banget!",
+        "likes": 123,
+        "posted_at": "2024-05-19T18:20:00Z"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "type": "album",
+    "title": "Macro World",
+    "desc": "Dunia kecil yang tak terlihat oleh mata telanjang",
+    "category": "Macro",
+    "src": [
+      "https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1578662996442-48f60103fc97?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["macro", "insects", "nature", "closeup"],
+    "uploaded_at": "2024-05-13T10:10:00Z",
+    "creator": {
+      "username": "macro_world",
+      "display_name": "David Chen",
+      "avatar": "https://randomuser.me/api/portraits/men/27.jpg",
+      "verified": false,
+      "followers": 12800,
+      "bio": "Macro photography specialist",
+      "joined_at": "2021-03-18T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/macro_world"
+      }
+    },
+    "details": {
+      "platform": "Instagram Album",
+      "location": {
+        "city": "Bogor",
+        "country": "Indonesia",
+        "geo": { "lat": -6.5971, "lon": 106.8060 }
+      },
+      "language": "en",
+      "aspect_ratio": "1:1",
+      "resolution": "1080x1080",
+      "mood": ["detailed", "fascinating", "microscopic"]
+    },
+    "music": null,
+    "engagement": {
+      "views": 34567,
+      "likes": 7890,
+      "comments": 156,
+      "shares": 45,
+      "saves": 234
+    },
+    "trending": {
+      "is_trending": false,
+      "rank": null,
+      "trend_category": null
+    },
+    "comments_preview": []
+  },
+  {
+    "id": 10,
+    "type": "video",
+    "title": "Drone Footage Bali",
+    "desc": "Pemandangan aerial Bali dari ketinggian",
+    "category": "Aerial",
+    "src": [
+      "https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["drone", "aerial", "bali", "landscape"],
+    "uploaded_at": "2024-05-17T11:30:00Z",
+    "creator": {
+      "username": "sky_capturer",
+      "display_name": "Wayan Darta",
+      "avatar": "https://randomuser.me/api/portraits/men/41.jpg",
+      "verified": true,
+      "followers": 23400,
+      "bio": "Drone photographer | Bali based",
+      "joined_at": "2020-02-14T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/sky_capturer",
+        "youtube": "https://youtube.com/skycapturer"
+      }
+    },
+    "details": {
+      "platform": "YouTube Shorts",
+      "location": {
+        "city": "Ubud",
+        "country": "Indonesia",
+        "geo": { "lat": -8.5193, "lon": 115.2633 }
+      },
+      "language": "id",
+      "aspect_ratio": "9:16",
+      "resolution": "1080x1920",
+      "mood": ["epic", "breathtaking", "aerial"]
+    },
+    "music": {
+      "title": "Island Dreams",
+      "artist": "Tropical Beats",
+      "src": "https://example.com/music/islanddreams.mp3",
+      "license": "royalty-free",
+      "genre": "Ambient",
+      "bpm": 85,
+      "is_original_audio": false
+    },
+    "engagement": {
+      "views": 156789,
+      "likes": 34567,
+      "comments": 890,
+      "shares": 456,
+      "saves": 1234
+    },
+    "trending": {
+      "is_trending": true,
+      "rank": 7,
+      "trend_category": "Travel"
+    },
+    "comments_preview": [
+      {
+        "user": "travel_bali",
+        "avatar": "https://randomuser.me/api/portraits/women/38.jpg",
+        "comment": "Pemandangan dari atas memang selalu memukau!",
+        "likes": 234,
+        "posted_at": "2024-05-17T12:45:00Z"
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "type": "album",
+    "title": "Black & White Emotions",
+    "desc": "Ekspresi manusia dalam monokrom",
+    "category": "Portrait",
+    "src": [
+      "https://images.unsplash.com/photo-1516726817505-f5ed825624d8?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1516726817505-f5ed825624d9?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["blackwhite", "portrait", "emotion", "monochrome"],
+    "uploaded_at": "2024-05-21T14:20:00Z",
+    "creator": {
+      "username": "bw_artist",
+      "display_name": "Rina Melati",
+      "avatar": "https://randomuser.me/api/portraits/women/42.jpg",
+      "verified": false,
+      "followers": 7800,
+      "bio": "Black & white photography enthusiast",
+      "joined_at": "2022-06-30T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/bw_artist"
+      }
+    },
+    "details": {
+      "platform": "Instagram Album",
+      "location": {
+        "city": "Semarang",
+        "country": "Indonesia",
+        "geo": { "lat": -6.9667, "lon": 110.4167 }
+      },
+      "language": "id",
+      "aspect_ratio": "4:5",
+      "resolution": "1080x1350",
+      "mood": ["dramatic", "emotional", "timeless"]
+    },
+    "music": null,
+    "engagement": {
+      "views": 23456,
+      "likes": 5678,
+      "comments": 123,
+      "shares": 34,
+      "saves": 189
+    },
+    "trending": {
+      "is_trending": false,
+      "rank": null,
+      "trend_category": null
+    },
+    "comments_preview": []
+  },
+  {
+    "id": 12,
+    "type": "video",
+    "title": "Urban Night Photography",
+    "desc": "Tips memotret cityscape di malam hari",
+    "category": "Tutorial",
+    "src": [
+      "https://images.unsplash.com/photo-1519996529932-87cdbf1c0a4b?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["night", "urban", "tutorial", "longexposure"],
+    "uploaded_at": "2024-05-22T20:15:00Z",
+    "creator": {
+      "username": "night_shooter",
+      "display_name": "Alex Tan",
+      "avatar": "https://randomuser.me/api/portraits/men/35.jpg",
+      "verified": true,
+      "followers": 28900,
+      "bio": "Night photography specialist | Gear reviewer",
+      "joined_at": "2019-11-08T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/night_shooter",
+        "youtube": "https://youtube.com/nightshooter"
+      }
+    },
+    "details": {
+      "platform": "YouTube",
+      "location": {
+        "city": "Kuala Lumpur",
+        "country": "Malaysia",
+        "geo": { "lat": 3.1390, "lon": 101.6869 }
+      },
+      "language": "en",
+      "aspect_ratio": "16:9",
+      "resolution": "1920x1080",
+      "mood": ["mysterious", "urban", "educational"]
+    },
+    "music": {
+      "title": "Night Drive",
+      "artist": "Urban Sounds",
+      "src": "https://example.com/music/nightdrive.mp3",
+      "license": "royalty-free",
+      "genre": "Synthwave",
+      "bpm": 95,
+      "is_original_audio": false
+    },
+    "engagement": {
+      "views": 67890,
+      "likes": 8901,
+      "comments": 234,
+      "shares": 78,
+      "saves": 456
+    },
+    "trending": {
+      "is_trending": false,
+      "rank": null,
+      "trend_category": null
+    },
+    "comments_preview": []
+  },
+  {
+    "id": 13,
+    "type": "album",
+    "title": "Traditional Market Colors",
+    "desc": "Warna-warni kehidupan di pasar tradisional",
+    "category": "Documentary",
+    "src": [
+      "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1542838132-92c53300491f?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["market", "traditional", "colors", "documentary"],
+    "uploaded_at": "2024-05-23T06:45:00Z",
+    "creator": {
+      "username": "cultural_eye",
+      "display_name": "Siti Rahayu",
+      "avatar": "https://randomuser.me/api/portraits/women/37.jpg",
+      "verified": false,
+      "followers": 15600,
+      "bio": "Documenting cultural heritage through photography",
+      "joined_at": "2021-04-12T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/cultural_eye"
+      }
+    },
+    "details": {
+      "platform": "Instagram Album",
+      "location": {
+        "city": "Surakarta",
+        "country": "Indonesia",
+        "geo": { "lat": -7.5755, "lon": 110.8243 }
+      },
+      "language": "id",
+      "aspect_ratio": "3:2",
+      "resolution": "1200x800",
+      "mood": ["vibrant", "cultural", "authentic"]
+    },
+    "music": null,
+    "engagement": {
+      "views": 45678,
+      "likes": 9876,
+      "comments": 345,
+      "shares": 123,
+      "saves": 567
+    },
+    "trending": {
+      "is_trending": true,
+      "rank": 15,
+      "trend_category": "Culture"
+    },
+    "comments_preview": [
+      {
+        "user": "heritage_lover",
+        "avatar": "https://randomuser.me/api/portraits/men/48.jpg",
+        "comment": "Foto-foto yang sangat hidup dan autentik!",
+        "likes": 89,
+        "posted_at": "2024-05-23T08:20:00Z"
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "type": "video",
+    "title": "Sunrise Mountain Hike",
+    "desc": "Perjalanan mendaki gunung untuk menangkap sunrise",
+    "category": "Adventure",
+    "src": [
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df5?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["mountain", "hiking", "sunrise", "adventure"],
+    "uploaded_at": "2024-05-24T05:30:00Z",
+    "creator": {
+      "username": "mountain_seeker",
+      "display_name": "Andi Wijaya",
+      "avatar": "https://randomuser.me/api/portraits/men/29.jpg",
+      "verified": true,
+      "followers": 43200,
+      "bio": "Adventure photographer | Mountain lover",
+      "joined_at": "2018-08-25T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/mountain_seeker",
+        "youtube": "https://youtube.com/mountainseeker"
+      }
+    },
+    "details": {
+      "platform": "YouTube",
+      "location": {
+        "city": "Mount Bromo",
+        "country": "Indonesia",
+        "geo": { "lat": -7.9425, "lon": 112.9530 }
+      },
+      "language": "id",
+      "aspect_ratio": "16:9",
+      "resolution": "1920x1080",
+      "mood": ["adventurous", "inspiring", "peaceful"]
+    },
+    "music": {
+      "title": "Mountain Dawn",
+      "artist": "Nature Symphony",
+      "src": "https://example.com/music/mountaindawn.mp3",
+      "license": "royalty-free",
+      "genre": "Orchestral",
+      "bpm": 70,
+      "is_original_audio": false
+    },
+    "engagement": {
+      "views": 234567,
+      "likes": 45678,
+      "comments": 1234,
+      "shares": 567,
+      "saves": 2345
+    },
+    "trending": {
+      "is_trending": true,
+      "rank": 4,
+      "trend_category": "Adventure"
+    },
+    "comments_preview": [
+      {
+        "user": "hiking_indonesia",
+        "avatar": "https://randomuser.me/api/portraits/women/41.jpg",
+        "comment": "Pemandangan sunrise-nya breathtaking!",
+        "likes": 345,
+        "posted_at": "2024-05-24T07:15:00Z"
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "type": "album",
+    "title": "Vintage Car Collection",
+    "desc": "Koleksi mobil klasik dalam foto artistic",
+    "category": "Automotive",
+    "src": [
+      "https://images.unsplash.com/photo-1535732820275-9ffd998cac22?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1535732820275-9ffd998cac23?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["vintage", "cars", "classic", "automotive"],
+    "uploaded_at": "2024-05-25T12:00:00Z",
+    "creator": {
+      "username": "classic_car_lens",
+      "display_name": "James Wilson",
+      "avatar": "https://randomuser.me/api/portraits/men/51.jpg",
+      "verified": true,
+      "followers": 18900,
+      "bio": "Automotive photographer | Classic car enthusiast",
+      "joined_at": "2020-09-15T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/classic_car_lens",
+        "website": "https://classiccarlens.com"
+      }
+    },
+    "details": {
+      "platform": "Instagram Album",
+      "location": {
+        "city": "Jakarta",
+        "country": "Indonesia",
+        "geo": { "lat": -6.2088, "lon": 106.8456 }
+      },
+      "language": "en",
+      "aspect_ratio": "16:9",
+      "resolution": "1920x1080",
+      "mood": ["nostalgic", "classic", "elegant"]
+    },
+    "music": null,
+    "engagement": {
+      "views": 56789,
+      "likes": 12345,
+      "comments": 278,
+      "shares": 89,
+      "saves": 456
+    },
+    "trending": {
+      "is_trending": false,
+      "rank": null,
+      "trend_category": null
+    },
+    "comments_preview": []
+  },
+  {
+    "id": 16,
+    "type": "video",
+    "title": "Underwater Paradise",
+    "desc": "Keindahan dunia bawah laut Raja Ampat",
+    "category": "Underwater",
+    "src": [
+      "https://images.unsplash.com/photo-1578662996442-48f60103fc98?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["underwater", "rajaampat", "marine", "diving"],
+    "uploaded_at": "2024-05-26T09:20:00Z",
+    "creator": {
+      "username": "ocean_explorer",
+      "display_name": "Maria Santos",
+      "avatar": "https://randomuser.me/api/portraits/women/49.jpg",
+      "verified": true,
+      "followers": 67800,
+      "bio": "Underwater photographer | Marine conservationist",
+      "joined_at": "2017-12-03T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/ocean_explorer",
+        "youtube": "https://youtube.com/oceanexplorer"
+      }
+    },
+    "details": {
+      "platform": "YouTube",
+      "location": {
+        "city": "Raja Ampat",
+        "country": "Indonesia",
+        "geo": { "lat": -0.6135, "lon": 130.6200 }
+      },
+      "language": "en",
+      "aspect_ratio": "16:9",
+      "resolution": "1920x1080",
+      "mood": ["magical", "colorful", "peaceful"]
+    },
+    "music": {
+      "title": "Deep Blue",
+      "artist": "Ocean Waves",
+      "src": "https://example.com/music/deepblue.mp3",
+      "license": "royalty-free",
+      "genre": "Ambient",
+      "bpm": 60,
+      "is_original_audio": false
+    },
+    "engagement": {
+      "views": 345678,
+      "likes": 78901,
+      "comments": 2345,
+      "shares": 1234,
+      "saves": 5678
+    },
+    "trending": {
+      "is_trending": true,
+      "rank": 6,
+      "trend_category": "Nature"
+    },
+    "comments_preview": [
+      {
+        "user": "dive_enthusiast",
+        "avatar": "https://randomuser.me/api/portraits/men/44.jpg",
+        "comment": "The coral reefs are absolutely stunning!",
+        "likes": 456,
+        "posted_at": "2024-05-26T11:05:00Z"
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "type": "album",
+    "title": "Street Art Gallery",
+    "desc": "Karya seni jalanan dari berbagai kota",
+    "category": "Street",
+    "src": [
+      "https://images.unsplash.com/photo-1517697471339-4aa32003c11a?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1517697471339-4aa32003c11b?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["streetart", "graffiti", "urban", "art"],
+    "uploaded_at": "2024-05-27T15:45:00Z",
+    "creator": {
+      "username": "urban_art_hunter",
+      "display_name": "Rio Pratama",
+      "avatar": "https://randomuser.me/api/portraits/men/36.jpg",
+      "verified": false,
+      "followers": 11200,
+      "bio": "Street art documenter | Urban explorer",
+      "joined_at": "2021-07-22T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/urban_art_hunter"
+      }
+    },
+    "details": {
+      "platform": "Instagram Album",
+      "location": {
+        "city": "Bandung",
+        "country": "Indonesia",
+        "geo": { "lat": -6.9175, "lon": 107.6191 }
+      },
+      "language": "id",
+      "aspect_ratio": "1:1",
+      "resolution": "1080x1080",
+      "mood": ["creative", "urban", "artistic"]
+    },
+    "music": null,
+    "engagement": {
+      "views": 33456,
+      "likes": 6789,
+      "comments": 167,
+      "shares": 45,
+      "saves": 234
+    },
+    "trending": {
+      "is_trending": false,
+      "rank": null,
+      "trend_category": null
+    },
+    "comments_preview": []
+  },
+  {
+    "id": 18,
+    "type": "video",
+    "title": "Food Photography Basics",
+    "desc": "Cara memotret makanan agar terlihat menarik",
+    "category": "Tutorial",
+    "src": [
+      "https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["food", "tutorial", "photography", "basics"],
+    "uploaded_at": "2024-05-28T13:10:00Z",
+    "creator": {
+      "username": "foodie_lens",
+      "display_name": "Dewi Anggraeni",
+      "avatar": "https://randomuser.me/api/portraits/women/31.jpg",
+      "verified": true,
+      "followers": 37600,
+      "bio": "Food photographer | Recipe developer",
+      "joined_at": "2019-05-18T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/foodie_lens",
+        "youtube": "https://youtube.com/foodielens"
+      }
+    },
+    "details": {
+      "platform": "YouTube",
+      "location": {
+        "city": "Jakarta",
+        "country": "Indonesia",
+        "geo": { "lat": -6.2088, "lon": 106.8456 }
+      },
+      "language": "id",
+      "aspect_ratio": "16:9",
+      "resolution": "1920x1080",
+      "mood": ["educational", "appetizing", "professional"]
+    },
+    "music": {
+      "title": "Kitchen Rhythm",
+      "artist": "Culinary Beats",
+      "src": "https://example.com/music/kitchenrhythm.mp3",
+      "license": "royalty-free",
+      "genre": "Jazz",
+      "bpm": 100,
+      "is_original_audio": false
+    },
+    "engagement": {
+      "views": 89012,
+      "likes": 14567,
+      "comments": 456,
+      "shares": 189,
+      "saves": 789
+    },
+    "trending": {
+      "is_trending": true,
+      "rank": 11,
+      "trend_category": "Education"
+    },
+    "comments_preview": [
+      {
+        "user": "cooking_mom",
+        "avatar": "https://randomuser.me/api/portraits/women/46.jpg",
+        "comment": "Tips lightingnya sangat berguna, terima kasih!",
+        "likes": 167,
+        "posted_at": "2024-05-28T14:35:00Z"
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "type": "album",
+    "title": "Minimalist Interior",
+    "desc": "Desain interior sederhana yang menenangkan",
+    "category": "Architecture",
+    "src": [
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1513694203232-719a280e022g?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["interior", "minimalist", "home", "design"],
+    "uploaded_at": "2024-05-29T10:30:00Z",
+    "creator": {
+      "username": "minimal_space",
+      "display_name": "Thomas Lee",
+      "avatar": "https://randomuser.me/api/portraits/men/39.jpg",
+      "verified": true,
+      "followers": 24300,
+      "bio": "Interior photographer | Design consultant",
+      "joined_at": "2020-04-07T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/minimal_space",
+        "website": "https://minimalspace.design"
+      }
+    },
+    "details": {
+      "platform": "Instagram Album",
+      "location": {
+        "city": "Singapore",
+        "country": "Singapore",
+        "geo": { "lat": 1.3521, "lon": 103.8198 }
+      },
+      "language": "en",
+      "aspect_ratio": "4:3",
+      "resolution": "1200x900",
+      "mood": ["calm", "clean", "minimalist"]
+    },
+    "music": null,
+    "engagement": {
+      "views": 44567,
+      "likes": 9876,
+      "comments": 234,
+      "shares": 67,
+      "saves": 345
+    },
+    "trending": {
+      "is_trending": false,
+      "rank": null,
+      "trend_category": null
+    },
+    "comments_preview": []
+  },
+  {
+    "id": 20,
+    "type": "video",
+    "title": "Cultural Festival Moments",
+    "desc": "Momen spesial dari festival budaya tradisional",
+    "category": "Documentary",
+    "src": [
+      "https://images.unsplash.com/photo-1549399542-7c3baf6d1b32?auto=format&fit=crop&w=900&q=80"
+    ],
+    "tags": ["festival", "cultural", "tradition", "celebration"],
+    "uploaded_at": "2024-05-30T18:20:00Z",
+    "creator": {
+      "username": "cultural_journey",
+      "display_name": "Ayu Lestari",
+      "avatar": "https://randomuser.me/api/portraits/women/43.jpg",
+      "verified": true,
+      "followers": 32100,
+      "bio": "Cultural documenter | Festival photographer",
+      "joined_at": "2019-10-12T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/cultural_journey",
+        "youtube": "https://youtube.com/culturaljourney"
+      }
+    },
+    "details": {
+      "platform": "YouTube Shorts",
+      "location": {
+        "city": "Denpasar",
+        "country": "Indonesia",
+        "geo": { "lat": -8.6705, "lon": 115.2126 }
+      },
+      "language": "id",
+      "aspect_ratio": "9:16",
+      "resolution": "1080x1920",
+      "mood": ["vibrant", "cultural", "festive"]
+    },
+    "music": {
+      "title": "Traditional Beat",
+      "artist": "Cultural Sounds",
+      "src": "https://example.com/music/traditionalbeat.mp3",
+      "license": "royalty-free",
+      "genre": "World",
+      "bpm": 115,
+      "is_original_audio": false
+    },
+    "engagement": {
+      "views": 123456,
+      "likes": 28765,
+      "comments": 789,
+      "shares": 345,
+      "saves": 1234
+    },
+    "trending": {
+      "is_trending": true,
+      "rank": 9,
+      "trend_category": "Culture"
+    },
+    "comments_preview": [
+      {
+        "user": "culture_enthusiast",
+        "avatar": "https://randomuser.me/api/portraits/men/47.jpg",
+        "comment": "Warisan budaya yang sangat indah!",
+        "likes": 178,
+        "posted_at": "2024-05-30T19:45:00Z"
       }
     ]
   }

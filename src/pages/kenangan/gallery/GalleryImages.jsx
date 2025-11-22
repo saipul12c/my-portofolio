@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Image, UserCheck, Tag } from "lucide-react";
+import { Image, UserCheck, Tag, AlertCircle } from "lucide-react";
 import imagesData from "../../../data/gallery/images.json";
 
 // 🔀 Fungsi acak (Fisher-Yates)
@@ -13,22 +13,57 @@ function shuffleArray(array) {
   return shuffled;
 }
 
-export default function GalleryImages({ onSelect }) {
+// 🔍 Filter helper function
+function filterImages(images, searchTerm = "", selectedTags = []) {
+  let filtered = images;
+
+  if (searchTerm) {
+    const term = searchTerm.toLowerCase();
+    filtered = filtered.filter(
+      (img) =>
+        img.title?.toLowerCase().includes(term) ||
+        img.desc?.toLowerCase().includes(term) ||
+        img.category?.toLowerCase().includes(term) ||
+        img.tags?.some((tag) => tag.toLowerCase().includes(term))
+    );
+  }
+
+  if (selectedTags.length > 0) {
+    filtered = filtered.filter((img) =>
+      selectedTags.some((tag) => img.tags?.includes(tag))
+    );
+  }
+
+  return filtered;
+}
+
+export default function GalleryImages({ onSelect, filterSettings = {}, onFilteredDataChange }) {
   const ITEMS_PER_PAGE = 10;
   const [currentPage, setCurrentPage] = useState(1);
+  
+  const { searchTerm = "", tags: selectedTags = [] } = filterSettings;
 
   // 🔄 Acak data & bagi ke halaman
-  const pages = useMemo(() => {
-    const shuffled = shuffleArray(imagesData);
+  const { pages, allFilteredData } = useMemo(() => {
+    const filtered = filterImages(imagesData, searchTerm, selectedTags);
+    const shuffled = shuffleArray(filtered);
     const totalPages = Math.ceil(shuffled.length / ITEMS_PER_PAGE);
     const chunks = [];
     for (let i = 0; i < totalPages; i++) {
       chunks.push(shuffled.slice(i * ITEMS_PER_PAGE, (i + 1) * ITEMS_PER_PAGE));
     }
-    return chunks;
-  }, []);
+    return { pages: chunks, allFilteredData: filtered };
+  }, [searchTerm, selectedTags]);
+
+  // 📢 Notify parent of filtered data
+  useMemo(() => {
+    if (onFilteredDataChange) {
+      onFilteredDataChange(allFilteredData);
+    }
+  }, [allFilteredData, onFilteredDataChange]);
 
   const currentData = pages[currentPage - 1] || [];
+  const hasNoData = allFilteredData.length === 0;
 
   // ⚙️ Navigasi halaman
   const nextPage = () => {
@@ -45,17 +80,31 @@ export default function GalleryImages({ onSelect }) {
         <Image className="w-6 h-6" /> Foto Kece 📸
       </h2>
 
-      {/* 🎨 Grid Gambar */}
-      <AnimatePresence mode="wait">
+      {hasNoData ? (
         <motion.div
-          key={currentPage}
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.4 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="bg-cyan-500/10 border border-cyan-400/30 rounded-2xl p-8 flex flex-col items-center justify-center text-center"
         >
-          {currentData.map((img) => (
+          <AlertCircle className="w-12 h-12 text-cyan-400 mb-3" />
+          <h3 className="text-lg font-semibold text-cyan-300 mb-2">Tidak Ada Foto Kece</h3>
+          <p className="text-gray-400">
+            Tidak ada foto yang ditemukan sesuai dengan pencarian Anda. Coba ubah filter atau cari istilah lain.
+          </p>
+        </motion.div>
+      ) : (
+        <>
+          {/* 🎨 Grid Gambar */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentPage}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+            >
+              {currentData.map((img) => (
             <motion.div
               key={img.id}
               whileHover={{ scale: 1.03 }}
@@ -117,38 +166,40 @@ export default function GalleryImages({ onSelect }) {
               </div>
             </motion.div>
           ))}
-        </motion.div>
-      </AnimatePresence>
+            </motion.div>
+          </AnimatePresence>
 
-      {/* 📜 Pagination */}
-      {pages.length > 1 && (
-        <div className="flex justify-center items-center gap-3 mt-10">
-          <button
-            onClick={prevPage}
-            disabled={currentPage === 1}
-            className={`px-4 py-2 rounded-lg border text-sm transition ${
-              currentPage === 1
-                ? "opacity-50 cursor-not-allowed border-gray-700 text-gray-400"
-                : "border-cyan-400 text-cyan-300 hover:bg-cyan-400/10"
-            }`}
-          >
-            ⬅ Sebelumnya
-          </button>
-          <span className="text-sm text-gray-400">
-            Halaman {currentPage} dari {pages.length}
-          </span>
-          <button
-            onClick={nextPage}
-            disabled={currentPage === pages.length}
-            className={`px-4 py-2 rounded-lg border text-sm transition ${
-              currentPage === pages.length
-                ? "opacity-50 cursor-not-allowed border-gray-700 text-gray-400"
-                : "border-cyan-400 text-cyan-300 hover:bg-cyan-400/10"
-            }`}
-          >
-            Berikutnya ➡
-          </button>
-        </div>
+          {/* 📜 Pagination */}
+          {pages.length > 1 && (
+            <div className="flex justify-center items-center gap-3 mt-10">
+              <button
+                onClick={prevPage}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 rounded-lg border text-sm transition ${
+                  currentPage === 1
+                    ? "opacity-50 cursor-not-allowed border-gray-700 text-gray-400"
+                    : "border-cyan-400 text-cyan-300 hover:bg-cyan-400/10"
+                }`}
+              >
+                ⬅ Sebelumnya
+              </button>
+              <span className="text-sm text-gray-400">
+                Halaman {currentPage} dari {pages.length}
+              </span>
+              <button
+                onClick={nextPage}
+                disabled={currentPage === pages.length}
+                className={`px-4 py-2 rounded-lg border text-sm transition ${
+                  currentPage === pages.length
+                    ? "opacity-50 cursor-not-allowed border-gray-700 text-gray-400"
+                    : "border-cyan-400 text-cyan-300 hover:bg-cyan-400/10"
+                }`}
+              >
+                Berikutnya ➡
+              </button>
+            </div>
+          )}
+        </>
       )}
     </section>
   );

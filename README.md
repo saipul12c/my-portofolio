@@ -390,7 +390,7 @@ Hubungi melalui:
 
 ## ✅ Version History
 
-Latest version: **v1.17.0**
+Latest version: **v1.18.1**
 
 Lihat `CHANGELOG.md` untuk history lengkap perubahan.
 

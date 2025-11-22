@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.84.0",
     "@tailwindcss/vite": "^4.1.14",
     "@tanstack/react-virtual": "^3.13.12",
     "compromise": "^14.14.4",

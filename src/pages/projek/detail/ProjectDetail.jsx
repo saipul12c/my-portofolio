@@ -42,6 +42,7 @@ export default function ProjectDetail() {
   const location = useLocation();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isPlayingGallery, setIsPlayingGallery] = useState(false);
+  const [recommendedProjects, setRecommendedProjects] = useState([]);
 
   // 🚧 Mode maintenance
   const isMaintenance = false; // ubah ke true kalau lagi perbaikan
@@ -74,6 +75,33 @@ export default function ProjectDetail() {
     }
     return () => clearInterval(interval);
   }, [isPlayingGallery, project?.gallery]);
+
+  // Get recommended projects
+  useEffect(() => {
+    if (!project) return;
+
+    const getRandomProjects = (count = 3) => {
+      const otherProjects = data.projects.filter(p => 
+        p.id !== project.id && 
+        (p.category === project.category || 
+         p.tech?.some(tech => project.tech?.includes(tech)))
+      );
+      
+      // Shuffle and take specified count
+      const shuffled = [...otherProjects].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count);
+    };
+
+    // Initial load
+    setRecommendedProjects(getRandomProjects(3));
+
+    // Update recommendations every 8 seconds
+    const interval = setInterval(() => {
+      setRecommendedProjects(getRandomProjects(3));
+    }, 8000);
+
+    return () => clearInterval(interval);
+  }, [project]);
 
   // Handle keyboard navigation
   useEffect(() => {
@@ -124,6 +152,14 @@ export default function ProjectDetail() {
       state: { fromProjectDetail: true }
     });
   }, [navigate]);
+
+  // Navigate to recommended project
+  const handleRecommendedProjectClick = (projectId) => {
+    sessionStorage.setItem(`project_${projectId}_accessed`, 'true');
+    navigate(`/project/${projectId}`, {
+      state: { fromProjectDetail: true }
+    });
+  };
 
   // 🚧 Early returns - HARUS SETELAH SEMUA HOOKS
   if (isMaintenance) {
@@ -194,14 +230,6 @@ export default function ProjectDetail() {
         <div className="absolute top-[-10%] left-[-10%] w-[30rem] h-[30rem] bg-pink-500/20 blur-[120px] rounded-full animate-pulse" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[36rem] h-[36rem] bg-cyan-500/20 blur-[150px] rounded-full animate-pulse" />
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] bg-purple-500/10 blur-[100px] rounded-full" />
-      </div>
-
-      {/* 🛡️ Access Indicator */}
-      <div className="max-w-7xl mx-auto mb-4">
-        <div className="flex items-center gap-2 text-sm text-cyan-400/70">
-          <ShieldCheck className="w-4 h-4" />
-          <span>Akses Terverifikasi</span>
-        </div>
       </div>
 
       {/* 🔙 Tombol Kembali */}
@@ -296,15 +324,6 @@ export default function ProjectDetail() {
                   </div>
                 </div>
               )}
-
-              {/* Access Badge */}
-              <motion.span
-                whileHover={{ scale: 1.05 }}
-                className="inline-block px-3 py-1 bg-green-500/20 border border-green-400/30 rounded-full text-green-300 text-sm backdrop-blur-sm flex items-center gap-1"
-              >
-                <Lock className="w-3 h-3" />
-                Verified Access
-              </motion.span>
             </div>
             
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight drop-shadow-md">
@@ -520,6 +539,61 @@ export default function ProjectDetail() {
               Lihat Proyek Lain
             </motion.button>
           </div>
+
+          {/* 🎯 Recommended Projects */}
+          {recommendedProjects.length > 0 && (
+            <Section icon={Sparkles} title="Rekomendasi Proyek Lainnya">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <AnimatePresence mode="wait">
+                  {recommendedProjects.map((recProject, index) => (
+                    <motion.div
+                      key={recProject.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ delay: index * 0.1, duration: 0.5 }}
+                      whileHover={{ scale: 1.02, y: -5 }}
+                      className="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-cyan-400/30 transition-all duration-300 cursor-pointer group"
+                      onClick={() => handleRecommendedProjectClick(recProject.id)}
+                    >
+                      <div className="relative h-40 overflow-hidden">
+                        <img 
+                          src={recProject.image} 
+                          alt={recProject.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-60" />
+                        <div className="absolute bottom-3 left-3 right-3">
+                          <h4 className="text-white font-semibold text-sm line-clamp-1">
+                            {recProject.title}
+                          </h4>
+                          <p className="text-cyan-300 text-xs">{recProject.category}</p>
+                        </div>
+                      </div>
+                      <div className="p-4">
+                        <p className="text-gray-300 text-sm line-clamp-2 mb-3">
+                          {recProject.overview || recProject.description}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-400 text-xs">{recProject.date}</span>
+                          <div className="flex items-center gap-1">
+                            {recProject.rating && (
+                              <>
+                                <span className="text-yellow-400 text-xs font-semibold">
+                                  {recProject.rating.toFixed(1)}
+                                </span>
+                                <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </Section>
+          )}
         </div>
       </motion.div>
     </main>

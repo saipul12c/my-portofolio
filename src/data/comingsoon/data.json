@@ -1,0 +1,519 @@
+[
+  {
+    "id": 1,
+    "launchDate": "2030-12-31T00:00:00",
+    "brand": {
+      "name": "CreativeHub",
+      "logo": "FaRocket",
+      "slogan": "Where Creativity Meets Innovation"
+    },
+    "content": {
+      "title": "Platform Konten Kreator Revolusioner",
+      "description": "Sebuah platform terpadu yang menghubungkan kreator dengan audiens mereka melalui fitur komunitas, livestreaming, dan marketplace digital yang lengkap.",
+      "features": [
+        {
+          "icon": "FaUsers",
+          "title": "Komunitas Interaktif",
+          "description": "Tempat berkumpulnya para kreator dan penikmat konten"
+        },
+        {
+          "icon": "FaVideo",
+          "title": "Livestreaming HD",
+          "description": "Streaming kualitas tinggi dengan interaksi real-time"
+        },
+        {
+          "icon": "FaShoppingCart",
+          "title": "Marketplace Digital",
+          "description": "Jual beli produk digital dan fisik dengan mudah"
+        },
+        {
+          "icon": "FaChartBar",
+          "title": "Analytics Mendalam",
+          "description": "Track performance dan insights yang detail"
+        }
+      ]
+    },
+    "countdownLabels": {
+      "days": "Hari",
+      "hours": "Jam",
+      "minutes": "Menit",
+      "seconds": "Detik",
+      "icon": "FaClock"
+    },
+    "newsletter": {
+      "title": "Dapatkan Pemberitahuan Saat Kami Launch!",
+      "placeholder": "Masukkan email Anda",
+      "buttonText": "Beritahu Saya",
+      "icon": "FaEnvelope",
+      "successIcon": "FaCheckCircle",
+      "errorIcon": "FaExclamationCircle"
+    },
+    "pages": {
+      "community": {
+        "title": "Komunitas",
+        "description": "Tempat berkumpulnya para kreator dan penikmat konten untuk berbagi ide, berkolaborasi, dan tumbuh bersama.",
+        "icon": "FaUsers",
+        "sections": {
+          "memberStats": {
+            "totalMembers": 12500,
+            "onlineNow": 342,
+            "newToday": 28,
+            "icons": {
+              "total": "FaUserFriends",
+              "online": "FaCircle",
+              "new": "FaUserPlus"
+            }
+          },
+          "forum": {
+            "title": "Forum Diskusi",
+            "icon": "FaComments",
+            "categories": [
+              {
+                "name": "Umum",
+                "icon": "FaGlobe",
+                "description": "Diskusi umum seputar platform"
+              },
+              {
+                "name": "Kreator Pemula",
+                "icon": "FaUserPlus",
+                "description": "Ruang untuk kreator yang baru memulai"
+              },
+              {
+                "name": "Tips & Trik",
+                "icon": "FaLightbulb",
+                "description": "Berbagi tips dan strategi konten"
+              },
+              {
+                "name": "Kolaborasi",
+                "icon": "FaHandshake",
+                "description": "Temukan partner kolaborasi"
+              },
+              {
+                "name": "Feedback",
+                "icon": "FaComments",
+                "description": "Minta dan beri feedback konten"
+              }
+            ]
+          },
+          "events": {
+            "title": "Acara Komunitas",
+            "icon": "FaCalendarAlt",
+            "upcomingEvents": [
+              {
+                "name": "Workshop Konten Kreatif",
+                "date": "2024-11-15T19:00:00",
+                "participants": 150,
+                "icon": "FaMicrophone",
+                "description": "Pelajari cara membuat konten yang engaging"
+              },
+              {
+                "name": "Live Q&A dengan Top Creator",
+                "date": "2024-11-20T20:00:00",
+                "participants": 89,
+                "icon": "FaVideo",
+                "description": "Tanya jawab langsung dengan creator berpengalaman"
+              },
+              {
+                "name": "Hackathon Kolaborasi",
+                "date": "2024-11-25T10:00:00",
+                "participants": 45,
+                "icon": "FaCode",
+                "description": "Kompetisi membuat konten kreatif"
+              }
+            ]
+          }
+        }
+      },
+      "livestream": {
+        "title": "Livestreaming & Video",
+        "description": "Platform berbagi video dan streaming langsung dengan kualitas terbaik dan fitur interaksi yang lengkap.",
+        "icon": "FaVideo",
+        "features": {
+          "videoUpload": {
+            "maxSize": "2GB",
+            "allowedFormats": ["MP4", "MOV", "AVI", "WMV", "FLV"],
+            "icon": "FaUpload"
+          },
+          "livestream": {
+            "maxDuration": "8 hours",
+            "qualityOptions": ["480p", "720p", "1080p", "4K"],
+            "icon": "FaBroadcastTower"
+          },
+          "interaction": {
+            "liveChat": true,
+            "superChat": true,
+            "polls": true,
+            "qna": true,
+            "icons": {
+              "liveChat": "FaComment",
+              "superChat": "FaDollarSign",
+              "polls": "FaChartBar",
+              "qna": "FaQuestionCircle"
+            }
+          }
+        },
+        "contentCategories": [
+          {
+            "name": "Hiburan",
+            "subcategories": ["Music", "Gaming", "Comedy", "Talk Show"],
+            "icon": "FaMusic"
+          },
+          {
+            "name": "Pendidikan",
+            "subcategories": ["Tutorial", "Lecture", "Documentary", "Workshop"],
+            "icon": "FaGraduationCap"
+          },
+          {
+            "name": "Gaya Hidup",
+            "subcategories": ["Vlog", "Cooking", "Travel", "Fashion"],
+            "icon": "FaHeart"
+          },
+          {
+            "name": "Teknologi",
+            "subcategories": ["Coding", "Review", "Tutorial Tech"],
+            "icon": "FaCode"
+          },
+          {
+            "name": "Seni & Kreatif",
+            "subcategories": ["Drawing", "Design", "Photography", "Craft"],
+            "icon": "FaPalette"
+          }
+        ],
+        "monetization": {
+          "ads": true,
+          "subscription": true,
+          "donation": true,
+          "merchandise": true,
+          "icons": {
+            "ads": "FaAd",
+            "subscription": "FaCreditCard",
+            "donation": "FaDonate",
+            "merchandise": "FaTshirt"
+          }
+        }
+      }
+    },
+    "socialLinks": [
+      {
+        "name": "Twitter",
+        "url": "https://twitter.com/creativehub",
+        "icon": "FaTwitter"
+      },
+      {
+        "name": "GitHub",
+        "url": "https://github.com/creativehub",
+        "icon": "FaGithub"
+      },
+      {
+        "name": "LinkedIn",
+        "url": "https://linkedin.com/company/creativehub",
+        "icon": "FaLinkedin"
+      },
+      {
+        "name": "Instagram",
+        "url": "https://instagram.com/creativehub",
+        "icon": "FaInstagram"
+      },
+      {
+        "name": "YouTube",
+        "url": "https://youtube.com/c/creativehub",
+        "icon": "FaYoutube"
+      },
+      {
+        "name": "Discord",
+        "url": "https://discord.gg/creativehub",
+        "icon": "FaDiscord"
+      }
+    ],
+    "contact": {
+      "email": {
+        "address": "support@creativehub.com",
+        "icon": "FaEnvelope"
+      },
+      "phone": {
+        "number": "+1-234-567-890",
+        "icon": "FaPhoneAlt"
+      },
+      "support": {
+        "available": true,
+        "hours": "24/7",
+        "icon": "FaHeadset"
+      }
+    },
+    "technology": {
+      "backend": {
+        "framework": "Node.js",
+        "database": "MongoDB",
+        "authentication": "JWT",
+        "cache": "Redis",
+        "icons": {
+          "backend": "FaServer",
+          "database": "FaDatabase"
+        }
+      },
+      "frontend": {
+        "framework": "React",
+        "styling": "Tailwind CSS",
+        "animation": "Framer Motion",
+        "icons": {
+          "frontend": "FaReact",
+          "styling": "FaPalette"
+        }
+      },
+      "infrastructure": {
+        "hosting": "Vercel",
+        "cdn": "Cloudflare",
+        "storage": "AWS S3",
+        "icons": {
+          "hosting": "FaCloud",
+          "cdn": "FaGlobe"
+        }
+      }
+    }
+  },
+  {
+    "id": 2,
+    "launchDate": "2030-03-15T00:00:00",
+    "brand": {
+      "name": "TechInnovate",
+      "logo": "FaCode",
+      "slogan": "Innovating the Future of Technology"
+    },
+    "content": {
+      "title": "Platform Teknologi Terdepan",
+      "description": "Solusi teknologi revolusioner yang mengubah cara bisnis dan developer berinovasi dengan tools dan infrastructure terdepan.",
+      "features": [
+        {
+          "icon": "FaCloud",
+          "title": "Cloud Storage",
+          "description": "Secure and scalable cloud solutions"
+        },
+        {
+          "icon": "FaMobile",
+          "title": "Mobile First",
+          "description": "Optimized for all devices"
+        },
+        {
+          "icon": "FaServer",
+          "title": "Enterprise Grade",
+          "description": "Infrastructure kelas enterprise"
+        },
+        {
+          "icon": "FaLock",
+          "title": "Security First",
+          "description": "Keamanan tingkat tinggi"
+        }
+      ]
+    },
+    "countdownLabels": {
+      "days": "Hari",
+      "hours": "Jam",
+      "minutes": "Menit",
+      "seconds": "Detik",
+      "icon": "FaStopwatch"
+    },
+    "newsletter": {
+      "title": "Dapatkan Update Terbaru",
+      "placeholder": "Alamat email Anda",
+      "buttonText": "Berlangganan",
+      "icon": "FaPaperPlane",
+      "successIcon": "FaThumbsUp",
+      "errorIcon": "FaExclamationCircle"
+    },
+    "pages": {
+      "community": {
+        "title": "Developer Community",
+        "description": "Komunitas developer dan tech enthusiast untuk berbagi pengetahuan dan kolaborasi.",
+        "icon": "FaUsers",
+        "sections": {
+          "memberStats": {
+            "totalMembers": 8500,
+            "onlineNow": 215,
+            "newToday": 18,
+            "icons": {
+              "total": "FaUserFriends",
+              "online": "FaCircle",
+              "new": "FaUserPlus"
+            }
+          },
+          "forum": {
+            "title": "Tech Forum",
+            "icon": "FaComments",
+            "categories": [
+              {
+                "name": "Web Development",
+                "icon": "FaCode",
+                "description": "Diskusi web development"
+              },
+              {
+                "name": "Mobile Apps",
+                "icon": "FaMobile",
+                "description": "Pengembangan aplikasi mobile"
+              },
+              {
+                "name": "Cloud & DevOps",
+                "icon": "FaCloud",
+                "description": "Infrastructure dan deployment"
+              },
+              {
+                "name": "AI & Machine Learning",
+                "icon": "FaLightbulb",
+                "description": "Kecerdasan artifisial"
+              }
+            ]
+          },
+          "events": {
+            "title": "Tech Events",
+            "icon": "FaCalendarAlt",
+            "upcomingEvents": [
+              {
+                "name": "Web Development Workshop",
+                "date": "2024-12-10T14:00:00",
+                "participants": 120,
+                "icon": "FaCode",
+                "description": "Workshop modern web development"
+              },
+              {
+                "name": "Cloud Infrastructure Seminar",
+                "date": "2024-12-18T13:00:00",
+                "participants": 75,
+                "icon": "FaCloud",
+                "description": "Best practices cloud infrastructure"
+              }
+            ]
+          }
+        }
+      },
+      "livestream": {
+        "title": "Tech Streaming",
+        "description": "Live coding, tech talks, dan tutorial programming secara real-time.",
+        "icon": "FaVideo",
+        "features": {
+          "videoUpload": {
+            "maxSize": "1GB",
+            "allowedFormats": ["MP4", "MOV", "WEBM"],
+            "icon": "FaUpload"
+          },
+          "livestream": {
+            "maxDuration": "6 hours",
+            "qualityOptions": ["360p", "480p", "720p", "1080p"],
+            "icon": "FaBroadcastTower"
+          },
+          "interaction": {
+            "liveChat": true,
+            "superChat": false,
+            "polls": true,
+            "qna": true,
+            "codeShare": true,
+            "icons": {
+              "liveChat": "FaComment",
+              "polls": "FaChartBar",
+              "qna": "FaQuestionCircle",
+              "codeShare": "FaCode"
+            }
+          }
+        },
+        "contentCategories": [
+          {
+            "name": "Programming",
+            "subcategories": ["JavaScript", "Python", "Java", "Go"],
+            "icon": "FaCode"
+          },
+          {
+            "name": "DevOps",
+            "subcategories": ["Docker", "Kubernetes", "CI/CD", "Monitoring"],
+            "icon": "FaServer"
+          },
+          {
+            "name": "Data Science",
+            "subcategories": ["Machine Learning", "Data Analysis", "Visualization"],
+            "icon": "FaChartBar"
+          }
+        ],
+        "monetization": {
+          "ads": false,
+          "subscription": true,
+          "donation": true,
+          "premiumContent": true,
+          "icons": {
+            "subscription": "FaCreditCard",
+            "donation": "FaDonate",
+            "premiumContent": "FaCrown"
+          }
+        }
+      }
+    },
+    "socialLinks": [
+      {
+        "name": "Twitter",
+        "url": "https://twitter.com/techinnovate",
+        "icon": "FaTwitter"
+      },
+      {
+        "name": "GitHub",
+        "url": "https://github.com/techinnovate",
+        "icon": "FaGithub"
+      },
+      {
+        "name": "LinkedIn",
+        "url": "https://linkedin.com/company/techinnovate",
+        "icon": "FaLinkedin"
+      },
+      {
+        "name": "Facebook",
+        "url": "https://facebook.com/techinnovate",
+        "icon": "FaFacebook"
+      },
+      {
+        "name": "Discord",
+        "url": "https://discord.gg/techinnovate",
+        "icon": "FaDiscord"
+      }
+    ],
+    "contact": {
+      "email": {
+        "address": "info@techinnovate.com",
+        "icon": "FaEnvelopeOpen"
+      },
+      "phone": {
+        "number": "+1-800-TECH-INN",
+        "icon": "FaPhoneAlt"
+      },
+      "support": {
+        "available": true,
+        "hours": "Mon-Fri 9AM-6PM",
+        "icon": "FaLifeRing"
+      }
+    },
+    "technology": {
+      "backend": {
+        "framework": "Python Django",
+        "database": "PostgreSQL",
+        "cache": "Redis",
+        "search": "Elasticsearch",
+        "icons": {
+          "backend": "FaPython",
+          "database": "FaDatabase"
+        }
+      },
+      "frontend": {
+        "framework": "Vue.js",
+        "styling": "CSS3",
+        "stateManagement": "Pinia",
+        "icons": {
+          "frontend": "FaVuejs",
+          "styling": "FaCss3Alt"
+        }
+      },
+      "infrastructure": {
+        "hosting": "AWS",
+        "cdn": "CloudFront",
+        "monitoring": "Prometheus",
+        "icons": {
+          "hosting": "FaCloud",
+          "cdn": "FaGlobe"
+        }
+      }
+    }
+  }
+]

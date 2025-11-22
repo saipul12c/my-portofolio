@@ -1,10 +1,50 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import { PlayCircle, UserCheck, Tag } from "lucide-react";
+import { PlayCircle, UserCheck, Tag, AlertCircle } from "lucide-react";
 import videos from "../../../data/gallery/videos.json";
 
-export default function GalleryVideos({ onSelect }) {
+// 🔍 Filter helper function
+function filterVideos(videoList, searchTerm = "", selectedTags = []) {
+  let filtered = videoList;
+
+  if (searchTerm) {
+    const term = searchTerm.toLowerCase();
+    filtered = filtered.filter(
+      (vid) =>
+        vid.title?.toLowerCase().includes(term) ||
+        vid.desc?.toLowerCase().includes(term) ||
+        vid.category?.toLowerCase().includes(term) ||
+        vid.tags?.some((tag) => tag.toLowerCase().includes(term))
+    );
+  }
+
+  if (selectedTags.length > 0) {
+    filtered = filtered.filter((vid) =>
+      selectedTags.some((tag) => vid.tags?.includes(tag))
+    );
+  }
+
+  return filtered;
+}
+
+export default function GalleryVideos({ onSelect, filterSettings = {}, onFilteredDataChange }) {
   const [visibleCount, setVisibleCount] = useState(9);
+  
+  const { searchTerm = "", tags: selectedTags = [] } = filterSettings;
+
+  // 🔍 Filter videos based on search and tags
+  const filteredVideos = useMemo(() => {
+    return filterVideos(videos, searchTerm, selectedTags);
+  }, [searchTerm, selectedTags]);
+
+  // 📢 Notify parent of filtered data
+  useMemo(() => {
+    if (onFilteredDataChange) {
+      onFilteredDataChange(filteredVideos.slice(0, visibleCount));
+    }
+  }, [filteredVideos, visibleCount, onFilteredDataChange]);
+
+  const hasNoData = filteredVideos.length === 0;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,13 +61,27 @@ export default function GalleryVideos({ onSelect }) {
       <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2 text-purple-300">
         <PlayCircle className="w-6 h-6" /> Video Seru 🎥
       </h2>
-      <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1 }}
-      >
-        {videos.slice(0, visibleCount).map((vid) => (
+
+      {hasNoData ? (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-purple-500/10 border border-purple-400/30 rounded-2xl p-8 flex flex-col items-center justify-center text-center"
+        >
+          <AlertCircle className="w-12 h-12 text-purple-400 mb-3" />
+          <h3 className="text-lg font-semibold text-purple-300 mb-2">Tidak Ada Video Seru</h3>
+          <p className="text-gray-400">
+            Tidak ada video yang ditemukan sesuai dengan pencarian Anda. Coba ubah filter atau cari istilah lain.
+          </p>
+        </motion.div>
+      ) : (
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+        >
+          {filteredVideos.slice(0, visibleCount).map((vid) => (
           <motion.div
             key={vid.id}
             whileHover={{ scale: 1.02 }}
@@ -83,8 +137,9 @@ export default function GalleryVideos({ onSelect }) {
               )}
             </div>
           </motion.div>
-        ))}
-      </motion.div>
+          ))}
+        </motion.div>
+      )}
     </section>
   );
 }

@@ -13,6 +13,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useState, useRef } from "react";
+import GalleryShareBar from "../GalleryShareBar";
 
 export default function GalleryShortModal({
   selectedMedia,
@@ -166,15 +167,18 @@ export default function GalleryShortModal({
             )}
 
             {/* Mobile Action Buttons */}
-            <div className="flex gap-3 pt-4 mt-4 border-t border-white/10 md:hidden">
-              <button className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 py-2 rounded-lg text-sm transition flex items-center justify-center gap-2">
-                <Heart size={16} />
-                Like
-              </button>
-              <button className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 py-2 rounded-lg text-sm transition flex items-center justify-center gap-2">
-                <Share2 size={16} />
-                Share
-              </button>
+            <div className="flex flex-col gap-3 pt-4 mt-4 border-t border-white/10">
+              <GalleryShareBar media={selectedMedia} />
+              <div className="flex gap-3 md:hidden">
+                <button className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 py-2 rounded-lg text-sm transition flex items-center justify-center gap-2">
+                  <Heart size={16} />
+                  Like
+                </button>
+                <button className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 py-2 rounded-lg text-sm transition flex items-center justify-center gap-2">
+                  <Share2 size={16} />
+                  Share
+                </button>
+              </div>
             </div>
           </div>
         </motion.div>

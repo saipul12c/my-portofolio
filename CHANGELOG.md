@@ -7,9 +7,9 @@ Semua perubahan penting pada project My Portfolio Website akan didokumentasikan 
 ---
 
 ## 📑 Daftar Isi
-- [Unreleased](#unreleased)
-- [v2.1.0](#v210---2025-11-20)
-- [v2.0.0](#v200---2025-11-20)
+- [Dalam Proses penyempurnaan](#Pengembangan)
+- [v1.17.0](#v210---2025-11-20)
+- [v1.15.0](#v200---2025-11-20)
 - [v1.17.0](#v1170---2025-11-17)
 - [v1.16.0](#v1160---2025-11-20)
 - [v1.15.0](#v1150---2025-11-18)
@@ -23,13 +23,70 @@ Semua perubahan penting pada project My Portfolio Website akan didokumentasikan 
 
 ---
 
-## Unreleased
+## Dalam Proses penyempurnaan 
 
 Sedang dalam pengembangan.
 
+
+## **[v1.18.1] – 2025-11-20**
+
+**Status:** CURRENT | **Release Channel:** Production | **Type:** Major
+**Build:** build-2025.11.21.005
+
+### 🎯 **Komponen & Arsitektur**
+
+#### ✨ **Added**
+
+* **Global Error Handling** pada seluruh section gallery (Shorts, Images, Videos, Albums).
+* **Callback `onFilteredDataChange`** di semua komponen gallery untuk mengirim data terfilter ke parent.
+* **Dynamic Stats System** yang membaca data gabungan dari keempat section.
+* **Pesan error per section**:
+
+  * Shorts → "Tidak Ada Short Video"
+  * Images → "Tidak Ada Foto Kece"
+  * Videos → "Tidak Ada Video Seru"
+  * Albums → "Tidak Ada Album"
+* **Auto-hide Empty Sections** — ketika tidak ada data hasil filter, komponen bersembunyi otomatis.
+* **Enhanced engagement metrics** di `GalleryStats.jsx`, termasuk total konten ditemukan + rata-rata engagement.
+
+#### 🔧 **Changed**
+
+* **Gallery.jsx**
+
+  * Penambahan state global `filteredData`
+  * Penambahan 4 handler utama:
+    `handleShortsFilteredData`, `handleImagesFilteredData`,
+    `handleVideosFilteredData`, `handleAlbumsFilteredData`
+  * Data hasil filter digabung: `combinedFilteredMedia`
+  * `GalleryStats` kini membaca hasil filter, bukan allMedia mentah.
+* **GalleryShorts / Images / Videos / Albums**
+
+  * Penataan ulang struktur komponen untuk integrasi global error state.
+  * Penyesuaian UI/UX untuk konsistensi warna (cyan, purple, pink).
+  * Perbaikan conditional rendering agar tidak ada layout kosong.
+
+#### 🚀 **Performance**
+
+* Pengurangan render tidak perlu lewat prop filtering yang lebih efisien.
+* Infinite scroll di `GalleryVideos` dipoles agar lebih ringan saat data kosong.
+* Optimisasi conditional UI saat terjadi filtered empty states.
+
+#### ⚠️ **BREAKING CHANGES**
+
+* `GalleryStats` **wajib** menerima `combinedFilteredMedia` (bukan lagi `allMedia`).
+* Section gallery harus mengimplementasikan **callback `onFilteredDataChange`** agar stats bekerja.
+* Beberapa struktur layout section berubah karena auto-hide behavior.
+
+**Affected Components:**
+
+* `Gallery.jsx` – Core logic telah di-refactor untuk penggabungan data terfilter.
+* `GalleryStats.jsx` – API berubah & statistik kini 100% berbasis data filter.
+* `GalleryShorts.jsx`, `GalleryImages.jsx`,
+  `GalleryVideos.jsx`, `GalleryAlbums.jsx` – Penambahan error UI + callback + behavior baru.
+
 ---
 
-## [v2.1.0] - 2025-11-20
+## [v1.17.0] - 2025-11-20
 
 **Status:** CURRENT | **Release Channel:** Production | **Type:** Major | **Build:** build-2025.11.18.009
 
@@ -59,7 +116,7 @@ Sedang dalam pengembangan.
 
 ---
 
-## [v2.0.0] - 2025-11-18
+## [v1.15.0] - 2025-11-18
 
 **Status:** SUPPORTED | **Release Channel:** Production | **Type:** Major | **Build:** build-2025.11.18.009
 

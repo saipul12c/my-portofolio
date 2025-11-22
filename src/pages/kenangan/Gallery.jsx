@@ -10,14 +10,29 @@ import GalleryAlbums from "./gallery/GalleryAlbums";
 import GalleryShortModal from "./gallery/modals/GalleryShortModal";
 import GalleryMediaModal from "./gallery/modals/GalleryMediaModal";
 
+import GalleryFilter from "./gallery/GalleryFilter";
+import GalleryNavigator from "./gallery/GalleryNavigator";
+import GalleryStats from "./gallery/GalleryStats";
+import GalleryRelatedContent from "./gallery/GalleryRelatedContent";
+import { useGalleryData } from "./hooks/useGalleryData";
+
 import { Sparkles } from "lucide-react";
 
 export default function Gallery() {
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [shortsList, setShortsList] = useState([]); // daftar data short aktif
+  const [shortsList, setShortsList] = useState([]);
+  const [filterSettings, setFilterSettings] = useState({ searchTerm: "", tags: [] });
+  const [filteredData, setFilteredData] = useState({
+    shorts: [],
+    images: [],
+    videos: [],
+    albums: []
+  });
   const videoRef = useRef(null);
   const isMaintenance = false;
+
+  const { allMedia, loading, allTags, filterMedia } = useGalleryData();
 
   // 🌀 Navigasi ke short berikutnya
   const handleNext = () => {
@@ -34,6 +49,36 @@ export default function Gallery() {
     setSelectedMedia(shortsList[prevIndex]);
     setCurrentIndex(prevIndex);
   };
+
+  // 🔍 Handle filter changes
+  const handleFilter = (settings) => {
+    setFilterSettings(settings);
+  };
+
+  // 📊 Collect filtered data from each section
+  const handleShortsFilteredData = (data) => {
+    setFilteredData(prev => ({ ...prev, shorts: data }));
+  };
+
+  const handleImagesFilteredData = (data) => {
+    setFilteredData(prev => ({ ...prev, images: data }));
+  };
+
+  const handleVideosFilteredData = (data) => {
+    setFilteredData(prev => ({ ...prev, videos: data }));
+  };
+
+  const handleAlbumsFilteredData = (data) => {
+    setFilteredData(prev => ({ ...prev, albums: data }));
+  };
+
+  // 📊 Combine all filtered data for statistics
+  const combinedFilteredMedia = [
+    ...filteredData.shorts,
+    ...filteredData.images,
+    ...filteredData.videos,
+    ...filteredData.albums
+  ];
 
   if (isMaintenance) return <Maintenance />;
 
@@ -61,32 +106,52 @@ export default function Gallery() {
         </p>
       </motion.div>
 
+      {/* 🔍 Filter & Search */}
+      <GalleryFilter onFilter={handleFilter} allTags={allTags} />
+
+      {/* 📊 Statistics - Now uses filtered data */}
+      <GalleryStats mediaList={combinedFilteredMedia} />
+
       {/* ⚡ Modular Components */}
       <GalleryShorts
+        filterSettings={filterSettings}
+        onFilteredDataChange={handleShortsFilteredData}
         onSelect={(media, list, index) => {
           setSelectedMedia(media);
-          setShortsList(list); // simpan semua short
-          setCurrentIndex(index); // index aktif
+          setShortsList(list);
+          setCurrentIndex(index);
         }}
       />
       <GalleryImages
+        filterSettings={filterSettings}
+        onFilteredDataChange={handleImagesFilteredData}
         onSelect={(media) => {
           setSelectedMedia(media);
           setCurrentIndex(0);
         }}
       />
       <GalleryVideos
+        filterSettings={filterSettings}
+        onFilteredDataChange={handleVideosFilteredData}
         onSelect={(media) => {
           setSelectedMedia(media);
           setCurrentIndex(0);
         }}
       />
       <GalleryAlbums
+        filterSettings={filterSettings}
+        onFilteredDataChange={handleAlbumsFilteredData}
         onSelect={(media) => {
           setSelectedMedia(media);
           setCurrentIndex(0);
         }}
       />
+
+      {/* 🔗 Related Content */}
+      <GalleryRelatedContent />
+
+      {/* 🔗 Navigation ke halaman lain */}
+      <GalleryNavigator />
 
       {/* 💫 Modals */}
       <GalleryShortModal

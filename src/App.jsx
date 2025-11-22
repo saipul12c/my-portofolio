@@ -45,6 +45,13 @@ import Blog from "./pages/blog/Blog";
 import BlogDetail from "./pages/blog/detail/BlogDetail";
 import Detailusers from  "./pages/blog/users/DetailProfile";
 import Bahasa from "./pages/bahasa/Bahasa";
+import Komunitas from "./pages/komunitas/Komo"
+import Comingsoon from "./pages/fitur/coomingsoon"
+
+// halaman kominiti - IMPLEMENTASI BARU
+// import Discond from "./pages/discond/Komoniti";
+// import { AuthProvider } from "./pages/discond/contexts/AuthContext";
+// import { ChatProvider } from "./pages/discond/contexts/ChatContext";
 
 // ⚠️ Halaman error kustom
 import NotFound from "./pages/errors/NotFound";
@@ -54,6 +61,15 @@ import Forbidden from "./pages/errors/Forbidden";
 import Timeout from "./pages/errors/Timeout";
 import BadGateway from "./pages/errors/BadGateway";
 import Maintenance from "./pages/errors/Maintenance";
+
+// ✅ NEW: Komponen wrapper untuk Komoniti
+// const KomonitiWrapper = () => (
+//   <AuthProvider>
+//     <ChatProvider>
+//       <Discond />
+//     </ChatProvider>
+//   </AuthProvider>
+// );
 
 export default function App() {
   return (
@@ -95,9 +111,8 @@ export default function App() {
                         <Route path="/help/faq" element={<FAQ />} />
 
                         <Route path="/help/commitment" element={<Komit />} />
-                         <Route path="/commitment/:id" element={<DetailCommitment />} />
-                        {/* <Route path="/chatbot" element={<Chatbot />} /> */}
-
+                        <Route path="/commitment/:id" element={<DetailCommitment />} />
+                      
                         {/* 💼 Halaman proyek - DUAL ROUTE SUPPORT */}
                         <Route path="/projects" element={<Projects />} />
                         <Route path="/projects/:id" element={<Projects />} />
@@ -127,6 +142,11 @@ export default function App() {
                         {/* website tambahan */}
                         <Route path="/qodam" element={<Qodam />} />
                         <Route path="/zodiak" element={<Zodiak />} />
+                        <Route path="/komunitas/[websiteinilagipengembangan]" element={<Komunitas />} />
+                        <Route path="/coming-soon" element={<Comingsoon />} />
+
+                        {/* ✅ MODIFIED: Komoniti dengan provider terpisah
+                        // <Route path="/discord" element={<KomonitiWrapper />} />
 
                         {/* ⚠️ Halaman error */}
                         <Route
