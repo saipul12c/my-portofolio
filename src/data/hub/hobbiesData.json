@@ -1,5 +1,6 @@
 [
   {
+    "id": 1,
     "icon": "Camera",
     "iconColor": "text-teal-400",
     "title": "Fotografi",
@@ -7,9 +8,22 @@
     "color": "from-teal-400/30 to-sky-500/10",
     "category": "Kreatif",
     "link": "https://unsplash.com",
-    "linkLabel": "Lihat Galeri"
+    "linkLabel": "Lihat Galeri",
+    "metadata": {
+      "difficulty": "Menengah",
+      "timeRequired": "Flexible",
+      "tools": ["Kamera", "Editing Software"],
+      "isActive": true,
+      "priority": "High"
+    },
+    "stats": {
+      "completion": 75,
+      "rating": 4.5,
+      "hoursPerWeek": 5
+    }
   },
   {
+    "id": 2,
     "icon": "BookOpen",
     "iconColor": "text-violet-400",
     "title": "Membaca Buku Pengembangan Diri",
@@ -17,9 +31,22 @@
     "color": "from-violet-400/30 to-fuchsia-500/10",
     "category": "Pembelajaran",
     "link": "https://www.goodreads.com",
-    "linkLabel": "Cari Buku"
+    "linkLabel": "Cari Buku",
+    "metadata": {
+      "difficulty": "Pemula",
+      "timeRequired": "30 menit/hari",
+      "tools": ["Buku", "E-reader"],
+      "isActive": true,
+      "priority": "Medium"
+    },
+    "stats": {
+      "completion": 60,
+      "rating": 4.8,
+      "hoursPerWeek": 3
+    }
   },
   {
+    "id": 3,
     "icon": "Film",
     "iconColor": "text-pink-400",
     "title": "Editing Video Dokumenter Pendidikan",
@@ -27,9 +54,22 @@
     "color": "from-pink-400/30 to-cyan-400/10",
     "category": "Kreatif",
     "link": "https://www.youtube.com",
-    "linkLabel": "Lihat Karya"
+    "linkLabel": "Lihat Karya",
+    "metadata": {
+      "difficulty": "Advanced",
+      "timeRequired": "2-3 jam/sesi",
+      "tools": ["Software Editing", "Microphone"],
+      "isActive": true,
+      "priority": "High"
+    },
+    "stats": {
+      "completion": 40,
+      "rating": 4.3,
+      "hoursPerWeek": 8
+    }
   },
   {
+    "id": 4,
     "icon": "PenTool",
     "iconColor": "text-cyan-300",
     "title": "Desain Grafis",
@@ -37,9 +77,22 @@
     "color": "from-cyan-300/30 to-emerald-400/10",
     "category": "Kreatif",
     "link": "https://www.behance.net",
-    "linkLabel": "Portofolio"
+    "linkLabel": "Portofolio",
+    "metadata": {
+      "difficulty": "Menengah",
+      "timeRequired": "Flexible",
+      "tools": ["Design Software", "Tablet"],
+      "isActive": true,
+      "priority": "Medium"
+    },
+    "stats": {
+      "completion": 85,
+      "rating": 4.6,
+      "hoursPerWeek": 6
+    }
   },
   {
+    "id": 5,
     "icon": "PenSquare",
     "iconColor": "text-rose-300",
     "title": "Menulis Blog Edukasi",
@@ -47,9 +100,22 @@
     "color": "from-rose-300/30 to-orange-300/10",
     "category": "Pembelajaran",
     "link": "https://medium.com",
-    "linkLabel": "Baca Blog"
+    "linkLabel": "Baca Blog",
+    "metadata": {
+      "difficulty": "Menengah",
+      "timeRequired": "1-2 jam/article",
+      "tools": ["Text Editor", "CMS"],
+      "isActive": true,
+      "priority": "Medium"
+    },
+    "stats": {
+      "completion": 70,
+      "rating": 4.4,
+      "hoursPerWeek": 4
+    }
   },
   {
+    "id": 6,
     "icon": "Headphones",
     "iconColor": "text-amber-300",
     "title": "Mendengarkan Musik Lo-fi",
@@ -57,9 +123,22 @@
     "color": "from-amber-300/30 to-orange-300/10",
     "category": "Relaksasi",
     "link": "https://www.youtube.com/@lofihiphop",
-    "linkLabel": "Putar Musik"
+    "linkLabel": "Putar Musik",
+    "metadata": {
+      "difficulty": "Pemula",
+      "timeRequired": "Flexible",
+      "tools": ["Streaming Service", "Headphones"],
+      "isActive": true,
+      "priority": "Low"
+    },
+    "stats": {
+      "completion": 95,
+      "rating": 4.9,
+      "hoursPerWeek": 10
+    }
   },
   {
+    "id": 7,
     "icon": "Compass",
     "iconColor": "text-emerald-300",
     "title": "Jelajah Alam & Citywalk",
@@ -67,9 +146,22 @@
     "color": "from-emerald-300/30 to-lime-400/10",
     "category": "Eksplorasi",
     "link": "https://www.google.com/maps",
-    "linkLabel": "Temukan Tempat"
+    "linkLabel": "Temukan Tempat",
+    "metadata": {
+      "difficulty": "Pemula",
+      "timeRequired": "2-4 jam/trip",
+      "tools": ["Maps", "Comfortable Shoes"],
+      "isActive": true,
+      "priority": "Medium"
+    },
+    "stats": {
+      "completion": 55,
+      "rating": 4.7,
+      "hoursPerWeek": 3
+    }
   },
   {
+    "id": 8,
     "icon": "Laptop",
     "iconColor": "text-sky-300",
     "title": "Eksperimen Web Design Minimalis",
@@ -77,9 +169,22 @@
     "color": "from-sky-300/30 to-indigo-400/10",
     "category": "Teknologi",
     "link": "https://dribbble.com",
-    "linkLabel": "Lihat Inspirasi"
+    "linkLabel": "Lihat Inspirasi",
+    "metadata": {
+      "difficulty": "Advanced",
+      "timeRequired": "3-5 jam/project",
+      "tools": ["Code Editor", "Design Tools"],
+      "isActive": true,
+      "priority": "High"
+    },
+    "stats": {
+      "completion": 45,
+      "rating": 4.2,
+      "hoursPerWeek": 7
+    }
   },
   {
+    "id": 9,
     "icon": "Globe",
     "iconColor": "text-indigo-300",
     "title": "Belajar Bahasa Asing",
@@ -87,9 +192,22 @@
     "color": "from-indigo-300/30 to-purple-400/10",
     "category": "Pembelajaran",
     "link": "https://duolingo.com",
-    "linkLabel": "Mulai Belajar"
+    "linkLabel": "Mulai Belajar",
+    "metadata": {
+      "difficulty": "Menengah",
+      "timeRequired": "15-30 menit/hari",
+      "tools": ["Language App", "Notebook"],
+      "isActive": true,
+      "priority": "Medium"
+    },
+    "stats": {
+      "completion": 65,
+      "rating": 4.5,
+      "hoursPerWeek": 2
+    }
   },
   {
+    "id": 10,
     "icon": "Code",
     "iconColor": "text-cyan-400",
     "title": "Ngoding Proyek Mini",
@@ -97,9 +215,22 @@
     "color": "from-cyan-400/30 to-blue-400/10",
     "category": "Teknologi",
     "link": "https://github.com",
-    "linkLabel": "Lihat Repositori"
+    "linkLabel": "Lihat Repositori",
+    "metadata": {
+      "difficulty": "Menengah",
+      "timeRequired": "2-4 jam/project",
+      "tools": ["Code Editor", "Git"],
+      "isActive": true,
+      "priority": "High"
+    },
+    "stats": {
+      "completion": 50,
+      "rating": 4.4,
+      "hoursPerWeek": 6
+    }
   },
   {
+    "id": 11,
     "icon": "Music",
     "iconColor": "text-rose-400",
     "title": "Menciptakan Beat Musik Digital",
@@ -107,9 +238,22 @@
     "color": "from-rose-400/30 to-amber-300/10",
     "category": "Kreatif",
     "link": "https://soundtrap.com",
-    "linkLabel": "Coba Produksi"
+    "linkLabel": "Coba Produksi",
+    "metadata": {
+      "difficulty": "Advanced",
+      "timeRequired": "1-2 jam/session",
+      "tools": ["DAW Software", "MIDI Controller"],
+      "isActive": true,
+      "priority": "Medium"
+    },
+    "stats": {
+      "completion": 35,
+      "rating": 4.1,
+      "hoursPerWeek": 4
+    }
   },
   {
+    "id": 12,
     "icon": "Heart",
     "iconColor": "text-red-400",
     "title": "Volunteering & Teaching",
@@ -117,9 +261,22 @@
     "color": "from-red-400/30 to-pink-400/10",
     "category": "Sosial",
     "link": "https://www.volunteerworld.com",
-    "linkLabel": "Cari Program"
+    "linkLabel": "Cari Program",
+    "metadata": {
+      "difficulty": "Pemula",
+      "timeRequired": "Flexible",
+      "tools": ["Communication Skills", "Teaching Materials"],
+      "isActive": true,
+      "priority": "High"
+    },
+    "stats": {
+      "completion": 80,
+      "rating": 4.9,
+      "hoursPerWeek": 5
+    }
   },
   {
+    "id": 13,
     "icon": "BookMarked",
     "iconColor": "text-amber-400",
     "title": "Membuat Catatan Digital",
@@ -127,9 +284,22 @@
     "color": "from-amber-400/30 to-emerald-300/10",
     "category": "Produktivitas",
     "link": "https://notion.so",
-    "linkLabel": "Coba Notion"
+    "linkLabel": "Coba Notion",
+    "metadata": {
+      "difficulty": "Pemula",
+      "timeRequired": "30 menit/hari",
+      "tools": ["Note-taking App", "Templates"],
+      "isActive": true,
+      "priority": "Medium"
+    },
+    "stats": {
+      "completion": 90,
+      "rating": 4.7,
+      "hoursPerWeek": 2
+    }
   },
   {
+    "id": 14,
     "icon": "Cpu",
     "iconColor": "text-lime-300",
     "title": "Belajar AI & Otomatisasi",
@@ -137,9 +307,22 @@
     "color": "from-lime-300/30 to-cyan-400/10",
     "category": "Teknologi",
     "link": "https://chat.openai.com",
-    "linkLabel": "Coba ChatGPT"
+    "linkLabel": "Coba ChatGPT",
+    "metadata": {
+      "difficulty": "Advanced",
+      "timeRequired": "1-2 jam/sesi",
+      "tools": ["AI Tools", "Programming Knowledge"],
+      "isActive": true,
+      "priority": "High"
+    },
+    "stats": {
+      "completion": 30,
+      "rating": 4.3,
+      "hoursPerWeek": 5
+    }
   },
   {
+    "id": 15,
     "icon": "Palette",
     "iconColor": "text-purple-300",
     "title": "Melukis Digital",
@@ -147,9 +330,22 @@
     "color": "from-purple-300/30 to-pink-400/10",
     "category": "Kreatif",
     "link": "https://www.procreate.com",
-    "linkLabel": "Coba Procreate"
+    "linkLabel": "Coba Procreate",
+    "metadata": {
+      "difficulty": "Menengah",
+      "timeRequired": "1-3 jam/session",
+      "tools": ["Drawing Tablet", "Digital Brushes"],
+      "isActive": true,
+      "priority": "Medium"
+    },
+    "stats": {
+      "completion": 60,
+      "rating": 4.5,
+      "hoursPerWeek": 4
+    }
   },
   {
+    "id": 16,
     "icon": "Pen",
     "iconColor": "text-emerald-400",
     "title": "Menulis Jurnal Reflektif",
@@ -157,9 +353,22 @@
     "color": "from-emerald-400/30 to-teal-300/10",
     "category": "Pembelajaran",
     "link": "https://journey.cloud",
-    "linkLabel": "Mulai Menulis"
+    "linkLabel": "Mulai Menulis",
+    "metadata": {
+      "difficulty": "Pemula",
+      "timeRequired": "10-15 menit/hari",
+      "tools": ["Journal", "Pen/Digital"],
+      "isActive": true,
+      "priority": "Low"
+    },
+    "stats": {
+      "completion": 85,
+      "rating": 4.6,
+      "hoursPerWeek": 1
+    }
   },
   {
+    "id": 17,
     "icon": "Users",
     "iconColor": "text-sky-400",
     "title": "Bergabung dengan Komunitas Edukasi",
@@ -167,9 +376,22 @@
     "color": "from-sky-400/30 to-indigo-300/10",
     "category": "Sosial",
     "link": "https://discord.com",
-    "linkLabel": "Gabung Komunitas"
+    "linkLabel": "Gabung Komunitas",
+    "metadata": {
+      "difficulty": "Pemula",
+      "timeRequired": "Flexible",
+      "tools": ["Communication Platform", "Networking"],
+      "isActive": true,
+      "priority": "Medium"
+    },
+    "stats": {
+      "completion": 75,
+      "rating": 4.8,
+      "hoursPerWeek": 3
+    }
   },
   {
+    "id": 18,
     "icon": "Book",
     "iconColor": "text-cyan-400",
     "title": "Membaca Literatur Pendidikan",
@@ -177,9 +399,22 @@
     "color": "from-cyan-400/30 to-emerald-300/10",
     "category": "Pembelajaran",
     "link": "https://scholar.google.com",
-    "linkLabel": "Cari Artikel"
+    "linkLabel": "Cari Artikel",
+    "metadata": {
+      "difficulty": "Menengah",
+      "timeRequired": "1-2 jam/minggu",
+      "tools": ["Academic Papers", "Reference Manager"],
+      "isActive": true,
+      "priority": "High"
+    },
+    "stats": {
+      "completion": 40,
+      "rating": 4.4,
+      "hoursPerWeek": 2
+    }
   },
   {
+    "id": 19,
     "icon": "Map",
     "iconColor": "text-amber-300",
     "title": "Menjelajahi Budaya Lokal",
@@ -187,9 +422,22 @@
     "color": "from-amber-300/30 to-red-400/10",
     "category": "Eksplorasi",
     "link": "https://indonesia.travel",
-    "linkLabel": "Jelajahi"
+    "linkLabel": "Jelajahi",
+    "metadata": {
+      "difficulty": "Pemula",
+      "timeRequired": "Flexible",
+      "tools": ["Local Guides", "Travel App"],
+      "isActive": true,
+      "priority": "Low"
+    },
+    "stats": {
+      "completion": 55,
+      "rating": 4.7,
+      "hoursPerWeek": 2
+    }
   },
   {
+    "id": 20,
     "icon": "Sparkles",
     "iconColor": "text-pink-300",
     "title": "Eksperimen dengan AI Kreatif",
@@ -197,6 +445,18 @@
     "color": "from-pink-300/30 to-purple-400/10",
     "category": "Teknologi",
     "link": "https://www.runwayml.com",
-    "linkLabel": "Coba Sekarang"
+    "linkLabel": "Coba Sekarang",
+    "metadata": {
+      "difficulty": "Advanced",
+      "timeRequired": "1-3 jam/experiment",
+      "tools": ["AI Platforms", "Creative Software"],
+      "isActive": true,
+      "priority": "High"
+    },
+    "stats": {
+      "completion": 25,
+      "rating": 4.2,
+      "hoursPerWeek": 6
+    }
   }
 ]

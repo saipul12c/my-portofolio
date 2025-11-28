@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Maintenance from "../errors/Maintenance";
 import photos from "../../data/foto/photos.json";
@@ -10,122 +10,104 @@ import PhotoGrid from "./foto/PhotoGrid";
 import PhotoPhilosophy from "./foto/PhotoPhilosophy";
 import PhotoModal from "./foto/PhotoModal";
 import PhotoRelatedContent from "./foto/PhotoRelatedContent";
-import PhotoBreadcrumb from "./foto/PhotoBreadcrumb";
 import PhotoSearchRelated from "./foto/PhotoSearchRelated";
+import Pagination from "./foto/Pagination";
 
 export default function Photography() {
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [visiblePhotos, setVisiblePhotos] = useState(9); // berapa banyak yang tampil
-  const [isFetching, setIsFetching] = useState(false);
-  const loaderRef = useRef(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const photosPerPage = 9;
+
   const isMaintenance = false;
 
   // 🔍 Filter pencarian
   const filteredPhotos = photos.filter((photo) =>
-    [photo.title, photo.category]
+    [photo.title, photo.category, photo.mood, photo.location]
       .join(" ")
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
   );
 
-  // 🧲 Infinite Scroll menggunakan Intersection Observer
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const target = entries[0];
-        if (target.isIntersecting && !isFetching && visiblePhotos < filteredPhotos.length) {
-          setIsFetching(true);
-          setTimeout(() => {
-            setVisiblePhotos((prev) => prev + 9); // tambah batch 9 foto
-            setIsFetching(false);
-          }, 500); // delay kecil biar smooth
-        }
-      },
-      { threshold: 0.1 }
-    );
+  // 🧮 Hitung pagination
+  const totalPages = Math.ceil(filteredPhotos.length / photosPerPage);
+  const startIndex = (currentPage - 1) * photosPerPage;
+  const currentPhotos = filteredPhotos.slice(startIndex, startIndex + photosPerPage);
 
-    if (loaderRef.current) observer.observe(loaderRef.current);
-    return () => observer.disconnect();
-  }, [visiblePhotos, filteredPhotos.length, isFetching]);
+  // 🔄 Reset ke halaman 1 saat pencarian berubah
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  // 🎯 Fungsi untuk mengganti halaman
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   if (isMaintenance) return <Maintenance />;
 
-  // Ambil foto sesuai jumlah visible
-  const currentPhotos = filteredPhotos.slice(0, visiblePhotos);
-
-  // Reset saat pencarian berubah
-  const handleSearch = (value) => {
-    setSearchTerm(value);
-    setVisiblePhotos(9); // tampilkan ulang dari awal
-  };
-
   return (
-    <main className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center px-6 sm:px-10 md:px-20 py-20 relative overflow-hidden">
+    <main className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center px-4 sm:px-6 md:px-8 lg:px-20 py-8 md:py-12 lg:py-20 relative overflow-hidden">
       <BackgroundGlow />
-      <PhotoBreadcrumb />
-      <PhotoHeader />
-      <PhotoSearch onSearch={handleSearch} allPhotos={photos} />
+      
+      <div className="w-full max-w-7xl">
+        {/* Header dan Search di tengah */}
+        <div className="flex flex-col items-center w-full">
+          <PhotoHeader />
+          <PhotoSearch onSearch={handleSearch} allPhotos={photos} />
+        </div>
 
-      {/* ✨ Grid foto + animasi */}
-      <motion.div
-        key={searchTerm}
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="w-full flex flex-col items-center"
-      >
-        {currentPhotos.length > 0 ? (
-          <PhotoGrid photos={currentPhotos} setSelectedPhoto={setSelectedPhoto} />
-        ) : (
-          <p className="text-gray-500 italic mt-10">
-            Tidak ada foto yang cocok dengan pencarianmu 😅
-          </p>
+        {/* ✨ Grid foto */}
+        <motion.div
+          key={`${searchTerm}-${currentPage}`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full flex flex-col items-center"
+        >
+          {currentPhotos.length > 0 ? (
+            <PhotoGrid photos={currentPhotos} setSelectedPhoto={setSelectedPhoto} />
+          ) : (
+            <p className="text-gray-400 italic mt-10 text-center text-sm md:text-base">
+              Tidak ada foto yang cocok dengan pencarianmu 😅
+            </p>
+          )}
+        </motion.div>
+
+        {/* 🎯 Pagination */}
+        {filteredPhotos.length > photosPerPage && (
+          <Pagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         )}
-      </motion.div>
 
-      {/* 🔗 Saran konten terkait saat pencarian tidak ada hasil */}
-      {searchTerm && currentPhotos.length === 0 && (
-        <PhotoSearchRelated 
-          searchTerm={searchTerm} 
-          filteredPhotos={currentPhotos} 
-          allPhotos={photos} 
-        />
-      )}
-
-      {/* Loader (trigger infinite scroll) */}
-      <div ref={loaderRef} className="h-20 flex items-center justify-center text-gray-400 mt-8">
-        {visiblePhotos < filteredPhotos.length ? (
-          <motion.div
-            animate={{ opacity: [0.4, 1, 0.4] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-          >
-            Memuat foto berikutnya...
-          </motion.div>
-        ) : (
-          filteredPhotos.length > 0 && (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-sm text-gray-500 italic"
-            >
-              Semua foto sudah ditampilkan 🎉
-            </motion.p>
-          )
+        {/* 🔗 Saran konten terkait saat pencarian tidak ada hasil */}
+        {searchTerm && currentPhotos.length === 0 && (
+          <PhotoSearchRelated 
+            searchTerm={searchTerm} 
+            filteredPhotos={currentPhotos} 
+            allPhotos={photos} 
+          />
         )}
+
+        {/* Filosofi di tengah */}
+        <div className="flex justify-center w-full">
+          <PhotoPhilosophy />
+        </div>
+
+        <PhotoRelatedContent />
+
+        {/* Modal Foto */}
+        <AnimatePresence>
+          {selectedPhoto && (
+            <PhotoModal photo={selectedPhoto} onClose={() => setSelectedPhoto(null)} />
+          )}
+        </AnimatePresence>
       </div>
-
-      <PhotoPhilosophy />
-
-      {/* 🌍 Konten Terkait dari Halaman Lain */}
-      <PhotoRelatedContent />
-
-      {/* Modal Foto */}
-      <AnimatePresence>
-        {selectedPhoto && (
-          <PhotoModal photo={selectedPhoto} onClose={() => setSelectedPhoto(null)} />
-        )}
-      </AnimatePresence>
     </main>
   );
 }

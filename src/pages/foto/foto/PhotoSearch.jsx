@@ -7,18 +7,17 @@ export default function PhotoSearch({ onSearch, allPhotos = [] }) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [placeholderText, setPlaceholderText] = useState("");
 
-  // ✅ Bekuin array phrases pakai useMemo biar gak re-render terus
   const phrases = useMemo(
     () => [
       "Cari foto berdasarkan judul atau kategori...",
       "Cari foto berdasarkan tema (Nature, City, Portrait...)",
       "Cari foto berdasarkan mood (Dark, Bright, Warm...)",
-      "Cari foto berdasarkan gaya (Abstract, Minimal, Retro...)",
+      "Cari foto berdasarkan lokasi...",
     ],
     []
   );
 
-  // 🧠 Efek animasi ketik di placeholder
+  // Typing effect untuk placeholder
   useEffect(() => {
     let currentPhrase = 0;
     let currentChar = 0;
@@ -49,10 +48,10 @@ export default function PhotoSearch({ onSearch, allPhotos = [] }) {
 
     type();
     return () => clearTimeout(timeout);
-  }, [phrases]); // sekarang aman banget
+  }, [phrases]);
 
   const suggestions = allPhotos
-    .flatMap((p) => [p.title, p.category])
+    .flatMap((p) => [p.title, p.category, p.mood, p.location])
     .filter((item, index, self) => item && self.indexOf(item) === index)
     .filter((item) => item.toLowerCase().includes(query.toLowerCase()))
     .slice(0, 6);
@@ -62,34 +61,31 @@ export default function PhotoSearch({ onSearch, allPhotos = [] }) {
     setQuery(value);
     setShowSuggestions(true);
     onSearch(value);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleSelect = (value) => {
     setQuery(value);
     setShowSuggestions(false);
     onSearch(value);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const clearSearch = () => {
     setQuery("");
     setShowSuggestions(false);
     onSearch("");
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
     <motion.div
-      className="relative w-full max-w-md mb-10"
-      initial={{ opacity: 0, y: -20 }}
+      className="relative w-full max-w-md mb-8 mx-auto"
+      initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
+      transition={{ duration: 0.5 }}
     >
-      <Search className="absolute left-3 top-3.5 text-gray-400" size={18} />
+      <Search className="absolute left-3 top-3 text-gray-400" size={18} />
       <input
         type="text"
-        placeholder={placeholderText || "Cari foto berdasarkan judul atau kategori..."}
+        placeholder={placeholderText || "Cari foto..."}
         value={query}
         onChange={handleChange}
         onFocus={() => setShowSuggestions(true)}
@@ -101,7 +97,7 @@ export default function PhotoSearch({ onSearch, allPhotos = [] }) {
         <motion.button
           onClick={clearSearch}
           whileHover={{ scale: 1.1 }}
-          className="absolute right-3 top-3 text-gray-400 hover:text-white transition"
+          className="absolute right-3 top-2.5 text-gray-400 hover:text-white transition"
         >
           <X size={16} />
         </motion.button>
@@ -114,7 +110,7 @@ export default function PhotoSearch({ onSearch, allPhotos = [] }) {
             initial={{ opacity: 0, scale: 0.95, y: -5 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -5 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
+            transition={{ duration: 0.2 }}
           >
             {suggestions.map((item, i) => (
               <motion.li
@@ -122,12 +118,12 @@ export default function PhotoSearch({ onSearch, allPhotos = [] }) {
                 onClick={() => handleSelect(item)}
                 whileHover={{
                   backgroundColor: "rgba(34,211,238,0.15)",
-                  x: 4,
-                  transition: { duration: 0.2 },
+                  transition: { duration: 0.1 },
                 }}
                 className="px-4 py-2 text-sm text-gray-300 hover:text-white cursor-pointer flex items-center gap-2"
               >
-                <Search size={14} className="text-cyan-400" /> {item}
+                <Search size={14} className="text-cyan-400 flex-shrink-0" /> 
+                <span className="truncate">{item}</span>
               </motion.li>
             ))}
           </motion.ul>

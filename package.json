@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.4.0",
+    "@react-three/rapier": "^2.2.0",
     "@supabase/supabase-js": "^2.84.0",
     "@tailwindcss/vite": "^4.1.14",
     "@tanstack/react-virtual": "^3.13.12",
@@ -17,6 +20,7 @@
     "emailjs-com": "^3.2.0",
     "framer-motion": "^12.23.22",
     "lucide-react": "^0.545.0",
+    "meshline": "^3.3.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-error-boundary": "^6.0.0",
@@ -29,7 +33,8 @@
     "react-virtualized-auto-sizer": "^1.0.26",
     "react-window": "^2.2.2",
     "remark-gfm": "^4.0.1",
-    "tailwindcss": "^4.1.14"
+    "tailwindcss": "^4.1.14",
+    "three": "^0.181.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

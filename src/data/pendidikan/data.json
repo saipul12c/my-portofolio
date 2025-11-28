@@ -1,0 +1,299 @@
+{
+  "education": [
+    {
+      "degree": "Sertifikasi Guru Professional",
+      "institution": "Kementerian Pendidikan dan Kebudayaan",
+      "year": "2022",
+      "description": "Pelatihan intensif untuk meningkatkan kompetensi pedagogik dan professional guru dalam menerapkan Kurikulum Merdeka.",
+      "achievements": [
+        "Lulus dengan Predikat Cumlaude",
+        "Presenter Best Practice di Kelas Berbagi",
+        "Pengembang Modul Pembelajaran Inovatif"
+      ],
+      "skills": ["Pengembangan Kurikulum", "Teknologi Pendidikan", "Manajemen Kelas", "Assesmen Berbasis Kompetensi"],
+      "logo": "📜"
+    },
+    {
+      "degree": "S1 Pendidikan Guru Sekolah Dasar",
+      "institution": "Universitas Pendidikan Indonesia",
+      "year": "2017 - 2021",
+      "description": "Fokus pada pembelajaran tematik interdisipliner serta pengembangan karakter siswa melalui pendekatan holistik dan kolaboratif.",
+      "gpa": "3.85",
+      "achievements": [
+        "Juara 1 Lomba Inovasi Pembelajaran Tingkat Nasional",
+        "Asisten Dosen Mata Kuliah Psikologi Pendidikan",
+        "Presenter di Konferensi Pendidikan Nasional 2020"
+      ],
+      "skills": ["Micro Teaching", "Kurikulum Merdeka", "Assesmen Autentik"],
+      "thesis": "Implementasi Pembelajaran Berdiferensiasi dalam Meningkatkan Motivasi Belajar Siswa Kelas IV",
+      "logo": "🎓"
+    },
+    {
+      "degree": "Digital Teaching Specialist",
+      "institution": "Google for Education",
+      "year": "2023",
+      "description": "Mastering digital tools and innovative teaching methods to create engaging and effective learning experiences in the digital era.",
+      "achievements": [
+        "Google Certified Educator Level 2",
+        "Top 10 Finalist National Digital Teaching Competition"
+      ],
+      "skills": ["Google Workspace", "EdTech Integration", "Digital Assessment", "Online Learning Management"],
+      "logo": "💻"
+    },
+    {
+      "degree": "English Language Proficiency",
+      "institution": "British Council",
+      "year": "2021",
+      "description": "Pelatihan bahasa Inggris untuk meningkatkan kemampuan komunikasi dan pengajaran dalam konteks global.",
+      "achievements": [
+        "Mencapai skor IELTS 7.5",
+        "Presenter dalam Konferensi Pendidikan Internasional"
+      ],
+      "skills": ["Academic Writing", "Public Speaking", "TOEFL/IELTS Preparation"],
+      "logo": "🌐"
+    },
+    {
+      "degree": "SMA Negeri 1 Bandung",
+      "institution": "Ilmu Pengetahuan Sosial",
+      "year": "2014 - 2017",
+      "description": "Berpartisipasi aktif dalam organisasi, debat, dan kegiatan sosial yang mengasah empati, kepemimpinan, serta komunikasi publik.",
+      "achievements": [
+        "Ketua OSIS Bidang Pendidikan",
+        "Juara 2 Debat Bahasa Inggris Tingkat Kota",
+        "Volunteer Teaching di Desa Binaan"
+      ],
+      "skills": ["Public Speaking", "Leadership", "Research"],
+      "logo": "🏫"
+    },
+    {
+      "degree": "Magister Pendidikan Dasar",
+      "institution": "Universitas Negeri Jakarta",
+      "year": "2023 - Sekarang",
+      "description": "Program pascasarjana fokus pada penelitian inovasi pembelajaran dan kebijakan pendidikan dasar yang berkelanjutan.",
+      "achievements": [
+        "Penerima Beasiswa LPDP",
+        "Asisten Penelitian Dosen Pembimbing",
+        "Publikasi Jurnal Nasional"
+      ],
+      "skills": ["Educational Research", "Policy Analysis", "Curriculum Design", "Academic Writing"],
+      "logo": "🎓",
+      "status": "On Going"
+    },
+    {
+      "degree": "Special Needs Education Training",
+      "institution": "PPPPTK TK & PLB Bandung",
+      "year": "2022",
+      "description": "Pelatihan khusus untuk menangani siswa berkebutuhan khusus dalam setting kelas inklusif dengan pendekatan differentiated instruction.",
+      "achievements": [
+        "Certified Inclusive Education Practitioner",
+        "Pengembang Modul Pembelajaran Inklusif",
+        "Best Practice in Differentiated Learning"
+      ],
+      "skills": ["Inclusive Education", "Differentiated Instruction", "Special Needs Assessment", "Individualized Education Plan"],
+      "logo": "♿"
+    },
+    {
+      "degree": "STEAM Education Specialist",
+      "institution": "SEAMEO QITEP in Science",
+      "year": "2023",
+      "description": "Program spesialisasi dalam integrasi Science, Technology, Engineering, Arts, and Mathematics dalam pembelajaran dasar.",
+      "achievements": [
+        "STEAM Certified Educator",
+        "Project Based Learning Expert",
+        "National STEAM Competition Judge"
+      ],
+      "skills": ["Project Based Learning", "STEAM Integration", "Design Thinking", "Creative Problem Solving"],
+      "logo": "🔬"
+    },
+    {
+      "degree": "Educational Leadership & Management",
+      "institution": "Harvard Graduate School of Education",
+      "year": "2024",
+      "description": "Online executive program focusing on strategic leadership, school management, and educational transformation in digital age.",
+      "achievements": [
+        "Harvard Executive Education Certificate",
+        "Top 5% in Cohort Performance",
+        "Strategic School Improvement Plan Developer"
+      ],
+      "skills": ["Strategic Planning", "Educational Leadership", "Change Management", "School Administration"],
+      "logo": "🏛️"
+    },
+    {
+      "degree": "Psychology for Educators",
+      "institution": "Universitas Indonesia",
+      "year": "2022",
+      "description": "Program sertifikasi psikologi pendidikan untuk memahami perkembangan kognitif, sosial-emosional siswa dan teknik konseling dasar.",
+      "achievements": [
+        "Certified Educational Psychologist",
+        "School Counseling Practitioner",
+        "Mental Health First Aider"
+      ],
+      "skills": ["Educational Psychology", "Student Counseling", "Behavior Management", "Mental Health First Aid"],
+      "logo": "🧠"
+    },
+    {
+      "degree": "Digital Content Creation for Education",
+      "institution": "Coursera - University of London",
+      "year": "2023",
+      "description": "Specialization in creating engaging digital educational content including videos, interactive modules, and gamified learning materials.",
+      "achievements": [
+        "Specialization Certificate with Honors",
+        "Featured Creator on Educational Platform",
+        "1000+ Students Reached"
+      ],
+      "skills": ["Video Production", "Interactive Content", "Gamification", "Multimedia Design"],
+      "logo": "🎬"
+    },
+    {
+      "degree": "Research Methodology in Education",
+      "institution": "Universitas Pendidikan Indonesia",
+      "year": "2022",
+      "description": "Pelatihan metodologi penelitian pendidikan kuantitatif dan kualitatif untuk pengembangan profesional berkelanjutan.",
+      "achievements": [
+        "Certified Educational Researcher",
+        "Published Research Paper",
+        "Conference Presenter"
+      ],
+      "skills": ["Quantitative Research", "Qualitative Research", "Data Analysis", "Academic Publishing"],
+      "logo": "📊"
+    },
+    {
+      "degree": "Environmental Education",
+      "institution": "WWF Indonesia",
+      "year": "2023",
+      "description": "Program pendidikan lingkungan hidup untuk mengintegrasikan konsep sustainability dan conservation dalam kurikulum.",
+      "achievements": [
+        "WWF Environmental Educator",
+        "Eco-School Coordinator",
+        "Green Classroom Initiative Leader"
+      ],
+      "skills": ["Sustainability Education", "Environmental Conservation", "Eco-Literacy", "Community Engagement"],
+      "logo": "🌱"
+    },
+    {
+      "degree": "Early Childhood Education",
+      "institution": "Himpunan PGPAUD Indonesia",
+      "year": "2022",
+      "description": "Sertifikasi pendidikan anak usia dini dengan fokus pada perkembangan holistik dan stimulasi multidimensi.",
+      "achievements": [
+        "Certified Early Childhood Educator",
+        "Play-Based Learning Specialist",
+        "Child Development Assessor"
+      ],
+      "skills": ["Child Development", "Play-Based Learning", "Early Literacy", "Parental Guidance"],
+      "logo": "👶"
+    }
+  ],
+  "courses": [
+    {
+      "title": "Classroom Management Mastery",
+      "provider": "Teacher Academy",
+      "duration": "40 hours",
+      "level": "Advanced",
+      "year": "2023",
+      "description": "Advanced techniques in classroom management, behavior guidance, and creating positive learning environments.",
+      "skills_learned": ["Behavior Management", "Positive Discipline", "Classroom Routines", "Conflict Resolution"],
+      "certificate": true,
+      "logo": "🏫"
+    },
+    {
+      "title": "Digital Assessment Tools",
+      "provider": "EdTech Indonesia",
+      "duration": "30 hours",
+      "level": "Intermediate",
+      "year": "2023",
+      "description": "Mastering various digital assessment tools for formative and summative evaluation in modern classrooms.",
+      "skills_learned": ["Google Forms", "Quizizz", "Kahoot", "Edpuzzle", "Rubric Design"],
+      "certificate": true,
+      "logo": "📝"
+    },
+    {
+      "title": "Creative Writing for Teachers",
+      "provider": "Writing Academy",
+      "duration": "36 hours",
+      "level": "Intermediate",
+      "year": "2022",
+      "description": "Developing creative writing skills for educational materials, storytelling, and student engagement.",
+      "skills_learned": ["Storytelling", "Educational Content Writing", "Poetry", "Drama in Education"],
+      "certificate": true,
+      "logo": "✍️"
+    },
+    {
+      "title": "Mindfulness in Education",
+      "provider": "Mindful Schools",
+      "duration": "24 hours",
+      "level": "Beginner",
+      "year": "2023",
+      "description": "Integrating mindfulness practices into daily classroom routines for student well-being and focus.",
+      "skills_learned": ["Mindfulness Techniques", "Stress Management", "Focus Exercises", "Emotional Regulation"],
+      "certificate": true,
+      "logo": "🧘"
+    },
+    {
+      "title": "Project-Based Learning Design",
+      "provider": "PBL Works",
+      "duration": "45 hours",
+      "level": "Advanced",
+      "year": "2023",
+      "description": "Comprehensive training in designing, implementing, and assessing project-based learning units.",
+      "skills_learned": ["PBL Design", "Project Planning", "Authentic Assessment", "Student Autonomy"],
+      "certificate": true,
+      "logo": "📋"
+    },
+    {
+      "title": "Educational Technology Integration",
+      "provider": "ISTE",
+      "duration": "50 hours",
+      "level": "Advanced",
+      "year": "2024",
+      "description": "Advanced course on integrating technology seamlessly into curriculum and instruction.",
+      "skills_learned": ["Tech Integration", "Digital Literacy", "Tool Evaluation", "Future Ready Skills"],
+      "certificate": true,
+      "logo": "💡"
+    },
+    {
+      "title": "Student-Centered Learning",
+      "provider": "ASCD",
+      "duration": "35 hours",
+      "level": "Intermediate",
+      "year": "2023",
+      "description": "Strategies for shifting from teacher-centered to student-centered learning environments.",
+      "skills_learned": ["Student Agency", "Choice Boards", "Learning Stations", "Self-Directed Learning"],
+      "certificate": true,
+      "logo": "🎯"
+    },
+    {
+      "title": "Cultural Responsive Teaching",
+      "provider": "Culturally Responsive Education",
+      "duration": "28 hours",
+      "level": "Intermediate",
+      "year": "2023",
+      "description": "Developing culturally responsive teaching practices for diverse classroom settings.",
+      "skills_learned": ["Cultural Awareness", "Inclusive Pedagogy", "Bias Recognition", "Equity in Education"],
+      "certificate": true,
+      "logo": "🌍"
+    },
+    {
+      "title": "Data-Driven Instruction",
+      "provider": "Assessment Academy",
+      "duration": "42 hours",
+      "level": "Advanced",
+      "year": "2024",
+      "description": "Using student data to inform instructional decisions and personalize learning pathways.",
+      "skills_learned": ["Data Analysis", "Progress Monitoring", "Differentiation", "Goal Setting"],
+      "certificate": true,
+      "logo": "📈"
+    },
+    {
+      "title": "Gamification in Education",
+      "provider": "Game-Based Learning",
+      "duration": "32 hours",
+      "level": "Intermediate",
+      "year": "2023",
+      "description": "Applying game design elements and principles in educational contexts to increase engagement.",
+      "skills_learned": ["Game Design", "Point Systems", "Badges & Rewards", "Engagement Strategies"],
+      "certificate": true,
+      "logo": "🎮"
+    }
+  ]
+}

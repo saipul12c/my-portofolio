@@ -40,13 +40,17 @@ import Certificates from "./pages/sertif/Certificates";
 import SoftSkills from "./pages/skills/SoftSkills";
 import Education from "./pages/sekolah/education";
 import Visi from "./pages/visi/visi";
+import CVsaya from "./pages/cv/CVsaya";
+
 import Hobbies from "./pages/hub/Hobbies";
+import HobbiesDetail from "./pages/hub/HobbyDetail.jsx"
+
 import Blog from "./pages/blog/Blog";
 import BlogDetail from "./pages/blog/detail/BlogDetail";
 import Detailusers from  "./pages/blog/users/DetailProfile";
 import Bahasa from "./pages/bahasa/Bahasa";
 import Komunitas from "./pages/komunitas/Komo"
-import Comingsoon from "./pages/fitur/coomingsoon"
+import Comingsoon from "./pages/fitur/comingsoon"
 
 // halaman kominiti - IMPLEMENTASI BARU
 // import Discond from "./pages/discond/Komoniti";
@@ -130,7 +134,10 @@ export default function App() {
                         {/* 🧠 Detail Soft Skill */}
                         <Route path="/SoftSkills/:id" element={<SoftSkills />} />
                         <Route path="/education" element={<Education />} />
+                        <Route path="/cv-saya" element={<CVsaya />} />
                         <Route path="/visi" element={<Visi />} />
+
+                        <Route path="/hobbies/:slug" element={<HobbiesDetail />} />
                         <Route path="/hobbies" element={<Hobbies />} />
 
                         <Route path="/blog" element={<Blog />} />

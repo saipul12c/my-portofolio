@@ -13,6 +13,7 @@ import {
   useTransform,
   AnimatePresence
 } from "framer-motion";
+import { Link } from "react-router-dom";
 
 // --- Sub-Komponen: Kartu Menggantung (Ultimate Physics) ---
 function HangingBadge({ profile }) {
@@ -171,10 +172,11 @@ const CardFront = memo(({ profile }) => (
         </div>
       </div>
 
-      <h2 className="text-3xl font-bold text-white tracking-tight text-center drop-shadow-lg">
+      {/* Perbaikan: Ukuran font nama dikurangi menjadi text-xl dan penyesuaian margin */}
+      <h2 className="text-xl font-bold text-white tracking-tight text-center drop-shadow-lg mb-3">
         {profile.name}
       </h2>
-      <div className="mt-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/5 backdrop-blur-md">
+      <div className="px-4 py-1.5 rounded-full bg-white/5 border border-white/5 backdrop-blur-md">
         <p className="text-xs font-semibold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-300 tracking-widest uppercase">
           Full Stack Developer
         </p>
@@ -205,48 +207,61 @@ const CardFront = memo(({ profile }) => (
 
 const CardBack = memo(({ profile }) => (
   <div
-    className="absolute inset-0 w-full h-full rounded-[28px] overflow-hidden border border-white/10 bg-[#111]/95 backdrop-blur-xl shadow-2xl"
+    className="absolute inset-0 w-full h-full rounded-[28px] overflow-hidden border border-white/10 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 backdrop-blur-xl shadow-2xl"
     style={{ 
       transform: "rotateY(180deg)", 
       backfaceVisibility: "hidden" 
     }}
   >
-    <div className="absolute inset-0 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] opacity-[0.05]" />
+    {/* Background pattern yang lebih modern */}
+    <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(circle_at_1px_1px,_white_1px,_transparent_0)] bg-[length:20px_20px]" />
+    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-blue-500/5 to-transparent" />
     
-    <div className="relative z-10 flex flex-col h-full p-8 justify-between">
-      <div className="absolute top-8 left-0 w-full h-12 bg-[#222] border-y border-white/5" />
-
-      <div className="mt-16 w-full">
-        <p className="text-[10px] text-gray-500 uppercase mb-1">Authorized Signature</p>
-        <div className="w-full h-10 bg-white/10 rounded flex items-center px-2 font-script text-gray-400 text-xl italic select-none">
-          {profile.name}
+    <div className="relative z-10 flex flex-col h-full p-6 justify-between">
+      {/* Header dengan garis elegan */}
+      <div className="text-center border-b border-white/10 pb-4 mb-4">
+        <h3 className="text-[11px] font-semibold text-gray-400 uppercase tracking-[0.3em] mb-1">
+          AUTHORIZED SIGNATURE
+        </h3>
+        <div className="w-full h-8 bg-gradient-to-r from-transparent via-white/5 to-transparent rounded flex items-center justify-center">
+          <p className="text-lg font-bold text-white/90 tracking-wider">
+            {profile.name}
+          </p>
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-3">
-        <div className="w-32 h-32 bg-white p-2 rounded-lg">
-          <div className="w-full h-full bg-black grid grid-cols-4 gap-1 p-1">
-            {[...Array(16)].map((_, i) => (
-              <div 
-                key={i} 
-                className={`bg-white ${Math.random() > 0.5 ? 'opacity-100' : 'opacity-0'}`} 
-              />
-            ))}
-            <div className="absolute top-2 left-2 w-8 h-8 border-4 border-black bg-white" />
-            <div className="absolute top-2 right-2 w-8 h-8 border-4 border-black bg-white" />
-            <div className="absolute bottom-2 left-2 w-8 h-8 border-4 border-black bg-white" />
-          </div>
+      {/* QRIS Section dengan desain yang lebih rapi */}
+      <div className="flex flex-col items-center gap-4 flex-1 justify-center">
+        <div className="bg-white p-3 rounded-xl shadow-2xl border border-white/20">
+          <img 
+            src={profile.qrisImage || "/images/qris-default.jpg"} 
+            alt="QRIS Payment"
+            className="w-28 h-28 object-cover rounded-lg"
+          />
         </div>
-        <p className="text-[10px] text-gray-500 text-center max-w-[150px]">
-          Scan to view portfolio or contact directly.
+        <div className="text-center space-y-1">
+          <p className="text-[10px] text-gray-400 leading-tight max-w-[140px]">
+            Scan QRIS untuk donasi atau pembayaran
+          </p>
+          <p className="text-[9px] text-gray-500 mt-2">
+            Support my work and projects
+          </p>
+        </div>
+      </div>
+
+      {/* Footer dengan ID */}
+      <div className="text-center pt-4 border-t border-white/5">
+        <p className="font-mono text-xs text-gray-500 tracking-[0.3em]">
+          8942 • 2024 • DEV
+        </p>
+        <p className="text-[9px] text-gray-600 mt-1">
+          DIGITAL IDENTITY CARD
         </p>
       </div>
 
-      <div className="text-center">
-        <p className="font-mono text-xs text-gray-600 tracking-[0.3em]">
-          ID: 8942-2024-DEV
-        </p>
-      </div>
+      {/* Decorative elements */}
+      <div className="absolute bottom-3 left-3 w-6 h-6 border-2 border-white/10 rounded-full"></div>
+      <div className="absolute top-3 right-3 w-4 h-4 border border-white/10 rounded-full"></div>
     </div>
   </div>
 ));
@@ -305,6 +320,11 @@ function AboutHeader({ profile }) {
   const creativityWords = useMemo(() => ["kreativitas", "seni", "imajinasi", "inovasi"], []);
   const technologyWords = useMemo(() => ["teknologi", "kode", "digital", "AI"], []);
 
+  // Handler untuk download CV
+  const handleDownloadCV = useCallback(() => {
+    window.open('/cv-saya', '_blank');
+  }, []);
+
   return (
     <div className="flex flex-col lg:flex-row items-center justify-between gap-10 w-full max-w-7xl mx-auto px-4 pt-10 pb-32">
       {/* Bagian Kiri: Teks Deskripsi */}
@@ -345,12 +365,21 @@ function AboutHeader({ profile }) {
         </motion.p>
 
         <div className="flex flex-wrap gap-4 justify-center lg:justify-start pt-4">
-          <button className="group px-8 py-3.5 rounded-full bg-white text-black font-bold hover:bg-gray-100 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)] hover:scale-105 active:scale-95">
+          {/* Perubahan: Tombol Download CV membuka halaman baru dengan route /cv-saya */}
+          <button 
+            onClick={handleDownloadCV}
+            className="group px-8 py-3.5 rounded-full bg-white text-black font-bold hover:bg-gray-100 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)] hover:scale-105 active:scale-95"
+          >
             Download CV
           </button>
-          <button className="px-8 py-3.5 rounded-full bg-white/5 text-white font-medium border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all backdrop-blur-sm">
+          
+          {/* Perubahan: Tombol View Projects menggunakan Link ke route /projects */}
+          <Link 
+            to="/projects"
+            className="px-8 py-3.5 rounded-full bg-white/5 text-white font-medium border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all backdrop-blur-sm"
+          >
             View Projects
-          </button>
+          </Link>
         </div>
       </motion.div>
 

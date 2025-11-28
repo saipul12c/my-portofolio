@@ -42,16 +42,16 @@ export default function PhotoRelatedContent() {
   ];
 
   return (
-    <section className="w-full py-16 px-6 sm:px-10 md:px-20 relative z-10">
+    <section className="w-full py-12 md:py-16 px-4 sm:px-6 md:px-8 relative z-10">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.5 }}
         className="max-w-7xl mx-auto"
       >
         {/* Header */}
-        <div className="mb-12 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent mb-3">
+        <div className="mb-8 md:mb-12 text-center px-2">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent mb-3">
             Jelajahi Dunia Saya
           </h2>
           <p className="text-gray-400 text-sm md:text-base max-w-2xl mx-auto">
@@ -60,37 +60,37 @@ export default function PhotoRelatedContent() {
         </div>
 
         {/* Content Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
           {relatedContent.map((item) => {
             const Icon = item.icon;
             return (
               <motion.button
                 key={item.id}
                 onClick={() => navigate(item.route)}
-                whileHover={{ scale: 1.02, y: -4 }}
+                whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className={`group relative overflow-hidden rounded-2xl p-6 border backdrop-blur-xl transition-all duration-300 ${item.borderColor} ${item.hoverBg} text-left`}
+                className={`group relative overflow-hidden rounded-xl sm:rounded-2xl p-4 sm:p-6 border backdrop-blur-xl transition-all duration-300 ${item.borderColor} ${item.hoverBg} text-left h-full`}
               >
                 {/* Gradient Background */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10`} />
 
                 {/* Content */}
-                <div className="flex flex-col h-full gap-4">
-                  <div className={`w-12 h-12 rounded-xl bg-white/5 backdrop-blur-md flex items-center justify-center border ${item.borderColor} group-hover:bg-white/10 transition-all`}>
-                    <Icon size={24} className={item.textColor} />
+                <div className="flex flex-col h-full gap-3 sm:gap-4">
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/5 backdrop-blur-md flex items-center justify-center border ${item.borderColor} group-hover:bg-white/10 transition-all flex-shrink-0`}>
+                    <Icon size={20} className={item.textColor} />
                   </div>
 
-                  <div>
-                    <h3 className={`text-lg font-semibold ${item.textColor} mb-2`}>
+                  <div className="flex-1">
+                    <h3 className={`text-base sm:text-lg font-semibold ${item.textColor} mb-2`}>
                       {item.title}
                     </h3>
-                    <p className="text-gray-300 text-sm leading-relaxed">
+                    <p className="text-gray-300 text-xs sm:text-sm leading-relaxed">
                       {item.description}
                     </p>
                   </div>
 
                   {/* Arrow indicator */}
-                  <div className="flex items-center gap-2 text-xs font-medium text-gray-400 group-hover:text-gray-200 transition-colors mt-auto">
+                  <div className="flex items-center gap-2 text-xs font-medium text-gray-400 group-hover:text-gray-200 transition-colors mt-2">
                     <span>Jelajahi</span>
                     <motion.span
                       animate={{ x: [0, 4, 0] }}
@@ -106,10 +106,10 @@ export default function PhotoRelatedContent() {
         </div>
 
         {/* Divider */}
-        <div className="mt-12 flex items-center gap-4">
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent" />
+        <div className="mt-8 md:mt-12 flex items-center gap-3 sm:gap-4 px-4">
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent" />
           <span className="text-gray-400 text-xs">Lebih banyak konten</span>
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent" />
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent" />
         </div>
       </motion.div>
     </section>
