@@ -1,0 +1,29 @@
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "avatar": "https://i.pravatar.cc/40?img=6",
+  "subscriptions": 42,
+  "playlists": [
+    {
+      "id": "playlist_1",
+      "name": "React Tutorials",
+      "videoCount": 15,
+      "thumbnail": "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=225&fit=crop"
+    },
+    {
+      "id": "playlist_2",
+      "name": "JavaScript Mastery",
+      "videoCount": 28,
+      "thumbnail": "https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=400&h=225&fit=crop"
+    }
+  ],
+  "watchHistory": [],
+  "likedVideos": [],
+  "settings": {
+    "autoplay": true,
+    "quality": "1080p",
+    "captions": true,
+    "darkMode": true,
+    "notifications": true
+  }
+}

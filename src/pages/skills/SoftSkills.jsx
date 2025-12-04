@@ -173,7 +173,7 @@ export default function SoftSkills() {
     );
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#0f172a] to-[#111827] text-white flex flex-col items-center px-6 py-20">
+    <main className="min-h-screen bg-gradient-to-b from-[var(--color-gray-900)] to-[var(--color-gray-800)] text-white flex flex-col items-center px-6 py-20">
       {/* Header */}
       <SoftSkillsHeader title={skillsData.sectionTitle} />
 

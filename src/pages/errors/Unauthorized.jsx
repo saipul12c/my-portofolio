@@ -83,9 +83,9 @@ export default function Unauthorized() {
         className="relative cursor-pointer z-10"
       >
         {unlocked ? (
-          <Unlock className="w-20 h-20 text-yellow-400 drop-shadow-[0_0_20px_#facc15] transition-all" />
+          <Unlock className="w-20 h-20 text-yellow-400 drop-shadow-[0_0_20px_var(--accent)] transition-all" />
         ) : (
-          <Lock className="w-20 h-20 text-yellow-400 drop-shadow-[0_0_20px_#facc15] transition-all" />
+          <Lock className="w-20 h-20 text-yellow-400 drop-shadow-[0_0_20px_var(--accent)] transition-all" />
         )}
       </motion.div>
 

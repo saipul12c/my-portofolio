@@ -30,7 +30,7 @@ export const SkillCard = React.memo(({
           </motion.div>
           <div className="min-w-0 flex-1">
             <h3 className="font-bold text-white text-lg sm:text-xl leading-tight truncate">{bahasa.nama}</h3>
-            <p className="text-cyan-300 font-medium mt-0.5 sm:mt-1 text-sm truncate">{bahasa.tingkat}</p>
+            <p className="text-gray-300 font-medium mt-0.5 sm:mt-1 text-sm truncate">{bahasa.tingkat}</p>
           </div>
         </div>
         
@@ -82,7 +82,7 @@ export const SkillCard = React.memo(({
         <div className="min-w-0 flex-1">
           <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 mb-2 gap-1">
             <h3 className="font-bold text-white text-lg truncate">{bahasa.nama}</h3>
-            <span className="text-cyan-300 text-sm font-medium whitespace-nowrap">{bahasa.tingkat}</span>
+            <span className="text-gray-300 text-sm font-medium whitespace-nowrap">{bahasa.tingkat}</span>
           </div>
           
           <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">

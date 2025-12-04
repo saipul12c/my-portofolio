@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { MessageCircle, Sparkles } from "lucide-react";
 import { ChatbotWindow } from "./components/logic/ChatbotWindow";
 import { ChatbotSettings } from "./components/ChatbotSettings";
@@ -20,18 +20,17 @@ export default function HelpChatbotItem() {
     fileMetadata: []
   });
 
+  const defaultAIBase = useMemo(() => ({
+    "Apa itu kecerdasan buatan?": "Kecerdasan buatan adalah teknologi yang membuat sistem komputer mampu melakukan tugas seperti manusia dengan kemampuan belajar, berpikir, dan beradaptasi.",
+    "Apa itu machine learning?": "Machine learning adalah bagian dari AI yang memungkinkan sistem belajar dari data tanpa diprogram secara eksplisit, menggunakan algoritma statistik.",
+    "Apa itu deep learning?": "Deep learning adalah metode machine learning yang menggunakan jaringan saraf tiruan berlapis untuk memproses data dalam jumlah besar dan kompleks.",
+    "Apa fungsi neural network?": "Neural network berfungsi meniru cara kerja otak manusia untuk mengenali pola, membuat prediksi, dan mengambil keputusan berdasarkan data input."
+  }), []);
+
   // Enhanced knowledge base loader dengan error handling
   useEffect(() => {
     const loadKnowledgeBase = async () => {
       try {
-        // Default fallback data
-        const defaultAIBase = {
-          "Apa itu kecerdasan buatan?": "Kecerdasan buatan adalah teknologi yang membuat sistem komputer mampu melakukan tugas seperti manusia dengan kemampuan belajar, berpikir, dan beradaptasi.",
-          "Apa itu machine learning?": "Machine learning adalah bagian dari AI yang memungkinkan sistem belajar dari data tanpa diprogram secara eksplisit, menggunakan algoritma statistik.",
-          "Apa itu deep learning?": "Deep learning adalah metode machine learning yang menggunakan jaringan saraf tiruan berlapis untuk memproses data dalam jumlah besar dan kompleks.",
-          "Apa fungsi neural network?": "Neural network berfungsi meniru cara kerja otak manusia untuk mengenali pola, membuat prediksi, dan mengambil keputusan berdasarkan data input."
-        };
-
         const combinedKnowledge = {
           AI: defaultAIBase,
           hobbies: [],
@@ -126,7 +125,7 @@ export default function HelpChatbotItem() {
     };
 
     loadKnowledgeBase();
-  }, []);
+  }, [defaultAIBase]);
 
   // Enhanced unread message tracking
   useEffect(() => {

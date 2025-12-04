@@ -6,19 +6,13 @@ const CommunityStatistics = ({ statistics }) => {
     {
       icon: Users,
       label: "Total Komunitas",
-      value: statistics?.totalCommunities || 0,
-      color: "cyan"
-    },
-    {
-      icon: Users,
-      label: "Komunitas Aktif",
-      value: statistics?.activeCommunities || 0,
-      color: "emerald"
+      value: typeof statistics?.totalCommunities === 'number' ? statistics.totalCommunities : (statistics?.totalCommunities ?? 0),
+      color: "cyan",
     },
     {
       icon: Users,
       label: "Total Anggota",
-      value: statistics?.totalMembers?.toLocaleString() || 0,
+      value: typeof statistics?.totalMembers === 'number' ? statistics.totalMembers.toLocaleString() : (statistics?.totalMembers ?? 0),
       color: "purple"
     },
     {

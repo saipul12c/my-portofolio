@@ -55,7 +55,7 @@ export const QuickStats = React.memo(({ bahasaSehariHari, bahasaPemrograman }) =
           <div className={`text-lg sm:text-2xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
             {stat.value}
           </div>
-          <div className="text-cyan-300 text-xs sm:text-sm mt-0.5 sm:mt-1">{stat.label}</div>
+          <div className="text-gray-300 text-xs sm:text-sm mt-0.5 sm:mt-1">{stat.label}</div>
         </motion.div>
       ))}
     </motion.div>

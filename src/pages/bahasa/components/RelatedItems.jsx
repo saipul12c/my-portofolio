@@ -83,7 +83,7 @@ export const RelatedItems = React.memo(({
       transition={{ duration: 0.4 }}
       className="mt-6 sm:mt-8"
     >
-      <h4 className="text-sm sm:text-base font-semibold text-cyan-300 mb-3 sm:mb-4 flex items-center">
+      <h4 className="text-sm sm:text-base font-semibold text-gray-300 mb-3 sm:mb-4 flex items-center">
         <span className="w-1 h-1 sm:h-1.5 bg-cyan-400 rounded-full mr-2"></span>
         Konten Terkait dengan "{skillName}"
       </h4>

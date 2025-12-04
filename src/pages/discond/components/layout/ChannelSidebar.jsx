@@ -2,29 +2,51 @@ import { motion } from "framer-motion";
 import { Hash, Volume2, Plus, Users, Settings } from 'lucide-react';
 import { useChat } from '../../contexts/ChatContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { useEffect, useState } from 'react';
 
 const ChannelSidebar = () => {
   const { selectedServer, selectedChannel, setSelectedChannel } = useChat();
   const { user } = useAuth();
+  const { channels: serverChannels } = useChat();
+  const [activeChannels, setActiveChannels] = useState([]);
 
-  // Mock data untuk channels - dalam aplikasi nyata ini akan diambil dari database
-  const channels = [
-    { id: 1, name: 'general', type: 'text', unread: false },
-    { id: 2, name: 'pengumuman', type: 'text', unread: true },
-    { id: 3, name: 'programming', type: 'text', unread: false },
-    { id: 4, name: 'design', type: 'text', unread: false },
-    { id: 5, name: 'voice-chat', type: 'voice', unread: false },
-    { id: 6, name: 'gaming', type: 'voice', unread: false },
-  ];
+  useEffect(() => {
+    let mounted = true;
+    const fetchActive = async () => {
+      try {
+        const res = await fetch('/api/channels/active?limit=10');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!mounted) return;
+        setActiveChannels(data || []);
+      } catch (err) {
+        console.error('Failed to fetch active channels', err);
+      }
+    };
+    // only fetch global active channels when no server is selected
+    if (!selectedServer) fetchActive();
+    return () => { mounted = false; };
+  }, [selectedServer]);
 
   if (!selectedServer) {
     return (
       <div className="w-60 bg-[#2f3136] flex flex-col">
         <div className="p-4 border-b border-gray-700">
-          <h2 className="text-white font-semibold">Pesan Langsung</h2>
+          <h2 className="text-white font-semibold">Top Channel Aktif</h2>
         </div>
-        <div className="flex-1 p-4">
-          <p className="text-gray-400 text-sm">Pilih server untuk melihat channels</p>
+        <div className="flex-1 p-2 overflow-y-auto">
+          {activeChannels.length === 0 && (
+            <p className="text-gray-400 text-sm p-4">Tidak ada channel aktif atau backend belum tersedia.</p>
+          )}
+          {activeChannels.map(ch => (
+            <div key={ch.id} className="px-3 py-2 m-2 rounded bg-[#262729] hover:bg-[#34373c] cursor-pointer" onClick={() => setSelectedChannel(ch)}>
+              <div className="flex items-center justify-between">
+                <div className="text-white font-medium">{ch.server_name} / {ch.name}</div>
+                <div className="text-gray-400 text-sm">{ch.member_count}👥</div>
+              </div>
+              <div className="text-gray-400 text-xs mt-1">{ch.message_count} pesan</div>
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -50,7 +72,7 @@ const ChannelSidebar = () => {
           </div>
           
           <div className="mt-2">
-            {channels.filter(c => c.type === 'text').map(channel => (
+            {(serverChannels || []).filter(c => (c.type || 'text') === 'text').map(channel => (
               <motion.div
                 key={channel.id}
                 whileHover={{ backgroundColor: 'rgba(79, 84, 92, 0.16)' }}
@@ -63,9 +85,6 @@ const ChannelSidebar = () => {
               >
                 <Hash className="w-4 h-4" />
                 <span className="flex-1">{channel.name}</span>
-                {channel.unread && (
-                  <div className="w-2 h-2 bg-white rounded-full"></div>
-                )}
               </motion.div>
             ))}
           </div>
@@ -79,7 +98,7 @@ const ChannelSidebar = () => {
           </div>
           
           <div className="mt-2">
-            {channels.filter(c => c.type === 'voice').map(channel => (
+            {(serverChannels || []).filter(c => c.type === 'voice').map(channel => (
               <motion.div
                 key={channel.id}
                 whileHover={{ backgroundColor: 'rgba(79, 84, 92, 0.16)' }}

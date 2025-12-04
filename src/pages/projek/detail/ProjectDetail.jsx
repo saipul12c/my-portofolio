@@ -174,7 +174,7 @@ export default function ProjectDetail() {
   // ❌ Jika project tidak ditemukan
   if (!project) {
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#111827] to-[#1e293b] text-white px-6">
+      <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[var(--color-gray-900)] via-[#111827] to-[var(--color-gray-800)] text-white px-6">
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -224,7 +224,7 @@ export default function ProjectDetail() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#0f172a] via-[#1a1b2e] to-[#0f172a] text-white px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 relative overflow-hidden">
+    <main className="min-h-screen bg-gradient-to-b from-[var(--color-gray-900)] via-[#1a1b2e] to-[var(--color-gray-900)] text-white px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 relative overflow-hidden">
       {/* 🌈 Background Gradient Glow */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-[-10%] left-[-10%] w-[30rem] h-[30rem] bg-pink-500/20 blur-[120px] rounded-full animate-pulse" />

@@ -112,10 +112,14 @@ const ChatArea = () => {
             animate={{ opacity: 1, y: 0 }}
             className="flex space-x-3 p-2 hover:bg-[#2f3136] rounded group"
           >
-            <div 
-              className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center text-white font-semibold bg-cyan-600"
-            >
-              {msg.profiles?.username?.substring(0, 2).toUpperCase() || 'US'}
+            <div className="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden bg-cyan-600">
+              {msg.profiles?.avatar_url ? (
+                <img alt={msg.profiles?.username || 'user'} src={msg.profiles.avatar_url} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-white font-semibold">
+                  {msg.profiles?.username?.substring(0, 2).toUpperCase() || 'US'}
+                </div>
+              )}
             </div>
             
             <div className="flex-1 min-w-0">

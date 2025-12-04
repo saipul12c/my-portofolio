@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Film, Calendar, MapPin, Tag, Play, AlertCircle } from "lucide-react";
 import shortsData from "../../../data/gallery/shorts.json";
@@ -62,8 +62,8 @@ export default function GalleryShorts({ onSelect, filterSettings = {}, onFiltere
     return { pages: chunks, allFilteredData: filtered };
   }, [searchTerm, selectedTags]);
 
-  // 📢 Notify parent of filtered data
-  useMemo(() => {
+  // 📢 Notify parent of filtered data (use effect to avoid updates during render)
+  useEffect(() => {
     if (onFilteredDataChange) {
       onFilteredDataChange(allFilteredData);
     }

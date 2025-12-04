@@ -242,6 +242,32 @@ npm start
 ```
 Backend berjalan di `http://localhost:3000`
 
+### Using the local JSON Backend (recommended for development)
+
+This project includes a small JSON-based backend server in `backend/` that exposes REST endpoints and Socket.IO for chat. To make the frontend use this local backend instead of a remote backend, enable the backend proxy in the environment.
+
+1. Ensure the backend is running:
+
+```powershell
+cd backend; npm install; npm start
+```
+
+2. In project root, set the environment flag (this repository already sets it in `.env`):
+
+```bash
+VITE_USE_BACKEND_PROXY=true
+```
+
+3. Start the frontend dev server (in a separate terminal):
+
+```powershell
+npm run dev
+```
+
+When `VITE_USE_BACKEND_PROXY=true`, the frontend will call the local endpoints under `/api/*` (for example `/api/communities`, `/api/messages`, `/api/auth/*`) and receive data from the JSON files in `backend/data/`.
+
+If you'd rather use a remote backend instead of the local JSON server, set `VITE_USE_BACKEND_PROXY=false` in `.env` and provide your remote API configuration.
+
 ### Build
 
 **Production build:**

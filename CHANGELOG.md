@@ -2,7 +2,7 @@
 
 Semua perubahan penting pada project My Portfolio Website akan didokumentasikan di file ini. Format berdasarkan [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-**Latest Release:** v2.1.0 (2025-11-20)
+**Latest Release:** v1.30.10 (2025-12-03)
 
 ---
 
@@ -26,6 +26,41 @@ Semua perubahan penting pada project My Portfolio Website akan didokumentasikan 
 ## Dalam Proses penyempurnaan 
 
 Sedang dalam pengembangan.
+
+> Catatan tentang versi: daftar diurutkan berdasarkan tanggal rilis (terbaru → terlama). Beberapa komponen internal menggunakan skema versi tersendiri (mis. 2.x) untuk menandai perubahan API/arsitektur — ini normal dan tidak selalu menunjukkan versi global proyek.
+
+## [v1.30.10] - 2025-12-03
+
+**Status:** DEVELOPMENT | **Release Channel:** Unreleased | **Type:** Patch
+
+### 🔧 Work in progress / Notes
+
+- Merapikan tata letak halaman streaming (`/streming`): menghapus margin-left kondisional di `main` (`Tubs.jsx`) yang menyebabkan ruang kosong berlebih di sebelah kiri. Perubahan ini hanya bersifat styling/layout — tidak merubah logika atau nama sintaks.
+
+## [v1.30.0] - Coming soon
+
+**Status:** PLANNED | **Release Channel:** Roadmap | **Type:** Minor
+
+### ✨ Coming soon
+
+- New pages planned: **Streaming** (halaman streming) — full streaming UI polish and responsive improvements.
+- **Komunitas** page (halaman komunitas) integration and community features roadmap.
+
+## [v1.20.0] - Coming soon
+
+**Status:** PLANNED | **Release Channel:** Roadmap | **Type:** Minor
+
+### ✨ Coming soon
+
+- Incremental UI/UX improvements for media pages and community integrations.
+
+## [v1.19.0] - Coming soon
+
+**Status:** PLANNED | **Release Channel:** Roadmap | **Type:** Minor
+
+### ✨ Coming soon
+
+- Preparation release for streaming and community previews; minor layout refinements and QA pass.
 
 
 ## **[v1.18.1] – 2025-11-20**

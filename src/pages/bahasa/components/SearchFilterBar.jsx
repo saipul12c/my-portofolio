@@ -27,7 +27,7 @@ export const SearchFilterBar = React.memo(({
           placeholder="Cari bahasa, teknologi, atau kemampuan..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 sm:py-3 bg-[#0f172a]/70 border border-cyan-500/30 rounded-xl text-white placeholder-cyan-300/60 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-200 text-sm sm:text-base"
+          className="w-full pl-10 pr-4 py-2.5 sm:py-3 bg-[#0f172a]/70 border border-cyan-500/30 rounded-xl text-white placeholder-gray-400/60 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-200 text-sm sm:text-base"
         />
       </div>
 
@@ -73,12 +73,12 @@ export const SearchFilterBar = React.memo(({
       </div>
     </div>
 
-    <motion.div 
+      <motion.div 
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       className="mt-3 sm:mt-4 text-center overflow-hidden"
     >
-      <p className="text-cyan-300 text-xs sm:text-sm">
+      <p className="text-gray-300 text-xs sm:text-sm">
         Menampilkan {filteredData.sehariHari.length + filteredData.pemrograman.length} dari {bahasaSehariHari.length + bahasaPemrograman.length} item
         {searchTerm && ` untuk "${searchTerm}"`}
       </p>

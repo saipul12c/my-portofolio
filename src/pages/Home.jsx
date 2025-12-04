@@ -220,7 +220,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0f172a] text-white flex flex-col px-6 sm:px-10 md:px-20 relative overflow-hidden">
+    <main className="min-h-screen bg-[var(--color-gray-900)] text-white flex flex-col px-6 sm:px-10 md:px-20 relative overflow-hidden">
       {/* Background glow effects */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-10 left-10 w-64 h-64 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" />

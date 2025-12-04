@@ -1,0 +1,34 @@
+[
+  {
+    "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "server_id": "33333333-3333-3333-3333-333333333333",
+    "server_name": "Frontend Dev",
+    "name": "general",
+    "position": 1,
+    "created_at": "2025-12-01T12:05:00.000Z"
+  },
+  {
+    "id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+    "server_id": "33333333-3333-3333-3333-333333333333",
+    "server_name": "Frontend Dev",
+    "name": "showcase",
+    "position": 2,
+    "created_at": "2025-12-01T12:10:00.000Z"
+  },
+  {
+    "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+    "server_id": "44444444-4444-4444-4444-444444444444",
+    "server_name": "React Indonesia",
+    "name": "diskusi",
+    "position": 1,
+    "created_at": "2025-11-30T09:05:00.000Z"
+  },
+  {
+    "id": "514b8a47-858f-4721-8710-bf936e0e2362",
+    "server_id": "1764685418744-8567",
+    "server_name": "ucup",
+    "name": "general",
+    "position": 0,
+    "created_at": "2025-12-02T14:23:38.764Z"
+  }
+]

@@ -26,7 +26,7 @@ export const LanguageSection = React.memo(({
         <div className="text-2xl sm:text-3xl">{icon}</div>
         <div>
           <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">{title}</h2>
-          <p className="text-cyan-300 text-sm sm:text-base">
+          <p className="text-gray-300 text-sm sm:text-base">
             {data.length} dari {isProgramming ? data.length : data.length} item ditampilkan
           </p>
         </div>
@@ -56,7 +56,7 @@ export const LanguageSection = React.memo(({
           animate={{ opacity: 1 }}
           className="text-center py-8 sm:py-12"
         >
-          <div className="text-cyan-300 text-lg">Tidak ada item yang sesuai dengan filter</div>
+          <div className="text-gray-300 text-lg">Tidak ada item yang sesuai dengan filter</div>
         </motion.div>
       )}
     </section>

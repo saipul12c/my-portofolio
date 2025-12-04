@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 
 export function useChatbot(knowledgeBase, knowledgeStats) {
-  const safeKnowledgeBase = {
+  const safeKnowledgeBase = useMemo(() => ({
     AI: {},
     hobbies: [],
     cards: [],
@@ -11,9 +11,8 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     profile: {},
     softskills: [],
     uploadedData: [],
-    fileMetadata: [],
-    ...knowledgeBase
-  };
+    fileMetadata: []
+  }), []);
 
   const [messages, setMessages] = useState(() => {
     try {
@@ -107,9 +106,9 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     }
 
     updateQuickActions();
-  }, [messages, settings.privacyMode, settings.memoryContext]);
+  }, [messages, settings.privacyMode, settings.memoryContext, updateQuickActions]);
 
-  const updateQuickActions = () => {
+  const updateQuickActions = useCallback(() => {
     const lastMessage = messages[messages.length - 1];
     let actions = [];
 
@@ -142,7 +141,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     }
 
     setActiveQuickActions(actions.slice(0, 3));
-  };
+  }, [messages, safeKnowledgeBase]);
 
   useEffect(() => {
     if (settings.autoSuggestions && messages.length > 0) {
@@ -154,9 +153,9 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     } else {
       setSuggestions([]);
     }
-  }, [messages, settings.autoSuggestions, safeKnowledgeBase]);
+  }, [messages, settings.autoSuggestions, safeKnowledgeBase, generateSuggestions]);
 
-  const generateSuggestions = (lastBotMessage) => {
+  const generateSuggestions = useCallback((lastBotMessage) => {
     const text = lastBotMessage.toLowerCase();
     let suggestions = [];
 
@@ -191,7 +190,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     }
 
     return suggestions.slice(0, 4);
-  };
+  }, [safeKnowledgeBase]);
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -279,6 +278,11 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
       indigo: "from-indigo-500 to-purple-500"
     };
     return gradients[settings.accent] || gradients.cyan;
+  };
+
+  const getSmartReply = (userText) => {
+    // Placeholder implementation for getSmartReply
+    return `Smart reply for: ${userText}`;
   };
 
   const generateBotReply = (userText) => {

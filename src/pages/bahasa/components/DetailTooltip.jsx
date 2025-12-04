@@ -69,7 +69,7 @@ export const DetailTooltip = React.memo(({ bahasa, isProgramming, onClose }) => 
         <div className="relative p-4 sm:p-6 border-b border-cyan-500/20 bg-gradient-to-r from-cyan-500/5 to-blue-500/5">
           <button 
             onClick={onClose}
-            className="absolute top-3 sm:top-4 right-3 sm:right-4 text-cyan-300 hover:text-white text-lg sm:text-xl transition-all duration-200 hover:scale-110 bg-cyan-500/10 p-1.5 sm:p-2 rounded-lg"
+            className="absolute top-3 sm:top-4 right-3 sm:right-4 text-gray-300 hover:text-white text-lg sm:text-xl transition-all duration-200 hover:scale-110 bg-cyan-500/10 p-1.5 sm:p-2 rounded-lg"
           >
             <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
@@ -83,7 +83,7 @@ export const DetailTooltip = React.memo(({ bahasa, isProgramming, onClose }) => 
             </motion.div>
             <div className="flex-1 min-w-0">
               <h3 className="font-bold text-white text-xl sm:text-2xl truncate">{bahasa.nama}</h3>
-              <p className="text-cyan-300 font-medium text-sm sm:text-base truncate">{bahasa.tingkat}</p>
+              <p className="text-gray-300 font-medium text-sm sm:text-base truncate">{bahasa.tingkat}</p>
             </div>
             <motion.span 
               className={`
@@ -103,7 +103,7 @@ export const DetailTooltip = React.memo(({ bahasa, isProgramming, onClose }) => 
           <div className="space-y-4 sm:space-y-6">
             {/* Progress */}
             <div className="space-y-3">
-              <h4 className="font-semibold text-cyan-300 flex items-center text-sm sm:text-base">
+              <h4 className="font-semibold text-gray-300 flex items-center text-sm sm:text-base">
                 <Target className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span className="ml-2">Tingkat Kemahiran</span>
               </h4>
@@ -139,7 +139,7 @@ export const DetailTooltip = React.memo(({ bahasa, isProgramming, onClose }) => 
                 transition={{ delay: index * 0.1 }}
                 className="space-y-2"
               >
-                <h4 className="font-semibold text-cyan-300 text-sm sm:text-base capitalize">
+                <h4 className="font-semibold text-gray-300 text-sm sm:text-base capitalize">
                   {key.replace(/([A-Z])/g, ' $1').trim()}
                 </h4>
                 <p className="text-gray-300 text-sm sm:text-base leading-relaxed">{value}</p>

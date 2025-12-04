@@ -38,8 +38,8 @@ export default function GalleryAlbums({ onSelect, filterSettings = {}, onFiltere
     return filterAlbums(albums, searchTerm, selectedTags);
   }, [searchTerm, selectedTags]);
 
-  // 📢 Notify parent of filtered data
-  useMemo(() => {
+  // 📢 Notify parent of filtered data (use effect to avoid updates during render)
+  useEffect(() => {
     if (onFilteredDataChange) {
       onFilteredDataChange(filteredAlbums);
     }

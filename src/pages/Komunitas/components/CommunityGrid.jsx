@@ -90,7 +90,7 @@ const CommunityGrid = ({
               <div className="space-y-2 mb-4">
                 <div className="flex items-center text-sm text-gray-400">
                   <Users className="h-4 w-4 mr-2" />
-                  <span>{community.members?.toLocaleString()} anggota</span>
+                  <span>{(community.members || 0).toLocaleString()} anggota</span>
                 </div>
                 <div className="flex items-center text-sm text-gray-400">
                   <MapPin className="h-4 w-4 mr-2" />
@@ -98,15 +98,24 @@ const CommunityGrid = ({
                 </div>
                 <div className="flex items-center text-sm text-gray-400">
                   <Calendar className="h-4 w-4 mr-2" />
-                  <span>{new Date(community.created_at).toLocaleDateString('id-ID')}</span>
+                  <span>{
+                    (() => {
+                      const d = community.created_at ? new Date(community.created_at) : null;
+                      return d && !isNaN(d.getTime()) ? d.toLocaleDateString('id-ID') : 'Tanggal tidak tersedia';
+                    })()
+                  }</span>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-1 mb-4">
-                <span className="bg-cyan-500/20 text-cyan-300 text-xs px-2 py-1 rounded border border-cyan-500/30">
-                  {community.category}
-                </span>
-                {community.tags?.slice(0, 2).map(tag => (
+                {community.category ? (
+                  <span className="bg-cyan-500/20 text-cyan-300 text-xs px-2 py-1 rounded border border-cyan-500/30">
+                    {community.category}
+                  </span>
+                ) : (
+                  <span className="text-gray-400 text-xs px-2 py-1">Kategori tidak tersedia</span>
+                )}
+                {community.tags && community.tags.length > 0 && community.tags.slice(0, 2).map(tag => (
                   <span
                     key={tag}
                     className="bg-white/10 text-gray-300 text-xs px-2 py-1 rounded border border-white/20"

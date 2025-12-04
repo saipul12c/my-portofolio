@@ -1,19 +1,39 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../lib/supabaseClient';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { io } from 'socket.io-client';
 
-// ✅ Ekspor ChatContext sebagai named export
 export const ChatContext = createContext(undefined);
 
 export const ChatProvider = ({ children }) => {
   const [servers, setServers] = useState([]);
   const [selectedServer, setSelectedServer] = useState(null);
   const [selectedChannel, setSelectedChannel] = useState(null);
+  const [channels, setChannels] = useState([]);
   const [messages, setMessages] = useState([]);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const socketRef = useRef(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   useEffect(() => {
-    fetchServers();
+    const init = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setLoading(false);
+          return;
+        }
+        const me = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+        if (!me.ok) { setLoading(false); return; }
+        const user = await me.json();
+        setCurrentUserId(user.id);
+        await fetchServers();
+      } catch (err) {
+        console.error('Chat init error', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    init();
   }, []);
 
   useEffect(() => {
@@ -28,59 +48,36 @@ export const ChatProvider = ({ children }) => {
   }, [selectedServer]);
 
   useEffect(() => {
-    let unsubscribe;
-    
+    let cleanup = null;
     if (selectedChannel) {
       fetchMessages(selectedChannel.id);
-      unsubscribe = setupMessagesSubscription(selectedChannel.id);
+      cleanup = setupMessagesSubscription(selectedChannel.id);
     }
-    
     return () => {
-      if (unsubscribe) unsubscribe();
+      if (cleanup) cleanup();
     };
   }, [selectedChannel]);
 
   const fetchServers = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('servers')
-        .select('*')
-        .order('created_at');
-
-      if (error) throw error;
-      
+      const res = await fetch('/api/servers');
+      if (!res.ok) { setServers([]); return; }
+      const data = await res.json();
       setServers(data || []);
-      if (data && data.length > 0) {
-        setSelectedServer(data[0]);
-      }
+      if (data && data.length > 0) setSelectedServer(data[0]);
     } catch (error) {
       console.error('Error fetching servers:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
   const fetchChannels = async (serverId) => {
     try {
-      const { data, error } = await supabase
-        .from('channels')
-        .select('*')
-        .eq('server_id', serverId)
-        .order('position');
-
-      if (error) throw error;
-
-      if (data && data.length > 0) {
-        setSelectedChannel(data[0]);
-      } else {
-        setSelectedChannel(null);
-      }
+      const res = await fetch(`/api/channels?server_id=${serverId}`);
+      if (!res.ok) { setChannels([]); setSelectedChannel(null); return; }
+      const data = await res.json();
+      setChannels(data || []);
+      if (data && data.length > 0) setSelectedChannel(data[0]);
+      else setSelectedChannel(null);
     } catch (error) {
       console.error('Error fetching channels:', error);
     }
@@ -88,20 +85,9 @@ export const ChatProvider = ({ children }) => {
 
   const fetchMessages = async (channelId) => {
     try {
-      const { data, error } = await supabase
-        .from('messages')
-        .select(`
-          *,
-          profiles:user_id (
-            username,
-            avatar_url
-          )
-        `)
-        .eq('channel_id', channelId)
-        .order('created_at')
-        .limit(100);
-
-      if (error) throw error;
+      const res = await fetch(`/api/messages?channel_id=${channelId}`);
+      if (!res.ok) { setMessages([]); return; }
+      const data = await res.json();
       setMessages(data || []);
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -109,76 +95,34 @@ export const ChatProvider = ({ children }) => {
   };
 
   const fetchServerMembers = async (serverId) => {
-    try {
-      const { data, error } = await supabase
-        .from('server_members')
-        .select(`
-          *,
-          profiles (*)
-        `)
-        .eq('server_id', serverId);
-
-      if (error) throw error;
-      setMembers(data || []);
-    } catch (error) {
-      console.error('Error fetching members:', error);
-    }
+    // not implemented in JSON backend; keep empty
+    setMembers([]);
   };
 
   const setupMessagesSubscription = (channelId) => {
-    const subscription = supabase
-      .channel('messages')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `channel_id=eq.${channelId}`
-        },
-        async (payload) => {
-          const { data: completeMessage, error } = await supabase
-            .from('messages')
-            .select(`
-              *,
-              profiles:user_id (
-                username,
-                avatar_url
-              )
-            `)
-            .eq('id', payload.new.id)
-            .single();
-
-          if (!error && completeMessage) {
-            setMessages(prev => [...prev, completeMessage]);
-          }
-        }
-      )
-      .subscribe();
-
+    const token = localStorage.getItem('token');
+    if (!socketRef.current) {
+      socketRef.current = io(undefined, { auth: { token } });
+    }
+    const socket = socketRef.current;
+    socket.emit('join', { channelId });
+    const handler = (msg) => setMessages(prev => [...prev, msg]);
+    socket.on('message', handler);
     return () => {
-      subscription.unsubscribe();
+      socket.off('message', handler);
+      socket.emit('leave', { channelId });
     };
   };
 
   const sendMessage = async (content) => {
     if (!selectedChannel || !content.trim()) return;
-
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
-      const { error } = await supabase
-        .from('messages')
-        .insert([
-          {
-            channel_id: selectedChannel.id,
-            content: content.trim(),
-            user_id: user.id
-          }
-        ]);
-
-      if (error) throw error;
+      const payload = { channelId: selectedChannel.id, content: content.trim(), userId: currentUserId };
+      if (socketRef.current && socketRef.current.connected) {
+        socketRef.current.emit('message', payload);
+      } else {
+        await fetch('/api/messages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ channel_id: selectedChannel.id, content: content.trim(), user_id: currentUserId }) });
+      }
     } catch (error) {
       console.error('Error sending message:', error);
     }
@@ -186,36 +130,11 @@ export const ChatProvider = ({ children }) => {
 
   const createServer = async (serverName) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
-      const { data, error } = await supabase
-        .from('servers')
-        .insert([
-          {
-            name: serverName,
-            icon: '🆕',
-            is_public: true,
-            owner_id: user.id
-          }
-        ])
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      await supabase
-        .from('server_members')
-        .insert([
-          {
-            server_id: data.id,
-            user_id: user.id,
-            role: 'owner'
-          }
-        ]);
-
-      setServers(prev => [...prev, data]);
-      setSelectedServer(data);
+      const serverId = `${Date.now()}-${Math.floor(Math.random()*10000)}`;
+      const ch = { server_id: serverId, server_name: serverName, name: 'general', position: 0 };
+      const res = await fetch('/api/channels', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ch) });
+      if (!res.ok) return { error: 'Failed to create server' };
+      await fetchServers();
       return { error: null };
     } catch (error) {
       return { error: error.message };
@@ -226,6 +145,7 @@ export const ChatProvider = ({ children }) => {
     servers,
     selectedServer,
     selectedChannel,
+    channels,
     messages,
     members,
     loading,
@@ -242,14 +162,10 @@ export const ChatProvider = ({ children }) => {
   );
 };
 
-// ✅ Ekspor useChat sebagai named export
 export const useChat = () => {
   const context = useContext(ChatContext);
-  if (context === undefined) {
-    throw new Error('useChat must be used within a ChatProvider');
-  }
+  if (context === undefined) throw new Error('useChat must be used within a ChatProvider');
   return context;
 };
 
-// ✅ Ekspor default untuk kompatibilitas
 export default ChatContext;

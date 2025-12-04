@@ -82,29 +82,52 @@ function VersionBadge() {
 }
 
 // Komponen untuk tombol chatbot di dalam menu
-function HelpChatbotButton({ onOpenChat }) {
+function HelpChatbotButton({ onOpenChat, enabled = true }) {
+  const handleClick = (e) => {
+    if (!enabled) {
+      e.preventDefault();
+      return;
+    }
+    onOpenChat();
+  };
+
   return (
     <button
-      onClick={onOpenChat}
-      className="flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors text-left w-full"
-      aria-label="Buka Chatbot SaipulAI"
+      onClick={handleClick}
+      className={`flex items-start gap-3 px-3 py-2 rounded-lg transition-colors text-left w-full
+        ${enabled 
+          ? "hover:bg-white/5 cursor-pointer" 
+          : "opacity-50 cursor-not-allowed"
+        }`}
+      aria-label={enabled ? "Buka Chatbot SaipulAI" : "Chatbot SaipulAI dinonaktifkan karna perbaikan"}
+      disabled={!enabled}
     >
-      <div className="w-9 h-9 flex items-center justify-center rounded-md bg-white/5 shrink-0">
-        <MessageCircle size={18} className="text-cyan-300" />
+      <div className={`w-9 h-9 flex items-center justify-center rounded-md shrink-0
+        ${enabled ? "bg-white/5" : "bg-gray-700/30"}`}>
+        <MessageCircle 
+          size={18} 
+          className={enabled ? "text-cyan-300" : "text-gray-500"} 
+        />
       </div>
       <div className="flex-1">
-        <div className="text-sm font-medium text-white/90 leading-tight">
+        <div className={`text-sm font-medium leading-tight
+          ${enabled ? "text-white/90" : "text-gray-500"}`}>
           Chatbot SaipulAI
         </div>
-        <div className="text-xs text-gray-400 mt-0.5">
-          Tanya apa saja ke AI
+        <div className="text-xs mt-0.5">
+          {enabled ? "Tanya apa saja ke AI" : "Fitur sedang dinonaktifkan"}
         </div>
       </div>
+      {!enabled && (
+        <div className="text-[10px] text-gray-500 mt-1 px-2 py-1 bg-gray-800/50 rounded">
+          OFF
+        </div>
+      )}
     </button>
   );
 }
 
-export default function HelpMenu({ onOpenChat }) {
+export default function HelpMenu({ onOpenChat, chatbotEnabled = true }) {
   return (
     <div
       className="w-72 rounded-2xl border border-white/10 shadow-[0_0_25px_rgba(56,189,248,0.2)]
@@ -137,9 +160,12 @@ export default function HelpMenu({ onOpenChat }) {
           to="/help/commitment"
         />
         
-        {/* 🔹 Tombol Chatbot - Sederhana tanpa logika state */}
+        {/* 🔹 Tombol Chatbot - Dikontrol oleh prop chatbotEnabled */}
         <div className="mt-2 border-t border-gray-700/40 pt-3">
-          <HelpChatbotButton onOpenChat={onOpenChat} />
+          <HelpChatbotButton 
+            onOpenChat={onOpenChat} 
+            enabled={chatbotEnabled} 
+          />
         </div>
       </div>
       

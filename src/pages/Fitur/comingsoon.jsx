@@ -52,7 +52,7 @@ const ComingSoon = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white flex flex-col px-6 sm:px-10 md:px-20 relative overflow-hidden py-20">
+    <div className="min-h-screen bg-[var(--color-gray-900)] text-white flex flex-col px-6 sm:px-10 md:px-20 relative overflow-hidden py-20">
       <BackgroundEffects />
 
       <div className="max-w-6xl mx-auto w-full">

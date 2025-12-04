@@ -1,0 +1,26 @@
+[
+  {
+    "id": "11111111-1111-1111-1111-111111111111",
+    "email": "admin@example.com",
+    "username": "admin",
+    "role": "admin",
+    "created_at": "2025-12-02T00:00:00.000Z",
+    "avatar_url": "/avatar/admin.svg"
+  },
+  {
+    "id": "22222222-2222-2222-2222-222222222222",
+    "email": "demo@example.com",
+    "username": "demo",
+    "role": "user",
+    "created_at": "2025-12-02T00:00:00.000Z",
+    "avatar_url": "/avatar/demo.svg"
+  },
+  {
+    "id": "db1af01a-380d-42bb-bdf5-837dc4ac16f1",
+    "email": "ucup@gmail.com",
+    "username": "ucup@gmail.com",
+    "password_hash": "$2a$10$rGO5nD76Jgl1oydwm0eJR.Hr4A7At/m8RMNHyca/mHKxIveblr5RK",
+    "role": "user",
+    "created_at": "2025-12-02T14:23:24.435Z"
+  }
+]

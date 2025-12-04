@@ -186,7 +186,7 @@ export default function Projects() {
   }, [selectedProject, handleCloseModal, navigate]);
 
   return (
-    <main className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center px-4 sm:px-6 md:px-10 lg:px-20 py-10 sm:py-16 md:py-20 relative overflow-hidden">
+    <main className="min-h-screen bg-[var(--color-gray-900)] text-white flex flex-col items-center px-4 sm:px-6 md:px-10 lg:px-20 py-10 sm:py-16 md:py-20 relative overflow-hidden">
       {/* 🌈 Responsive Background efek */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-0 left-0 w-40 h-40 sm:w-56 sm:h-56 md:w-72 md:h-72 bg-cyan-500/15 rounded-full blur-3xl animate-pulse" />

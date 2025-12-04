@@ -1,0 +1,23 @@
+[
+  {
+    "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+    "channel_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "user_id": "11111111-1111-1111-1111-111111111111",
+    "content": "Selamat datang di channel general!",
+    "created_at": "2025-12-01T12:06:00.000Z"
+  },
+  {
+    "id": "0bed7116-f755-4db0-bfbe-eb86ebcf6a3f",
+    "channel_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "user_id": null,
+    "content": "hallo",
+    "created_at": "2025-12-02T14:23:44.320Z"
+  },
+  {
+    "id": "dcb4f559-ac4d-45a8-80e9-652ac1d176f9",
+    "channel_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "user_id": "11111111-1111-1111-1111-111111111111",
+    "content": "test from CLI",
+    "created_at": "2025-12-03T01:51:55.245Z"
+  }
+]

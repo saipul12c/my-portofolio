@@ -66,7 +66,7 @@ export const PageConnections = React.memo(() => {
         <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-3 sm:mb-4">
           Jelajahi Lebih Lanjut
         </h3>
-        <p className="text-cyan-300 text-sm sm:text-base md:text-lg max-w-3xl mx-auto">
+        <p className="text-gray-300 text-sm sm:text-base md:text-lg max-w-3xl mx-auto">
           Temukan bagaimana kemampuan bahasa dan teknologi saya diaplikasikan dalam berbagai aspek portfolio
         </p>
       </div>

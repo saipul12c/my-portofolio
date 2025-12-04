@@ -87,7 +87,7 @@ const Bahasa = () => {
   ) : null, [selectedSkill]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e1b4b] to-[#0f172a] py-4 sm:py-8 px-3 sm:px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-[#0f172a]/80 backdrop-blur-md py-4 sm:py-8 px-3 sm:px-4 relative overflow-hidden text-gray-300">
       {/* Optimized Background Elements dengan will-change untuk performa */}
       <div className="absolute top-10 left-5 sm:left-10 w-48 h-48 sm:w-72 sm:h-72 bg-cyan-500/10 rounded-full blur-2xl sm:blur-3xl animate-pulse" style={{willChange: "transform"}}></div>
       <div className="absolute bottom-10 right-5 sm:right-10 w-64 h-64 sm:w-96 sm:h-96 bg-blue-500/10 rounded-full blur-2xl sm:blur-3xl animate-pulse delay-700" style={{willChange: "transform"}}></div>
@@ -104,7 +104,7 @@ const Bahasa = () => {
           <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-4 sm:mb-6">
             Kemampuan Bahasa & Teknologi
           </h1>
-          <p className="text-cyan-300 text-sm sm:text-lg md:text-xl max-w-4xl mx-auto leading-relaxed font-light px-2">
+          <p className="text-gray-300 text-sm sm:text-lg md:text-xl max-w-4xl mx-auto leading-relaxed font-light px-2">
             Jelajahi berbagai bahasa dan teknologi yang saya kuasai, dari komunikasi sehari-hari 
             hingga stack pengembangan software modern dengan pengalaman nyata
           </p>
@@ -171,7 +171,7 @@ const Bahasa = () => {
           >
             <div className="text-4xl sm:text-6xl mb-3 sm:mb-4">🔍</div>
             <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">Tidak ada hasil</h3>
-            <p className="text-cyan-300 mb-4 sm:mb-6 text-sm sm:text-base">
+            <p className="text-gray-300 mb-4 sm:mb-6 text-sm sm:text-base">
               Tidak ada item yang sesuai dengan pencarian dan filter Anda
             </p>
             <button
@@ -192,7 +192,7 @@ const Bahasa = () => {
         >
           <div className="bg-gradient-to-br from-[#1e293b]/80 to-[#0f172a]/80 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-cyan-500/30 relative overflow-hidden">
             <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-3 sm:mb-4">Siap Berkolaborasi?</h3>
-            <p className="text-cyan-300 text-sm sm:text-lg mb-4 sm:mb-6 max-w-2xl mx-auto">
+            <p className="text-gray-300 text-sm sm:text-lg mb-4 sm:mb-6 max-w-2xl mx-auto">
               Dengan beragam kemampuan bahasa dan teknologi, saya siap membantu mewujudkan 
               ide kreatif Anda.
             </p>

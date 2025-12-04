@@ -54,6 +54,29 @@ export function useGalleryData() {
     ];
   }, [allMedia]);
 
+  // Provide internal suggestion helper for other components
+  const getInternalSuggestions = (searchTerm = "") => {
+    const term = (searchTerm || "").toLowerCase();
+    if (!term) return [];
+    return allMedia
+      .filter((item) => {
+        return (
+          item.title?.toLowerCase().includes(term) ||
+          item.desc?.toLowerCase().includes(term) ||
+          item.category?.toLowerCase().includes(term) ||
+          (item.tags || []).some((t) => t.toLowerCase().includes(term))
+        );
+      })
+      .slice(0, 12)
+      .map((item) => ({
+        type: "internal",
+        id: item.id,
+        title: item.title || item.desc || `${item.type} ${item.id}`,
+        mediaType: item.type,
+        url: `/kenangan/${item.type}/${item.id}`,
+      }));
+  };
+
   const filterMedia = (searchTerm = "", tags = []) => {
     let filtered = allMedia;
 
@@ -85,5 +108,6 @@ export function useGalleryData() {
     error,
     allTags,
     filterMedia,
+    getInternalSuggestions,
   };
 }

@@ -20,7 +20,7 @@ export const ProgressBar = React.memo(({ level, showLabel = true }) => {
   return (
     <div className="w-full">
       {showLabel && (
-        <div className="flex justify-between text-sm text-cyan-300 mb-2">
+        <div className="flex justify-between text-sm text-gray-300 mb-2">
           <span>Kemahiran</span>
           <span className="font-bold">{level}%</span>
         </div>

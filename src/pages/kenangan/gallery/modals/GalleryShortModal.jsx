@@ -12,6 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import GalleryShareBar from "../GalleryShareBar";
 
@@ -25,19 +26,17 @@ export default function GalleryShortModal({
   const [isMuted, setIsMuted] = useState(true);
   const newRef = useRef(null);
   const localVideoRef = videoRef || newRef;
-
-  if (!selectedMedia || selectedMedia.type !== "short") return null;
+  const navigate = useNavigate();
 
   const handleVideoHover = () => {
-    if (localVideoRef.current) localVideoRef.current.play().catch(() => {});
+    // Optional: Add hover effects if needed
   };
 
   const handleVideoLeave = () => {
-    if (localVideoRef.current) {
-      localVideoRef.current.pause();
-      localVideoRef.current.currentTime = 0;
-    }
+    // Optional: Add leave effects if needed
   };
+
+  if (!selectedMedia || selectedMedia.type !== "short") return null;
 
   return (
     <AnimatePresence>
@@ -163,6 +162,42 @@ export default function GalleryShortModal({
                   <Eye size={14} />{" "}
                   {selectedMedia.engagement.views?.toLocaleString()}
                 </span>
+              </div>
+            )}
+
+            {/* Comments Preview */}
+            {selectedMedia.comments_preview && selectedMedia.comments_preview.length > 0 && (
+              <div className="mt-4">
+                <h3 className="text-sm font-semibold text-white mb-2">Komentar</h3>
+                <div className="flex flex-col gap-3">
+                  {selectedMedia.comments_preview.slice(0, 3).map((c, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <img src={c.avatar} alt={c.user} className="w-9 h-9 rounded-full object-cover border border-white/10" />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-cyan-300">{c.user}</span>
+                          <span className="text-xs text-gray-400">{new Date(c.posted_at).toLocaleString()}</span>
+                        </div>
+                        <p className="text-sm text-gray-300">{c.comment}</p>
+                      </div>
+                    </div>
+                  ))}
+
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      onClick={() => navigate(`/gallery/shorts/${selectedMedia.id}`)}
+                      className="text-sm px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30"
+                    >
+                      Lihat detail
+                    </button>
+                    <button
+                      onClick={() => navigate(`/gallery/shorts/${selectedMedia.id}`)}
+                      className="text-sm px-3 py-1 rounded-lg border border-white/10 text-gray-300 hover:bg-white/5"
+                    >
+                      Lihat semua komentar
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
 

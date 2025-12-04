@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
+import { checkHealth } from '../../lib/backend';
 import { motion } from "framer-motion";
 import { 
   Users, 
   ArrowRight,
   Sparkles
 } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js'
+// Supabase removed: use backend `/api/*` endpoints instead
 
 // Import komponen modular
 import CommunityStatistics from './components/CommunityStatistics';
@@ -13,13 +14,12 @@ import CommunityFilters from './components/CommunityFilters';
 import CommunityGrid from './components/CommunityGrid';
 import CommunityModal from './components/CommunityModal';
 import CommunityForm from './components/CommunityForm';
+import { useCommunity } from '../../context/CommunityContext';
 
-// Inisialisasi Supabase client
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL 
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY 
-const supabase = createClient(supabaseUrl, supabaseKey)
+// Frontend always uses the backend JSON server endpoints under `/api/*`.
 
 const Komunitas = () => {
+  const { setSelectedCommunity: setSelectedCommunityGlobal } = useCommunity();
   const [communities, setCommunities] = useState([]);
   const [filteredCommunities, setFilteredCommunities] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,19 +53,23 @@ const Komunitas = () => {
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
 
-  // Fetch data komunitas dari Supabase
+  // Fetch data komunitas dari backend JSON server
   const fetchCommunities = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('communities')
-        .select('*')
-        .order('created_at', { ascending: false });
 
-      if (error) throw error;
-
-      const transformedData = data.map(community => ({
+      // Fetch always from local JSON backend
+      const res = await fetch('/api/communities');
+      if (!res.ok) throw new Error('Failed to fetch from backend');
+      const data = await res.json();
+      const transformedData = (data || []).map(community => ({
         ...community,
+        // ensure consistent / safe defaults so UI doesn't show `undefined`
+        members: typeof community.members === 'number' ? community.members : (Number(community.members) || 0),
+        category: community.category || '',
+        location: community.location || '',
+        tags: Array.isArray(community.tags) ? community.tags : (typeof community.tags === 'string' && community.tags ? community.tags.split(',').map(t => t.trim()).filter(Boolean) : []),
+        is_active: community.is_active !== false,
         contact: {
           email: community.contact_email || '',
           phone: community.contact_phone || '',
@@ -78,7 +82,6 @@ const Komunitas = () => {
           linkedin: community.social_media_linkedin || ''
         }
       }));
-
       setCommunities(transformedData);
       setFilteredCommunities(transformedData);
     } catch (err) {
@@ -89,52 +92,39 @@ const Komunitas = () => {
     }
   };
 
-  // Fetch statistics dari Supabase
+  // Fetch statistics dari backend JSON server
   const fetchStatistics = async () => {
     try {
-      const { count: totalCommunities, error: countError } = await supabase
-        .from('communities')
-        .select('*', { count: 'exact', head: true });
-
-      if (countError) throw countError;
-
-      const { count: activeCommunities, error: activeError } = await supabase
-        .from('communities')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_active', true);
-
-      if (activeError) throw activeError;
-
-      const { data: membersData, error: membersError } = await supabase
-        .from('communities')
-        .select('members');
-
-      if (membersError) throw membersError;
-
-      const totalMembers = membersData?.reduce((sum, community) => sum + (community.members || 0), 0) || 0;
-
-      const { data: categoriesData, error: categoriesError } = await supabase
-        .from('communities')
-        .select('category');
-
-      if (categoriesError) throw categoriesError;
-
-      const uniqueCategories = [...new Set(categoriesData?.map(c => c.category).filter(Boolean))];
-
-      setStatistics({
-        totalCommunities: totalCommunities || 0,
-        activeCommunities: activeCommunities || 0,
-        totalMembers,
-        categories: uniqueCategories
-      });
+      // Statistics derived from the same `/api/communities` endpoint
+      const res = await fetch('/api/communities');
+      if (!res.ok) throw new Error('Failed to fetch communities for statistics');
+      const data = await res.json();
+      const totalCommunities = data.length;
+      const activeCommunities = data.filter(c => c.is_active !== false).length;
+      const totalMembers = data.reduce((sum, c) => sum + (c.members || 0), 0);
+      const uniqueCategories = [...new Set(data.map(c => c.category).filter(Boolean))];
+      setStatistics({ totalCommunities, activeCommunities, totalMembers, categories: uniqueCategories });
     } catch (err) {
       console.error('Error fetching statistics:', err);
     }
   };
 
   useEffect(() => {
-    fetchCommunities();
-    fetchStatistics();
+    let mounted = true;
+    const init = async () => {
+      // quick health-check before attempting the heavier fetches
+      const healthy = await checkHealth();
+      if (!mounted) return;
+      if (!healthy) {
+        setError('Backend tidak tersedia. Pastikan server backend berjalan di `backend/`.');
+        setLoading(false);
+        return;
+      }
+      await fetchCommunities();
+      await fetchStatistics();
+    };
+    init();
+    return () => { mounted = false; };
   }, []);
 
   // Filter dan search
@@ -193,6 +183,8 @@ const Komunitas = () => {
 
   const handleViewDetails = (community) => {
     setSelectedCommunity(community);
+    // also persist in global context so other pages see this selection
+    if (setSelectedCommunityGlobal) setSelectedCommunityGlobal(community);
     setShowModal(true);
   };
 
@@ -215,20 +207,17 @@ const Komunitas = () => {
     });
     setEditingId(community.id);
     setShowForm(true);
+    if (setSelectedCommunityGlobal) setSelectedCommunityGlobal(community);
   };
 
   const handleDelete = async (id) => {
     if (confirm('Apakah Anda yakin ingin menghapus komunitas ini?')) {
       try {
-        const { error } = await supabase
-          .from('communities')
-          .delete()
-          .eq('id', id);
+        const res = await fetch(`/api/communities/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Failed to delete via backend');
 
-        if (error) throw error;
-
-        fetchCommunities();
-        fetchStatistics();
+        await fetchCommunities();
+        await fetchStatistics();
       } catch (err) {
         alert('Error menghapus komunitas');
         console.error('Error deleting community:', err);
@@ -258,23 +247,22 @@ const Komunitas = () => {
         updated_at: new Date().toISOString()
       };
 
-      if (editingId) {
-        const { error } = await supabase
-          .from('communities')
-          .update(communityData)
-          .eq('id', editingId);
-
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('communities')
-          .insert([{
-            ...communityData,
-            created_at: new Date().toISOString()
-          }]);
-
-        if (error) throw error;
-      }
+        if (editingId) {
+          const res = await fetch(`/api/communities/${editingId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(communityData)
+          });
+          if (!res.ok) throw new Error('Failed to update via backend');
+        } else {
+          const payload = { ...communityData, created_at: new Date().toISOString() };
+          const res = await fetch('/api/communities', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) throw new Error('Failed to insert via backend');
+        }
 
       fetchCommunities();
       fetchStatistics();
@@ -304,9 +292,10 @@ const Komunitas = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
+    const newVal = type === 'checkbox' ? checked : (type === 'number' ? (value === '' ? '' : Number(value)) : value);
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: newVal
     }));
   };
 
@@ -319,14 +308,14 @@ const Komunitas = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0f172a] flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--color-gray-900)] flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-cyan-400"></div>
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#0f172a] text-white flex flex-col px-6 sm:px-10 md:px-20 relative overflow-hidden">
+    <main className="min-h-screen bg-[var(--color-gray-900)] text-white flex flex-col px-6 sm:px-10 md:px-20 relative overflow-hidden">
       {/* Background glow effects */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-10 left-10 w-64 h-64 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" />

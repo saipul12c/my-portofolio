@@ -6,7 +6,7 @@
     "icon": "BookOpen",
     "lastUpdated": "2025-11-07",
     "author": "Tim Dokumentasi Portofolio",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "versionCode": "build-2025.11.07.001",
     "versionType": "stable",
     "releaseChannel": "production",
@@ -14,17 +14,17 @@
     "tags": ["dasar", "panduan-awal", "pengantar", "pengenalan"],
     "content": "Selamat datang di dokumentasi platform Portofolio! Panduan ini membantu kamu memahami langkah awal mulai dari registrasi akun hingga menjelajahi fitur profesional. 💼",
     "changelog": [
-      { 
-        "date": "2025-11-01", 
+      {
+        "date": "2025-11-07",
+        "version": "1.1.0",
+        "changes": "Ringkasan fitur & peningkatan tata visual dokumentasi.",
+        "type": "feature"
+      },
+      {
+        "date": "2025-11-01",
         "version": "1.0.1",
         "changes": "Perbaikan struktur navigasi dan konsistensi istilah.",
         "type": "improvement"
-      },
-      { 
-        "date": "2025-11-07", 
-        "version": "1.1.0",
-        "changes": "Penambahan ringkasan fitur baru dan update visual dokumentasi.",
-        "type": "feature"
       }
     ],
     "versionHistory": [
@@ -50,6 +50,11 @@
         "migrationRequired": false
       }
     ],
+    "visual": {
+      "summary": "Panduan singkat untuk pengguna baru — jelas, ringkas, dan mudah dipahami untuk semua usia.",
+      "badge": "Panduan Awal",
+      "color": "#0ea5a3"
+    },
     "compatibility": {
       "minRequired": "1.0.0",
       "testedUpTo": "1.2.0",
@@ -93,25 +98,31 @@
     "icon": "Sparkles",
     "lastUpdated": "2025-11-06",
     "author": "Tim Pengembang UI/UX",
-    "version": "1.5.0",
-    "versionCode": "build-2025.11.06.002",
+    "version": "1.16.0",
+    "versionCode": "build-2025.11.06.016",
     "versionType": "stable",
     "releaseChannel": "production",
     "estimatedReadTime": "8 menit",
     "tags": ["fitur", "dashboard", "komunitas", "notifikasi"],
     "content": "Temukan semua fitur utama yang membuat platform Portofolio unggul — mulai dari personalisasi profil hingga interaksi komunitas dan dashboard real-time. 🚀",
     "changelog": [
-      { 
-        "date": "2025-11-03", 
-        "version": "0.9.0",
+      {
+        "date": "2025-11-06",
+        "version": "1.16.0",
+        "changes": "Peningkatan UX fitur utama dan sinkronisasi notifikasi real-time.",
+        "type": "improvement"
+      },
+      {
+        "date": "2025-11-03",
+        "version": "1.6.0",
         "changes": "Penambahan mode kolaborasi antar pengguna.",
         "type": "feature"
       },
-      { 
-        "date": "2025-11-06", 
-        "version": "1.1.0",
-        "changes": "Integrasi penuh dengan sistem notifikasi real-time.",
-        "type": "enhancement"
+      {
+        "date": "2025-10-28",
+        "version": "1.9.0",
+        "changes": "Pembaruan lama — lihat catatan untuk detail migration.",
+        "type": "deprecated"
       }
     ],
     "versionHistory": [
@@ -137,6 +148,11 @@
         "migrationRequired": true
       }
     ],
+    "visual": {
+      "summary": "Rangkuman fitur utama: profil, notifikasi, dan mode kolaborasi — dibuat sederhana agar mudah dicerna.",
+      "badge": "Fitur Utama",
+      "color": "#7c3aed"
+    },
     "compatibility": {
       "minRequired": "2.0.0",
       "testedUpTo": "1.2.0",
@@ -177,25 +193,25 @@
     "icon": "Lightbulb",
     "lastUpdated": "2025-11-07",
     "author": "Tim Edukasi Pengguna",
-    "version": "1.7.0",
-    "versionCode": "build-2025.11.07.003",
+    "version": "1.6.0",
+    "versionCode": "build-2025.11.07.006",
     "versionType": "stable",
     "releaseChannel": "production",
     "estimatedReadTime": "7 menit",
     "tags": ["efisiensi", "pengalaman-pengguna", "keyboard", "personal-branding"],
     "content": "Gunakan tips dan trik berikut untuk meningkatkan produktivitas dan citra profesional kamu di platform ini. ✨",
     "changelog": [
-      { 
-        "date": "2025-11-04", 
+      {
+        "date": "2025-11-07",
+        "version": "1.6.0",
+        "changes": "Perbaikan contoh bio & update shortcut agar lebih mudah diikuti pengguna baru.",
+        "type": "improvement"
+      },
+      {
+        "date": "2025-11-04",
         "version": "1.5.0",
         "changes": "Penambahan panduan personal branding dan optimasi profil.",
         "type": "feature"
-      },
-      { 
-        "date": "2025-11-07", 
-        "version": "1.6.0",
-        "changes": "Penyesuaian contoh bio dan update shortcut baru.",
-        "type": "improvement"
       }
     ],
     "versionHistory": [
@@ -221,6 +237,11 @@
         "migrationRequired": false
       }
     ],
+    "visual": {
+      "summary": "Kumpulan tips praktis & shortcut — disajikan ringkas agar semua usia mudah memahaminya.",
+      "badge": "Tips & Trik",
+      "color": "#f59e0b"
+    },
     "compatibility": {
       "minRequired": "1.4.0",
       "testedUpTo": "1.16.0",
@@ -258,25 +279,31 @@
     "icon": "Plug",
     "lastUpdated": "2025-11-07",
     "author": "Divisi API & Teknologi",
-    "version": "1.8.0",
-    "versionCode": "build-2025.11.07.004",
+    "version": "1.14.0",
+    "versionCode": "build-2025.11.07.014",
     "versionType": "major",
     "releaseChannel": "production",
     "estimatedReadTime": "9 menit",
     "tags": ["api", "plugin", "keamanan", "notion", "github"],
     "content": "Pelajari cara menghubungkan Portofolio dengan berbagai tools eksternal seperti GitHub, Notion, dan Slack. 🔌",
     "changelog": [
-      { 
-        "date": "2025-11-05", 
-        "version": "1.10.1",
-        "changes": "Penambahan webhook integrasi Slack.",
+      {
+        "date": "2025-11-07",
+        "version": "1.14.0",
+        "changes": "Pembaruan integrasi & keamanan token API.",
+        "type": "security"
+      },
+      {
+        "date": "2025-11-05",
+        "version": "1.15.1",
+        "changes": "Penambahan webhook integrasi Slack dan plugin eksternal.",
         "type": "feature"
       },
-      { 
-        "date": "2025-11-07", 
-        "version": "1.13.0",
-        "changes": "Update sistem token API dengan validasi otomatis.",
-        "type": "security"
+      {
+        "date": "2025-11-01",
+        "version": "1.16.0",
+        "changes": "Versi sebelumnya yang memiliki breaking changes, periksa panduan migrasi.",
+        "type": "deprecated"
       }
     ],
     "versionHistory": [
@@ -302,6 +329,11 @@
         "migrationRequired": true
       }
     ],
+    "visual": {
+      "summary": "Panduan integrasi & keamanan — dibuat jelas agar tim dev dan non-dev mengerti risiko dan langkah migrasi.",
+      "badge": "Integrasi",
+      "color": "#06b6d4"
+    },
     "compatibility": {
       "minRequired": "1.2.0",
       "testedUpTo": "1.16.0",
@@ -340,28 +372,28 @@
     "icon": "FolderKanban",
     "lastUpdated": "2025-11-07",
     "author": "Tim Showcase Developer",
-    "version": "1.9.0",
-    "versionCode": "build-2025.11.07.005",
+    "version": "1.3.0",
+    "versionCode": "build-2025.11.07.003",
     "versionType": "stable",
     "releaseChannel": "production",
     "estimatedReadTime": "7 menit",
     "tags": ["proyek", "showcase", "frontend", "backend"],
     "content": "Bagian ini menjelaskan cara menampilkan proyekmu di halaman publik, lengkap dengan preview dan statistik pengunjung. 💼",
     "changelog": [
-      { 
-        "date": "2025-11-07", 
+      {
+        "date": "2025-11-07",
         "version": "1.3.0",
-        "changes": "Penambahan fitur preview real-time dan statistik advanced.",
+        "changes": "Penambahan preview real-time & statistik yang lebih jelas untuk tiap proyek.",
         "type": "feature"
       },
-      { 
-        "date": "2025-11-05", 
+      {
+        "date": "2025-11-05",
         "version": "1.2.0",
         "changes": "Optimasi performa loading halaman proyek.",
         "type": "performance"
       },
-      { 
-        "date": "2025-11-03", 
+      {
+        "date": "2025-11-03",
         "version": "1.1.0",
         "changes": "Penambahan multiple image upload untuk showcase.",
         "type": "enhancement"
@@ -390,6 +422,11 @@
         "migrationRequired": false
       }
     ],
+    "visual": {
+      "summary": "Langkah-langkah sederhana untuk menampilkan proyek — cocok untuk pengguna non-teknis dan developer.",
+      "badge": "Halaman Proyek",
+      "color": "#10b981"
+    },
     "compatibility": {
       "minRequired": "1.0.0",
       "testedUpTo": "1.4.0",
@@ -426,24 +463,24 @@
     "icon": "BarChart3",
     "lastUpdated": "2025-11-07",
     "author": "Tim Data & Insight",
-    "version": "1.10.0",
-    "versionCode": "build-2025.11.07.006",
+    "version": "1.16.0",
+    "versionCode": "build-2025.11.07.016",
     "versionType": "major",
     "releaseChannel": "production",
     "estimatedReadTime": "6 menit",
     "tags": ["analitik", "tema", "personalisasi", "dark-mode"],
     "content": "Pelajari cara membaca statistik performa dan mengatur tampilan sesuai preferensimu. 📊",
     "changelog": [
-      { 
-        "date": "2025-11-07", 
+      {
+        "date": "2025-11-07",
         "version": "1.16.0",
-        "changes": "Redesign total dashboard analitik dengan real-time data streaming.",
+        "changes": "Redesign dashboard analitik dengan streaming data real-time dan export data.",
         "type": "major"
       },
-      { 
-        "date": "2025-11-04", 
+      {
+        "date": "2025-11-04",
         "version": "1.2.0",
-        "changes": "Penambahan custom theme builder dan export data.",
+        "changes": "Penambahan custom theme builder dan fitur export data.",
         "type": "feature"
       }
     ],
@@ -470,6 +507,11 @@
         "migrationRequired": false
       }
     ],
+    "visual": {
+      "summary": "Ulasan analitik & personalisasi — panduan langsung untuk membaca insight dan menyesuaikan tampilan.",
+      "badge": "Analitik",
+      "color": "#2563eb"
+    },
     "compatibility": {
       "minRequired": "1.2.0",
       "testedUpTo": "2.1.0",
@@ -507,28 +549,28 @@
     "icon": "Brain",
     "lastUpdated": "2025-11-20",
     "author": "Tim AI & Machine Learning",
-    "version": "1.11.0",
-    "versionCode": "build-2025.11.20.007",
+    "version": "2.0.0",
+    "versionCode": "build-2025.11.20.020",
     "versionType": "major",
     "releaseChannel": "production",
     "estimatedReadTime": "8 menit",
     "tags": ["ai", "pencarian", "nlp", "machine-learning", "assistant"],
     "content": "Temukan kekuatan AI dalam platform Portofolio - dari pencarian cerdas yang memahami konteks hingga asisten AI yang mampu menganalisis dan menjawab pertanyaan kompleks. 🧠",
     "changelog": [
-      { 
-        "date": "2025-11-20", 
+      {
+        "date": "2025-11-20",
         "version": "2.0.0",
-        "changes": "Peluncuran fitur AI Overview dengan kemampuan question-answering dan semantic analysis.",
+        "changes": "Peluncuran fitur AI Overview: Q&A kontekstual, semantic search & confidence score.",
         "type": "major"
       },
-      { 
-        "date": "2025-11-18", 
+      {
+        "date": "2025-11-18",
         "version": "1.8.0",
-        "changes": "Implementasi predictive search dan smart suggestions.",
+        "changes": "Implementasi predictive search dan smart suggestions untuk pencarian lebih cepat.",
         "type": "feature"
       },
-      { 
-        "date": "2025-11-15", 
+      {
+        "date": "2025-11-15",
         "version": "1.7.0",
         "changes": "Integrasi NLP library untuk analisis konten otomatis.",
         "type": "enhancement"
@@ -557,6 +599,11 @@
         "migrationRequired": false
       }
     ],
+    "visual": {
+      "summary": "Panduan fitur AI — dibuat ramah pengguna: jelaskan fungsi, contoh tanya-jawab, dan cara pakai sederhana.",
+      "badge": "Fitur AI",
+      "color": "#8b5cf6"
+    },
     "compatibility": {
       "minRequired": "2.0.0",
       "testedUpTo": "2.3.0",
@@ -607,28 +654,28 @@
     "icon": "Smartphone",
     "lastUpdated": "2025-11-19",
     "author": "Tim Mobile Experience",
-    "version": "1.13.0",
-    "versionCode": "build-2025.11.19.008",
+    "version": "1.9.0",
+    "versionCode": "build-2025.11.19.009",
     "versionType": "stable",
     "releaseChannel": "production",
     "estimatedReadTime": "7 menit",
     "tags": ["mobile", "responsive", "ux", "performance", "touch"],
     "content": "Pelajari bagaimana platform Portofolio dioptimalkan untuk pengalaman terbaik di semua perangkat mobile dan desktop. 📱",
     "changelog": [
-      { 
-        "date": "2025-11-19", 
+      {
+        "date": "2025-11-19",
         "version": "1.9.0",
-        "changes": "Optimasi layout search bar dan komponen AI untuk mobile.",
+        "changes": "Optimasi layout & performa untuk tampilan mobile agar lebih ringan.",
         "type": "improvement"
       },
-      { 
-        "date": "2025-11-17", 
+      {
+        "date": "2025-11-17",
         "version": "1.8.0",
-        "changes": "Implementasi touch-friendly interactions dan gesture controls.",
+        "changes": "Implementasi gesture controls dan touch-friendly interactions.",
         "type": "feature"
       },
-      { 
-        "date": "2025-11-14", 
+      {
+        "date": "2025-11-14",
         "version": "1.7.0",
         "changes": "Perbaikan responsive grid system dan typography scaling.",
         "type": "enhancement"
@@ -657,6 +704,11 @@
         "migrationRequired": false
       }
     ],
+    "visual": {
+      "summary": "Petunjuk optimasi mobile yang jelas & sederhana untuk semua pengguna.",
+      "badge": "Mobile",
+      "color": "#ef4444"
+    },
     "compatibility": {
       "minRequired": "1.5.0",
       "testedUpTo": "2.1.0",
@@ -706,30 +758,30 @@
     "icon": "Puzzle",
     "lastUpdated": "2025-11-18",
     "author": "Tim Frontend Architecture",
-    "version": "1.15.0",
-    "versionCode": "build-2025.11.18.009",
+    "version": "2.1.0",
+    "versionCode": "build-2025.11.18.021",
     "versionType": "major",
     "releaseChannel": "production",
     "estimatedReadTime": "9 menit",
     "tags": ["components", "architecture", "react", "performance", "reusability"],
-    "content": "Dive deep into the component architecture powering Portofolio - from reusable UI patterns to performance optimizations. 🧩",
+    "content": "Mengenal arsitektur komponen yang kuat — contoh pola reusable, tips performa, dan praktik terbaik untuk dev dan tim produk. 🧩",
     "changelog": [
-      { 
-        "date": "2025-11-18", 
+      {
+        "date": "2025-11-18",
         "version": "2.1.0",
-        "changes": "Refactor komponen SearchBar dan AiOverview untuk better reusability.",
+        "changes": "Refactor SearchBar & AiOverview untuk reusability dan integrasi komponen.",
         "type": "major"
       },
-      { 
-        "date": "2025-11-16", 
+      {
+        "date": "2025-11-16",
         "version": "2.0.0",
-        "changes": "Implementasi compound components pattern untuk complex UI.",
+        "changes": "Implementasi compound component pattern untuk UI kompleks.",
         "type": "feature"
       },
-      { 
-        "date": "2025-11-13", 
+      {
+        "date": "2025-11-13",
         "version": "1.9.0",
-        "changes": "Optimasi re-renders dengan React.memo dan useMemo.",
+        "changes": "Optimasi render dengan React.memo & useMemo.",
         "type": "performance"
       }
     ],
@@ -756,6 +808,11 @@
         "migrationRequired": false
       }
     ],
+    "visual": {
+      "summary": "Referensi arsitektur komponen — ditulis ringkas untuk developer dari berbagai level.",
+      "badge": "Komponen Lanjutan",
+      "color": "#06b6d4"
+    },
     "compatibility": {
       "minRequired": "2.0.0",
       "testedUpTo": "2.5.0",
@@ -805,30 +862,30 @@
     "icon": "TestTube",
     "lastUpdated": "2025-11-17",
     "author": "Tim Quality Engineering",
-    "version": "1.17.0",
-    "versionCode": "build-2025.11.17.010",
+    "version": "1.7.0",
+    "versionCode": "build-2025.11.17.007",
     "versionType": "stable",
     "releaseChannel": "production",
     "estimatedReadTime": "8 menit",
     "tags": ["testing", "qa", "jest", "cypress", "accessibility"],
-    "content": "Memastikan kualitas dan keandalan platform melalui comprehensive testing strategies dan quality assurance processes. 🧪",
+    "content": "Menjaga kualitas platform lewat strategi testing & QA yang dapat diikuti oleh tim kecil atau besar. 🧪",
     "changelog": [
-      { 
-        "date": "2025-11-17", 
+      {
+        "date": "2025-11-17",
         "version": "1.7.0",
-        "changes": "Implementasi AI component testing dengan mocked NLP responses.",
+        "changes": "AI component testing dengan mock NLP untuk stabilitas fitur AI.",
         "type": "feature"
       },
-      { 
-        "date": "2025-11-15", 
+      {
+        "date": "2025-11-15",
         "version": "1.6.0",
-        "changes": "Penambahan accessibility testing dengan axe-core.",
+        "changes": "Penambahan accessibility testing (axe-core) untuk meningkatkan aksesibilitas.",
         "type": "enhancement"
       },
-      { 
-        "date": "2025-11-12", 
+      {
+        "date": "2025-11-12",
         "version": "1.5.0",
-        "changes": "Setup end-to-end testing dengan Cypress untuk critical user flows.",
+        "changes": "Setup E2E testing (Cypress) untuk skenario kritikal.",
         "type": "feature"
       }
     ],
@@ -855,6 +912,11 @@
         "migrationRequired": false
       }
     ],
+    "visual": {
+      "summary": "Panduan testing & QA singkat — cocok untuk tim yang ingin mengikuti alur QA praktis.",
+      "badge": "Testing & QA",
+      "color": "#14b8a6"
+    },
     "compatibility": {
       "minRequired": "1.3.0",
       "testedUpTo": "2.0.0",

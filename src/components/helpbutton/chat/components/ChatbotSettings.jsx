@@ -1,10 +1,10 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Brain, Cpu, Database, Zap, Shield, Palette, Languages, Bell, CpuIcon, Upload, FileText, Image, File, Video, Music, Archive, Trash2, Download, RefreshCw } from "lucide-react";
 
 export function ChatbotSettings({ onClose, knowledgeBase = {}, updateKnowledgeBase, knowledgeStats = {} }) {
   // Enhanced safe knowledge base dengan file metadata
-  const safeKnowledgeBase = {
+  const safeKnowledgeBase = useMemo(() => ({
     AI: {},
     hobbies: [],
     cards: [],
@@ -16,7 +16,7 @@ export function ChatbotSettings({ onClose, knowledgeBase = {}, updateKnowledgeBa
     uploadedData: [],
     fileMetadata: [],
     ...knowledgeBase
-  };
+  }), [knowledgeBase]);
 
   const [activeTab, setActiveTab] = useState("umum");
   const [settings, setSettings] = useState({
@@ -47,7 +47,6 @@ export function ChatbotSettings({ onClose, knowledgeBase = {}, updateKnowledgeBa
     enableAnalytics: false
   });
 
-  const [uploadedFiles, setUploadedFiles] = useState([]);
   const [fileStats, setFileStats] = useState({
     totalFiles: 0,
     totalSize: 0,
@@ -86,17 +85,6 @@ export function ChatbotSettings({ onClose, knowledgeBase = {}, updateKnowledgeBa
       if (savedFileMetadata) {
         metadata = JSON.parse(savedFileMetadata);
       }
-
-      setUploadedFiles(metadata.map(file => ({
-        name: file.fileName,
-        size: file.fileSize,
-        type: file.fileType,
-        extension: file.extension,
-        uploadDate: file.uploadDate,
-        sentences: file.sentenceCount,
-        words: file.wordCount,
-        processed: file.processed
-      })));
 
       // Calculate file statistics
       const stats = {
@@ -332,7 +320,6 @@ export function ChatbotSettings({ onClose, knowledgeBase = {}, updateKnowledgeBa
       try {
         localStorage.removeItem("saipul_uploaded_data");
         localStorage.removeItem("saipul_file_metadata");
-        setUploadedFiles([]);
         setFileStats({ totalFiles: 0, totalSize: 0, byType: {}, recentUploads: [] });
         
         if (updateKnowledgeBase) {
@@ -400,14 +387,6 @@ export function ChatbotSettings({ onClose, knowledgeBase = {}, updateKnowledgeBa
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
-  const accentColors = {
-    cyan: "from-cyan-500 to-blue-500",
-    purple: "from-purple-500 to-pink-500",
-    green: "from-green-500 to-emerald-500",
-    orange: "from-orange-500 to-red-500",
-    indigo: "from-indigo-500 to-purple-500"
   };
 
   // Calculate enhanced knowledge base stats

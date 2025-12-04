@@ -74,7 +74,7 @@ export default function VisiMisi() {
   ];
 
   return (
-    <section className="relative min-h-screen bg-[#0f172a] text-gray-100 flex flex-col items-center px-6 py-20 overflow-hidden">
+    <section className="relative min-h-screen bg-[var(--color-gray-900)] text-gray-100 flex flex-col items-center px-6 py-20 overflow-hidden">
       {/* 🌌 Background Particle & Gradient */}
       <div className="absolute inset-0 -z-20 overflow-hidden">
         {particles.map((_, i) => (
@@ -90,7 +90,7 @@ export default function VisiMisi() {
         <div className="absolute top-10 left-10 w-72 h-72 bg-cyan-400/20 blur-3xl rounded-full animate-pulse" />
         <div className="absolute bottom-10 right-10 w-[28rem] h-[28rem] bg-fuchsia-500/20 blur-3xl rounded-full animate-pulse" />
         <div className="absolute top-1/3 left-1/2 w-40 h-40 bg-yellow-300/10 blur-3xl rounded-full animate-ping" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0f172a]/50 via-[#1e1b4b]/30 to-[#0f172a] opacity-70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0f172a]/50 via-[#1e1b4b]/30 to-[var(--color-gray-900)] opacity-70" />
       </div>
 
       {/* ✨ Header */}

@@ -22,6 +22,22 @@
       "shares": 98,
       "saves": 215
     },
+    "comments_preview": [
+      {
+        "user": "rina_short",
+        "avatar": "https://randomuser.me/api/portraits/women/50.jpg",
+        "comment": "Ringkas tapi berbobot! Good job 👏",
+        "likes": 24,
+        "posted_at": "2024-04-20T10:00:00Z"
+      },
+      {
+        "user": "dimas_dev",
+        "avatar": "https://randomuser.me/api/portraits/men/52.jpg",
+        "comment": "Langsung praktek, terbantu banget.",
+        "likes": 11,
+        "posted_at": "2024-04-20T11:20:00Z"
+      }
+    ],
     "user_behavior": {
       "liked_by_user": false,
       "watched_percentage": 0,
@@ -51,6 +67,15 @@
       "shares": 75,
       "saves": 110
     },
+    "comments_preview": [
+      {
+        "user": "alia_js",
+        "avatar": "https://randomuser.me/api/portraits/women/55.jpg",
+        "comment": "Tips debuggingnya ringkas dan jelas!",
+        "likes": 18,
+        "posted_at": "2024-05-05T15:00:00Z"
+      }
+    ],
     "user_behavior": {
       "liked_by_user": true,
       "watched_percentage": 0.95,
@@ -80,6 +105,15 @@
       "shares": 60,
       "saves": 140
     },
+    "comments_preview": [
+      {
+        "user": "react_lover",
+        "avatar": "https://randomuser.me/api/portraits/men/60.jpg",
+        "comment": "Nice pattern, langsung kepake di projectku.",
+        "likes": 30,
+        "posted_at": "2024-08-01T11:05:00Z"
+      }
+    ],
     "user_behavior": {
       "liked_by_user": false,
       "watched_percentage": 0.70,
@@ -109,6 +143,15 @@
       "shares": 55,
       "saves": 95
     },
+    "comments_preview": [
+      {
+        "user": "tiktok_dev",
+        "avatar": "https://randomuser.me/api/portraits/men/61.jpg",
+        "comment": "Banyak hack berguna, makasih ya!",
+        "likes": 14,
+        "posted_at": "2024-09-01T13:00:00Z"
+      }
+    ],
     "user_behavior": {
       "liked_by_user": true,
       "watched_percentage": 0.90,

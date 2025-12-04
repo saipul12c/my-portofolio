@@ -56,7 +56,7 @@ export default function Navbar() {
 
       {/* Menu Mobile */}
       <div
-        className={`md:hidden fixed top-0 right-0 h-full w-3/4 sm:w-2/5 bg-[#0f172a] backdrop-blur-lg shadow-2xl border-l border-blue-900/40 transform transition-transform duration-300 ease-in-out ${
+        className={`md:hidden fixed top-0 right-0 h-full w-3/4 sm:w-2/5 bg-[var(--color-gray-900)] backdrop-blur-lg shadow-2xl border-l border-blue-900/40 transform transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -76,7 +76,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        <ul className="flex flex-col items-start px-6 py-6 space-y-5 bg-[#0f172a]">
+        <ul className="flex flex-col items-start px-6 py-6 space-y-5 bg-[var(--color-gray-900)]">
           {links.map((item) => (
             <li key={item.to} className="w-full">
               <Link

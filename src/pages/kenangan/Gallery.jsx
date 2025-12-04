@@ -32,7 +32,7 @@ export default function Gallery() {
   const videoRef = useRef(null);
   const isMaintenance = false;
 
-  const { allMedia, loading, allTags, filterMedia } = useGalleryData();
+  const { allTags, allMedia } = useGalleryData();
 
   // 🌀 Navigasi ke short berikutnya
   const handleNext = () => {
@@ -83,7 +83,7 @@ export default function Gallery() {
   if (isMaintenance) return <Maintenance />;
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#0f172a] via-[#111827] to-[#020617] text-white flex flex-col items-center px-6 sm:px-10 md:px-20 py-24 relative overflow-hidden">
+    <main className="min-h-screen bg-gradient-to-b from-[var(--color-gray-900)] via-[#111827] to-[#020617] text-white flex flex-col items-center px-6 sm:px-10 md:px-20 py-24 relative overflow-hidden">
       {/* 🌈 Background Glow */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute top-0 left-10 w-80 h-80 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" />
@@ -107,7 +107,7 @@ export default function Gallery() {
       </motion.div>
 
       {/* 🔍 Filter & Search */}
-      <GalleryFilter onFilter={handleFilter} allTags={allTags} />
+      <GalleryFilter onFilter={handleFilter} allTags={allTags} allMedia={allMedia} />
 
       {/* 📊 Statistics - Now uses filtered data */}
       <GalleryStats mediaList={combinedFilteredMedia} />

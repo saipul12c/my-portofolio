@@ -47,7 +47,7 @@ export const SkillResources = React.memo(({ skillName, isProgramming }) => {
       transition={{ duration: 0.3 }}
       className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-cyan-500/20"
     >
-      <h5 className="text-xs sm:text-sm font-semibold text-cyan-300 mb-3 flex items-center">
+      <h5 className="text-xs sm:text-sm font-semibold text-gray-300 mb-3 flex items-center">
         <span className="w-1 h-1 bg-cyan-400 rounded-full mr-2"></span>
         Resource Pembelajaran
       </h5>

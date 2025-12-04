@@ -1,59 +1,47 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../lib/supabaseClient';
+import { useContext, useState, useEffect } from 'react';
 import { USER_ROLES, USER_TIERS } from '../utils/constants';
+import { AuthContext } from './AuthContextObject';
 
-// ✅ Ekspor AuthContext sebagai named export
-export const AuthContext = createContext(undefined);
-
+// ✅ Ekspor AuthProvider sebagai named export
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        await fetchUserProfile(session.user.id);
-      } else {
+    // Initialize by checking backend session token
+    const init = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const res = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) {
+          localStorage.removeItem('token');
+          setLoading(false);
+          return;
+        }
+        const data = await res.json();
+        setUser(data);
+      } catch (err) {
+        console.error('Error checking session', err);
+      } finally {
         setLoading(false);
       }
     };
 
-    getSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session?.user) {
-          await fetchUserProfile(session.user.id);
-        } else {
-          setUser(null);
-          setLoading(false);
-        }
-      }
-    );
-
-    return () => subscription.unsubscribe();
+    init();
   }, []);
 
   const fetchUserProfile = async (userId) => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (error) throw error;
-
-      setUser({
-        id: data.id,
-        email: data.email,
-        username: data.username,
-        role: data.role || USER_ROLES.USER,
-        tier: data.tier || USER_TIERS.BRONZE,
-        avatar_url: data.avatar_url,
-        created_at: data.created_at
-      });
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      const res = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+      if (!res.ok) return;
+      const data = await res.json();
+      setUser(data);
     } catch (error) {
       console.error('Error fetching user profile:', error);
     } finally {
@@ -63,64 +51,56 @@ export const AuthProvider = ({ children }) => {
 
   const signUp = async (email, password, username) => {
     try {
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, username })
       });
-
-      if (authError) throw authError;
-
-      if (authData.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert([
-            {
-              id: authData.user.id,
-              email,
-              username,
-              role: USER_ROLES.USER,
-              tier: USER_TIERS.BRONZE,
-            }
-          ]);
-
-        if (profileError) throw profileError;
-      }
-
+      const data = await res.json();
+      if (!res.ok) return { error: data.error || 'Signup failed' };
+      // save token
+      if (data.token) localStorage.setItem('token', data.token);
+      await fetchUserProfile(data.user.id);
       return { error: null };
     } catch (error) {
-      return { error: error.message };
+      return { error: error.message || 'Signup failed' };
     }
   };
 
   const signIn = async (email, password) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const res = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
       });
-
-      if (error) throw error;
+      const data = await res.json();
+      if (!res.ok) return { error: data.error || 'Signin failed' };
+      if (data.token) localStorage.setItem('token', data.token);
+      await fetchUserProfile(data.user.id);
       return { error: null };
     } catch (error) {
-      return { error: error.message };
+      return { error: error.message || 'Signin failed' };
     }
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) console.error('Error signing out:', error);
+    localStorage.removeItem('token');
+    setUser(null);
   };
 
   const updateProfile = async (updates) => {
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update(updates)
-        .eq('id', user.id);
-
-      if (error) throw error;
-
-      setUser(prev => ({ ...prev, ...updates }));
+      const token = localStorage.getItem('token');
+      if (!token) return { error: 'Not authenticated' };
+      const res = await fetch(`/api/profiles/${user.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(updates)
+      });
+      const data = await res.json();
+      if (!res.ok) return { error: data.error || 'Update failed' };
+      setUser(prev => ({ ...prev, ...data }));
       return { error: null };
     } catch (error) {
       return { error: error.message };
@@ -153,4 +133,4 @@ export const useAuth = () => {
 };
 
 // ✅ Ekspor default untuk kompatibilitas
-export default AuthContext;
+export default AuthProvider;

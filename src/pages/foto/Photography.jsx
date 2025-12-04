@@ -49,7 +49,7 @@ export default function Photography() {
   if (isMaintenance) return <Maintenance />;
 
   return (
-    <main className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center px-4 sm:px-6 md:px-8 lg:px-20 py-8 md:py-12 lg:py-20 relative overflow-hidden">
+    <main className="min-h-screen bg-[var(--color-gray-900)] text-white flex flex-col items-center px-4 sm:px-6 md:px-8 lg:px-20 py-8 md:py-12 lg:py-20 relative overflow-hidden">
       <BackgroundGlow />
       
       <div className="w-full max-w-7xl">

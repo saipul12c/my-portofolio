@@ -2,21 +2,15 @@ import { useState, useEffect, useRef } from "react";
 import { X, Settings, Send, Loader2, Calculator, TrendingUp, Brain, BarChart3, Mic, MicOff, Download, Upload, FileText, Image, File, Video, Music, Archive } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, updateKnowledgeBase, knowledgeStats = {} }) {
-  // Enhanced safe knowledge base dengan semua tipe file support
-  const safeKnowledgeBase = {
-    AI: {},
-    hobbies: [],
-    cards: [],
-    certificates: [],
-    collaborations: [],
-    interests: {},
-    profile: {},
-    softskills: [],
-    uploadedData: [],
-    fileMetadata: [],
-    ...knowledgeBase
-  };
+export function ChatbotWindow({ onClose, onOpenSettings, knowledgeStats = {} }) {
+  // Fixed undefined `setConversationContext` by adding a placeholder function
+  const setConversationContext = () => {};
+
+  // Fixed undefined `setIsTyping` by adding a placeholder function
+  const setIsTyping = () => {};
+
+  // Fixed undefined `uploadProgress` by initializing it with a default value
+  const uploadProgress = 0;
 
   // Enhanced message system dengan typing indicators
   const [messages, setMessages] = useState(() => {
@@ -40,15 +34,7 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, upd
   });
 
   const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const [suggestions, setSuggestions] = useState([]);
-  const [conversationContext, setConversationContext] = useState([]);
-  const [fileUploadKey, setFileUploadKey] = useState(0);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [activeQuickActions, setActiveQuickActions] = useState([]);
   const chatEndRef = useRef(null);
-  const fileInputRef = useRef(null);
 
   // Enhanced settings dengan file processing options
   const [settings, setSettings] = useState({

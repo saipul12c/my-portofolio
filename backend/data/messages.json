@@ -1,0 +1,58 @@
+[
+  {
+    "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+    "channel_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "user_id": "11111111-1111-1111-1111-111111111111",
+    "content": "Selamat datang di channel general!",
+    "created_at": "2025-12-01T12:06:00.000Z"
+  },
+  {
+    "id": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+    "channel_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+    "user_id": "22222222-2222-2222-2222-222222222222",
+    "content": "Ini contoh project saya: https://github.com/example/repo",
+    "created_at": "2025-12-01T12:11:00.000Z"
+  },
+  {
+    "id": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+    "channel_id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+    "user_id": "22222222-2222-2222-2222-222222222222",
+    "content": "Halo semua, ada yang mau belajar React Hooks?",
+    "created_at": "2025-11-30T09:06:00.000Z"
+  },
+  {
+    "id": "0bed7116-f755-4db0-bfbe-eb86ebcf6a3f",
+    "channel_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "user_id": null,
+    "content": "hallo",
+    "created_at": "2025-12-02T14:23:44.320Z"
+  },
+  {
+    "id": "76a04224-16ce-4a0d-a36b-51978d94a14c",
+    "channel_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "user_id": null,
+    "content": "kamu siapa",
+    "created_at": "2025-12-03T01:37:43.819Z"
+  },
+  {
+    "id": "e189c680-cab6-4dc0-96b1-960e0d4ae51a",
+    "channel_id": "514b8a47-858f-4721-8710-bf936e0e2362",
+    "user_id": null,
+    "content": "hallo",
+    "created_at": "2025-12-03T01:37:54.090Z"
+  },
+  {
+    "id": "dcb4f559-ac4d-45a8-80e9-652ac1d176f9",
+    "channel_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "user_id": "11111111-1111-1111-1111-111111111111",
+    "content": "test from CLI",
+    "created_at": "2025-12-03T01:51:55.245Z"
+  },
+  {
+    "id": "b54e9b5c-ca6a-46c3-a632-eaf88dd034a4",
+    "channel_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+    "user_id": "db1af01a-380d-42bb-bdf5-837dc4ac16f1",
+    "content": "hallo",
+    "created_at": "2025-12-03T02:01:38.910Z"
+  }
+]

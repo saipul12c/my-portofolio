@@ -1,8 +1,11 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight, Heart, MessageCircle, Share2, Eye, Tag, UserCheck, Music } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import GalleryShareBar from "../GalleryShareBar";
 
 export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, currentIndex, setCurrentIndex }) {
+  const navigate = useNavigate();
+
   if (!selectedMedia || selectedMedia.type === "short") return null;
 
   const handlePrev = () => {
@@ -168,6 +171,45 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
                     <Eye size={16} /> 
                     {(selectedMedia.engagement.views || 0).toLocaleString()}
                   </span>
+                </div>
+              )}
+
+              {/* Comments Preview */}
+              {selectedMedia.comments_preview && selectedMedia.comments_preview.length > 0 && (
+                <div className="mb-4">
+                  <h4 className="text-sm font-semibold text-white mb-2">Komentar</h4>
+                  <div className="flex flex-col gap-3">
+                    {selectedMedia.comments_preview.slice(0,3).map((c, i) => (
+                      <div key={i} className="flex items-start gap-3">
+                        <img src={c.avatar} alt={c.user} className="w-8 h-8 rounded-full object-cover border border-white/10" />
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-cyan-300">{c.user}</span>
+                            <span className="text-xs text-gray-400">{new Date(c.posted_at).toLocaleString()}</span>
+                          </div>
+                          <p className="text-sm text-gray-300">{c.comment}</p>
+                        </div>
+                      </div>
+                    ))}
+                      <button
+                        onClick={() => {
+                          navigate(`/gallery/${selectedMedia.type === 'image' ? 'images' : selectedMedia.type === 'video' ? 'videos' : selectedMedia.type === 'album' ? 'albums' : 'shorts'}/${selectedMedia.id}`);
+                          setSelectedMedia(null);
+                        }}
+                        className="text-sm px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30"
+                      >
+                        Lihat detail
+                      </button>
+                      <button
+                        onClick={() => {
+                          navigate(`/gallery/${selectedMedia.type === 'image' ? 'images' : selectedMedia.type === 'video' ? 'videos' : selectedMedia.type === 'album' ? 'albums' : 'shorts'}/${selectedMedia.id}`);
+                          setSelectedMedia(null);
+                        }}
+                        className="text-sm px-3 py-1 rounded-lg border border-white/10 text-gray-300 hover:bg-white/5"
+                      >
+                        Lihat semua komentar
+                      </button>
+                  </div>
                 </div>
               )}
             </div>

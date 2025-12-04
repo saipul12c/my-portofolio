@@ -31,6 +31,10 @@ export default function HelpButton() {
   // Ubah ke false jika fitur maintenance sudah selesai
   const isMaintenance = false;
 
+  // Kontrol untuk mengaktifkan/menonaktifkan chatbot
+  // Ubah ke true untuk mengaktifkan, false untuk menonaktifkan
+  const isChatbotEnabled = false;
+
   const handleClick = () => {
     if (isMaintenance) {
       setShowNotice(true);
@@ -41,6 +45,9 @@ export default function HelpButton() {
   };
 
   const openChat = () => {
+    // Hanya buka chatbot jika diaktifkan
+    if (!isChatbotEnabled) return;
+    
     setOpen(false); // Tutup menu bantuan utama
     setIsChatOpen(true);
   };
@@ -105,7 +112,7 @@ export default function HelpButton() {
           style={{ transformOrigin: "bottom right" }}
         >
           <ErrorBoundary FallbackComponent={ChatbotErrorFallback}>
-            <HelpMenu onOpenChat={openChat} />
+            <HelpMenu onOpenChat={openChat} chatbotEnabled={isChatbotEnabled} />
           </ErrorBoundary>
         </div>
       )}

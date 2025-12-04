@@ -20,7 +20,7 @@ export default function Education() {
   return (
     <main
       ref={ref}
-      className="relative min-h-screen bg-[#0b1120] text-white flex flex-col items-center px-6 py-24 overflow-hidden"
+      className="relative min-h-screen bg-[var(--color-gray-900)] text-white flex flex-col items-center px-6 py-24 overflow-hidden"
     >
       {/* === Scroll Progress Bar === */}
       <motion.div
@@ -303,7 +303,7 @@ export default function Education() {
       </motion.section>
 
       {/* Footer Glow */}
-      <div className="absolute bottom-0 w-full h-40 bg-gradient-to-t from-[#0b1120] to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 w-full h-40 bg-gradient-to-t from-[var(--color-gray-900)] to-transparent pointer-events-none" />
     </main>
   );
 }

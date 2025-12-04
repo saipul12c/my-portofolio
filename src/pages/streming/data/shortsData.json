@@ -1,0 +1,41 @@
+[
+  {
+    "id": "short_1",
+    "title": "React useState in 60 seconds",
+    "channel": "React Tips",
+    "views": "2.5M views",
+    "duration": "0:58",
+    "videoUrl": "/videos/shorts/short1.mp4",
+    "thumbnail": "/videos/thumbnails/short1.jpg",
+    "channelLogo": "https://i.pravatar.cc/40?img=17",
+    "likes": 125000,
+    "comments": 3400,
+    "music": "Original sound - React Tips"
+  },
+  {
+    "id": "short_2",
+    "title": "CSS Grid vs Flexbox - Which one?",
+    "channel": "CSS Master",
+    "views": "1.8M views",
+    "duration": "0:45",
+    "videoUrl": "/videos/shorts/short2.mp4",
+    "thumbnail": "/videos/thumbnails/short2.jpg",
+    "channelLogo": "https://i.pravatar.cc/40?img=18",
+    "likes": 98000,
+    "comments": 2100,
+    "music": "Trending sound - CSS Master"
+  },
+  {
+    "id": "short_3",
+    "title": "JavaScript Array Methods Explained",
+    "channel": "JS Guru",
+    "views": "3.2M views",
+    "duration": "0:52",
+    "videoUrl": "/videos/shorts/short3.mp4",
+    "thumbnail": "/videos/thumbnails/short3.jpg",
+    "channelLogo": "https://i.pravatar.cc/40?img=19",
+    "likes": 210000,
+    "comments": 5600,
+    "music": "Original sound - JS Guru"
+  }
+]

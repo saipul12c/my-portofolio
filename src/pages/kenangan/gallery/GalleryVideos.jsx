@@ -37,8 +37,8 @@ export default function GalleryVideos({ onSelect, filterSettings = {}, onFiltere
     return filterVideos(videos, searchTerm, selectedTags);
   }, [searchTerm, selectedTags]);
 
-  // 📢 Notify parent of filtered data
-  useMemo(() => {
+  // 📢 Notify parent of filtered data (use effect to avoid updates during render)
+  useEffect(() => {
     if (onFilteredDataChange) {
       onFilteredDataChange(filteredVideos.slice(0, visibleCount));
     }

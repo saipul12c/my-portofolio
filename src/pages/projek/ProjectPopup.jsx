@@ -150,7 +150,7 @@ const ProjectPopup = ({
             onClick={(e) => e.stopPropagation()}
           >
             <div 
-              className="bg-[#1e293b] border border-white/10 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col relative mx-auto"
+              className="bg-[var(--color-gray-800)] border border-white/10 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col relative mx-auto"
               style={{
                 boxShadow: `0 0 40px -5px #22d3ee60`,
               }}
@@ -364,7 +364,7 @@ const ProjectPopup = ({
 
                 {/* Right Column - Additional Info */}
                 <motion.div 
-                  className="lg:w-1/2 bg-[#0f172a] flex flex-col border-t lg:border-t-0 lg:border-l border-white/10"
+                  className="lg:w-1/2 bg-[var(--color-gray-900)] flex flex-col border-t lg:border-t-0 lg:border-l border-white/10"
                   variants={contentVariants}
                   initial="hidden"
                   animate="visible"
