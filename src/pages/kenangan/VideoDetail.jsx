@@ -33,7 +33,7 @@ export default function VideoDetail() {
                 {item.comments_preview && item.comments_preview.length > 0 ? (
                   item.comments_preview.map((c, idx) => (
                     <div key={idx} className="flex items-start gap-3">
-                      <img src={c.avatar} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full" />
+                      <img src={c.avatar} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full" loading="lazy" />
                       <div>
                         <div className="text-sm font-medium text-purple-300">{c.user}</div>
                         <div className="text-sm text-gray-300">{c.comment}</div>

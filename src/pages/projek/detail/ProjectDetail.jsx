@@ -561,6 +561,7 @@ export default function ProjectDetail() {
                           src={recProject.image} 
                           alt={recProject.title}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          loading="lazy"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-60" />
                         <div className="absolute bottom-3 left-3 right-3">

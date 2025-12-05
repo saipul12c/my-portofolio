@@ -92,6 +92,7 @@ const CommentSection = () => {
           src="https://i.pravatar.cc/40?img=6" 
           alt="Your avatar" 
           className="w-10 h-10 rounded-full"
+          loading="lazy"
         />
         <form onSubmit={handleSubmitComment} className="flex-1">
           <input
@@ -161,6 +162,7 @@ const CommentSection = () => {
                 src={comment.user.avatar} 
                 alt={comment.user.name}
                 className="w-10 h-10 rounded-full"
+                loading="lazy"
               />
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
@@ -200,6 +202,7 @@ const CommentSection = () => {
                       src="https://i.pravatar.cc/32?img=6" 
                       alt="Your avatar" 
                       className="w-8 h-8 rounded-full"
+                      loading="lazy"
                     />
                     <div className="flex-1">
                       <input
@@ -235,6 +238,7 @@ const CommentSection = () => {
                   src="https://i.pravatar.cc/32?img=6" 
                   alt="Reply avatar" 
                   className="w-8 h-8 rounded-full"
+                  loading="lazy"
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">

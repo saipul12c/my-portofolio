@@ -354,6 +354,7 @@ const VideoPlayerModal = ({ video, isOpen, onClose }) => {
                       src={video.channelLogo} 
                       alt={video.channel}
                       className="w-10 h-10 rounded-full"
+                      loading="lazy"
                     />
                     <div>
                       <div className="flex items-center gap-2">

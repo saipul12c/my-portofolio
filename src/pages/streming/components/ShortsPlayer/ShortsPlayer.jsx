@@ -102,6 +102,7 @@ const ShortsPlayer = ({ short, onNext, onPrevious, onClose }) => {
                 src={short.channelLogo} 
                 alt={short.channel}
                 className="w-8 h-8 rounded-full"
+                loading="lazy"
               />
               <span className="font-medium">{short.channel}</span>
               <button className="px-3 py-1 bg-white text-black text-sm rounded-full font-semibold">

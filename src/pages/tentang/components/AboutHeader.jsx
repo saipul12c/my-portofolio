@@ -234,7 +234,7 @@ const CardBack = memo(({ profile }) => (
       <div className="flex flex-col items-center gap-4 flex-1 justify-center">
         <div className="bg-white p-3 rounded-xl shadow-2xl border border-white/20">
           <img 
-            src={profile.qrisImage || "/images/qris-default.jpg"} 
+            src={profile.qrisImage || "../../../data/IMG/Donate/Donate.png"} 
             alt="QRIS Payment"
             className="w-28 h-28 object-cover rounded-lg"
           />

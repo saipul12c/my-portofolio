@@ -61,7 +61,7 @@ export default function AboutCertificates({ certificates }) {
                 className="relative bg-gradient-to-tr from-pink-600/20 to-purple-600/20 backdrop-blur-2xl border border-white/20 rounded-3xl p-6 hover:scale-105 hover:shadow-xl transition-transform cursor-pointer group"
               >
                 <div className="flex items-center justify-center mb-3">
-                  <img src={cert.organization.logo} alt={cert.organization.name} className="w-10 h-10 rounded-full" />
+                  <img src={cert.organization.logo} alt={cert.organization.name} className="w-10 h-10 rounded-full" loading="lazy" />
                 </div>
                 <h4 className="text-lg font-bold text-white mb-1">{cert.name}</h4>
                 <p className="text-gray-300 text-sm mb-2">{cert.organization.name}</p>
@@ -154,6 +154,7 @@ export default function AboutCertificates({ certificates }) {
                   src={selectedCert.organization.logo}
                   alt={selectedCert.organization.name}
                   className="w-12 h-12 rounded-full shadow-lg"
+                  loading="lazy"
                 />
               </div>
 

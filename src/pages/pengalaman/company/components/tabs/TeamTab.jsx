@@ -32,6 +32,7 @@ const TeamTab = ({ team }) => {
                   onError={(e) => {
                     e.target.style.display = 'none';
                   }}
+                  loading="lazy"
                 />
               ) : (
                 <div className="w-20 h-20 rounded-full mx-auto mb-4 bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">

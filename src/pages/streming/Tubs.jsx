@@ -298,6 +298,7 @@ const Tubs = () => {
                         src={short.thumbnail} 
                         alt={short.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
                       />
                       <div className="absolute bottom-2 right-2 bg-black/90 text-white text-xs px-2 py-1 rounded-md">
                         {short.duration}
@@ -336,6 +337,7 @@ const Tubs = () => {
                         src={video.thumbnail} 
                         alt={video.title}
                         className="w-full h-full object-cover"
+                        loading="lazy"
                       />
                       <div className="absolute bottom-2 right-2 bg-black/90 text-white text-xs px-2 py-1 rounded-md">
                         {video.duration}
@@ -351,6 +353,7 @@ const Tubs = () => {
                           src={video.channelLogo} 
                           alt={video.channel}
                           className="w-6 h-6 rounded-full"
+                          loading="lazy"
                         />
                         <span className="text-gray-600 dark:text-gray-400">{video.channel}</span>
                         {video.verified && (

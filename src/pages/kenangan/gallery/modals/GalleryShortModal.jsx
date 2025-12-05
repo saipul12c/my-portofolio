@@ -172,7 +172,7 @@ export default function GalleryShortModal({
                 <div className="flex flex-col gap-3">
                   {selectedMedia.comments_preview.slice(0, 3).map((c, i) => (
                     <div key={i} className="flex items-start gap-3">
-                      <img src={c.avatar} alt={c.user} className="w-9 h-9 rounded-full object-cover border border-white/10" />
+                      <img src={c.avatar} alt={c.user} className="w-9 h-9 rounded-full object-cover border border-white/10" loading="lazy" />
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-cyan-300">{c.user}</span>

@@ -41,6 +41,7 @@ const VideoCard = ({ video, onVideoClick, onMenuAction }) => {
             src={video.thumbnail} 
             alt={video.title}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
@@ -114,6 +115,7 @@ const VideoCard = ({ video, onVideoClick, onMenuAction }) => {
             src={video.channelLogo} 
             alt={video.channel}
             className="w-10 h-10 rounded-full hover:ring-2 hover:ring-gray-600 transition-all"
+            loading="lazy"
           />
           {video.verified && (
             <CheckCircle className="absolute -bottom-1 -right-1 w-4 h-4 text-blue-500 bg-white rounded-full" />

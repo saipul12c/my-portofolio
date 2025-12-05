@@ -29,6 +29,7 @@ const PortfolioTab = ({ portfolio }) => {
                   alt={project.title}
                   className="w-full h-48 object-cover rounded-lg mb-4"
                   onError={(e) => e.target.style.display = 'none'}
+                  loading="lazy"
                 />
               )}
               <h3 className="text-xl font-bold mb-2">{project.title}</h3>

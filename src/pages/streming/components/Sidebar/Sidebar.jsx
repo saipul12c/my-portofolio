@@ -41,6 +41,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar, user }) => {
               src={user.avatar} 
               alt={user.name}
               className="w-10 h-10 rounded-full"
+              loading="lazy"
             />
             <div className="flex-1 min-w-0">
               <h4 className="font-semibold truncate">{user.name}</h4>
@@ -106,7 +107,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar, user }) => {
                 {subscriptions.map((sub, index) => (
                   <a key={index} href="#" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-gray-800 transition-colors group">
                     <div className="relative">
-                      <img src={sub.logo} alt={sub.label} className="w-6 h-6 rounded-full" />
+                      <img src={sub.logo} alt={sub.label} className="w-6 h-6 rounded-full" loading="lazy" />
                       {sub.live && (
                         <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>
                       )}

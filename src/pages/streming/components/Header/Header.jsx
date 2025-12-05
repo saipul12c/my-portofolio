@@ -315,6 +315,7 @@ const Header = ({
                 src={user?.avatar || 'https://i.pravatar.cc/40'} 
                 alt="User" 
                 className="w-full h-full object-cover"
+                loading="lazy"
               />
             </div>
           </button>
@@ -328,6 +329,7 @@ const Header = ({
                     src={user?.avatar || 'https://i.pravatar.cc/40'} 
                     alt="User" 
                     className="w-10 h-10 rounded-full"
+                    loading="lazy"
                   />
                   <div>
                     <h4 className="font-semibold">{user?.name || 'User'}</h4>
