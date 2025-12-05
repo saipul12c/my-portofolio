@@ -44,83 +44,30 @@ export default function HelpChatbotItem() {
           fileMetadata: []
         };
 
-        // Dynamic JSON loading dengan fallback
-        const loadJSON = async (path, defaultData) => {
+        // Dynamic JSON loading
+        const jsonFiles = [
+          'public/data/about/cards.json',
+          'public/data/about/certificates.json',
+          'public/data/about/collaborations.json',
+          'public/data/about/interests.json',
+          'public/data/about/profile.json',
+          'public/data/about/softskills.json'
+        ];
+
+        for (const file of jsonFiles) {
           try {
-            const module = await import(path);
-            return module.default || defaultData;
+            const response = await fetch(file);
+            const data = await response.json();
+            const key = file.split('/').slice(-1)[0].replace('.json', '');
+            combinedKnowledge[key] = data;
           } catch (error) {
-            console.warn(`Failed to load ${path}:`, error);
-            return defaultData;
+            console.error(`Failed to load ${file}:`, error);
           }
-        };
-
-        // Load semua JSON files secara parallel
-        const [
-          aiBase,
-          hobbiesData,
-          cards,
-          certificates,
-          collaborations,
-          interests,
-          profile,
-          softskills
-        ] = await Promise.all([
-          loadJSON("./data/AI-base.json", defaultAIBase),
-          loadJSON("./data/hobbiesData.json", []),
-          loadJSON("./data/cards.json", { cards: [] }),
-          loadJSON("./data/certificates.json", { certificates: [] }),
-          loadJSON("./data/collaborations.json", { partners: [] }),
-          loadJSON("./data/interests.json", {}),
-          loadJSON("./data/profile.json", {}),
-          loadJSON("./data/softskills.json", { skills: [] })
-        ]);
-
-        // Update knowledge base dengan data yang berhasil di-load
-        combinedKnowledge.AI = aiBase;
-        combinedKnowledge.hobbies = Array.isArray(hobbiesData) ? hobbiesData : [];
-        combinedKnowledge.cards = Array.isArray(cards.cards) ? cards.cards : [];
-        combinedKnowledge.certificates = Array.isArray(certificates.certificates) ? certificates.certificates : [];
-        combinedKnowledge.collaborations = Array.isArray(collaborations.partners) ? collaborations.partners : [];
-        combinedKnowledge.interests = interests || {};
-        combinedKnowledge.profile = profile || {};
-        combinedKnowledge.softskills = Array.isArray(softskills.skills) ? softskills.skills : [];
-
-        // Load uploaded data dan metadata dari localStorage
-        try {
-          const savedUploadedData = localStorage.getItem("saipul_uploaded_data");
-          const savedFileMetadata = localStorage.getItem("saipul_file_metadata");
-          
-          if (savedUploadedData) {
-            const uploadedData = JSON.parse(savedUploadedData);
-            combinedKnowledge.uploadedData = Array.isArray(uploadedData) ? uploadedData : [];
-          }
-          
-          if (savedFileMetadata) {
-            const fileMetadata = JSON.parse(savedFileMetadata);
-            combinedKnowledge.fileMetadata = Array.isArray(fileMetadata) ? fileMetadata : [];
-          }
-        } catch (e) {
-          console.error("Error loading uploaded data:", e);
         }
 
         setKnowledgeBase(combinedKnowledge);
-        
       } catch (error) {
-        console.error("Error loading knowledge base:", error);
-        // Set minimal fallback knowledge base
-        setKnowledgeBase({
-          AI: defaultAIBase,
-          hobbies: [],
-          cards: [],
-          certificates: [],
-          collaborations: [],
-          interests: {},
-          profile: {},
-          softskills: [],
-          uploadedData: [],
-          fileMetadata: []
-        });
+        console.error('Error loading knowledge base:', error);
       }
     };
 

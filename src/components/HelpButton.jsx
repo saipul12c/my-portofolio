@@ -2,7 +2,7 @@ import { useState } from "react";
 import { HelpCircle, X, Wrench, Info } from "lucide-react";
 import HelpMenu from "./helpbutton/HelpMenu";
 import { ErrorBoundary } from "react-error-boundary";
-import { ChatbotWindow } from "./helpbutton/chat/components/ChatbotWindow";
+import { ChatbotWindow } from "./helpbutton/chat/components/logic/ChatbotWindow";
 import { ChatbotSettings } from "./helpbutton/chat/components/ChatbotSettings";
 
 function ChatbotErrorFallback({ error, resetErrorBoundary }) {
@@ -33,7 +33,7 @@ export default function HelpButton() {
 
   // Kontrol untuk mengaktifkan/menonaktifkan chatbot
   // Ubah ke true untuk mengaktifkan, false untuk menonaktifkan
-  const isChatbotEnabled = false;
+  const isChatbotEnabled = true;
 
   const handleClick = () => {
     if (isMaintenance) {

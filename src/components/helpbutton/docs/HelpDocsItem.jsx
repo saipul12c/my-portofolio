@@ -36,7 +36,7 @@ const VirtualizedList = ({ items, renderItem, itemHeight, containerHeight, overs
     <div
       ref={containerRef}
       style={{ height: containerHeight, overflow: 'auto' }}
-      className="virtualized-container"
+      className="virtualized-container hide-scrollbar"
     >
       <div style={{ height: totalHeight, position: 'relative' }}>
         <div style={{ transform: `translateY(${startIndex * itemHeight}px)` }}>
@@ -65,42 +65,55 @@ const SectionItem = memo(({
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       viewport={{ once: true }}
-      className="group"
+      className={`group${isOpen ? ' z-20' : ''}`}
+      style={{ marginBottom: isOpen ? '16px' : '8px', position: 'relative' }}
     >
-      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-lg hover:shadow-xl border border-gray-200/60 dark:border-gray-700/60 transition-all duration-300 hover:border-blue-300/30 dark:hover:border-blue-500/30 overflow-hidden">
-        
+      <div className="bg-white/90 dark:bg-gray-900/80 backdrop-blur-2xl rounded-3xl shadow-2xl hover:shadow-3xl border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:border-blue-400/40 dark:hover:border-blue-500/40 overflow-hidden relative">
         <button
           onClick={() => onToggle(index)}
-          className="w-full flex justify-between items-start p-6 text-left group"
+          className="w-full flex justify-between items-start p-6 md:p-8 text-left group focus:outline-none focus:ring-2 focus:ring-blue-400/50"
         >
-          <div className="flex items-start gap-4 flex-1">
+          <div className="flex items-start gap-4 md:gap-6 flex-1">
             <div className="flex-shrink-0 mt-1">
-              <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <IconComponent className="text-white" size={24} />
+              <div
+                className="p-4 rounded-2xl shadow-xl group-hover:scale-110 transition-transform duration-300 border-2 border-white dark:border-gray-900"
+                style={{
+                  background: `linear-gradient(135deg, ${section.visual?.color || '#3b82f6'} 0%, ${section.visual?.color ? `${section.visual.color}80` : '#8b5cf6'} 100%)`
+                }}
+              >
+                <IconComponent className="text-white" size={28} />
               </div>
             </div>
-            
             <div className="flex-1 min-w-0">
-              <div className="flex flex-wrap items-center gap-3 mb-2">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-2">
+                <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {section.title}
                 </h2>
-                
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getVersionTypeColor(section.versionType)}`}>
+                {section.visual?.badge && (
+                  <span
+                    className="px-3 py-1 rounded-full text-xs font-semibold border border-current shadow-sm"
+                    style={{ color: section.visual.color }}
+                  >
+                    {section.visual.badge}
+                  </span>
+                )}
+                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getVersionTypeColor(section.versionType)}`}>
                   v{section.version}
                 </span>
-                
                 {section.releaseChannel && (
-                  <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs font-medium border border-gray-300 dark:border-gray-600">
+                  <span className="px-2 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs font-semibold border border-gray-300 dark:border-gray-600">
                     {section.releaseChannel}
                   </span>
                 )}
               </div>
-              
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-3">
+              {section.visual?.summary && (
+                <p className="text-gray-500 dark:text-gray-400 text-base italic mb-2">
+                  {section.visual.summary}
+                </p>
+              )}
+              <p className="text-gray-700 dark:text-gray-200 leading-relaxed mb-3 text-base">
                 {section.content}
               </p>
-              
               <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                 <div className="flex items-center gap-1">
                   <Icons.User size={14} />
@@ -114,13 +127,18 @@ const SectionItem = memo(({
                   <Icons.Clock size={14} />
                   <span>{section.estimatedReadTime}</span>
                 </div>
+                {section.versionCode && (
+                  <div className="flex items-center gap-1">
+                    <Icons.Code size={14} />
+                    <span className="font-mono text-xs">{section.versionCode}</span>
+                  </div>
+                )}
               </div>
-              
               <div className="flex flex-wrap gap-2 mt-3">
-                {section.tags.map((tag, i) => (
+                {section.tags?.map((tag, i) => (
                   <span
                     key={i}
-                    className={`px-3 py-1 rounded-full text-xs font-medium transition-all hover:scale-105 ${getTagColor(tag)}`}
+                    className={`px-3 py-1 rounded-full text-xs font-semibold transition-all hover:scale-105 ${getTagColor(tag)}`}
                   >
                     {tag}
                   </span>
@@ -128,21 +146,20 @@ const SectionItem = memo(({
               </div>
             </div>
           </div>
-          
           <motion.div
             animate={{ rotate: isOpen ? 180 : 0 }}
             transition={{ type: "spring", stiffness: 300 }}
-            className="flex-shrink-0 ml-4 mt-2 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors"
+            className="flex-shrink-0 ml-4 mt-2 p-2 rounded-lg bg-gray-200 dark:bg-gray-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors"
           >
-            <Icons.ChevronDown size={20} className="text-gray-600 dark:text-gray-400" />
+            <Icons.ChevronDown size={22} className="text-gray-600 dark:text-gray-400" />
           </motion.div>
         </button>
-
         <AnimatePresence>
           {isOpen && (
             <SectionContent section={section} getStatusColor={getStatusColor} getVersionTypeColor={getVersionTypeColor} />
           )}
         </AnimatePresence>
+        <div className="absolute left-0 right-0 bottom-0 h-1 bg-gradient-to-r from-blue-400/40 via-purple-400/30 to-pink-400/40" />
       </div>
     </motion.div>
   );
@@ -158,26 +175,39 @@ const SectionContent = memo(({ section, getStatusColor, getVersionTypeColor }) =
     className="border-t border-gray-200 dark:border-gray-700"
   >
     <div className="p-6 space-y-8">
+      {/* Version History & Compatibility Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-            <Icons.History size={18} />
-            Version History
-          </h3>
-          <div className="space-y-3">
-            {section.versionHistory?.map((version, i) => (
-              <div key={i} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <span className="font-mono text-sm font-medium">v{version.version}</span>
-                  <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(version.status)}`}>
-                    {version.status}
-                  </span>
+        {section.versionHistory?.length > 0 && (
+          <div className="space-y-4">
+            <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+              <Icons.History size={18} />
+              Version History
+            </h3>
+            <div className="space-y-3">
+              {section.versionHistory?.map((version, i) => (
+                <div key={i} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono text-sm font-medium">v{version.version}</span>
+                    <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(version.status)}`}>
+                      {version.status}
+                    </span>
+                    {version.breakingChanges && (
+                      <span className="px-2 py-1 bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300 rounded-full text-xs">
+                        Breaking
+                      </span>
+                    )}
+                    {version.migrationRequired && (
+                      <span className="px-2 py-1 bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300 rounded-full text-xs">
+                        Migration
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">{version.date}</span>
                 </div>
-                <span className="text-sm text-gray-500 dark:text-gray-400">{version.date}</span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {section.compatibility && (
           <div className="space-y-4">
@@ -198,6 +228,18 @@ const SectionContent = memo(({ section, getStatusColor, getVersionTypeColor }) =
                 <span>API Version:</span>
                 <span className="font-mono">{section.compatibility.apiCompatibility}</span>
               </div>
+              {section.compatibility.browserSupport && (
+                <div>
+                  <span className="block mb-2">Browser Support:</span>
+                  <div className="flex flex-wrap gap-2">
+                    {section.compatibility.browserSupport.map((browser, i) => (
+                      <span key={i} className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-xs">
+                        {browser}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -218,10 +260,14 @@ const SectionContent = memo(({ section, getStatusColor, getVersionTypeColor }) =
             {section.changelog.map((log, i) => (
               <div key={i} className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                 <div className={`flex-shrink-0 w-2 h-2 mt-2 rounded-full ${
+                  log.type === 'major' ? 'bg-red-500' :
                   log.type === 'feature' ? 'bg-green-500' :
                   log.type === 'improvement' ? 'bg-blue-500' :
                   log.type === 'security' ? 'bg-red-500' :
-                  log.type === 'performance' ? 'bg-teal-500' : 'bg-gray-500'
+                  log.type === 'performance' ? 'bg-teal-500' :
+                  log.type === 'deprecated' ? 'bg-yellow-500' :
+                  log.type === 'enhancement' ? 'bg-purple-500' :
+                  log.type === 'documentation' ? 'bg-indigo-500' : 'bg-gray-500'
                 }`} />
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -229,9 +275,13 @@ const SectionContent = memo(({ section, getStatusColor, getVersionTypeColor }) =
                     <span className={`px-2 py-1 rounded-full text-xs ${getVersionTypeColor(log.type)}`}>
                       {log.type}
                     </span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">{log.date}</span>
+                    {log.date && (
+                      <span className="text-sm text-gray-500 dark:text-gray-400">{log.date}</span>
+                    )}
                   </div>
-                  <p className="text-gray-700 dark:text-gray-300">{log.changes}</p>
+                  {log.changes && (
+                    <p className="text-gray-700 dark:text-gray-300">{log.changes}</p>
+                  )}
                 </div>
               </div>
             ))}
@@ -277,9 +327,11 @@ const SectionContent = memo(({ section, getStatusColor, getVersionTypeColor }) =
                   <Icons.ExternalLink size={16} className="text-gray-400 group-hover:text-blue-500 transition-colors" />
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                      {res.label}
+                      {res.label || 'Resource Link'}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">{res.type}</p>
+                    {res.type && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">{res.type}</p>
+                    )}
                   </div>
                 </a>
               ))}
@@ -308,48 +360,61 @@ const LazySubsections = memo(({ subsections }) => {
       <div className="grid gap-4">
         {subsections.slice(0, visibleCount).map((sub, subIndex) => (
           <div key={subIndex} className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-            <h4 className="font-semibold text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2">
-              <Icons.ChevronRight size={16} className="flex-shrink-0" />
-              {sub.subtitle}
-            </h4>
-            <p className="text-gray-700 dark:text-gray-300 mb-3">
-              {sub.details}
-            </p>
+            {sub.subtitle ? (
+              <h4 className="font-semibold text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2">
+                <Icons.ChevronRight size={16} className="flex-shrink-0" />
+                {sub.subtitle}
+              </h4>
+            ) : sub.tips ? (
+              <h4 className="font-semibold text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2">
+                <Icons.ChevronRight size={16} className="flex-shrink-0" />
+                Tips & Information
+              </h4>
+            ) : null}
+            
+            {sub.details && (
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
+                {sub.details}
+              </p>
+            )}
+            
+            {sub.tips && (
+              <div className="flex items-start gap-2 text-sm bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 p-3 rounded-lg border border-blue-200 dark:border-blue-700 mb-3">
+                <Icons.Lightbulb size={16} className="flex-shrink-0 mt-0.5" />
+                <span>{sub.tips}</span>
+              </div>
+            )}
 
-            <div className="space-y-2">
-              {sub.tips && (
-                <div className="flex items-start gap-2 text-sm bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 p-3 rounded-lg border border-blue-200 dark:border-blue-700">
-                  <Icons.Lightbulb size={16} className="flex-shrink-0 mt-0.5" />
-                  <span>{sub.tips}</span>
-                </div>
-              )}
+            {sub.warning && (
+              <div className="flex items-start gap-2 text-sm bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 p-3 rounded-lg border border-yellow-200 dark:border-yellow-700 mb-3">
+                <Icons.AlertTriangle size={16} className="flex-shrink-0 mt-0.5" />
+                <span>{sub.warning}</span>
+              </div>
+            )}
 
-              {sub.warning && (
-                <div className="flex items-start gap-2 text-sm bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 p-3 rounded-lg border border-yellow-200 dark:border-yellow-700">
-                  <Icons.AlertTriangle size={16} className="flex-shrink-0 mt-0.5" />
-                  <span>{sub.warning}</span>
-                </div>
-              )}
+            {sub.examples && (
+              <div className="bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 mb-3">
+                <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">Example:</p>
+                <p className="text-sm text-gray-700 dark:text-gray-300">{sub.examples}</p>
+              </div>
+            )}
 
-              {sub.examples && (
-                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">Example:</p>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">{sub.examples}</p>
+            {sub.codeSnippet && (
+              <div className="bg-gray-900 rounded-lg overflow-hidden border border-gray-700 mb-3">
+                <div className="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700">
+                  <span className="text-xs font-medium text-gray-300">Code Snippet</span>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(sub.codeSnippet)}
+                    className="text-gray-400 hover:text-white cursor-pointer"
+                  >
+                    <Icons.Copy size={14} />
+                  </button>
                 </div>
-              )}
-
-              {sub.codeSnippet && (
-                <div className="bg-gray-900 rounded-lg overflow-hidden border border-gray-700">
-                  <div className="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700">
-                    <span className="text-xs font-medium text-gray-300">Code Snippet</span>
-                    <Icons.Copy size={14} className="text-gray-400 hover:text-white cursor-pointer" />
-                  </div>
-                  <pre className="p-4 text-sm text-green-400 overflow-x-auto">
-                    <code>{sub.codeSnippet}</code>
-                  </pre>
-                </div>
-              )}
-            </div>
+                <pre className="p-4 text-sm text-green-400 overflow-x-auto">
+                  <code>{sub.codeSnippet}</code>
+                </pre>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -369,52 +434,105 @@ const LazySubsections = memo(({ subsections }) => {
 });
 
 // Main component dengan optimasi
+// Hide scrollbar utility (inject global style)
+if (typeof window !== 'undefined') {
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  `;
+  document.head.appendChild(style);
+}
+
 export default function HelpDocsItem() {
   const [openIndex, setOpenIndex] = useState(null);
   const [docsSections, setDocsSections] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [displayMode, setDisplayMode] = useState('virtualized'); // 'virtualized' or 'paginated'
+  const [displayMode, setDisplayMode] = useState('virtualized');
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState('id');
+  const [sortOrder, setSortOrder] = useState('asc');
   const itemsPerPage = 10;
 
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchQuery);
-      setCurrentPage(1); // Reset to first page on new search
+      setCurrentPage(1);
     }, 300);
 
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Load data dengan chunking untuk data besar
+  // Load data
   useEffect(() => {
-    const loadData = async () => {
-      // Simulate loading large data in chunks
-      setDocsSections(docsData);
-    };
-
-    loadData();
+    setDocsSections(Array.isArray(docsData) ? docsData : []);
   }, []);
 
-  // Optimized search dengan useMemo
+  // Optimized search dan sort dengan useMemo
   const filteredSections = useMemo(() => {
-    if (!debouncedSearch.trim()) {
-      return docsSections;
+    let result = [...docsSections];
+
+    // Filter berdasarkan search query
+    if (debouncedSearch.trim()) {
+      const query = debouncedSearch.toLowerCase();
+      result = result.filter(section => {
+        const title = (section.title || '').toLowerCase();
+        const content = (section.content || '').toLowerCase();
+        const tagsMatch = (section.tags || []).some(tag => (tag || '').toLowerCase().includes(query));
+        const subsectionsMatch = (section.subsections || []).some(sub => (
+          (sub.subtitle || '').toLowerCase().includes(query) ||
+          (sub.details || '').toLowerCase().includes(query) ||
+          (sub.tips || '').toLowerCase().includes(query) ||
+          (sub.warning || '').toLowerCase().includes(query) ||
+          (sub.examples || '').toLowerCase().includes(query)
+        ));
+        const visualSummary = ((section.visual && section.visual.summary) || '').toLowerCase();
+        const author = (section.author || '').toLowerCase();
+
+        return (
+          title.includes(query) ||
+          content.includes(query) ||
+          tagsMatch ||
+          subsectionsMatch ||
+          visualSummary.includes(query) ||
+          author.includes(query)
+        );
+      });
     }
 
-    const query = debouncedSearch.toLowerCase();
-    return docsSections.filter(section => 
-      section.title.toLowerCase().includes(query) ||
-      section.content.toLowerCase().includes(query) ||
-      section.tags.some(tag => tag.toLowerCase().includes(query)) ||
-      section.subsections?.some(sub => 
-        sub.subtitle.toLowerCase().includes(query) ||
-        sub.details.toLowerCase().includes(query)
-      )
-    );
-  }, [debouncedSearch, docsSections]);
+    // Sorting
+    result.sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (sortBy) {
+        case 'title':
+          aValue = a.title.toLowerCase();
+          bValue = b.title.toLowerCase();
+          break;
+        case 'lastUpdated':
+          aValue = new Date(a.lastUpdated);
+          bValue = new Date(b.lastUpdated);
+          break;
+        case 'version':
+          aValue = parseFloat(a.version);
+          bValue = parseFloat(b.version);
+          break;
+        default:
+          aValue = a.id;
+          bValue = b.id;
+      }
+
+      if (sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+
+    return result;
+  }, [debouncedSearch, docsSections, sortBy, sortOrder]);
 
   // Paginated data
   const paginatedSections = useMemo(() => {
@@ -425,16 +543,20 @@ export default function HelpDocsItem() {
   const totalPages = Math.ceil(filteredSections.length / itemsPerPage);
 
   const toggleSection = useCallback((index) => {
-    setOpenIndex(openIndex === index ? null : index);
-  }, [openIndex]);
+    setOpenIndex(prev => (prev === index ? null : index));
+  }, []);
+
+  const toggleSortOrder = useCallback(() => {
+    setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'));
+  }, []);
 
   // Color functions dengan useCallback
   const getStatusColor = useCallback((status) => {
     switch (status) {
-      case 'current': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
-      case 'supported': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
-      case 'deprecated': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
-      case 'archived': return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
+      case 'CURRENT': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
+      case 'SUPPORTED': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+      case 'DEPRECATED': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
+      case 'ARCHIVED': return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
       default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
     }
   }, []);
@@ -444,9 +566,9 @@ export default function HelpDocsItem() {
       case 'major': return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
       case 'stable': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
       case 'feature': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
-      case 'improvement': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300';
       case 'security': return 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300';
-      case 'performance': return 'bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300';
+      case 'documentation': return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300';
+      case 'enhancement': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300';
       default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
     }
   }, []);
@@ -469,27 +591,31 @@ export default function HelpDocsItem() {
   }, []);
 
   // Virtualized list render item
-  const renderVirtualizedItem = useCallback((index) => (
-    <div
-      key={filteredSections[index].id || index}
-      style={{
-        position: 'absolute',
-        top: index * 400,
-        width: '100%',
-        height: 400
-      }}
-    >
-      <SectionItem
-        section={filteredSections[index]}
-        index={index}
-        isOpen={openIndex === index}
-        onToggle={toggleSection}
-        getStatusColor={getStatusColor}
-        getVersionTypeColor={getVersionTypeColor}
-        getTagColor={getTagColor}
-      />
-    </div>
-  ), [filteredSections, openIndex, toggleSection, getStatusColor, getVersionTypeColor, getTagColor]);
+  const renderVirtualizedItem = useCallback((index) => {
+    const section = filteredSections[index];
+    if (!section) return null;
+
+    return (
+      <div
+        key={section.id ?? `virtual-${index}`}
+        style={{
+          width: '100%',
+          height: 400,
+          boxSizing: 'border-box'
+        }}
+      >
+        <SectionItem
+          section={section}
+          index={index}
+          isOpen={openIndex === index}
+          onToggle={toggleSection}
+          getStatusColor={getStatusColor}
+          getVersionTypeColor={getVersionTypeColor}
+          getTagColor={getTagColor}
+        />
+      </div>
+    );
+  }, [filteredSections, openIndex, toggleSection, getStatusColor, getVersionTypeColor, getTagColor]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-gray-900 dark:via-gray-950 dark:to-blue-900/10 text-gray-800 dark:text-gray-100 flex flex-col items-center py-12 px-4 sm:px-6">
@@ -526,28 +652,51 @@ export default function HelpDocsItem() {
           />
         </div>
 
-        {/* Display Controls */}
+        {/* Controls Section */}
         <div className="flex flex-wrap justify-center gap-4 mb-8">
-          <button
-            onClick={() => setDisplayMode('virtualized')}
-            className={`px-4 py-2 rounded-lg transition-colors ${
-              displayMode === 'virtualized' 
-                ? 'bg-blue-500 text-white' 
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-            }`}
-          >
-            Virtualized List
-          </button>
-          <button
-            onClick={() => setDisplayMode('paginated')}
-            className={`px-4 py-2 rounded-lg transition-colors ${
-              displayMode === 'paginated' 
-                ? 'bg-blue-500 text-white' 
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-            }`}
-          >
-            Paginated View
-          </button>
+          {/* Display Controls */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => setDisplayMode('virtualized')}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                displayMode === 'virtualized' 
+                  ? 'bg-blue-500 text-white' 
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              Virtualized List
+            </button>
+            <button
+              onClick={() => setDisplayMode('paginated')}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                displayMode === 'paginated' 
+                  ? 'bg-blue-500 text-white' 
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              Paginated View
+            </button>
+          </div>
+
+          {/* Sort Controls */}
+          <div className="flex gap-2">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg"
+            >
+              <option value="id">Sort by ID</option>
+              <option value="title">Sort by Title</option>
+              <option value="lastUpdated">Sort by Date</option>
+              <option value="version">Sort by Version</option>
+            </select>
+            <button
+              onClick={toggleSortOrder}
+              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg"
+            >
+              {sortOrder === 'asc' ? '↑ Asc' : '↓ Desc'}
+            </button>
+          </div>
         </div>
 
         {/* Quick Stats */}

@@ -11,6 +11,7 @@ import HelpButton from "./components/HelpButton";
 import Doct from "./components/helpbutton/docs/HelpDocsItem.jsx";
 import FAQ from "./components/helpbutton/faq/HelpFAQItem.jsx";
 import Info from "./components/helpbutton/versiWeb/HelpVersionInfo.jsx";
+import InfoDetail from "./components/helpbutton/versiWeb/detail/HelpVersionDetail.jsx";
 import Komit from "./components/helpbutton/komit/HelpCommitmentItem.jsx";
 import DetailCommitment from "./components/helpbutton/komit/detail/DetailCommitment.jsx";
 
@@ -46,6 +47,7 @@ import Education from "./pages/sekolah/education";
 import Visi from "./pages/visi/visi";
 import CVsaya from "./pages/cv/CVsaya";
 import Streming from "./pages/streming/Tubs";
+import AI_Docs from "./pages/help/ai/AI_Docs";
 
 import Hobbies from "./pages/hub/Hobbies";
 import HobbiesDetail from "./pages/hub/HobbyDetail.jsx"
@@ -147,7 +149,9 @@ export default function App() {
 
                         {/* ❓ Halaman bantuan */}
                         <Route path="/help/version" element={<Info />} />
+                        <Route path="/help/version/:slug" element={<InfoDetail />} />
                         <Route path="/help/docs" element={<Doct />} />
+                        <Route path="/help/ai-docs" element={<AI_Docs />} />
                         <Route path="/help/faq" element={<FAQ />} />
 
                         <Route path="/help/commitment" element={<Komit />} />

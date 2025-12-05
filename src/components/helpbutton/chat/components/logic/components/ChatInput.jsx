@@ -1,4 +1,5 @@
 import { Send, Mic, MicOff } from "lucide-react";
+import { CHATBOT_VERSION, AI_DOCS_PATH } from "../../../config";
 
 export function ChatInput({
   input,
@@ -50,9 +51,17 @@ export function ChatInput({
         </button>
       </div>
       
-      <div className="text-xs text-gray-500 mt-2 text-center flex items-center justify-center gap-2">
-        <span>💡 Upload PDF, DOC, XLS, Images •</span>
-        <span>Gunakan konteks untuk percakapan natural</span>
+      <div className="text-xs text-gray-400 mt-2 text-center">
+        <button
+          onClick={(e) => { e.preventDefault(); try { window.location.assign(AI_DOCS_PATH); } catch { window.location.href = AI_DOCS_PATH; } }}
+          className="hover:text-white/90 transition-colors duration-200"
+          title="Dokumentasi Kecerdasan Buatan"
+        >
+          SaipulAI dapat membuat kesalahan. Periksa info penting.{" "}
+          <span className="underline cursor-pointer hover:text-white font-medium">
+            versi {CHATBOT_VERSION}
+          </span>
+        </button>
       </div>
     </div>
   );

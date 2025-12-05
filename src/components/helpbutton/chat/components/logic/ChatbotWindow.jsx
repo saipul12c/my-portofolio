@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useChatbot } from "./hooks/useChatbot";
-import { useFileUpload } from "./hooks/useFileUpload";
-import { useSpeechRecognition } from "./hooks/useSpeechRecognition";
+import { useChatbot } from "./hook/useChatbot";
+import { useFileUpload } from "./hook/useFileUpload";
+import { useSpeechRecognition } from "./hook/useSpeechRecognition";
 import { ChatHeader } from "./components/ChatHeader";
 import { ChatMessage } from "./components/ChatMessage";
 import { ChatInput } from "./components/ChatInput";

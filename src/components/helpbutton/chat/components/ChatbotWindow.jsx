@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { X, Settings, Send, Loader2, Calculator, TrendingUp, Brain, BarChart3, Mic, MicOff, Download, Upload, FileText, Image, File, Video, Music, Archive } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import generateResponse from '../logic/utils/responseGenerator';
 
 export function ChatbotWindow({ onClose, onOpenSettings, knowledgeStats = {} }) {
   // Fixed undefined `setConversationContext` by adding a placeholder function
@@ -152,45 +153,24 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeStats = {} }) 
 
 
   // Enhanced knowledge response dengan multi-source search
-  const generateBotReply = async (userText) => {
+  // Enhanced knowledge response dengan multi-source search & local generator
+  const generateBotReply = (userText) => {
     setIsTyping(true);
-
-    const history = messages.map(msg => ({
-      role: msg.from === "user" ? "user" : "model",
-      parts: [{ text: msg.text }],
-    }));
-
     try {
-      const response = await fetch('http://localhost:3000/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: userText,
-          history: history,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const botMsg = { 
-        from: "bot", 
-        text: data.reply,
+      // Gunakan responseGenerator lokal, passing settings
+      const reply = generateResponse(userText, settings);
+      const botMsg = {
+        from: "bot",
+        text: reply,
         timestamp: new Date().toISOString(),
         type: "response"
       };
-      
       setMessages((prev) => [...prev, botMsg]);
-
     } catch (error) {
-      console.error("Error fetching bot reply:", error);
-      setMessages((prev) => [...prev, { 
-        from: "bot", 
-        text: "❌ Maaf, terjadi error saat menghubungi AI. Pastikan server backend berjalan dan coba lagi.",
+      console.error("Error generating bot reply:", error);
+      setMessages((prev) => [...prev, {
+        from: "bot",
+        text: "Maaf, terjadi kesalahan saat menghasilkan jawaban. Silakan coba lagi nanti.",
         timestamp: new Date().toISOString(),
         type: "error"
       }]);

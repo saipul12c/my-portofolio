@@ -1,304 +1,484 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { 
   Rocket, 
   Calendar, 
   Users, 
   Cpu, 
-  Shield, 
-  Globe, 
-  Download,
-  Zap,
   TrendingUp,
-  Code2,
   Layers,
-  Smartphone,
-  Monitor
+  ChevronRight,
+  ExternalLink,
+  Clock,
+  Tag,
+  Zap,
+  Package,
+  AlertCircle,
+  CheckCircle,
+  XCircle,
+  Clock4,
+  Flame
 } from "lucide-react";
 import docsData from "../docs/data/docsSections.json";
+import { 
+  getLatestVersionInfo
+} from "../docs/lib/versionUtils";
+
+// Data versi planned/coming soon dari CHANGELOG.md
+const PLANNED_VERSIONS = [
+  {
+    version: "v1.30.0",
+    status: "PLANNED",
+    date: "Coming Soon",
+    type: "Minor",
+    description: "New streaming page & community features",
+    color: "bg-gradient-to-r from-purple-500/10 to-purple-600/10 border-purple-500/30",
+    textColor: "text-purple-400",
+    iconColor: "text-purple-400",
+    details: [
+      "Streaming page with full UI polish",
+      "Community page integration",
+      "Responsive improvements"
+    ]
+  },
+  {
+    version: "v1.20.0",
+    status: "PLANNED",
+    date: "Coming Soon",
+    type: "Minor",
+    description: "Incremental UI/UX improvements",
+    color: "bg-gradient-to-r from-blue-500/10 to-blue-600/10 border-blue-500/30",
+    textColor: "text-blue-400",
+    iconColor: "text-blue-400",
+    details: [
+      "Media pages enhancements",
+      "Community integrations",
+      "UX refinements"
+    ]
+  },
+  {
+    version: "v1.19.0",
+    status: "PLANNED",
+    date: "Coming Soon",
+    type: "Minor",
+    description: "Streaming & community previews",
+    color: "bg-gradient-to-r from-cyan-500/10 to-cyan-600/10 border-cyan-500/30",
+    textColor: "text-cyan-400",
+    iconColor: "text-cyan-400",
+    details: [
+      "Streaming feature preparation",
+      "Community previews",
+      "Layout refinements",
+      "QA pass improvements"
+    ]
+  }
+];
 
 export default function HelpVersionInfo() {
-  const [isHovered, setIsHovered] = useState(false);
+  const [activeTab, setActiveTab] = useState("all");
+  const [versions, setVersions] = useState([]);
   
-  // Ambil data terbaru dan hitung statistik
-  const latestSection = docsData?.[docsData.length - 1] || {};
-  const totalSections = docsData?.length || 0;
+  // Ambil data dari JSON dan utils
+  const latest = getLatestVersionInfo(docsData);
   
-  // Hitung jumlah versi major
-  const majorVersions = docsData?.filter(doc => 
-    doc.versionType === 'major' || doc.version?.startsWith('2.')
-  ).length || 0;
+  // Ekstrak semua versi unik dari data
+  useEffect(() => {
+    const extractVersions = () => {
+      const versionMap = new Map();
+      
+      // Tambahkan versi dari dokumen
+      docsData.forEach(doc => {
+        if (doc.version) {
+          if (!versionMap.has(doc.version)) {
+            versionMap.set(doc.version, {
+              version: doc.version,
+              versionCode: doc.versionCode,
+              versionType: doc.versionType,
+              releaseChannel: doc.releaseChannel,
+              lastUpdated: doc.lastUpdated,
+              title: doc.title,
+              slug: doc.slug,
+              author: doc.author,
+              status: doc.versionHistory?.[0]?.status || "CURRENT",
+              breakingChanges: doc.versionHistory?.[0]?.breakingChanges || false,
+              migrationRequired: doc.versionHistory?.[0]?.migrationRequired || false,
+              estimatedReadTime: doc.estimatedReadTime,
+              tags: doc.tags || [],
+              content: doc.content,
+              changelog: doc.changelog || [],
+              versionHistory: doc.versionHistory || [],
+              visual: doc.visual || {},
+              compatibility: doc.compatibility || {}
+            });
+          }
+        }
+      });
+      
+      // Tambahkan versi planned
+      PLANNED_VERSIONS.forEach(planned => {
+        versionMap.set(planned.version, {
+          ...planned,
+          versionCode: "build-planned",
+          releaseChannel: "Roadmap",
+          versionType: planned.type.toLowerCase(),
+          lastUpdated: planned.date,
+          slug: planned.version.toLowerCase().replace(/\./g, '-'),
+          changelog: [],
+          versionHistory: [],
+          visual: {
+            summary: planned.description,
+            badge: "PLANNED",
+            color: planned.iconColor
+          }
+        });
+      });
+      
+      // Sortir versi (terbaru ke terlama)
+      return Array.from(versionMap.values()).sort((a, b) => {
+        const parseVersion = (v) => {
+          const match = v.version.match(/v?(\d+)\.(\d+)\.(\d+)/);
+          return match ? [parseInt(match[1]), parseInt(match[2]), parseInt(match[3])] : [0, 0, 0];
+        };
+        
+        const aVer = parseVersion(a);
+        const bVer = parseVersion(b);
+        
+        for (let i = 0; i < 3; i++) {
+          if (aVer[i] !== bVer[i]) {
+            return bVer[i] - aVer[i]; // Descending
+          }
+        }
+        return 0;
+      });
+    };
+    
+    setVersions(extractVersions());
+  }, []);
 
-  // Extract data
-  const versiWebsite = latestSection.version || "v1.0.0";
-  const versionCode = latestSection.versionCode || "build-unknown";
-  const versionType = latestSection.versionType || "stable";
-  const lastUpdated = latestSection.lastUpdated || "Belum ada data";
-  const author = latestSection.author || "Tim Dokumentasi";
-  const estimatedReadTime = latestSection.estimatedReadTime || "5 menit";
-  
-  // Data compatibility
-  const compatibility = latestSection.compatibility || {};
-  const minRequired = compatibility.minRequired || "1.0.0";
-  const testedUpTo = compatibility.testedUpTo || "1.0.0";
-  const browserSupport = compatibility.browserSupport || ["chrome 120+", "firefox 118+"];
-  const apiCompatibility = compatibility.apiCompatibility || "v1";
+  // Filter versi berdasarkan tab aktif
+  const filteredVersions = versions.filter(ver => {
+    switch (activeTab) {
+      case "current":
+        return ver.status === "CURRENT" || ver.releaseChannel === "Production";
+      case "planned":
+        return ver.status === "PLANNED";
+      case "major":
+        return ver.versionType === "major";
+      case "stable":
+        return ver.versionType === "stable";
+      case "breaking":
+        return ver.breakingChanges === true;
+      default:
+        return true;
+    }
+  });
 
-  // Status warna berdasarkan version type
-  const getVersionColor = () => {
-    switch (versionType) {
-      case 'major': return 'from-red-500 to-orange-500';
-      case 'stable': return 'from-green-500 to-emerald-500';
-      case 'beta': return 'from-blue-500 to-cyan-500';
-      case 'alpha': return 'from-purple-500 to-pink-500';
-      default: return 'from-gray-500 to-gray-600';
+  // Helper untuk mendapatkan warna berdasarkan status
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "CURRENT":
+        return "bg-green-500/20 text-green-400 border-green-500/30";
+      case "SUPPORTED":
+        return "bg-blue-500/20 text-blue-400 border-blue-500/30";
+      case "PLANNED":
+        return "bg-purple-500/20 text-purple-400 border-purple-500/30";
+      case "DEPRECATED":
+        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+      case "ARCHIVED":
+        return "bg-gray-500/20 text-gray-400 border-gray-500/30";
+      default:
+        return "bg-gray-500/20 text-gray-400 border-gray-500/30";
     }
   };
 
-  const getStatusColor = () => {
-    switch (versionType) {
-      case 'major': return 'bg-red-500/20 text-red-300 border-red-500/30';
-      case 'stable': return 'bg-green-500/20 text-green-300 border-green-500/30';
-      case 'beta': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
-      case 'alpha': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
-      default: return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+  // Helper untuk mendapatkan warna berdasarkan tipe versi
+  const getTypeColor = (type) => {
+    switch (type) {
+      case "major":
+        return "bg-red-500/20 text-red-400";
+      case "stable":
+        return "bg-green-500/20 text-green-400";
+      case "minor":
+        return "bg-blue-500/20 text-blue-400";
+      default:
+        return "bg-gray-500/20 text-gray-400";
     }
   };
+
+  // Helper untuk label tambahan
+  const getExtraLabels = (version) => {
+    const labels = [];
+    // Coming Soon
+    if (version.status === "PLANNED") {
+      labels.push({ text: "Coming Soon", color: "bg-gradient-to-r from-purple-500 to-purple-600 text-white" });
+    }
+    // Baru (new) jika versi adalah yang terbaru
+    if (version.version === latest.versiWebsite) {
+      labels.push({ text: "Baru", color: "bg-gradient-to-r from-green-500 to-green-600 text-white" });
+    }
+    // Last Update
+    if (version.lastUpdated === latest.lastUpdated && version.version !== latest.versiWebsite) {
+      labels.push({ text: "Last Update", color: "bg-gradient-to-r from-blue-500 to-blue-600 text-white" });
+    }
+    // Peluncuran pertama
+    if (version.version === "v1.0.0") {
+      labels.push({ text: "Peluncuran Pertama", color: "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white" });
+    }
+    return labels;
+  };
+
+  // Colorful tag palette
+  const tagColors = [
+    "bg-pink-500/30 text-pink-400",
+    "bg-blue-500/30 text-blue-400",
+    "bg-green-500/30 text-green-400",
+    "bg-yellow-500/30 text-yellow-400",
+    "bg-purple-500/30 text-purple-400",
+    "bg-cyan-500/30 text-cyan-400",
+    "bg-orange-500/30 text-orange-400",
+    "bg-red-500/30 text-red-400",
+    "bg-teal-500/30 text-teal-400",
+    "bg-indigo-500/30 text-indigo-400"
+  ];
 
   return (
-    <section
-      className="relative overflow-hidden rounded-3xl border border-gray-700/50 
-                 bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 p-6 
-                 shadow-2xl transition-all duration-500 hover:shadow-purple-500/10
-                 max-w-2xl mx-auto backdrop-blur-sm"
-      style={{
-        backgroundImage: `
-          radial-gradient(circle at 0% 0%, rgba(120, 119, 198, 0.03) 0%, transparent 50%),
-          radial-gradient(circle at 100% 0%, rgba(255, 119, 198, 0.03) 0%, transparent 50%),
-          radial-gradient(circle at 100% 100%, rgba(120, 220, 198, 0.02) 0%, transparent 50%),
-          radial-gradient(circle at 0% 100%, rgba(255, 220, 100, 0.02) 0%, transparent 50%)
-        `
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {/* Animated Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div 
-          className={`absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-3xl opacity-5 transition-all duration-1000 ${
-            isHovered ? 'scale-150 opacity-10' : ''
-          }`}
-        />
-        <div 
-          className={`absolute -bottom-20 -right-20 w-40 h-40 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-3xl opacity-5 transition-all duration-1000 delay-300 ${
-            isHovered ? 'scale-150 opacity-10' : ''
-          }`}
-        />
-      </div>
-
-      {/* Grid Pattern */}
-      <div className="absolute inset-0 opacity-[0.02] pointer-events-none" 
-           style={{
-             backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-             backgroundSize: '50px 50px'
-           }} 
-      />
-
-      {/* Header Section */}
-      <header className="relative mb-8">
-        <div className="flex items-center justify-between mb-4">
+    <div className="min-h-screen bg-gradient-to-b from-[#0a1833] to-[#162447] p-4 md:p-6">
+      {/* Header */}
+      <div className="max-w-7xl mx-auto mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-[#e6e6e6] mb-2">
+              Website Versions & Release History
+            </h1>
+            <p className="text-[#bfc8e2]">
+              Track all versions of your portfolio website, from current releases to upcoming features
+            </p>
+          </div>
           <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className={`absolute inset-0 bg-gradient-to-r ${getVersionColor()} rounded-xl blur-md opacity-60 ${
-                isHovered ? 'scale-110' : ''
-              } transition-transform duration-300`} />
-              <div className="relative p-2 bg-gray-800/80 rounded-xl border border-gray-600/50 backdrop-blur-sm">
-                <Rocket className="text-white" size={20} />
-              </div>
-            </div>
-            <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                System Version
-              </h1>
-              <p className="text-sm text-gray-400">Platform Documentation</p>
-            </div>
-          </div>
-          
-          <div className={`px-3 py-1 rounded-full border backdrop-blur-sm text-xs font-medium transition-all duration-300 ${
-            getStatusColor()
-          } ${isHovered ? 'scale-105' : ''}`}>
-            {versionType.toUpperCase()}
-          </div>
-        </div>
-
-        {/* Version Badge */}
-        <div className="relative group">
-          <div className={`absolute inset-0 bg-gradient-to-r ${getVersionColor()} rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-all duration-500`} />
-          <div className="relative bg-gray-800/60 backdrop-blur-sm rounded-2xl p-4 border border-gray-600/50 group-hover:border-gray-500/50 transition-all duration-300">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <Code2 className="text-gray-400" size={16} />
-                  <span className="text-sm text-gray-400 font-mono">Build</span>
-                </div>
-                <p className="text-lg font-bold text-white font-mono">{versionCode}</p>
-              </div>
-              
-              <div className="text-right">
-                <div className="flex items-center gap-2 justify-end mb-1">
-                  <span className="text-sm text-gray-400">Release</span>
-                  <Zap className="text-yellow-400" size={16} />
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl font-black bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                    {versiWebsite}
-                  </span>
+            <div className="p-3 bg-gradient-to-r from-[#162447] to-[#1f2a44] rounded-2xl border border-[#1f2a44]">
+              <div className="flex items-center gap-2">
+                <Rocket className="text-purple-400" size={20} />
+                <div>
+                  <p className="text-xs text-[#bfc8e2]">Latest Version</p>
+                  <p className="text-lg font-bold text-[#e6e6e6]">{latest.versiWebsite}</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </header>
 
-      {/* Main Content Grid */}
-      <div className="relative grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {/* Stats Column */}
-        <div className="space-y-4">
-          {/* Last Updated */}
-          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl p-4 border border-gray-600/50 hover:border-green-500/30 transition-all duration-300 group">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-green-500/20 rounded-lg group-hover:scale-110 transition-transform">
-                <Calendar className="text-green-400" size={16} />
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">Last Updated</p>
-                <p className="text-base font-semibold text-green-300">{lastUpdated}</p>
-              </div>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="bg-gradient-to-br from-[#162447] to-[#1f2a44] rounded-2xl p-6 border border-[#1f2a44]">
+            <div className="flex items-center justify-between mb-4">
+              <Package className="text-blue-400" size={24} />
+              <span className="text-xs px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full">
+                {versions.length} Total
+              </span>
             </div>
+            <h3 className="text-2xl font-bold text-[#e6e6e6] mb-1">{versions.length}</h3>
+            <p className="text-[#bfc8e2] text-sm">Total Versions</p>
           </div>
 
-          {/* Author Team */}
-          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl p-4 border border-gray-600/50 hover:border-blue-500/30 transition-all duration-300 group">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-blue-500/20 rounded-lg group-hover:scale-110 transition-transform">
-                <Users className="text-blue-400" size={16} />
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">Development Team</p>
-                <p className="text-base font-semibold text-blue-300 truncate">{author}</p>
-              </div>
+          <div className="bg-gradient-to-br from-[#162447] to-[#1f2a44] rounded-2xl p-6 border border-[#1f2a44]">
+            <div className="flex items-center justify-between mb-4">
+              <Zap className="text-green-400" size={24} />
+              <span className="text-xs px-3 py-1 bg-green-500/20 text-green-400 rounded-full">
+                Current
+              </span>
             </div>
-          </div>
-        </div>
-
-        {/* Compatibility Column */}
-        <div className="space-y-4">
-          {/* API Version */}
-          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl p-4 border border-gray-600/50 hover:border-purple-500/30 transition-all duration-300 group">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-purple-500/20 rounded-lg group-hover:scale-110 transition-transform">
-                <Cpu className="text-purple-400" size={16} />
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">API Compatibility</p>
-                <p className="text-base font-semibold text-purple-300">{apiCompatibility}</p>
-              </div>
-            </div>
+            <h3 className="text-2xl font-bold text-[#e6e6e6] mb-1">
+              {versions.filter(v => v.status === "CURRENT").length}
+            </h3>
+            <p className="text-[#bfc8e2] text-sm">Active Versions</p>
           </div>
 
-          {/* Read Time */}
-          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl p-4 border border-gray-600/50 hover:border-orange-500/30 transition-all duration-300 group">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-orange-500/20 rounded-lg group-hover:scale-110 transition-transform">
-                <TrendingUp className="text-orange-400" size={16} />
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">Estimated Read</p>
-                <p className="text-base font-semibold text-orange-300">{estimatedReadTime}</p>
-              </div>
+          <div className="bg-gradient-to-br from-[#162447] to-[#1f2a44] rounded-2xl p-6 border border-[#1f2a44]">
+            <div className="flex items-center justify-between mb-4">
+              <Clock4 className="text-purple-400" size={24} />
+              <span className="text-xs px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full">
+                Upcoming
+              </span>
             </div>
+            <h3 className="text-2xl font-bold text-[#e6e6e6] mb-1">
+              {versions.filter(v => v.status === "PLANNED").length}
+            </h3>
+            <p className="text-[#bfc8e2] text-sm">Planned Releases</p>
+          </div>
+
+          <div className="bg-gradient-to-br from-[#162447] to-[#1f2a44] rounded-2xl p-6 border border-[#1f2a44]">
+            <div className="flex items-center justify-between mb-4">
+              <Flame className="text-red-400" size={24} />
+              <span className="text-xs px-3 py-1 bg-red-500/20 text-red-400 rounded-full">
+                Breaking
+              </span>
+            </div>
+            <h3 className="text-2xl font-bold text-[#e6e6e6] mb-1">
+              {versions.filter(v => v.breakingChanges).length}
+            </h3>
+            <p className="text-[#bfc8e2] text-sm">Breaking Changes</p>
           </div>
         </div>
-      </div>
 
-      {/* System Requirements */}
-      <div className="relative mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <Shield className="text-gray-400" size={18} />
-          <h3 className="text-sm font-semibold text-gray-300">System Requirements</h3>
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="bg-gray-800/30 rounded-xl p-3 border border-gray-600/50">
-            <div className="flex items-center gap-2 mb-2">
-              <Download className="text-gray-400" size={14} />
-              <span className="text-xs text-gray-400 font-medium">Min Required</span>
-            </div>
-            <p className="text-sm font-mono text-white">{minRequired}</p>
-          </div>
-          
-          <div className="bg-gray-800/30 rounded-xl p-3 border border-gray-600/50">
-            <div className="flex items-center gap-2 mb-2">
-              <Layers className="text-gray-400" size={14} />
-              <span className="text-xs text-gray-400 font-medium">Tested Up To</span>
-            </div>
-            <p className="text-sm font-mono text-white">{testedUpTo}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Browser Support */}
-      <div className="relative mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <Globe className="text-gray-400" size={18} />
-          <h3 className="text-sm font-semibold text-gray-300">Browser Support</h3>
-        </div>
-        
-        <div className="flex flex-wrap gap-2">
-          {browserSupport.map((browser, index) => (
-            <div 
-              key={index}
-              className="flex items-center gap-2 px-3 py-2 bg-gray-800/40 rounded-lg border border-gray-600/50 hover:border-gray-500/50 transition-all duration-300 group"
+        {/* Tabs */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          <button
+            onClick={() => setActiveTab("all")}
+            className={`px-4 py-2 rounded-xl transition-all ${activeTab === "all" 
+              ? "bg-gradient-to-r from-purple-500 to-purple-600 text-white" 
+              : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}
+          >
+            All Versions
+          </button>
+          <button
+            onClick={() => setActiveTab("current")}
+            className={`px-4 py-2 rounded-xl transition-all ${activeTab === "current" 
+              ? "bg-gradient-to-r from-green-500 to-green-600 text-white" 
+              : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}
+          >
+            Current
+          </button>
+          <button
+            onClick={() => setActiveTab("planned")}
+            className={`px-4 py-2 rounded-xl transition-all ${activeTab === "planned" 
+              ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white" 
+              : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}
+          >
+            Planned
+          </button>
+          <button
+            onClick={() => setActiveTab("major")}
+            className={`px-4 py-2 rounded-xl transition-all ${activeTab === "major" 
+              ? "bg-gradient-to-r from-red-500 to-red-600 text-white" 
+              : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}
+          >
+            Major
+          </button>
+          <button
+              onClick={() => setActiveTab("breaking")}
+              className={`px-4 py-2 rounded-xl transition-all ${activeTab === "breaking" 
+                ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white" 
+                : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}
             >
-              <div className="flex items-center gap-1">
-                {browser.includes('chrome') && <Monitor className="text-red-400" size={12} />}
-                {browser.includes('firefox') && <Globe className="text-orange-400" size={12} />}
-                {browser.includes('safari') && <Smartphone className="text-blue-400" size={12} />}
-                {browser.includes('edge') && <Monitor className="text-blue-300" size={12} />}
+              Breaking Changes
+            </button>
+        </div>
+
+        {/* Versions List */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {filteredVersions.map((version, index) => (
+            <Link
+              key={index}
+              to={`/help/version/${version.slug}`}
+              className="group block"
+            >
+              <div className="bg-gradient-to-br from-[#162447]/60 to-[#1f2a44]/60 rounded-2xl p-6 border border-[#1f2a44] hover:border-purple-500/50 transition-all duration-300 hover:scale-[1.02]">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <div className="flex items-center gap-3 mb-2 flex-wrap">
+                      <h3 className="text-xl font-bold text-[#e6e6e6] group-hover:text-purple-300 transition-colors">
+                        {version.version}
+                      </h3>
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(version.status)}`}>
+                        {version.status}
+                      </span>
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getTypeColor(version.versionType)}`}>
+                        {version.versionType}
+                      </span>
+                      {/* Extra labels */}
+                      {getExtraLabels(version).map((label, i) => (
+                        <span key={i} className={`px-3 py-1 rounded-full text-xs font-medium ml-1 ${label.color}`}>{label.text}</span>
+                      ))}
+                    </div>
+                    <p className="text-[#bfc8e2] mb-1">{version.title || version.description}</p>
+                    <p className="text-sm text-[#bfc8e2]">{version.versionCode}</p>
+                  </div>
+                  <ChevronRight className="text-[#bfc8e2] group-hover:text-purple-400 transition-colors" size={20} />
+                </div>
+
+                <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-700/50">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="text-[#bfc8e2]" size={16} />
+                      <span className="text-sm text-[#bfc8e2]">{version.lastUpdated}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Users className="text-[#bfc8e2]" size={16} />
+                      <span className="text-sm text-[#bfc8e2]">{version.author}</span>
+                    </div>
+                  </div>
+
+                  {version.breakingChanges && (
+                    <div className="flex items-center gap-2">
+                      <AlertCircle className="text-red-400" size={16} />
+                      <span className="text-sm text-red-400">Breaking Changes</span>
+                    </div>
+                  )}
+
+                  {version.migrationRequired && (
+                    <div className="flex items-center gap-2">
+                      <XCircle className="text-yellow-400" size={16} />
+                      <span className="text-sm text-yellow-400">Migration Required</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Tags - colorful */}
+                {version.tags && version.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    {version.tags.slice(0, 3).map((tag, tagIndex) => (
+                      <span 
+                        key={tagIndex}
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${tagColors[tagIndex % tagColors.length]}`}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                    {version.tags.length > 3 && (
+                      <span className="px-3 py-1 bg-gray-700/50 text-gray-300 rounded-full text-xs">
+                        +{version.tags.length - 3} more
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
-              <span className="text-xs font-medium text-gray-300">{browser}</span>
-            </div>
+            </Link>
           ))}
         </div>
-      </div>
 
-      {/* Footer Stats */}
-      <footer className="relative pt-4 border-t border-gray-700/30">
-        <div className="grid grid-cols-3 gap-4 text-center">
-          <div>
-            <p className="text-2xl font-bold text-white">{totalSections}</p>
-            <p className="text-xs text-gray-400">Sections</p>
+        {/* Empty State */}
+        {filteredVersions.length === 0 && (
+          <div className="text-center py-12">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#1f2a44] mb-4">
+              <Package className="text-[#bfc8e2]" size={32} />
+            </div>
+            <h3 className="text-xl font-semibold text-[#bfc8e2] mb-2">
+              No versions found
+            </h3>
+            <p className="text-[#bfc8e2] max-w-md mx-auto">
+              No versions match your current filter. Try selecting a different category.
+            </p>
           </div>
-          <div>
-            <p className="text-2xl font-bold text-green-400">{majorVersions}</p>
-            <p className="text-xs text-gray-400">Major Releases</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-blue-400">{docsData?.length || 0}</p>
-            <p className="text-xs text-gray-400">Total Docs</p>
+        )}
+
+        {/* Footer Info */}
+        <div className="mt-8 p-6 bg-gradient-to-r from-[#162447]/60 to-[#1f2a44]/60 rounded-2xl border border-[#1f2a44]">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-lg font-semibold text-[#e6e6e6] mb-2">Version Information</h4>
+              <p className="text-[#bfc8e2] text-sm">
+                All website versions follow semantic versioning. Click on any version to view detailed release notes, 
+                changelog, migration guides, and compatibility information.
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-[#bfc8e2] mb-1">Last Updated</p>
+              <p className="text-lg font-bold text-[#e6e6e6]">{latest.lastUpdated}</p>
+              <p className="text-xs text-[#bfc8e2] mt-1">by {latest.author}</p>
+            </div>
           </div>
         </div>
-        
-        <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-700/30">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-            <span className="text-xs text-gray-400">All systems operational</span>
-          </div>
-          <span className="text-xs text-gray-500 font-mono">
-            {new Date().getFullYear()} • v{versiWebsite}
-          </span>
-        </div>
-      </footer>
-    </section>
+      </div>
+    </div>
   );
 }

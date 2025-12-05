@@ -7,6 +7,8 @@ import {
   ShieldCheck,
   MessageCircle,
 } from "lucide-react";
+import docsData from "./docs/data/docsSections.json";
+import { getLatestVersionInfo } from "./docs/lib/versionUtils";
 
 function HelpMenuItem({ title, subtitle, icon: Icon, to, external = false }) {
   const handleClick = (e) => {
@@ -49,10 +51,9 @@ function HelpMenuItem({ title, subtitle, icon: Icon, to, external = false }) {
 }
 
 function VersionBadge() {
-  const version =
-    document.querySelector('meta[name="app-version"]')?.content ||
-    window?.__APP_VERSION__ ||
-    "v1.16.0";
+  // Sinkronisasi versi dengan HelpVersionInfo
+  const latest = getLatestVersionInfo(docsData);
+  const version = latest?.version || latest?.versiWebsite;
 
   const handleOpenVersionPage = (e) => {
     e.preventDefault();

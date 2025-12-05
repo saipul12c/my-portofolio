@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { getSmartReply } from '../utils/responseGenerator';
 
 export function useChatbot(knowledgeBase, knowledgeStats) {
   const safeKnowledgeBase = useMemo(() => ({
@@ -77,6 +78,42 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     }
   }, []);
 
+  // Update quick actions based on latest messages and safeKnowledgeBase
+  const updateQuickActions = useCallback(() => {
+    const lastMessage = messages[messages.length - 1];
+    let actions = [];
+
+    if (!lastMessage || lastMessage.from === "user") {
+      actions = [
+        { icon: 'Calculator', label: "Matematika", action: "Hitung integral x^2 dx dari 0 sampai 1" },
+        { icon: 'Brain', label: "AI Knowledge", action: "Jelaskan tentang neural network" },
+        { icon: 'FileText', label: "Data Info", action: "Tampilkan knowledge base yang tersedia" }
+      ];
+    } else if (lastMessage.text && (lastMessage.text.includes('matematika') || lastMessage.text.includes('hitung'))) {
+      actions = [
+        { icon: 'Calculator', label: "Kalkulus", action: "Hitung turunan dari sin(x) + cos(x)" },
+        { icon: 'BarChart3', label: "Statistik", action: "Hitung rata-rata 10, 20, 30, 40, 50" },
+        { icon: 'TrendingUp', label: "Analisis", action: "Analisis data statistik untuk 100, 200, 150" }
+      ];
+    } else if (lastMessage.text && (lastMessage.text.includes('AI') || lastMessage.text.includes('machine learning'))) {
+      actions = [
+        { icon: 'Brain', label: "Deep Learning", action: "Apa perbedaan AI dan machine learning?" },
+        { icon: 'Settings', label: "Neural Network", action: "Jelaskan tentang convolutional neural network" },
+        { icon: 'TrendingUp', label: "Prediksi", action: "Buat prediksi perkembangan AI 5 tahun ke depan" }
+      ];
+    } else {
+      if (safeKnowledgeBase.hobbies.length > 0) {
+        actions.push({ icon: 'Brain', label: "Hobi", action: `Ceritakan tentang ${safeKnowledgeBase.hobbies[0]?.title}` });
+      }
+      if (safeKnowledgeBase.certificates.length > 0) {
+        actions.push({ icon: 'FileText', label: "Sertifikat", action: `Apa itu ${safeKnowledgeBase.certificates[0]?.name}` });
+      }
+      actions.push({ icon: 'Upload', label: "Upload File", action: "upload_file" });
+    }
+
+    setActiveQuickActions(actions.slice(0, 3));
+  }, [messages, safeKnowledgeBase]);
+
   useEffect(() => {
     if (!settings.privacyMode) {
       try {
@@ -107,53 +144,6 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
 
     updateQuickActions();
   }, [messages, settings.privacyMode, settings.memoryContext, updateQuickActions]);
-
-  const updateQuickActions = useCallback(() => {
-    const lastMessage = messages[messages.length - 1];
-    let actions = [];
-
-    if (!lastMessage || lastMessage.from === "user") {
-      actions = [
-        { icon: 'Calculator', label: "Matematika", action: "Hitung integral x^2 dx dari 0 sampai 1" },
-        { icon: 'Brain', label: "AI Knowledge", action: "Jelaskan tentang neural network" },
-        { icon: 'FileText', label: "Data Info", action: "Tampilkan knowledge base yang tersedia" }
-      ];
-    } else if (lastMessage.text.includes('matematika') || lastMessage.text.includes('hitung')) {
-      actions = [
-        { icon: 'Calculator', label: "Kalkulus", action: "Hitung turunan dari sin(x) + cos(x)" },
-        { icon: 'BarChart3', label: "Statistik", action: "Hitung rata-rata 10, 20, 30, 40, 50" },
-        { icon: 'TrendingUp', label: "Analisis", action: "Analisis data statistik untuk 100, 200, 150" }
-      ];
-    } else if (lastMessage.text.includes('AI') || lastMessage.text.includes('machine learning')) {
-      actions = [
-        { icon: 'Brain', label: "Deep Learning", action: "Apa perbedaan AI dan machine learning?" },
-        { icon: 'Settings', label: "Neural Network", action: "Jelaskan tentang convolutional neural network" },
-        { icon: 'TrendingUp', label: "Prediksi", action: "Buat prediksi perkembangan AI 5 tahun ke depan" }
-      ];
-    } else {
-      if (safeKnowledgeBase.hobbies.length > 0) {
-        actions.push({ icon: 'Brain', label: "Hobi", action: `Ceritakan tentang ${safeKnowledgeBase.hobbies[0]?.title}` });
-      }
-      if (safeKnowledgeBase.certificates.length > 0) {
-        actions.push({ icon: 'FileText', label: "Sertifikat", action: `Apa itu ${safeKnowledgeBase.certificates[0]?.name}` });
-      }
-      actions.push({ icon: 'Upload', label: "Upload File", action: "upload_file" });
-    }
-
-    setActiveQuickActions(actions.slice(0, 3));
-  }, [messages, safeKnowledgeBase]);
-
-  useEffect(() => {
-    if (settings.autoSuggestions && messages.length > 0) {
-      const lastMessage = messages[messages.length - 1];
-      if (lastMessage.from === "bot") {
-        const suggestedQuestions = generateSuggestions(lastMessage.text);
-        setSuggestions(suggestedQuestions);
-      }
-    } else {
-      setSuggestions([]);
-    }
-  }, [messages, settings.autoSuggestions, safeKnowledgeBase, generateSuggestions]);
 
   const generateSuggestions = useCallback((lastBotMessage) => {
     const text = lastBotMessage.toLowerCase();
@@ -191,6 +181,18 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
 
     return suggestions.slice(0, 4);
   }, [safeKnowledgeBase]);
+
+  useEffect(() => {
+    if (settings.autoSuggestions && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage.from === "bot") {
+        const suggestedQuestions = generateSuggestions(lastMessage.text);
+        setSuggestions(suggestedQuestions);
+      }
+    } else {
+      setSuggestions([]);
+    }
+  }, [messages, settings.autoSuggestions, safeKnowledgeBase, generateSuggestions]);
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -280,11 +282,6 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     return gradients[settings.accent] || gradients.cyan;
   };
 
-  const getSmartReply = (userText) => {
-    // Placeholder implementation for getSmartReply
-    return `Smart reply for: ${userText}`;
-  };
-
   const generateBotReply = (userText) => {
     setIsTyping(true);
 
@@ -297,7 +294,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
 
     setTimeout(() => {
       try {
-        const reply = getSmartReply(userText);
+        const reply = getSmartReply(userText, settings, conversationContext, safeKnowledgeBase, knowledgeStats);
         const botMsg = { 
           from: "bot", 
           text: reply,
