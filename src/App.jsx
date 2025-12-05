@@ -57,7 +57,7 @@ import BlogDetail from "./pages/blog/detail/BlogDetail";
 import Detailusers from "./pages/blog/users/DetailProfile";
 import Bahasa from "./pages/bahasa/Bahasa";
 import Komunitas from "./pages/Komunitas/Komo";
-import Comingsoon from "./pages/fitur/comingsoon";
+import Comingsoon from "./pages/Fitur/comingsoon";
 
 // halaman komunitias - IMPLEMENTASI BARU
 import Discond from "./pages/discond/Komoniti";
