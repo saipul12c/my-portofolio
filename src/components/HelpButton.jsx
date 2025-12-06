@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HelpCircle, X, Wrench, Info } from "lucide-react";
 import HelpMenu from "./helpbutton/HelpMenu";
 import { ErrorBoundary } from "react-error-boundary";
@@ -60,6 +60,23 @@ export default function HelpButton() {
   };
 
   const closeSettings = () => setIsSettingsOpen(false);
+
+  // ✅ Logika untuk menyimpan percakapan chatbot di localStorage
+  useEffect(() => {
+    if (isChatOpen) {
+      const chatObserver = new MutationObserver(() => {
+        const chatContent = document.querySelector(".chat-window").innerText;
+        localStorage.setItem("chatHistory", chatContent);
+      });
+
+      const chatWindow = document.querySelector(".chat-window");
+      if (chatWindow) {
+        chatObserver.observe(chatWindow, { childList: true, subtree: true });
+      }
+
+      return () => chatObserver.disconnect();
+    }
+  }, [isChatOpen]);
 
   return (
     <div className="fixed bottom-6 right-6 z-[9999]">

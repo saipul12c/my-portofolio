@@ -44,7 +44,6 @@ export default function HelpChatbotItem() {
           fileMetadata: []
         };
 
-        // Dynamic JSON loading
         const jsonFiles = [
           'public/data/about/cards.json',
           'public/data/about/certificates.json',
@@ -57,22 +56,26 @@ export default function HelpChatbotItem() {
         for (const file of jsonFiles) {
           try {
             const response = await fetch(file);
+            if (!response.ok) {
+              console.error(`Failed to load ${file}:`, response.statusText);
+              continue;
+            }
             const data = await response.json();
             const key = file.split('/').slice(-1)[0].replace('.json', '');
             combinedKnowledge[key] = data;
           } catch (error) {
-            console.error(`Failed to load ${file}:`, error);
+            console.error(`Error loading ${file}:`, error);
           }
         }
 
         setKnowledgeBase(combinedKnowledge);
       } catch (error) {
-        console.error('Error loading knowledge base:', error);
+        console.error("Error loading knowledge base:", error);
       }
     };
 
     loadKnowledgeBase();
-  }, [defaultAIBase]);
+  }, [defaultAIBase]); // Added dependency
 
   // Enhanced unread message tracking
   useEffect(() => {

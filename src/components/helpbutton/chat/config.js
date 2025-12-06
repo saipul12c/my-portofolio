@@ -1,5 +1,5 @@
 // Central config for chatbot small metadata
-export const CHATBOT_VERSION = "6.0.0";
+export const CHATBOT_VERSION = "7.0.10";
 export const AI_DOCS_PATH = "/help/ai-docs";
 
 // Default runtime settings used by the local chatbot UI

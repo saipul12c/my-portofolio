@@ -1,182 +1,105 @@
 import { useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { useChatbot } from "./hook/useChatbot";
-import { useFileUpload } from "./hook/useFileUpload";
-import { useSpeechRecognition } from "./hook/useSpeechRecognition";
 import { ChatHeader } from "./components/ChatHeader";
 import { ChatMessage } from "./components/ChatMessage";
 import { ChatInput } from "./components/ChatInput";
-import { QuickActions } from "./components/QuickActions";
-import { Suggestions } from "./components/Suggestions";
-import { getSmartReply } from "./utils/responseGenerator";
+import ReportModal from "./components/ReportModal";
+import Sentiment from "sentiment";
 
-export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, updateKnowledgeBase, knowledgeStats = {} }) {
+export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, knowledgeStats = {} }) {
   const {
     messages,
     setMessages,
     input,
     setInput,
-    isTyping,
-    setIsTyping,
-    suggestions,
-    conversationContext,
-    settings,
-    activeQuickActions,
     handleSend,
     handleKeyDown,
-    clearChat,
-    exportChat,
     getAccentGradient,
-    safeKnowledgeBase
+    reportIssue,
+    generateBotReply
   } = useChatbot(knowledgeBase, knowledgeStats);
-
-  const {
-    uploadProgress,
-    fileUploadKey,
-    setFileUploadKey,
-    handleFileUpload
-  } = useFileUpload(settings, updateKnowledgeBase, setMessages);
-
-  const {
-    isListening,
-    startSpeechRecognition
-  } = useSpeechRecognition(settings, setInput, handleSend);
-
-  const chatEndRef = useRef(null);
-  const fileInputRef = useRef(null);
-
-  const triggerFileUpload = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleQuickAction = (action) => {
-    if (action === "upload_file") {
-      triggerFileUpload();
-    } else {
-      setInput(action);
+  // Handler untuk quick actions (like, dislike, regenerate, report)
+  const handleQuickAction = (action, messageId, extra) => {
+    if (action === "like") {
+      setMessages((prev) => prev.map((msg) =>
+        msg.id === messageId ? { ...msg, liked: true, disliked: false } : msg
+      ));
+    } else if (action === "dislike") {
+      setMessages((prev) => prev.map((msg) =>
+        msg.id === messageId ? { ...msg, disliked: true, liked: false } : msg
+      ));
+    } else if (action === "regenerate") {
+      // Regenerate response for bot message
+      const msg = messages.find((m) => m.id === messageId);
+      if (msg && msg.from === "bot") {
+        generateBotReply(msg.text);
+      }
+    } else if (action === "report") {
+      // Simpan laporan ke localStorage dan tampilkan feedback
+      const reportData = {
+        messageId,
+        ...extra,
+        timestamp: new Date().toISOString()
+      };
+      try {
+        const reports = JSON.parse(localStorage.getItem("saipul_chat_reports") || "[]");
+        reports.push(reportData);
+        localStorage.setItem("saipul_chat_reports", JSON.stringify(reports));
+      } catch {}
+      setMessages((prev) => [...prev, {
+        from: "user",
+        text: `Laporan dikirim: ${JSON.stringify(reportData)}`,
+        timestamp: new Date().toISOString(),
+        type: "report"
+      }]);
     }
   };
 
-  const generateBotReply = (userText) => {
-    setIsTyping(true);
+  const chatEndRef = useRef(null);
+  const sentimentAnalyzer = new Sentiment();
 
-    const baseTime = settings.responseSpeed === 'fast' ? 600 : 
-                    settings.responseSpeed === 'thorough' ? 1800 : 1000;
-    
-    const complexityMultiplier = userText.length > 50 ? 1.3 : 1;
-    const knowledgeMultiplier = userText.includes('upload') || userText.includes('file') ? 1.2 : 1;
-    const typingTime = baseTime * complexityMultiplier * knowledgeMultiplier;
+  const analyzeSentiment = (text) => {
+    const result = sentimentAnalyzer.analyze(text);
+    if (result.score > 0) return "positive";
+    if (result.score < 0) return "negative";
+    return "neutral";
+  };
 
-    setTimeout(() => {
-      try {
-        const reply = getSmartReply(userText, settings, conversationContext, safeKnowledgeBase, knowledgeStats);
-        const botMsg = { 
-          from: "bot", 
-          text: reply,
-          timestamp: new Date().toISOString(),
-          type: "response"
-        };
-        
-        setMessages((prev) => [...prev, botMsg]);
-        
-        window.dispatchEvent(new CustomEvent('saipul_chat_update', {
-          detail: { type: 'new_bot_message', message: botMsg }
-        }));
-      } catch (error) {
-        console.error("Error generating bot reply:", error);
-        setMessages((prev) => [...prev, { 
-          from: "bot", 
-          text: "❌ Maaf, terjadi error saat memproses permintaan Anda. Silakan coba lagi atau gunakan format yang berbeda.",
-          timestamp: new Date().toISOString(),
-          type: "error"
-        }]);
-      } finally {
-        setIsTyping(false);
-      }
-    }, typingTime);
+  const handleSendWithSentiment = () => {
+    const sentiment = analyzeSentiment(input);
+    handleSend({ text: input, sentiment });
   };
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, y: 50, scale: 0.9 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 50, scale: 0.95 }}
-        transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 30 }}
-        className="fixed bottom-20 right-6 bg-gray-800/95 border border-gray-700 rounded-2xl shadow-2xl w-96 overflow-hidden backdrop-blur-md z-[9999]"
-      >
-        <ChatHeader
-          onClose={onClose}
-          onOpenSettings={onOpenSettings}
-          triggerFileUpload={triggerFileUpload}
-          exportChat={exportChat}
-          clearChat={clearChat}
-          getAccentGradient={getAccentGradient}
-          settings={settings}
-        />
+    <div className="fixed bottom-6 right-6 w-full max-w-md h-[80vh] bg-white shadow-lg rounded-lg flex flex-col overflow-hidden">
+      {/* Header */}
+      <ChatHeader onClose={onClose} onOpenSettings={onOpenSettings} />
 
-        {uploadProgress > 0 && (
-          <div className="h-1 bg-gray-700">
-            <div 
-              className="h-full bg-green-500 transition-all duration-300"
-              style={{ width: `${uploadProgress}%` }}
-            />
-          </div>
-        )}
-
-        <QuickActions
-          activeQuickActions={activeQuickActions}
-          handleQuickAction={handleQuickAction}
-        />
-
-        <div className="max-h-80 overflow-y-auto p-3 space-y-3 text-sm scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800">
-          {messages.map((message, index) => (
-            <ChatMessage
-              key={index}
-              message={message}
-              isTyping={false}
-              getAccentGradient={getAccentGradient}
-              settings={settings}
-            />
-          ))}
-
-          {isTyping && (
-            <ChatMessage
-              message={{ from: "bot", text: "" }}
-              isTyping={true}
-              getAccentGradient={getAccentGradient}
-              settings={settings}
-            />
-          )}
-
-          <Suggestions
-            suggestions={suggestions}
-            setInput={setInput}
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-4 bg-gray-100">
+        {messages.map((message, index) => (
+          <ChatMessage
+            key={index}
+            message={message}
+            isTyping={index === messages.length - 1}
+            getAccentGradient={getAccentGradient}
+            sentiment={message.sentiment}
+            handleQuickAction={handleQuickAction}
           />
+        ))}
+        <div ref={chatEndRef} />
+      </div>
 
-          <div ref={chatEndRef} />
-        </div>
-
+      {/* Input */}
+      <div className="p-4 bg-white border-t border-gray-200">
         <ChatInput
           input={input}
           setInput={setInput}
-          handleSend={handleSend}
+          handleSend={handleSendWithSentiment}
           handleKeyDown={handleKeyDown}
-          isListening={isListening}
-          startSpeechRecognition={startSpeechRecognition}
-          getAccentGradient={getAccentGradient}
         />
-
-        <input
-          key={fileUploadKey}
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileUpload}
-          accept=".txt,.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.json,.csv,.md"
-          multiple
-          className="hidden"
-        />
-      </motion.div>
-    </AnimatePresence>
+      </div>
+    </div>
   );
 }

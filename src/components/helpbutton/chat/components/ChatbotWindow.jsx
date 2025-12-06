@@ -5,10 +5,14 @@ import generateResponse from '../logic/utils/responseGenerator';
 
 export function ChatbotWindow({ onClose, onOpenSettings, knowledgeStats = {} }) {
   // Fixed undefined `setConversationContext` by adding a placeholder function
-  const setConversationContext = () => {};
+  const setConversationContext = (context) => {
+    console.log("Setting conversation context:", context);
+  };
 
   // Fixed undefined `setIsTyping` by adding a placeholder function
-  const setIsTyping = () => {};
+  const setIsTyping = (isTyping) => {
+    console.log("Bot is typing:", isTyping);
+  };
 
   // Fixed undefined `uploadProgress` by initializing it with a default value
   const uploadProgress = 0;
@@ -19,15 +23,17 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeStats = {} }) 
       const saved = localStorage.getItem("saipul_chat_history");
       if (saved) {
         const parsed = JSON.parse(saved);
-        return Array.isArray(parsed) ? parsed : [];
+        if (Array.isArray(parsed)) {
+          return parsed;
+        }
       }
     } catch (e) {
       console.error("Error loading chat history:", e);
     }
-    
+
     return [{ 
       from: "bot", 
-      text: `Halo! 👋 Aku SaipulAI v6.0 Enhanced dengan kemampuan:\n\n• 🧮 **Matematika Lanjutan** & Analisis Data\n• 📊 **Multi-format File Upload** (PDF, DOCX, TXT, Gambar, dll)\n• 🤖 **AI Knowledge Base** Dinamis\n• 🎯 **Context-Aware Responses**\n• 📁 **File Management** & Metadata Tracking\n• 🔍 **Advanced Search** Across All Data\n\nKnowledge base saat ini: ${knowledgeStats.totalItems || 0} item dari ${knowledgeStats.totalCategories || 0} kategori.\n\nAda yang bisa kubantu analisis, hitung, atau proses hari ini?`,
+      text: `Halo! \u{1F44B} Aku SaipulAI v6.0 Enhanced dengan kemampuan:\n\n\u2022 \u{1F9EE} **Matematika Lanjutan** & Analisis Data\n\u2022 \u{1F4CA} **Multi-format File Upload** (PDF, DOCX, TXT, Gambar, dll)\n\u2022 \u{1F916} **AI Knowledge Base** Dinamis\n\u2022 \u{1F3AF} **Context-Aware Responses**\n\u2022 \u{1F4C1} **File Management** & Metadata Tracking\n\u2022 \u{1F50D} **Advanced Search** Across All Data\n\nKnowledge base saat ini: ${knowledgeStats.totalItems || 0} item dari ${knowledgeStats.totalCategories || 0} kategori.\n\nAda yang bisa kubantu analisis, hitung, atau proses hari ini?`,
       timestamp: new Date().toISOString(),
       type: "welcome",
       data: { knowledgeStats }
@@ -148,9 +154,6 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeStats = {} }) 
   };
 
   // Enhanced Speech Recognition dengan continuous mode
-  
-
-
 
   // Enhanced knowledge response dengan multi-source search
   // Enhanced knowledge response dengan multi-source search & local generator

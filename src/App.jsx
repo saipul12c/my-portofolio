@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 // 🌐 Komponen global
 import Navbar from "./components/Navbar";
@@ -48,6 +49,7 @@ import Visi from "./pages/visi/visi";
 import CVsaya from "./pages/cv/CVsaya";
 import Streming from "./pages/streming/Tubs";
 import AI_Docs from "./pages/help/ai/AI_Docs";
+import AI_DocDetail from "./pages/help/ai/AI_DocDetail";
 
 import Hobbies from "./pages/hub/Hobbies";
 import HobbiesDetail from "./pages/hub/HobbyDetail.jsx"
@@ -113,12 +115,28 @@ const PlainLayout = ({ children }) => (
   </main>
 );
 
+// ✅ Komponen untuk melacak lokasi halaman
+function PageTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    console.log("Current page:", location.pathname);
+    const pageContent = document.body.innerText;
+    localStorage.setItem("lastVisitedPage", location.pathname);
+    localStorage.setItem("pageContent", pageContent);
+  }, [location]);
+
+  return null;
+}
+
 export default function App() {
   return (
     <Router>
       <ErrorProvider>
         <CommunityProvider>
           <div className="flex flex-col min-h-screen bg-[var(--color-gray-900)] text-white selection:bg-cyan-400/30 selection:text-cyan-200">
+            {/* Pindahkan usePageTracker ke dalam Router */}
+            <PageTracker />
             <Routes>
               {/* 🚀 Halaman Launching — berdiri sendiri */}
               <Route path="/launching" element={<LaunchingPage />} />
@@ -152,6 +170,7 @@ export default function App() {
                         <Route path="/help/version/:slug" element={<InfoDetail />} />
                         <Route path="/help/docs" element={<Doct />} />
                         <Route path="/help/ai-docs" element={<AI_Docs />} />
+                        <Route path="/help/ai-docs/:slug" element={<AI_DocDetail />} />
                         <Route path="/help/faq" element={<FAQ />} />
 
                         <Route path="/help/commitment" element={<Komit />} />

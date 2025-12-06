@@ -2,6 +2,36 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { getSmartReply } from '../utils/responseGenerator';
 
 export function useChatbot(knowledgeBase, knowledgeStats) {
+    // Integrasi Gemini: update pesan bot jika event Gemini diterima
+    useEffect(() => {
+      const handleGeminiResponse = (event) => {
+        const { input, response } = event.detail || {};
+        if (input && response) {
+          setMessages((prev) => {
+            // Cari pesan bot yang placeholder/fallback
+            const idx = prev.findIndex(m => m.from === 'bot' && m.text.includes('Maaf, saya belum punya jawaban spesifik'));
+            if (idx !== -1) {
+              const updated = [...prev];
+              updated[idx] = {
+                ...updated[idx],
+                text: response,
+                type: 'response-gemini'
+              };
+              return updated;
+            }
+            // Jika tidak ada, tambahkan sebagai pesan baru
+            return [...prev, {
+              from: 'bot',
+              text: response,
+              timestamp: new Date().toISOString(),
+              type: 'response-gemini'
+            }];
+          });
+        }
+      };
+      window.addEventListener('saipul_chat_gemini', handleGeminiResponse);
+      return () => window.removeEventListener('saipul_chat_gemini', handleGeminiResponse);
+    }, []);
   const safeKnowledgeBase = useMemo(() => ({
     AI: {},
     hobbies: [],
@@ -40,6 +70,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
   const [suggestions, setSuggestions] = useState([]);
   const [conversationContext, setConversationContext] = useState([]);
   const [activeQuickActions, setActiveQuickActions] = useState([]);
+  const [userActivity, setUserActivity] = useState([]);
 
   const [settings, setSettings] = useState({
     theme: "system",
@@ -271,6 +302,16 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     }
   };
 
+  const reportIssue = useCallback((details) => {
+    setMessages((prev) => [...prev, {
+      from: "user",
+      text: `Laporan diterima: ${details}`,
+      timestamp: new Date().toISOString(),
+      type: "report"
+    }]);
+    console.log("Issue reported:", details);
+  }, []);
+
   const getAccentGradient = () => {
     const gradients = {
       cyan: "from-cyan-500 to-blue-500",
@@ -321,6 +362,35 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     }, typingTime);
   };
 
+  useEffect(() => {
+    const trackActivity = (event) => {
+      setUserActivity((prev) => {
+        const updatedActivity = [...prev, event];
+
+        // Batasi panjang array aktivitas hingga 10 elemen
+        if (updatedActivity.length > 10) {
+          updatedActivity.shift();
+        }
+
+        return updatedActivity;
+      });
+    };
+
+    window.addEventListener("click", trackActivity);
+    window.addEventListener("keydown", trackActivity);
+
+    return () => {
+      window.removeEventListener("click", trackActivity);
+      window.removeEventListener("keydown", trackActivity);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (userActivity.length > 0) {
+      console.log("User activity updated:", userActivity);
+    }
+  }, [userActivity]);
+
   return {
     messages,
     setMessages,
@@ -339,6 +409,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     exportChat,
     getAccentGradient,
     generateBotReply,
-    safeKnowledgeBase
+    safeKnowledgeBase,
+    reportIssue
   };
 }

@@ -396,6 +396,24 @@ export function ChatbotSettings({ onClose, knowledgeBase = {}, updateKnowledgeBa
            typeof value === 'object' && value !== null ? Object.keys(value).length > 0 : false;
   }).length;
 
+  const validateSettings = (settings) => {
+    if (settings.maxFileSize <= 0) {
+      console.warn("Invalid maxFileSize, resetting to default (10MB)");
+      settings.maxFileSize = 10;
+    }
+
+    if (!Array.isArray(settings.allowedFileTypes) || settings.allowedFileTypes.length === 0) {
+      console.warn("Invalid allowedFileTypes, resetting to default");
+      settings.allowedFileTypes = ['txt', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'json', 'csv', 'md'];
+    }
+
+    return settings;
+  };
+
+  useEffect(() => {
+    setSettings((prevSettings) => validateSettings(prevSettings));
+  }, []);
+
   return (
     <AnimatePresence>
       <motion.div

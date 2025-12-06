@@ -1,57 +1,79 @@
 import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { ThumbsUp, ThumbsDown, RefreshCw, Flag } from "lucide-react";
+import ReportModal from "./ReportModal";
+import { useState } from "react";
 
-export function ChatMessage({ 
-  message, 
-  isTyping, 
-  getAccentGradient, 
-  settings 
-}) {
-  if (isTyping) {
-    return (
-      <div className="flex justify-start">
-        <div className="px-3 py-2 rounded-xl bg-gray-700 text-gray-300 text-xs flex items-center gap-2 border border-gray-600">
-          <Loader2 size={14} className="animate-spin" /> 
-          <span>
-            {settings.responseSpeed === 'fast' ? 'Menganalisis...' : 
-             settings.responseSpeed === 'thorough' ? 'Menganalisis mendalam...' : 
-             'Memproses...'}
-          </span>
-        </div>
-      </div>
-    );
-  }
+export function ChatMessage({ message, handleQuickAction }) {
+  const isUser = message.from === "user";
+  const [isReportModalOpen, setReportModalOpen] = useState(false);
+
+  const openReportModal = () => setReportModalOpen(true);
+  const closeReportModal = () => setReportModalOpen(false);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className={`flex ${message.from === "user" ? "justify-end" : "justify-start"}`}
+      className={`flex ${isUser ? "justify-end" : "justify-start"} my-2`}
     >
       <div
-        className={`px-3 py-2 rounded-xl max-w-[85%] break-words shadow-md ${
-          message.from === "user"
-            ? `bg-gradient-to-r ${getAccentGradient()} text-white rounded-br-none`
-            : "bg-gray-700 text-gray-100 rounded-bl-none border border-gray-600"
-        } ${message.type === 'error' ? 'border-l-4 border-l-red-500' : ''} ${
-          message.type === 'success' ? 'border-l-4 border-l-green-500' : ''
+        className={`px-4 py-2 rounded-lg max-w-xs break-words shadow-md ${
+          isUser
+            ? "bg-blue-500 text-white rounded-br-none"
+            : "bg-gray-300 text-gray-800 rounded-bl-none"
         }`}
       >
-        <div className="whitespace-pre-wrap">
-          {message.text.split('**').map((part, index) => 
-            index % 2 === 1 ? <strong key={index}>{part}</strong> : part
-          )}
-        </div>
-        <div className={`text-xs mt-1 ${message.from === "user" ? "text-blue-100" : "text-gray-400"}`}>
-          {new Date(message.timestamp).toLocaleTimeString('id-ID', { 
-            hour: '2-digit', 
-            minute: '2-digit' 
+        <p>{message.text}</p>
+        <span className="block text-xs mt-1 text-right opacity-70">
+          {new Date(message.timestamp).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
           })}
-          {message.type === 'error' && ' • ⚠️'}
-          {message.type === 'success' && ' • ✅'}
-        </div>
+        </span>
+
+        {/* Quick Actions */}
+        {!isUser && (
+          <div className="flex gap-2 mt-2">
+            <button
+              onClick={() => handleQuickAction("like", message.id)}
+              className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
+              title="Like"
+            >
+              <ThumbsUp size={16} />
+            </button>
+            <button
+              onClick={() => handleQuickAction("dislike", message.id)}
+              className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
+              title="Dislike"
+            >
+              <ThumbsDown size={16} />
+            </button>
+            <button
+              onClick={() => handleQuickAction("regenerate", message.id)}
+              className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
+              title="Regenerate"
+            >
+              <RefreshCw size={16} />
+            </button>
+            <button
+              onClick={openReportModal}
+              className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
+              title="Report"
+            >
+              <Flag size={16} />
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Report Modal */}
+      <ReportModal
+        open={isReportModalOpen}
+        onClose={closeReportModal}
+        onSubmit={(reason) => handleQuickAction("report", message.id, reason)}
+        messageId={message.id}
+      />
     </motion.div>
   );
 }
