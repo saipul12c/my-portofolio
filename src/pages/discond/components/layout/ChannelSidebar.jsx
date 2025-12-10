@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
-import { Hash, Volume2, Plus, Users, Settings } from 'lucide-react';
+import { Hash, Volume2, Plus, Users, Settings, X } from 'lucide-react';
 import { useChat } from '../../contexts/ChatContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEffect, useState } from 'react';
+import api from '../../lib/api';
 
-const ChannelSidebar = () => {
+const ChannelSidebar = ({ mobileClose }) => {
   const { selectedServer, selectedChannel, setSelectedChannel } = useChat();
   const { user } = useAuth();
   const { channels: serverChannels } = useChat();
@@ -14,9 +15,7 @@ const ChannelSidebar = () => {
     let mounted = true;
     const fetchActive = async () => {
       try {
-        const res = await fetch('/api/channels/active?limit=10');
-        if (!res.ok) return;
-        const data = await res.json();
+        const data = await api.channels.active(10).catch(e => { console.error('Failed to fetch active channels', e); return []; });
         if (!mounted) return;
         setActiveChannels(data || []);
       } catch (err) {
@@ -31,6 +30,12 @@ const ChannelSidebar = () => {
   if (!selectedServer) {
     return (
       <div className="w-60 bg-[#2f3136] flex flex-col">
+        <div className="md:hidden bg-[#2f3136] p-2 flex items-center justify-between">
+          <div className="text-white text-sm font-semibold">Channels</div>
+          <button onClick={() => mobileClose?.()} className="text-gray-300 p-1">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
         <div className="p-4 border-b border-gray-700">
           <h2 className="text-white font-semibold">Top Channel Aktif</h2>
         </div>
@@ -54,6 +59,12 @@ const ChannelSidebar = () => {
 
   return (
     <div className="w-60 bg-[#2f3136] flex flex-col">
+      <div className="md:hidden bg-[#2f3136] p-2 flex items-center justify-between">
+        <div className="text-white text-sm font-semibold">Channels</div>
+        <button onClick={() => mobileClose?.()} className="text-gray-300 p-1">
+          <X className="w-5 h-5" />
+        </button>
+      </div>
       {/* Server Header */}
       <div className="p-4 border-b border-gray-700 shadow-sm">
         <h2 className="text-white font-semibold flex items-center justify-between">
@@ -85,6 +96,9 @@ const ChannelSidebar = () => {
               >
                 <Hash className="w-4 h-4" />
                 <span className="flex-1">{channel.name}</span>
+                <button onClick={(e) => { e.stopPropagation(); setSelectedChannel(channel); window.dispatchEvent(new CustomEvent('discond:open-channel-settings', { detail: { tab: 'settings' } })); }} className="p-1 text-gray-400 hover:text-gray-200">
+                  <Settings className="w-4 h-4" />
+                </button>
               </motion.div>
             ))}
           </div>

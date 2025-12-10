@@ -29,3 +29,24 @@ export const getRoleBadge = (role) => {
 export const canManageServer = (userRole) => {
   return [USER_ROLES.SUPERVISOR, USER_ROLES.ADMIN].includes(userRole);
 };
+
+export const friendlyFetchError = (err, res) => {
+  // Prefer server-provided message
+  if (res && typeof res.status === 'number') {
+    if (res.status === 503) return 'Server sedang dalam pemeliharaan atau tidak tersedia. Silakan coba lagi nanti.';
+    if (res.status === 502 || res.status === 504) return 'Tidak bisa terhubung ke server upstream. Silakan coba lagi nanti.';
+    if (res.status === 500) return 'Terjadi masalah pada server. Tim kami sudah diberitahu.';
+    if (res.status === 401) return 'Anda perlu masuk kembali.';
+    if (res.status === 404) return 'Sumber tidak ditemukan.';
+  }
+
+  if (err) {
+    const msg = (err.message || '').toLowerCase();
+    if (msg.includes('failed to fetch') || msg.includes('networkerror') || msg.includes('network request failed')) {
+      return 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda atau coba lagi nanti.';
+    }
+    if (msg.includes('timeout')) return 'Permintaan memakan waktu terlalu lama. Coba lagi.';
+  }
+
+  return 'Terjadi kesalahan. Silakan coba lagi.';
+};

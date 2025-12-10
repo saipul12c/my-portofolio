@@ -24,6 +24,7 @@ const Komunitas = () => {
   const [filteredCommunities, setFilteredCommunities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [serverDown, setServerDown] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [showActiveOnly, setShowActiveOnly] = useState(true);
@@ -60,7 +61,14 @@ const Komunitas = () => {
 
       // Fetch always from local JSON backend
       const res = await fetch('/api/communities');
-      if (!res.ok) throw new Error('Failed to fetch from backend');
+      if (!res.ok) {
+        // treat 5xx as server problems
+        if (res.status >= 500) {
+          setServerDown(true);
+          setError('Server sedang dalam perbaikan. Mohon coba lagi nanti.');
+        }
+        throw new Error('Failed to fetch from backend');
+      }
       const data = await res.json();
       const transformedData = (data || []).map(community => ({
         ...community,
@@ -85,7 +93,14 @@ const Komunitas = () => {
       setCommunities(transformedData);
       setFilteredCommunities(transformedData);
     } catch (err) {
-      setError('Gagal memuat data komunitas');
+      // network errors (e.g. server not reachable) typically surface as TypeError
+      const isNetworkError = err instanceof TypeError || (err && /failed to fetch/i.test(err.message || ''));
+      if (isNetworkError) {
+        setServerDown(true);
+        setError('Server sedang dalam perbaikan. Mohon coba lagi nanti.');
+      } else {
+        setError('Gagal memuat data komunitas');
+      }
       console.error('Error fetching communities:', err);
     } finally {
       setLoading(false);
@@ -97,7 +112,10 @@ const Komunitas = () => {
     try {
       // Statistics derived from the same `/api/communities` endpoint
       const res = await fetch('/api/communities');
-      if (!res.ok) throw new Error('Failed to fetch communities for statistics');
+      if (!res.ok) {
+        if (res.status >= 500) setServerDown(true);
+        throw new Error('Failed to fetch communities for statistics');
+      }
       const data = await res.json();
       const totalCommunities = data.length;
       const activeCommunities = data.filter(c => c.is_active !== false).length;
@@ -105,6 +123,8 @@ const Komunitas = () => {
       const uniqueCategories = [...new Set(data.map(c => c.category).filter(Boolean))];
       setStatistics({ totalCommunities, activeCommunities, totalMembers, categories: uniqueCategories });
     } catch (err) {
+      const isNetworkError = err instanceof TypeError || (err && /failed to fetch/i.test(err.message || ''));
+      if (isNetworkError) setServerDown(true);
       console.error('Error fetching statistics:', err);
     }
   };
@@ -116,7 +136,8 @@ const Komunitas = () => {
       const healthy = await checkHealth();
       if (!mounted) return;
       if (!healthy) {
-        setError('Backend tidak tersedia. Pastikan server backend berjalan di `backend/`.');
+        setServerDown(true);
+        setError('Server sedang dalam perbaikan. Mohon coba lagi nanti.');
         setLoading(false);
         return;
       }
@@ -299,6 +320,23 @@ const Komunitas = () => {
     }));
   };
 
+  // Retry flow: re-check health then fetch
+  const handleRetry = async () => {
+    setError('');
+    setServerDown(false);
+    setLoading(true);
+    const healthy = await checkHealth();
+    if (!healthy) {
+      setServerDown(true);
+      setError('Server sedang dalam perbaikan. Mohon coba lagi nanti.');
+      setLoading(false);
+      return;
+    }
+    await fetchCommunities();
+    await fetchStatistics();
+    setLoading(false);
+  };
+
   // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -354,6 +392,23 @@ const Komunitas = () => {
       {/* Statistics Section */}
       <CommunityStatistics statistics={statistics} />
 
+      {/* Server down banner */}
+      {serverDown && (
+        <div className="max-w-6xl mx-auto w-full py-4">
+          <div className="bg-yellow-600/10 border border-yellow-600/20 backdrop-blur-xl rounded-2xl p-4 flex items-center justify-between">
+            <div className="text-sm text-yellow-300">Server sedang dalam perbaikan. Beberapa fitur mungkin tidak tersedia.</div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleRetry}
+                className="px-4 py-2 bg-yellow-500 text-black rounded-xl hover:brightness-95"
+              >
+                Coba Lagi
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Filters Section */}
       <CommunityFilters
         searchTerm={searchTerm}
@@ -393,7 +448,27 @@ const Komunitas = () => {
       <CommunityGrid
         communities={currentItems}
         error={error}
-        onRetry={fetchCommunities}
+        onRetry={handleRetry}
+        onAddCommunity={() => {
+          setEditingId(null);
+          setFormData({
+            name: '',
+            description: '',
+            category: '',
+            members: 0,
+            location: '',
+            contact_email: '',
+            contact_phone: '',
+            contact_website: '',
+            social_media_facebook: '',
+            social_media_twitter: '',
+            social_media_instagram: '',
+            social_media_linkedin: '',
+            tags: [],
+            is_active: true
+          });
+          setShowForm(true);
+        }}
         onViewDetails={handleViewDetails}
         onEdit={handleEdit}
         onDelete={handleDelete}

@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from "framer-motion";
+import { Routes, Route, useLocation } from 'react-router-dom';
 // ✅ PERBAIKAN: Import langsung dari contexts, bukan dari hooks
 import { useAuth } from './contexts/AuthContext';
 import { useChat } from './contexts/ChatContext';
@@ -17,8 +18,16 @@ const Komoniti = () => {
   const { loading: chatLoading } = useChat();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showSelectedBanner, setShowSelectedBanner] = useState(false);
+  const bannerRef = useRef(null);
+  const autoHideMs = 5000; // auto-hide after 5s
   const { selectedCommunity } = useCommunity();
   const { setSelectedServer, createServer } = useChat();
+  const { servers, channels } = useChat();
+  const location = useLocation();
+  const [showMobileServers, setShowMobileServers] = useState(false);
+  const [showMobileChannels, setShowMobileChannels] = useState(false);
+  const [showMobileMembers, setShowMobileMembers] = useState(false);
 
   useEffect(() => {
     if (selectedCommunity) {
@@ -33,11 +42,82 @@ const Komoniti = () => {
       };
       try {
         setSelectedServer(serverLike);
-      } catch (e) {
-        // ignore if chat context not ready
+      } catch {
+        void 0; // ignore if chat context not ready
       }
     }
   }, [selectedCommunity, setSelectedServer]);
+
+  useEffect(() => {
+    if (selectedCommunity) {
+      try {
+        const key = `community-banner-dismissed:${selectedCommunity.id}`;
+        const dismissed = sessionStorage.getItem(key);
+        if (!dismissed) setShowSelectedBanner(true);
+        else setShowSelectedBanner(false);
+      } catch {
+        setShowSelectedBanner(true);
+      }
+    } else setShowSelectedBanner(false);
+  }, [selectedCommunity]);
+
+  useEffect(() => {
+    if (!showSelectedBanner) return;
+
+    // outside click handler
+    const onDocClick = (e) => {
+      if (bannerRef.current && !bannerRef.current.contains(e.target)) {
+        try {
+          if (selectedCommunity) sessionStorage.setItem(`community-banner-dismissed:${selectedCommunity.id}`, '1');
+        } catch { void 0; }
+        setShowSelectedBanner(false);
+      }
+    };
+
+    // auto-hide timer
+    const timer = setTimeout(() => {
+      try {
+        if (selectedCommunity) sessionStorage.setItem(`community-banner-dismissed:${selectedCommunity.id}`, '1');
+      } catch { void 0; }
+      setShowSelectedBanner(false);
+    }, autoHideMs);
+
+    document.addEventListener('mousedown', onDocClick);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('mousedown', onDocClick);
+    };
+  }, [showSelectedBanner, selectedCommunity]);
+
+  // Sync route -> context: read URL parts and set selected server/channel accordingly
+  useEffect(() => {
+    try {
+      // Expected paths: /discord/servers/:serverId or /discord/servers/:serverId/channels/:channelId
+      const parts = location.pathname.replace(/(^\/+|\/+$)/g, '').split('/');
+      const idx = parts.indexOf('servers');
+      if (idx !== -1) {
+        const serverId = parts[idx + 1];
+        if (serverId) {
+          const found = servers?.find(s => String(s.id) === String(serverId)) || null;
+          // support community-<id> synthetic server ids
+          setSelectedServer(found || (serverId.startsWith('community-') ? { id: serverId, name: serverId, icon: '🌐', is_public: true } : null));
+        }
+
+        const chIdx = parts.indexOf('channels');
+        if (chIdx !== -1) {
+          const channelId = parts[chIdx + 1];
+          if (channelId) {
+            const foundCh = channels?.find(c => String(c.id) === String(channelId)) || null;
+            if (foundCh) {
+              try { setSelectedServer(foundCh.server_id ? servers.find(s=>s.id===foundCh.server_id) : null); } catch { void 0; }
+            }
+          }
+        }
+      }
+    } catch {
+      void 0; // ignore routing sync errors
+    }
+  }, [location.pathname, servers, channels, setSelectedServer]);
 
   if (authLoading || chatLoading) {
     return (
@@ -74,7 +154,7 @@ const Komoniti = () => {
     );
   }
 
-  return (
+  const MainLayout = () => (
     <div className="h-screen bg-[var(--color-gray-900)] flex text-white overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0 -z-10">
@@ -82,51 +162,131 @@ const Komoniti = () => {
         <div className="absolute bottom-10 right-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
       </div>
 
-      {/* Server Sidebar */}
-      <ServerSidebar onProfileClick={() => setShowProfileModal(true)} />
+      {/* Server Sidebar (desktop) */}
+      <div className="hidden md:flex">
+        <ServerSidebar onProfileClick={() => setShowProfileModal(true)} />
+      </div>
 
-      {/* Channel Sidebar */}
-      <ChannelSidebar />
+      {/* Channel Sidebar (desktop) */}
+      <div className="hidden md:flex">
+        <ChannelSidebar />
+      </div>
 
       {/* Selected community banner (sync from Komunitas page) */}
-      {selectedCommunity && (
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 z-40">
-          <div className="bg-[#111216]/80 border border-white/10 rounded-lg px-4 py-2 flex items-center gap-4 backdrop-blur">
-            <div>
-              <div className="text-sm text-gray-300">Komunitas dipilih</div>
-              <div className="text-white font-semibold">{selectedCommunity.name}</div>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={async () => {
-                  try {
-                    if (createServer) {
-                      await createServer(selectedCommunity.name);
+      <AnimatePresence>
+        {selectedCommunity && showSelectedBanner && (
+          <motion.div
+            key={selectedCommunity.id}
+            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+            transition={{ duration: 0.18 }}
+            className="absolute top-6 left-1/2 -translate-x-1/2 z-40"
+          >
+            <div
+              ref={bannerRef}
+              onClick={() => {
+                try {
+                  if (selectedCommunity) sessionStorage.setItem(`community-banner-dismissed:${selectedCommunity.id}`, '1');
+                } catch { void 0; }
+                setShowSelectedBanner(false);
+              }}
+              className="bg-[#111216]/80 border border-white/10 rounded-lg px-4 py-2 flex items-center gap-4 backdrop-blur cursor-pointer"
+            >
+              <div>
+                <div className="text-sm text-gray-300">Komunitas dipilih</div>
+                <div className="text-white font-semibold">{selectedCommunity.name}</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    try {
+                      if (createServer) {
+                        const res = await createServer(selectedCommunity.name);
+                        if (res?.error) console.error('Gagal membuka community di chat:', res.error);
+                      }
+                    } catch (err) {
+                      console.error('Error opening community as server:', err);
                     }
-                  } catch (e) {
-                    console.error('Error opening community as server:', e);
-                  }
-                }}
-                className="bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded"
-              >
-                Buka di Chat
-              </button>
+                    try {
+                      if (selectedCommunity) sessionStorage.setItem(`community-banner-dismissed:${selectedCommunity.id}`, '1');
+                    } catch { void 0; }
+                    setShowSelectedBanner(false);
+                  }}
+                  className="bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded"
+                >
+                  Buka di Chat
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Main Chat Area */}
-      <ChatArea />
+      <ChatArea
+        onOpenServers={() => setShowMobileServers(true)}
+        onOpenChannels={() => setShowMobileChannels(true)}
+        onOpenMembers={() => setShowMobileMembers(true)}
+      />
 
       {/* Members Sidebar */}
-      <MemberSidebar />
+      <div className="hidden md:flex">
+        <MemberSidebar />
+      </div>
 
       {/* Profile Modal */}
       {showProfileModal && (
         <UserProfile onClose={() => setShowProfileModal(false)} />
       )}
     </div>
+  );
+
+  // Mobile overlays
+  const MobileOverlays = () => (
+    <>
+      {/* backdrop */}
+      {(showMobileServers || showMobileChannels || showMobileMembers) && (
+        <div className="fixed inset-0 bg-black/40 z-40 md:hidden" onClick={() => { setShowMobileServers(false); setShowMobileChannels(false); setShowMobileMembers(false); }} />
+      )}
+
+      {/* Server sidebar (mobile) */}
+      {showMobileServers && (
+        <div className="fixed left-0 top-0 bottom-0 z-50 md:hidden">
+          <ServerSidebar onProfileClick={() => { setShowProfileModal(true); setShowMobileServers(false); }} mobileClose={() => setShowMobileServers(false)} />
+        </div>
+      )}
+
+      {/* Channel sidebar (mobile) */}
+      {showMobileChannels && (
+        <div className="fixed left-0 top-0 bottom-0 z-50 md:hidden">
+          <ChannelSidebar mobileClose={() => setShowMobileChannels(false)} />
+        </div>
+      )}
+
+      {/* Member sidebar (mobile) */}
+      {showMobileMembers && (
+        <div className="fixed right-0 top-0 bottom-0 z-50 md:hidden">
+          <MemberSidebar mobileClose={() => setShowMobileMembers(false)} />
+        </div>
+      )}
+    </>
+  );
+
+  // Route-aware rendering: allow deep links to servers/channels and profile
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<MainLayout />} />
+        <Route path="servers/:serverId" element={<MainLayout />} />
+        <Route path="servers/:serverId/channels/:channelId" element={<MainLayout />} />
+        <Route path="profile/:userId" element={<MainLayout />} />
+        {/* fallback to main layout for any other nested paths */}
+        <Route path="*" element={<MainLayout />} />
+      </Routes>
+      <MobileOverlays />
+    </>
   );
 };
 

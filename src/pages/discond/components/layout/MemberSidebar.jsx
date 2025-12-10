@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, X } from 'lucide-react';
 import { useChat } from '../../contexts/ChatContext';
 
-const MemberSidebar = () => {
+const MemberSidebar = ({ mobileClose }) => {
   const { members, selectedServer } = useChat();
 
   // Mock data untuk members - dalam aplikasi nyata ini akan diambil dari database
@@ -34,6 +34,12 @@ const MemberSidebar = () => {
   if (!selectedServer) {
     return (
       <div className="w-60 bg-[#2f3136] border-l border-gray-700">
+        <div className="md:hidden bg-[#2f3136] p-2 flex items-center justify-between">
+          <div className="text-white text-sm font-semibold">Members</div>
+          <button onClick={() => mobileClose?.()} className="text-gray-300 p-1">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
         <div className="p-4 border-b border-gray-700">
           <h3 className="text-white font-semibold">Teman</h3>
         </div>
@@ -46,6 +52,12 @@ const MemberSidebar = () => {
 
   return (
     <div className="w-60 bg-[#2f3136] border-l border-gray-700 flex flex-col">
+      <div className="md:hidden bg-[#2f3136] p-2 flex items-center justify-between">
+        <div className="text-white text-sm font-semibold">Members</div>
+        <button onClick={() => mobileClose?.()} className="text-gray-300 p-1">
+          <X className="w-5 h-5" />
+        </button>
+      </div>
       {/* Header */}
       <div className="p-4 border-b border-gray-700">
         <div className="relative">

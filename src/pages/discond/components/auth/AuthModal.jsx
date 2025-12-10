@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import Modal from '../ui/Modal';
+import { friendlyFetchError } from '../../utils/helpers';
 
 const AuthModal = ({ onClose }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -32,7 +33,7 @@ const AuthModal = ({ onClose }) => {
         onClose();
       }
     } catch (err) {
-      setError('Terjadi kesalahan, coba lagi');
+      setError(friendlyFetchError(err));
     } finally {
       setLoading(false);
     }

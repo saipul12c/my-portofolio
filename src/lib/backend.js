@@ -13,6 +13,17 @@ export async function checkHealth(timeout = 3000) {
 
 export async function apiFetch(url, opts) {
   const headers = { ...(opts && opts.headers ? opts.headers : {}) };
+
+  // Automatically attach bearer token from localStorage when available
+  try {
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('token') : null;
+    if (token && !headers.Authorization && !headers.authorization) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+  } catch (e) {
+    // ignore if localStorage isn't available in the environment
+  }
+
   if (!headers['Content-Type'] && !(opts && opts.body instanceof FormData)) {
     headers['Content-Type'] = 'application/json';
   }

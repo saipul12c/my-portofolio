@@ -30,5 +30,53 @@
     "name": "general",
     "position": 0,
     "created_at": "2025-12-02T14:23:38.764Z"
+  },
+  {
+    "id": "52ce6e49-348b-4c8e-927f-f5119d4e8ab7",
+    "server_id": "1765350055694-9414",
+    "server_name": "React Indonesia",
+    "name": "general",
+    "position": 0,
+    "created_at": "2025-12-10T07:00:55.738Z"
+  },
+  {
+    "id": "1d43df8a-38bb-465b-87e2-3e3446cfda78",
+    "server_id": "1765350058110-5406",
+    "server_name": "React Indonesia",
+    "name": "general",
+    "position": 0,
+    "created_at": "2025-12-10T07:00:58.190Z"
+  },
+  {
+    "id": "fef229ad-87ca-4d42-883e-5458e038e840",
+    "server_id": "1765350917559-6574",
+    "server_name": "React Indonesia",
+    "name": "general",
+    "position": 0,
+    "created_at": "2025-12-10T07:15:17.595Z"
+  },
+  {
+    "id": "d2837e8b-960d-4851-8cb6-6ee89b9d8b2a",
+    "server_id": "1765354423009-6839",
+    "server_name": "React Indonesia",
+    "name": "general",
+    "position": 0,
+    "created_at": "2025-12-10T08:13:43.032Z"
+  },
+  {
+    "id": "f106bf20-84b2-4c34-8fde-39815c93b13b",
+    "server_id": "1765354425336-2577",
+    "server_name": "React Indonesia",
+    "name": "general",
+    "position": 0,
+    "created_at": "2025-12-10T08:13:45.367Z"
+  },
+  {
+    "id": "22a410b0-e231-4e6c-b3a2-c329139845e8",
+    "server_id": "1765354426233-9754",
+    "server_name": "React Indonesia",
+    "name": "general",
+    "position": 0,
+    "created_at": "2025-12-10T08:13:47.359Z"
   }
 ]

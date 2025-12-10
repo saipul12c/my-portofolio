@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
-import { Plus, MessageCircle } from 'lucide-react';
+import { Plus, MessageCircle, X } from 'lucide-react';
 import { useState } from 'react';
 import { useChat } from '../../contexts/ChatContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { getTierColor } from '../../utils/helpers';
 
-const ServerSidebar = ({ onProfileClick }) => {
+const ServerSidebar = ({ onProfileClick, mobileClose }) => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newServerName, setNewServerName] = useState('');
   const { servers, selectedServer, setSelectedServer, createServer } = useChat();
@@ -23,6 +23,13 @@ const ServerSidebar = ({ onProfileClick }) => {
 
   return (
     <>
+      {/* Mobile top bar with close button */}
+      <div className="md:hidden bg-[#202225] p-2 flex items-center justify-between">
+        <div className="text-white text-sm font-semibold">Servers</div>
+        <button onClick={() => mobileClose?.()} className="text-gray-300 p-1">
+          <X className="w-5 h-5" />
+        </button>
+      </div>
       <div className="w-16 bg-[#202225] flex flex-col items-center py-3 space-y-4 overflow-y-auto">
         {/* Direct Messages */}
         <motion.button

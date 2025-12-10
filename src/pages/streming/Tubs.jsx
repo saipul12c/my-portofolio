@@ -10,24 +10,24 @@ import VideoCard from './components/VideoCard/VideoCard';
 import VideoPlayerModal from './components/VideoPlayerModal/VideoPlayerModal';
 import ShortsPlayer from './components/ShortsPlayer/ShortsPlayer';
 import RecommendationBanner from './components/RecommendationBanner/RecommendationBanner';
-import videosData from './data/videosData.json';
-import shortsData from './data/shortsData.json';
-import userData from './data/userData.json';
+// Data is now loaded from backend API endpoints (/api/videos, /api/shorts, /api/streaming-users)
 import { NOTIFICATIONS } from './utils/constants';
 import { videoHistory, likedVideos, userSettings } from './utils/storage';
 
 const Tubs = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [videos, setVideos] = useState(videosData);
-  const [shorts] = useState(shortsData);
+  const [allVideos, setAllVideos] = useState([]);
+  const [videos, setVideos] = useState([]);
+  const [shorts, setShorts] = useState([]);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [selectedShort, setSelectedShort] = useState(null);
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
   const [isShortsOpen, setIsShortsOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState('All');
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [user] = useState(userData);
+  const [user, setUser] = useState(null);
+  const [loadingData, setLoadingData] = useState(true);
   const [notifications] = useState(NOTIFICATIONS);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [sortBy, setSortBy] = useState('recommended');
@@ -37,6 +37,37 @@ const Tubs = () => {
     const settings = userSettings.get();
     setIsDarkMode(settings.darkMode);
     document.documentElement.classList.toggle('dark', settings.darkMode);
+
+    // Fetch streaming data from backend APIs
+    let mounted = true;
+    const load = async () => {
+      try {
+        setLoadingData(true);
+        const [videosRes, shortsRes, usersRes] = await Promise.all([
+          fetch('/api/videos'),
+          fetch('/api/shorts'),
+          fetch('/api/streaming-users')
+        ]);
+        const [videosJson, shortsJson, usersJson] = await Promise.all([
+          videosRes.ok ? videosRes.json() : [],
+          shortsRes.ok ? shortsRes.json() : [],
+          usersRes.ok ? usersRes.json() : null
+        ]);
+        if (!mounted) return;
+        setAllVideos(Array.isArray(videosJson) ? videosJson : []);
+        setVideos(Array.isArray(videosJson) ? videosJson : []);
+        setShorts(Array.isArray(shortsJson) ? shortsJson : []);
+        // usersJson may be an object or array; use first user object as `user` prop for components
+        if (Array.isArray(usersJson)) setUser(usersJson[0] || null);
+        else setUser(usersJson || null);
+      } catch (err) {
+        console.error('Failed to load streaming data', err);
+      } finally {
+        setLoadingData(false);
+      }
+    };
+    load();
+    return () => { mounted = false; };
   }, []);
 
   // Toggle theme
@@ -48,18 +79,19 @@ const Tubs = () => {
   };
 
   const handleSearch = useCallback((query = searchQuery) => {
-    if (query.trim()) {
-      const filtered = videosData.filter(video =>
-        video.title.toLowerCase().includes(query.toLowerCase()) ||
-        video.channel.toLowerCase().includes(query.toLowerCase()) ||
-        video.description?.toLowerCase().includes(query.toLowerCase()) ||
-        video.tags?.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+    const q = (query || '').trim().toLowerCase();
+    if (q) {
+      const filtered = allVideos.filter(video =>
+        (video.title || '').toLowerCase().includes(q) ||
+        (video.channel || '').toLowerCase().includes(q) ||
+        (video.description || '').toLowerCase().includes(q) ||
+        (video.tags || []).some(tag => String(tag).toLowerCase().includes(q))
       );
       setVideos(filtered);
     } else {
-      setVideos(videosData);
+      setVideos(allVideos);
     }
-  }, [searchQuery]);
+  }, [allVideos, searchQuery]);
 
   const handleVoiceSearch = () => {
     // Check if browser supports Web Speech API
@@ -97,18 +129,18 @@ const Tubs = () => {
     setActiveFilter(filter);
     
     if (filter === 'Shorts') {
-      // Show shorts
+      // handled by UI which switches to shorts view
     } else if (filter === 'Live') {
-      const liveVideos = videosData.filter(video => video.isLive);
+      const liveVideos = (allVideos || []).filter(video => video.isLive);
       setVideos(liveVideos);
     } else if (filter !== 'All') {
-      const filtered = videosData.filter(video => 
-        video.category?.includes(filter) || 
-        video.tags?.includes(filter.toLowerCase())
+      const filtered = (allVideos || []).filter(video => 
+        (video.category || '').includes(filter) || 
+        (video.tags || []).includes(filter.toLowerCase())
       );
       setVideos(filtered);
     } else {
-      setVideos(videosData);
+      setVideos(allVideos);
     }
   };
 
@@ -250,12 +282,16 @@ const Tubs = () => {
                       <div className="bg-current rounded-sm"></div>
                       <div className="bg-current rounded-sm"></div>
                     </div>
-                  </button>
                   <button 
-                    onClick={() => setViewMode('list')}
-                    className={`px-3 py-1.5 rounded-md transition-colors ${
-                      viewMode === 'list' ? 'bg-white dark:bg-gray-700' : ''
-                    }`}
+                    onClick={() => {
+                      setSearchQuery('');
+                      setActiveFilter('All');
+                      setVideos(allVideos);
+                    }}
+                    className="px-6 py-3 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-full transition-colors font-medium"
+                  >
+                    Browse trending videos
+                  </button>
                   >
                     <div className="w-5 h-5 flex flex-col justify-between">
                       <div className="w-full h-1 bg-current rounded-sm"></div>

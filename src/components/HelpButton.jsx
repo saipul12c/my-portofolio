@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { HelpCircle, X, Wrench, Info } from "lucide-react";
 import HelpMenu from "./helpbutton/HelpMenu";
 import { ErrorBoundary } from "react-error-boundary";
-import { ChatbotWindow } from "./helpbutton/chat/components/logic/ChatbotWindow";
+import { ChatbotWindow } from "./helpbutton/chat/components/ChatbotWindow";
 import { ChatbotSettings } from "./helpbutton/chat/components/ChatbotSettings";
 
 function ChatbotErrorFallback({ error, resetErrorBoundary }) {

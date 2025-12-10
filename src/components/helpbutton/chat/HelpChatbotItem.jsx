@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { MessageCircle, Sparkles } from "lucide-react";
-import { ChatbotWindow } from "./components/logic/ChatbotWindow";
+import { ChatbotWindow } from "./components/ChatbotWindow";
 import { ChatbotSettings } from "./components/ChatbotSettings";
 
 export default function HelpChatbotItem() {

@@ -5,6 +5,7 @@ const CommunityGrid = ({
   communities,
   error,
   onRetry,
+  onAddCommunity,
   onViewDetails,
   onEdit,
   onDelete,
@@ -180,6 +181,16 @@ const CommunityGrid = ({
           <p className="text-gray-400 mb-4">
             Coba ubah filter pencarian atau tambahkan komunitas baru
           </p>
+          <div className="flex justify-center">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => onAddCommunity && onAddCommunity()}
+              className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:opacity-90 transition-all shadow-lg"
+            >
+              Tambah Komunitas
+            </motion.button>
+          </div>
         </motion.div>
       )}
 

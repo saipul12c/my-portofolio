@@ -1,11 +1,18 @@
 import { motion } from "framer-motion";
-import { Hash, Pin, Bell, Users, Inbox, HelpCircle, Search, Plus, Gift, Image, Smile, Sticker } from 'lucide-react';
+import { Hash, Pin, Bell, BellOff, Users, Inbox, HelpCircle, Search, Plus, Gift, Image, Smile, Sticker, Menu, List } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import ChannelSettings from './ChannelSettings';
+import Modal from '../ui/Modal';
+import api from '../../lib/api';
 import { useChat } from '../../contexts/ChatContext';
 import { useAuth } from '../../contexts/AuthContext';
 
-const ChatArea = () => {
+const ChatArea = ({ onOpenServers, onOpenChannels, onOpenMembers }) => {
   const [message, setMessage] = useState('');
+  const [openSettings, setOpenSettings] = useState(false);
+  const [settingsTab, setSettingsTab] = useState('notifications');
+  const [openHelp, setOpenHelp] = useState(false);
+  const [channelMuted, setChannelMuted] = useState(false);
   const messagesEndRef = useRef(null);
   const { selectedChannel, messages, sendMessage } = useChat();
   const { user } = useAuth();
@@ -17,6 +24,29 @@ const ChatArea = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      if (!selectedChannel) { setChannelMuted(false); return; }
+      try {
+        const s = await api.channels.settings.get(selectedChannel.id).catch(() => null);
+        if (!mounted) return;
+        setChannelMuted(!!(s && s.muted));
+      } catch (e) { console.error(e); }
+    })();
+    return () => { mounted = false; };
+  }, [selectedChannel]);
+
+  useEffect(() => {
+    const handler = (e) => {
+      const tab = e?.detail?.tab || 'settings';
+      setSettingsTab(tab);
+      setOpenSettings(true);
+    };
+    window.addEventListener('discond:open-channel-settings', handler);
+    return () => window.removeEventListener('discond:open-channel-settings', handler);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -56,6 +86,18 @@ const ChatArea = () => {
       {/* Channel Header */}
       <div className="h-12 border-b border-gray-700 px-4 flex items-center justify-between shadow-sm">
         <div className="flex items-center space-x-2">
+          {/* Mobile controls: show on small screens only */}
+          <div className="flex items-center space-x-2 md:hidden mr-2">
+            <button onClick={() => onOpenServers?.()} className="p-2 text-gray-300 hover:text-white">
+              <Menu className="w-5 h-5" />
+            </button>
+            <button onClick={() => onOpenChannels?.()} className="p-2 text-gray-300 hover:text-white">
+              <List className="w-5 h-5" />
+            </button>
+            <button onClick={() => onOpenMembers?.()} className="p-2 text-gray-300 hover:text-white">
+              <Users className="w-5 h-5" />
+            </button>
+          </div>
           <Hash className="w-5 h-5 text-gray-400" />
           <h3 className="text-white font-semibold">{selectedChannel.name}</h3>
           <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
@@ -63,13 +105,13 @@ const ChatArea = () => {
         </div>
         
         <div className="flex items-center space-x-4">
-          <button className="text-gray-400 hover:text-gray-300 transition-colors">
-            <Bell className="w-5 h-5" />
+          <button title={channelMuted ? 'Notifikasi (dibisukan)' : 'Notifikasi'} onClick={() => { setOpenSettings(true); setSettingsTab('notifications'); }} className="text-gray-400 hover:text-gray-300 transition-colors">
+            {channelMuted ? <BellOff className="w-5 h-5" /> : <Bell className="w-5 h-5" />}
           </button>
-          <button className="text-gray-400 hover:text-gray-300 transition-colors">
+          <button onClick={() => { setOpenSettings(true); setSettingsTab('pins'); }} className="text-gray-400 hover:text-gray-300 transition-colors">
             <Pin className="w-5 h-5" />
           </button>
-          <button className="text-gray-400 hover:text-gray-300 transition-colors">
+          <button onClick={() => { onOpenMembers?.(); setOpenSettings(true); setSettingsTab('members'); }} className="text-gray-400 hover:text-gray-300 transition-colors">
             <Users className="w-5 h-5" />
           </button>
           
@@ -82,10 +124,10 @@ const ChatArea = () => {
             <Search className="w-4 h-4 text-gray-400 absolute right-2 top-1.5" />
           </div>
           
-          <button className="text-gray-400 hover:text-gray-300 transition-colors">
+          <button onClick={() => { setOpenSettings(true); setSettingsTab('pins'); }} className="text-gray-400 hover:text-gray-300 transition-colors">
             <Inbox className="w-5 h-5" />
           </button>
-          <button className="text-gray-400 hover:text-gray-300 transition-colors">
+          <button onClick={() => { setOpenHelp(true); }} className="text-gray-400 hover:text-gray-300 transition-colors">
             <HelpCircle className="w-5 h-5" />
           </button>
         </div>
@@ -179,6 +221,21 @@ const ChatArea = () => {
           Tekan Enter untuk mengirim • Shift+Enter untuk baris baru
         </div>
       </div>
+      {openSettings && (
+        <ChannelSettings channel={selectedChannel} openTab={settingsTab} onClose={() => setOpenSettings(false)} />
+      )}
+
+      {openHelp && (
+        <Modal onClose={() => setOpenHelp(false)} size="sm">
+          <div className="text-white">
+            <h3 className="font-semibold text-lg mb-2">Bantuan Channel</h3>
+            <p className="text-gray-300 text-sm">Ini adalah bantuan singkat untuk fitur channel. Klik ikon untuk mengakses pengaturan, pin, dan daftar anggota.</p>
+            <div className="mt-4 text-right">
+              <button onClick={() => setOpenHelp(false)} className="px-3 py-1 rounded bg-cyan-600">Tutup</button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

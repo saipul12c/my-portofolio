@@ -48,7 +48,7 @@ import Education from "./pages/sekolah/education";
 import Visi from "./pages/visi/visi";
 import CVsaya from "./pages/cv/CVsaya";
 import Streming from "./pages/streming/Tubs";
-import AI_Docs from "./pages/help/ai/AI_Docs";
+import AI_Docs from "./pages/help/AI_Docs";
 import AI_DocDetail from "./pages/help/ai/AI_DocDetail";
 
 import Hobbies from "./pages/hub/Hobbies";
@@ -169,8 +169,8 @@ export default function App() {
                         <Route path="/help/version" element={<Info />} />
                         <Route path="/help/version/:slug" element={<InfoDetail />} />
                         <Route path="/help/docs" element={<Doct />} />
-                        <Route path="/help/ai-docs" element={<AI_Docs />} />
-                        <Route path="/help/ai-docs/:slug" element={<AI_DocDetail />} />
+                        <Route path="/help/docs/ai" element={<AI_Docs />} />
+                        <Route path="/help/docs/ai/:slug" element={<AI_DocDetail />} />
                         <Route path="/help/faq" element={<FAQ />} />
 
                         <Route path="/help/commitment" element={<Komit />} />
@@ -252,7 +252,7 @@ export default function App() {
               {/* ✅ Route khusus tanpa Navbar & Footer */}
               {/* 🛡️ Discord dengan LaunchGuard tapi tanpa layout standar */}
               <Route
-                path="/discord"
+                path="/discord/*"
                 element={
                   <LaunchGuard>
                     <PlainLayout>
