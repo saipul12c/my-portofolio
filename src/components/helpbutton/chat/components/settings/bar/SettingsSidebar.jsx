@@ -1,4 +1,4 @@
-import { Palette, Cpu, Database, FileText, Archive, Zap, Shield } from "lucide-react";
+import { Palette, Cpu, Database, FileText, Archive, Zap, Shield, Keyboard } from "lucide-react";
 
 export function SettingsSidebar({ activeTab, setActiveTab }) {
   const tabs = [
@@ -8,7 +8,8 @@ export function SettingsSidebar({ activeTab, setActiveTab }) {
     { id: "files", label: "File & Data", icon: FileText },
     { id: "storage", label: "Storage & Backup", icon: Archive },
     { id: "perform", label: "Performa", icon: Zap },
-    { id: "privacy", label: "Privasi & Keamanan", icon: Shield }
+    { id: "privacy", label: "Privasi & Keamanan", icon: Shield },
+    { id: "shortcuts", label: "Keyboard Shortcuts", icon: Keyboard }
   ];
 
   const getTabClasses = (tabId) => {

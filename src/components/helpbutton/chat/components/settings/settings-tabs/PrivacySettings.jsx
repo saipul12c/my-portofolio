@@ -1,6 +1,18 @@
 import { ToggleSwitch } from "../components/ToggleSwitch";
 
 export function PrivacySettings({ settings, handleSave, clearUploadedData }) {
+  const handleClearChatHistory = () => {
+    if (confirm("Apakah Anda yakin ingin menghapus semua riwayat chat? Tindakan ini tidak dapat dibatalkan.")) {
+      try {
+        localStorage.removeItem("saipul_chat_history");
+        alert("Riwayat chat berhasil dihapus!");
+      } catch (e) {
+        console.error("Error clearing chat history:", e);
+        alert("Error menghapus riwayat chat.");
+      }
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="space-y-3">
@@ -65,18 +77,15 @@ export function PrivacySettings({ settings, handleSave, clearUploadedData }) {
 
       <div className="space-y-2">
         <button
-          onClick={() => {
-            localStorage.removeItem("saipul_chat_history");
-            alert("Riwayat chat berhasil dihapus!");
-          }}
-          className="w-full px-4 py-2 rounded-lg bg-red-900/30 hover:bg-red-800/50 transition text-red-400 border border-red-500/30"
+          onClick={handleClearChatHistory}
+          className="w-full px-4 py-2 rounded-lg bg-red-900/30 hover:bg-red-800/50 transition text-red-400 border border-red-500/30 flex items-center justify-center gap-2"
         >
           🗑️ Hapus Semua Riwayat Chat
         </button>
         
         <button
           onClick={clearUploadedData}
-          className="w-full px-4 py-2 rounded-lg bg-orange-900/30 hover:bg-orange-800/50 transition text-orange-400 border border-orange-500/30"
+          className="w-full px-4 py-2 rounded-lg bg-orange-900/30 hover:bg-orange-800/50 transition text-orange-400 border border-orange-500/30 flex items-center justify-center gap-2"
         >
           🗑️ Hapus Semua Data Uploaded
         </button>

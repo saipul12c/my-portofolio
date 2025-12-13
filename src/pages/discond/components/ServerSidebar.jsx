@@ -1,17 +1,26 @@
 import { motion } from "framer-motion";
 import { Plus, MessageCircle, Users, Crown } from 'lucide-react';
 import { useState } from 'react';
+import AuthButtons from './auth/AuthButtons';
+import { useChat } from '../contexts/ChatContext';
+import { useAuth } from '../contexts/AuthContext';
 
-const ServerSidebar = ({ servers, selectedServer, onServerSelect, onCreateServer, userName }) => {
+const ServerSidebar = ({ onAuthRequest, mobileClose }) => {
+  const { servers, selectedServer, setSelectedServer, createServer } = useChat();
+  const { user } = useAuth();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newServerName, setNewServerName] = useState('');
 
-  const handleCreateServer = () => {
-    if (newServerName.trim()) {
-      onCreateServer(newServerName.trim());
-      setNewServerName('');
-      setShowCreateModal(false);
+  const handleCreateServer = async () => {
+    if (!newServerName.trim()) return;
+    try {
+      const res = await createServer(newServerName.trim());
+      if (res?.error) console.error('Create server error', res.error);
+    } catch (err) {
+      console.error('Create server exception', err);
     }
+    setNewServerName('');
+    setShowCreateModal(false);
   };
 
   return (
@@ -34,7 +43,7 @@ const ServerSidebar = ({ servers, selectedServer, onServerSelect, onCreateServer
         <div className="w-8 h-0.5 bg-gray-600 rounded-full mx-auto"></div>
 
         {/* Server List */}
-        {servers.map(server => (
+        {(servers || []).map(server => (
           <motion.button
             key={server.id}
             whileHover={{ scale: 1.1 }}
@@ -44,7 +53,7 @@ const ServerSidebar = ({ servers, selectedServer, onServerSelect, onCreateServer
                 ? 'bg-cyan-600 text-white rounded-2xl'
                 : 'bg-[#36393f] text-gray-300 hover:bg-cyan-600 hover:text-white hover:rounded-2xl'
             }`}
-            onClick={() => onServerSelect(server)}
+            onClick={() => setSelectedServer(server)}
           >
             <span className="text-lg font-semibold">{server.icon || '🖥️'}</span>
             
@@ -65,15 +74,9 @@ const ServerSidebar = ({ servers, selectedServer, onServerSelect, onCreateServer
           <Plus className="w-6 h-6" />
         </motion.button>
 
-        {/* User Profile */}
-        <div className="mt-auto">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="w-10 h-10 bg-cyan-600 rounded-full flex items-center justify-center text-white font-semibold text-sm cursor-pointer"
-            title={userName}
-          >
-            {userName.substring(0, 2).toUpperCase()}
-          </motion.div>
+        {/* User Profile / Auth Controls */}
+        <div className="mt-auto w-full px-2">
+          <AuthButtons onAuthRequest={onAuthRequest} />
         </div>
       </div>
 

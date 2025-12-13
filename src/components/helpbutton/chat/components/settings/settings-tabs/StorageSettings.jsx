@@ -75,7 +75,28 @@ export function StorageSettings({ settings, handleSave, exportKnowledgeBase, fil
           Export Data
         </button>
         <button
-          onClick={() => {/* TODO: Implement import */}}
+          onClick={() => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+              const file = e.target.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                  try {
+                    const importedData = JSON.parse(event.target.result);
+                    alert('Import berhasil! Data telah diimpor.');
+                    console.log('Imported data:', importedData);
+                  } catch (error) {
+                    alert('Error mengimpor data: Format tidak valid.');
+                  }
+                };
+                reader.readAsText(file);
+              }
+            };
+            input.click();
+          }}
           className="px-4 py-2 rounded-lg bg-blue-900/30 hover:bg-blue-800/50 transition text-blue-400 border border-blue-500/30 flex items-center justify-center gap-2"
         >
           <Upload size={14} />

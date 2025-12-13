@@ -2,20 +2,21 @@
 
 Semua perubahan penting pada project My Portfolio Website akan didokumentasikan di file ini. Format berdasarkan [Keep a Changelog](https://keepachangelog.com/id-ID/1.0.0/).
 
-**Latest Release:** v1.18.30 (2025-12-05)
+**Latest Release:** v1.18.35 (2025-12-12)
 
 ## 📑 Daftar Isi
 - [Dalam Proses Penyempurnaan](#dalam-proses-penyempurnaan)
 - [v1.30.0](#v1300---coming-soon)
 - [v1.20.0](#v1200---coming-soon)
 - [v1.19.0](#v1190---coming-soon)
+- [v1.18.35](#v11835---2025-12-12)
 - [v1.18.30](#v11830---2025-12-05)
 - [v1.18.1](#v1181---2025-11-20)
 - [v1.17.0](#v1170---2025-11-20)
-- [v1.16.0](#v1160---2025-11-20)
-- [v1.15.0](#v1150---2025-11-18)
-- [v1.14.0](#v1140---2025-11-07)
-- [v1.13.0](#v1130---2025-11-19)
+- [v1.16.0](#v1160---2025-10-20)
+- [v1.15.0](#v1150---2025-09-18)
+- [v1.14.0](#v1140---2025-08-07)
+- [v1.13.0](#v1130---2025-07-19)
 - [📊 Release Statistics](#-release-statistics)
 - [🔄 Migration Guides](#-migration-guides)
 - [🚀 Upgrade Path Recommendations](#-upgrade-path-recommendations)
@@ -25,39 +26,119 @@ Semua perubahan penting pada project My Portfolio Website akan didokumentasikan 
 
 ---
 
----
-
 ## Dalam Proses Penyempurnaan
 
-Sedang dalam pengembangan.
+Kami sedang mengembangkan dan menyempurnakan platform. Fitur-fitur baru akan segera hadir untuk memberikan pengalaman terbaik bagi pengguna.
 
-> Catatan tentang versi: daftar diurutkan berdasarkan tanggal rilis (terbaru → terlama). Beberapa komponen internal menggunakan skema versi tersendiri (mis. 2.x) untuk menandai perubahan API/arsitektur — ini normal dan tidak selalu menunjukkan versi global proyek.
+> **Catatan tentang versi**: Daftar versi diurutkan dari yang terbaru ke terlama. Beberapa komponen teknis memiliki versi internal sendiri (misalnya 2.x) yang menandai perubahan besar dalam struktur teknis - ini wajar dan tidak selalu berarti versi keseluruhan platform berubah.
 
-## [v1.30.0] - Coming soon
+## [v2.0.0] - Coming soon
 
-**Status:** PLANNED | **Release Channel:** Roadmap | **Type:** Minor
+**Status:** PLANNED | **Release Channel:** Stable | **Type:** Major
 
-### ✨ Coming soon
+### 🚀 CreativeHub Official Launch
+- **Platform Konten Kreator Revolusioner**: Launch resmi CreativeHub - platform terpadu untuk kreator konten
+- **Core Features**:
+  - Komunitas Interaktif untuk kreator dan audiens
+  - Livestreaming HD dengan interaksi real-time
+  - Marketplace Digital untuk produk digital dan fisik
+  - Analytics Mendalam untuk tracking performance
+- **Integrated Ecosystem**: Sistem terpadu komunitas, streaming, dan marketplace
+- **Multi-Platform Support**: Dukungan berbagai jenis konten dan monetisasi
+- **Platform All-in-One**: Semua yang kreator butuh dalam satu tempat
+- **Komunitas Aktif**: Tempat berkumpulnya kreator dan penikmat konten
+- **Streaming HD**: Live streaming dengan kualitas tinggi dan interaksi langsung
+- **Marketplace**: Jual beli produk digital dan fisik dengan mudah
+- **Analytics**: Pantau performa konten dengan data lengkap
 
-- New pages planned: **Streaming** (halaman streming) — full streaming UI polish and responsive improvements.
-- New pages planned: **Streaming** (halaman streaming) — full streaming UI polish and responsive improvements.
-- **Komunitas** page (halaman komunitas) integration and community features roadmap.
+## [v1.30.0] - Comingsoon
 
-## [v1.20.0] - Coming soon
+**Status:** DIRENCANAKAN | **Jenis Rilis:** Peningkatan Minor
 
-**Status:** PLANNED | **Release Channel:** Roadmap | **Type:** Minor
+### ✨ Yang Akan Datang
+- **Komunitas Lengkap**: Halaman komunitas akan memiliki forum diskusi lengkap, statistik anggota, dan sistem acara yang terorganisir
+- **Streaming Lebih Baik**: Kualitas streaming akan ditingkatkan dengan opsi resolusi lebih banyak dan fitur interaksi langsung yang lebih responsif
+- **Terintegrasi**: Dua platform (CreativeHub dan TechInnovate) akan terhubung lebih baik, memudahkan pengguna berpindah antar layanan
 
-### ✨ Coming soon
+### 🎯 Untuk Siapa?
+- **Kreator Konten**: Akan mendapatkan komunitas yang lebih aktif dan alat streaming yang lebih baik
+- **Developer Teknologi**: Akan mendapatkan forum diskusi teknis yang lebih terstruktur
+- **Semua Pengguna**: Pengalaman lebih lancar antara platform konten dan teknologi
 
-- Incremental UI/UX improvements for media pages and community integrations.
+## [v1.20.0] - Comingsoon
 
-## [v1.19.0] - Coming soon
+**Status:** DIRENCANAKAN | **Jenis Rilis:** Persiapan Launch
 
-**Status:** PLANNED | **Release Channel:** Roadmap | **Type:** Minor
+### ✨ Persiapan TechInnovate
+- **Platform Teknologi Siap Launch**: Semua fitur utama TechInnovate sudah lengkap dan siap digunakan
+- **Komunitas Developer**: Forum khusus untuk programmer, cloud engineer, dan ahli data science
+- **Streaming Teknikal**: Platform khusus untuk live coding, sharing pengetahuan teknologi, dan tutorial programming
 
-### ✨ Coming soon
+### 🎯 Untuk Siapa?
+- **Perusahaan**: Yang membutuhkan solusi teknologi cloud dan keamanan tinggi
+- **Developer**: Yang ingin belajar dan berkolaborasi dalam proyek teknologi
+- **Startup**: Yang membutuhkan infrastructure kelas enterprise
 
-- Preparation release for streaming and community previews; minor layout refinements and QA pass.
+## [v1.19.0] - Comingson
+
+**Status:** DIRENCANAKAN | **Jenis Rilis:** Preview Release
+
+### ✨ Preview CreativeHub
+- **Coba Dulu**: Versi percobaan untuk pengguna terbatas sebelum launch resmi
+- **Alat untuk Kreator**: Tools lengkap untuk membuat, menganalisis, dan menjual konten
+- **Bahasa Lebih Banyak**: Dukungan bahasa internasional untuk menjangkau lebih banyak negara
+
+### 🚀 TechInnovate Live!
+- **Platform Teknologi Siap Pakai**: Solusi lengkap untuk kebutuhan teknologi bisnis modern
+- **Cloud Aman**: Penyimpanan data di cloud dengan keamanan tingkat tinggi
+- **Mobile First**: Bisa diakses optimal dari smartphone, tablet, dan desktop
+- **Untuk Bisnis Besar**: Infrastructure yang kuat untuk perusahaan skala besar
+
+### 🎯 Untuk Siapa?
+- **Kreator Pemula**: Bisa mencoba platform sebelum commit
+- **Kreator Profesional**: Bisa memberikan feedback untuk perbaikan
+- **Tim Kreatif**: Bisa berkolaborasi dalam satu platform
+- **IT Manager**: Yang butuh solusi teknologi terpercaya
+- **Software Developer**: Yang butuh tools dan komunitas programming
+- **Bisnis Digital**: Yang ingin teknologi mereka lebih efisien dan aman
+
+---
+
+## [v1.18.35] - 2025-12-12
+
+**Status:** CURRENT | **Release Channel:** Production | **Type:** Patch
+
+### ✨ Added / Diperbarui
+
+- **Util file terpusat**: Menambahkan `src/components/helpbutton/chat/components/logic/utils/fileProcessor.js` untuk mengkonsolidasikan logika pembacaan file, ekstraksi teks, validasi, penyimpanan ke localStorage, dan ekspor KB.
+- **Refactor hooks & settings**: Memperbarui `useFileUpload.js`, `useFileManagement.js`, `useSettings.js`, dan `ChatbotSettings.jsx` agar memakai util bersama, mengurangi duplikasi, dan menstandarkan `STORAGE_KEYS` & `DEFAULT_SETTINGS`.
+- **Integrasi berkas ke KB**: Menambahkan dispatch event (`saipul_kb_updated`, `saipul_file_processed`) saat file selesai disimpan sehingga `useChatbot` otomatis memuat ulang data KB.
+- **Shortcut keyboard yang dapat dikonfigurasi**: `useChatbot.js` sekarang membaca `settings.shortcuts` dan mendaftarkan kombinasi shortcut (termasuk `openUpload` dan `toggleSpeech`); UI Settings menambahkan tab `Keyboard Shortcuts` untuk edit.
+- **Progress & notifikasi upload**: Menambahkan state `uploadProgress`, event `saipul_upload_progress`, dan progress bar di `FileSettings.jsx` untuk menampilkan proses pengunggahan secara real-time.
+- **Math engine**: Mengganti evaluator math dengan `mathjs` dan merombak `mathCalculator.js` untuk mendukung turunan simbolik dan integrasi numerik yang lebih aman.
+- **Speech recognition**: Memperbarui hook `useSpeechRecognition.js` agar mendukung callback dan integrasi toggle via event `saipul_toggle_speech`.
+
+### 🔧 Fixed / Changed
+
+- Mengubah waktu generasi saran (suggestions) sehingga dibuat berdasarkan pesan terakhir pengguna dan dibersihkan saat mengetik atau mengirim pesan.
+- Memperbaiki beberapa path import dan referensi hook/component yang menyebabkan error bundling Vite.
+
+### 📁 Affected Files
+
+- `src/components/helpbutton/chat/components/logic/utils/fileProcessor.js`
+- `src/components/helpbutton/chat/components/logic/hook/useFileUpload.js`
+- `src/components/helpbutton/chat/components/settings/hooks/useFileManagement.js`
+- `src/components/helpbutton/chat/components/ChatbotSettings.jsx`
+- `src/components/helpbutton/chat/components/settings/hooks/useSettings.js`
+- `src/components/helpbutton/chat/components/logic/hook/useChatbot.js`
+- `src/components/helpbutton/chat/components/logic/utils/mathCalculator.js`
+- `src/components/helpbutton/chat/components/logic/hook/useSpeechRecognition.js`
+- `src/components/helpbutton/chat/components/ChatbotWindow.jsx`
+- `src/components/helpbutton/chat/components/logic/components/ChatInput.jsx`
+- `src/components/helpbutton/chat/components/settings/conten/SettingsContent.jsx`
+- `src/components/helpbutton/chat/components/settings/bar/SettingsSidebar.jsx`
+- `src/components/helpbutton/chat/components/settings/settings-tabs/FileSettings.jsx`
+- `package.json` (menambahkan dependency `mathjs`)
 
 ---
 
@@ -87,9 +168,6 @@ Sedang dalam pengembangan.
 - `src/components/helpbutton/chat/config.js`
 - `src/pages/help/ai/AI_Docs.jsx`
 - `src/components/HelpButton.jsx`
-
----
-
 
 ## **[v1.18.1] – 2025-11-20**
 

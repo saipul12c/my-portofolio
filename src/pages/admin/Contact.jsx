@@ -1,5 +1,5 @@
 import { motion, useAnimation } from "framer-motion";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useInView } from "react-intersection-observer";
 import emailjs from "emailjs-com";
 import { toast, ToastContainer } from "react-toastify";
@@ -72,7 +72,7 @@ export default function Contact() {
   }, []);
 
   // Enhanced fetch data dengan retry logic
-  const fetchContacts = async (retryCount = 0) => {
+  const fetchContacts = useCallback(async (retryCount = 0) => {
     try {
       const res = await fetch(SHEETDB_URL);
       if (!res.ok) throw new Error("Gagal fetch data");
@@ -107,11 +107,11 @@ export default function Contact() {
       setLoadingContacts(false);
       setRefreshLoading(false);
     }
-  };
+  }, [SHEETDB_URL]);
 
   useEffect(() => {
     fetchContacts();
-  }, [SHEETDB_URL]);
+  }, [fetchContacts]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

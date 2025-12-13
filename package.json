@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:all": "concurrently \"npm --prefix backend run dev\" \"npm run dev\"",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -20,6 +21,7 @@
     "emailjs-com": "^3.2.0",
     "framer-motion": "^12.23.22",
     "lucide-react": "^0.545.0",
+    "mathjs": "^15.1.0",
     "meshline": "^3.3.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

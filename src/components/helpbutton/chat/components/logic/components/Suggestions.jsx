@@ -1,5 +1,10 @@
-export function Suggestions({ suggestions, setInput }) {
-  if (suggestions.length === 0) return null;
+export function Suggestions({ suggestions = [], setInput, onSelect }) {
+  if (!suggestions || suggestions.length === 0) return null;
+
+  const handleClick = (s) => {
+    if (typeof onSelect === 'function') return onSelect(s);
+    if (typeof setInput === 'function') return setInput(s);
+  };
 
   return (
     <div className="space-y-2">
@@ -8,7 +13,8 @@ export function Suggestions({ suggestions, setInput }) {
         {suggestions.map((suggestion, index) => (
           <button
             key={index}
-            onClick={() => setInput(suggestion)}
+            type="button"
+            onClick={() => handleClick(suggestion)}
             className="text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded transition border border-gray-600 max-w-[45%] truncate"
             title={suggestion}
           >

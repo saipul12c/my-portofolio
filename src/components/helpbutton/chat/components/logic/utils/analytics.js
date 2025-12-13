@@ -1,6 +1,6 @@
 import { getRandomItem } from './helpers';
 
-export function generatePrediction(dataType, context) {
+export function generatePrediction(dataType) {
   const predictions = {
     harga: {
       items: ['saham teknologi', 'emas', 'bitcoin', 'properti residensial', 'mata uang asing'],

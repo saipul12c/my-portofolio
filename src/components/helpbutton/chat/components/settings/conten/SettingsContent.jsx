@@ -1,11 +1,11 @@
 import { Download, RefreshCw, Trash2, Upload } from "lucide-react";
-import { GeneralSettings } from "./settings-tabs/GeneralSettings";
-import { AISettings } from "./settings-tabs/AISettings";
-import { DataSettings } from "./settings-tabs/DataSettings";
-import { FileSettings } from "./settings-tabs/FileSettings";
-import { StorageSettings } from "./settings-tabs/StorageSettings";
-import { PerformanceSettings } from "./settings-tabs/PerformanceSettings";
-import { PrivacySettings } from "./settings-tabs/PrivacySettings";
+import { GeneralSettings } from "../settings-tabs/GeneralSettings";
+import { AISettings } from "../settings-tabs/AISettings";
+import { DataSettings } from "../settings-tabs/DataSettings";
+import { FileSettings } from "../settings-tabs/FileSettings";
+import { StorageSettings } from "../settings-tabs/StorageSettings";
+import { PerformanceSettings } from "../settings-tabs/PerformanceSettings";
+import { PrivacySettings } from "../settings-tabs/PrivacySettings";
 
 export function SettingsContent({
   activeTab,
@@ -22,7 +22,7 @@ export function SettingsContent({
   formatFileSize,
   totalKBCategories,
   knowledgeStats,
-  safeKnowledgeBase
+  
 }) {
   const renderTabContent = () => {
     const commonProps = {
@@ -49,6 +49,7 @@ export function SettingsContent({
             clearUploadedData={clearUploadedData}
             getFileIcon={getFileIcon}
             uploadedFiles={uploadedFiles}
+            uploadProgress={commonProps.settings?.uploadProgress}
           />
         );
       case "storage":
@@ -67,6 +68,38 @@ export function SettingsContent({
             clearUploadedData={clearUploadedData}
           />
         );
+      case "shortcuts":
+        {
+          const shortcuts = settings.shortcuts || {};
+        return (
+          <div className="space-y-4">
+            <h4 className="text-white font-medium">Keyboard Shortcuts</h4>
+            <div className="text-xs text-gray-400">Gunakan kombinasi keyboard berikut untuk mempercepat interaksi dengan Live Chat. Anda dapat mengubah kombinasi dan menyimpannya.</div>
+            <div className="mt-3 grid grid-cols-1 gap-3 text-sm">
+              {[
+                {key: 'send', label: 'Send message'},
+                {key: 'clear', label: 'Clear chat'},
+                {key: 'export', label: 'Export chat'},
+                {key: 'openSettings', label: 'Open settings'},
+                {key: 'focusInput', label: 'Focus message input'},
+                {key: 'regenerate', label: 'Regenerate last bot response'},
+                {key: 'openUpload', label: 'Open upload dialog'}
+              ].map(item => (
+                <div key={item.key} className="flex items-center gap-3">
+                  <div className="w-44 text-gray-200">{item.label}</div>
+                  <input
+                    type="text"
+                    value={shortcuts[item.key] || ''}
+                    onChange={(e) => handleSave('shortcuts', { ...(settings.shortcuts || {}), [item.key]: e.target.value })}
+                    className="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white"
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="text-xs text-gray-500">Gunakan format seperti <code>Ctrl+Enter</code> atau <code>Ctrl+Shift+U</code>.</div>
+          </div>
+        );
+        }
       default:
         return <GeneralSettings {...commonProps} />;
     }
@@ -96,11 +129,13 @@ export function SettingsContent({
         </div>
       </div>
 
+      <div className="text-xs text-gray-400">Perubahan pengaturan akan diterapkan langsung ke chat aktif.</div>
+
       {renderTabContent()}
 
       <div className="pt-4 flex justify-between items-center border-t border-gray-700">
         <div className="text-xs text-gray-500">
-          SaipulAI v6.0 • Enhanced Intelligence
+          SaipulAI v7.0.0 • Enhanced Intelligence
           <br />
           <span className="text-gray-600">
             {knowledgeStats.totalItems || 0} items • {fileStats.totalFiles} files

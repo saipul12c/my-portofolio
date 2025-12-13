@@ -1,1 +1,16 @@
-[]
+[
+	{
+		"id": "yc-1",
+		"video_id": "vid-1",
+		"author": "user123",
+		"text": "Terima kasih, sangat membantu!",
+		"created_at": "2025-10-06T10:12:00.000Z"
+	},
+	{
+		"id": "yc-2",
+		"video_id": "vid-2",
+		"author": "coder456",
+		"text": "Contoh kodenya jelas sekali.",
+		"created_at": "2025-10-13T11:20:00.000Z"
+	}
+]

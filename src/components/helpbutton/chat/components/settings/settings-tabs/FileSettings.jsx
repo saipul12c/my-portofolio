@@ -1,5 +1,6 @@
 import { Upload, Trash2 } from "lucide-react";
 import { ToggleSwitch } from "../components/ToggleSwitch";
+import { useRef, useEffect } from 'react';
 
 export function FileSettings({ 
   settings, 
@@ -8,8 +9,18 @@ export function FileSettings({
   clearUploadedData, 
   getFileIcon, 
   formatFileSize, 
-  fileStats 
+  fileStats,
+  uploadProgress
 }) {
+  const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    const handler = () => {
+      if (fileInputRef && fileInputRef.current) fileInputRef.current.click();
+    };
+    window.addEventListener('saipul_open_upload', handler);
+    return () => window.removeEventListener('saipul_open_upload', handler);
+  }, []);
   return (
     <div className="space-y-4">
       <div className="space-y-3">
@@ -91,6 +102,7 @@ export function FileSettings({
               Max: {settings.maxFileSize}MB per file
             </span>
             <input
+              ref={fileInputRef}
               type="file"
               accept={settings.allowedFileTypes.map(ext => `.${ext}`).join(',')}
               onChange={handleFileUpload}
@@ -98,6 +110,15 @@ export function FileSettings({
               className="hidden"
             />
           </label>
+        </div>
+      )}
+
+      {typeof uploadProgress === 'number' && uploadProgress > 0 && (
+        <div className="mt-3">
+          <div className="text-xs text-gray-400 mb-1">Upload Progress: {uploadProgress}%</div>
+          <div className="w-full bg-gray-700 rounded h-2 overflow-hidden">
+            <div style={{ width: `${uploadProgress}%` }} className="h-2 bg-cyan-500 transition-all" />
+          </div>
         </div>
       )}
 

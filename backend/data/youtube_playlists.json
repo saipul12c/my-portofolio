@@ -1,1 +1,9 @@
-[]
+[
+	{
+		"id": "pl-1",
+		"channel_id": "UC_example_1",
+		"title": "Playlist: Tutorial React",
+		"video_ids": ["vid-1","vid-2"],
+		"published_at": "2025-10-15T00:00:00.000Z"
+	}
+]

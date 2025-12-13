@@ -128,7 +128,7 @@ export default function HelpChatbotItem() {
   const updateKnowledgeBase = (newData) => {
     setKnowledgeBase(prev => {
       const updated = { ...prev, ...newData };
-      
+
       // Auto-save uploaded data to localStorage
       if (newData.uploadedData) {
         try {
@@ -137,7 +137,7 @@ export default function HelpChatbotItem() {
           console.error("Error saving uploaded data:", e);
         }
       }
-      
+
       if (newData.fileMetadata) {
         try {
           localStorage.setItem("saipul_file_metadata", JSON.stringify(newData.fileMetadata));
@@ -145,7 +145,14 @@ export default function HelpChatbotItem() {
           console.error("Error saving file metadata:", e);
         }
       }
-      
+
+      // Notify other components (chat) that KB has been updated
+      try {
+        window.dispatchEvent(new CustomEvent('saipul_kb_updated', { detail: { knowledgeBase: updated } }));
+      } catch (e) {
+        console.error('Error dispatching saipul_kb_updated:', e);
+      }
+
       return updated;
     });
   };

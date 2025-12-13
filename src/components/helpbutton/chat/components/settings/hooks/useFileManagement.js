@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { getFileIcon } from '../../logic/utils/fileIcons';
+import { processFileGeneric, saveUploadedData, STORAGE_KEYS, exportKnowledgeBase as exportKB } from '../../logic/utils/fileProcessor';
 
 export function useFileManagement(settings, updateKnowledgeBase, safeKnowledgeBase, knowledgeStats) {
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -8,21 +10,18 @@ export function useFileManagement(settings, updateKnowledgeBase, safeKnowledgeBa
     byType: {},
     recentUploads: []
   });
+  const [uploadProgress, setUploadProgress] = useState(0);
 
-  const loadFileStatistics = () => {
+  const loadFileStatistics = useCallback(() => {
     try {
-      const savedUploadedData = localStorage.getItem("saipul_uploaded_data");
-      const savedFileMetadata = localStorage.getItem("saipul_file_metadata");
+      const savedUploadedData = localStorage.getItem(STORAGE_KEYS.UPLOADED_DATA);
+      const savedFileMetadata = localStorage.getItem(STORAGE_KEYS.FILE_METADATA);
       
       let files = [];
       let metadata = [];
       
-      if (savedUploadedData) {
-        files = JSON.parse(savedUploadedData);
-      }
-      if (savedFileMetadata) {
-        metadata = JSON.parse(savedFileMetadata);
-      }
+      if (savedUploadedData) files = JSON.parse(savedUploadedData);
+      if (savedFileMetadata) metadata = JSON.parse(savedFileMetadata);
 
       setUploadedFiles(metadata.map(file => ({
         name: file.fileName,
@@ -44,9 +43,7 @@ export function useFileManagement(settings, updateKnowledgeBase, safeKnowledgeBa
 
       metadata.forEach(file => {
         const ext = file.extension;
-        if (!stats.byType[ext]) {
-          stats.byType[ext] = { count: 0, totalSize: 0 };
-        }
+        if (!stats.byType[ext]) stats.byType[ext] = { count: 0, totalSize: 0 };
         stats.byType[ext].count++;
         stats.byType[ext].totalSize += file.fileSize || 0;
       });
@@ -55,9 +52,16 @@ export function useFileManagement(settings, updateKnowledgeBase, safeKnowledgeBa
     } catch (e) {
       console.error("Error loading file statistics:", e);
     }
-  };
+  }, []);
 
-  const handleFileUpload = (event) => {
+  // file processing delegated to shared util: processFileGeneric
+
+  const handleFileUpload = useCallback((event) => {
+    if (!settings.enableFileUpload) {
+      alert("File upload dinonaktifkan. Aktifkan di pengaturan terlebih dahulu.");
+      return;
+    }
+
     const files = Array.from(event.target.files);
     if (!files.length) return;
 
@@ -66,147 +70,39 @@ export function useFileManagement(settings, updateKnowledgeBase, safeKnowledgeBa
 
     files.forEach((file, index) => {
       setTimeout(() => {
-        processFile(file)
+        processFileGeneric(file, settings)
           .then(fileData => {
-            const existingData = JSON.parse(localStorage.getItem("saipul_uploaded_data") || "[]");
-            const existingMetadata = JSON.parse(localStorage.getItem("saipul_file_metadata") || "[]");
-            
-            const updatedData = [...existingData, fileData];
-            const updatedMetadata = [...existingMetadata, {
-              fileName: file.name,
-              fileSize: file.size,
-              fileType: file.type,
-              extension: file.name.split('.').pop()?.toLowerCase(),
-              uploadDate: new Date().toISOString(),
-              wordCount: fileData.wordCount,
-              sentenceCount: fileData.sentences?.length || 0,
-              processed: true
-            }];
-
-            localStorage.setItem("saipul_uploaded_data", JSON.stringify(updatedData));
-            localStorage.setItem("saipul_file_metadata", JSON.stringify(updatedMetadata));
+            const { updatedData, updatedMetadata } = saveUploadedData(fileData);
 
             if (updateKnowledgeBase) {
-              updateKnowledgeBase({
-                uploadedData: updatedData,
-                fileMetadata: updatedMetadata
-              });
+              updateKnowledgeBase({ uploadedData: updatedData, fileMetadata: updatedMetadata });
             }
 
             processedCount++;
+            const pct = Math.round((processedCount / totalFiles) * 100);
+            setUploadProgress(pct);
+            try { window.dispatchEvent(new CustomEvent('saipul_upload_progress', { detail: { file: file.name, progress: pct } })); } catch (e) {}
+
             loadFileStatistics();
 
             if (processedCount === totalFiles) {
-              alert(`✅ ${processedCount} file berhasil diupload dan diproses!`);
+              setTimeout(() => setUploadProgress(0), 800);
+              try { window.dispatchEvent(new CustomEvent('saipul_all_files_processed', { detail: { count: processedCount } })); } catch (e) {}
             }
           })
           .catch(error => {
             console.error(`Error processing file ${file.name}:`, error);
-            alert(`❌ Error processing ${file.name}: ${error.message}`);
+            try { window.dispatchEvent(new CustomEvent('saipul_file_process_error', { detail: { file: file.name, error: error.message } })); } catch (e) {}
           });
       }, index * 500);
     });
-  };
+  }, [settings.enableFileUpload, processFileGeneric, updateKnowledgeBase, loadFileStatistics]);
 
-  const processFile = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      const extension = file.name.split('.').pop()?.toLowerCase();
-      
-      if (file.size > settings.maxFileSize * 1024 * 1024) {
-        reject(new Error(`File size exceeds ${settings.maxFileSize}MB limit`));
-        return;
-      }
-
-      if (!settings.allowedFileTypes.includes(extension)) {
-        reject(new Error(`File type .${extension} not allowed`));
-        return;
-      }
-
-      reader.onload = (e) => {
-        try {
-          const content = e.target.result;
-          let textContent = '';
-          let sentences = [];
-          let wordCount = 0;
-
-          switch (extension) {
-            case 'txt':
-            case 'md':
-            case 'csv':
-              textContent = content;
-              break;
-            case 'json':
-              try {
-                const jsonData = JSON.parse(content);
-                textContent = typeof jsonData === 'object' ? 
-                  JSON.stringify(jsonData, null, 2) : String(jsonData);
-              } catch {
-                textContent = content;
-              }
-              break;
-            case 'pdf':
-              textContent = `[PDF Content: ${file.name}] Simulated PDF text extraction would go here...`;
-              break;
-            case 'doc':
-            case 'docx':
-              textContent = `[DOC Content: ${file.name}] Simulated document text extraction...`;
-              break;
-            case 'xls':
-            case 'xlsx':
-              textContent = `[Spreadsheet: ${file.name}] Simulated spreadsheet data extraction...`;
-              break;
-            case 'jpg':
-            case 'jpeg':
-            case 'png':
-              textContent = `[Image: ${file.name}] ${settings.extractTextFromImages ? 
-                'Simulated OCR text extraction...' : 'Image metadata analysis...'}`;
-              break;
-            default:
-              textContent = `[${extension.toUpperCase()} File: ${file.name}] Content processing...`;
-          }
-
-          if (textContent) {
-            sentences = textContent
-              .split(/[.!?]+/)
-              .filter(sentence => sentence.trim().length > 10)
-              .map(sentence => sentence.trim())
-              .slice(0, 200);
-
-            wordCount = textContent.split(/\s+/).length;
-          }
-
-          resolve({
-            fileName: file.name,
-            content: textContent,
-            sentences: sentences,
-            uploadDate: new Date().toISOString(),
-            wordCount: wordCount,
-            fileType: file.type,
-            extension: extension,
-            size: file.size
-          });
-
-        } catch (error) {
-          reject(error);
-        }
-      };
-
-      reader.onerror = () => reject(new Error("Failed to read file"));
-      
-      if (['txt', 'md', 'csv', 'json'].includes(extension)) {
-        reader.readAsText(file);
-      } else {
-        reader.readAsDataURL(file);
-      }
-    });
-  };
-
-  const clearUploadedData = () => {
+  const clearUploadedData = useCallback(() => {
     if (confirm("Apakah Anda yakin ingin menghapus semua data yang diupload? Tindakan ini tidak dapat dibatalkan.")) {
       try {
-        localStorage.removeItem("saipul_uploaded_data");
-        localStorage.removeItem("saipul_file_metadata");
+        localStorage.removeItem(STORAGE_KEYS.UPLOADED_DATA);
+        localStorage.removeItem(STORAGE_KEYS.FILE_METADATA);
         setUploadedFiles([]);
         setFileStats({ totalFiles: 0, totalSize: 0, byType: {}, recentUploads: [] });
         
@@ -223,59 +119,35 @@ export function useFileManagement(settings, updateKnowledgeBase, safeKnowledgeBa
         alert("Error clearing uploaded data.");
       }
     }
-  };
+  }, [updateKnowledgeBase]);
 
-  const exportKnowledgeBase = () => {
+  const exportKnowledgeBase = useCallback(() => {
     try {
       const exportData = {
         exportDate: new Date().toISOString(),
         knowledgeBase: safeKnowledgeBase,
         fileStats: fileStats,
         settings: settings,
-        stats: knowledgeStats
+        stats: knowledgeStats,
+        uploadedFiles: uploadedFiles
       };
-      
-      const dataStr = JSON.stringify(exportData, null, 2);
-      const dataBlob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(dataBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `saipulai-knowledge-base-${new Date().toISOString().split('T')[0]}.json`;
-      link.click();
-      URL.revokeObjectURL(url);
-      
+      exportKB(exportData);
       alert("Knowledge base berhasil diexport!");
     } catch (e) {
       console.error("Error exporting knowledge base:", e);
       alert("Error exporting knowledge base.");
     }
-  };
+  }, [safeKnowledgeBase, fileStats, settings, knowledgeStats, uploadedFiles]);
 
-  const getFileIcon = (extension) => {
-    const icons = {
-      'pdf': '📄',
-      'doc': '📝',
-      'docx': '📝',
-      'txt': '📃',
-      'xls': '📊',
-      'xlsx': '📊',
-      'csv': '📈',
-      'jpg': '🖼️',
-      'jpeg': '🖼️',
-      'png': '🖼️',
-      'json': '⚙️',
-      'md': '📋'
-    };
-    return icons[extension] || '📁';
-  };
+  
 
-  const formatFileSize = (bytes) => {
+  const formatFileSize = useCallback((bytes) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
+  }, []);
 
   return {
     uploadedFiles,

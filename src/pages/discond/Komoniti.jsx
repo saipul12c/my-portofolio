@@ -1,9 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
+import './discond-theme.css';
 import { motion, AnimatePresence } from "framer-motion";
 import { Routes, Route, useLocation } from 'react-router-dom';
 // ✅ PERBAIKAN: Import langsung dari contexts, bukan dari hooks
 import { useAuth } from './contexts/AuthContext';
 import { useChat } from './contexts/ChatContext';
+import api from './lib/api';
+import { useNavigate } from 'react-router-dom';
 import { useCommunity } from '../../context/CommunityContext';
 import ServerSidebar from './components/layout/ServerSidebar';
 import ChannelSidebar from './components/layout/ChannelSidebar';
@@ -11,6 +14,13 @@ import ChatArea from './components/layout/ChatArea';
 import MemberSidebar from './components/layout/MemberSidebar';
 import AuthModal from './components/auth/AuthModal';
 import UserProfile from './components/auth/UserProfile';
+import DMModal from './components/layout/DMModal';
+import Help from './Help';
+import ChannelHelp from './ChannelHelp';
+import Version from './Version';
+import ChannelSettingsPanel from './components/layout/ChannelSettingsPanel';
+import PinnedMessages from './components/layout/PinnedMessages';
+import MembersList from './components/layout/MembersList';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
 const Komoniti = () => {
@@ -18,12 +28,15 @@ const Komoniti = () => {
   const { loading: chatLoading } = useChat();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showDMModal, setShowDMModal] = useState(false);
+  const [dmIdState, setDmIdState] = useState(null);
   const [showSelectedBanner, setShowSelectedBanner] = useState(false);
   const bannerRef = useRef(null);
   const autoHideMs = 5000; // auto-hide after 5s
   const { selectedCommunity } = useCommunity();
-  const { setSelectedServer, createServer } = useChat();
-  const { servers, channels } = useChat();
+  const { setSelectedServer, createServer, servers, channels, members } = useChat();
+  const navigate = useNavigate();
+  const [profileMember, setProfileMember] = useState(null);
   const location = useLocation();
   const [showMobileServers, setShowMobileServers] = useState(false);
   const [showMobileChannels, setShowMobileChannels] = useState(false);
@@ -92,7 +105,7 @@ const Komoniti = () => {
   // Sync route -> context: read URL parts and set selected server/channel accordingly
   useEffect(() => {
     try {
-      // Expected paths: /discord/servers/:serverId or /discord/servers/:serverId/channels/:channelId
+      // Expected paths: /discord/servers/:serverId or /discord/servers/:serverId/channels/:channelId or /discord/profile/:userId
       const parts = location.pathname.replace(/(^\/+|\/+$)/g, '').split('/');
       const idx = parts.indexOf('servers');
       if (idx !== -1) {
@@ -118,6 +131,59 @@ const Komoniti = () => {
       void 0; // ignore routing sync errors
     }
   }, [location.pathname, servers, channels, setSelectedServer]);
+
+  // Open DM modal when route contains /dm/:dmId
+  useEffect(() => {
+    try {
+      const parts = location.pathname.replace(/(^\/+|\/+$)/g, '').split('/');
+      const idx = parts.indexOf('dm');
+      if (idx !== -1) {
+        const id = parts[idx + 1];
+        if (id) {
+          setDmIdState(id);
+          setShowDMModal(true);
+          return;
+        }
+      }
+    } catch { void 0; }
+  }, [location.pathname]);
+
+  // Open profile modal when route contains /profile/:userId
+  useEffect(() => {
+    try {
+      const parts = location.pathname.replace(/(^\/+|\/+$)/g, '').split('/');
+      const idx = parts.indexOf('profile');
+      if (idx !== -1) {
+        const userId = parts[idx + 1];
+        if (userId) {
+          // try find in loaded members first
+          const found = (members || []).find(m => String(m.id) === String(userId));
+          if (found) {
+            setProfileMember(found);
+            setShowProfileModal(true);
+            return;
+          }
+
+          // fallback: fetch user by id
+          (async () => {
+            try {
+              const u = await api.users.get(userId).catch(() => null);
+              if (u) setProfileMember(u);
+            } catch (e) { /* ignore */ }
+            setShowProfileModal(true);
+          })();
+          return;
+        }
+      }
+
+      // if route doesn't include profile, ensure modal closed
+      // but don't override explicit UI open (e.g. when clicking profile button)
+      // only close if we previously opened via route
+      if (!location.pathname.includes('/profile/')) {
+        // keep existing showProfileModal if user opened it via UI; do nothing
+      }
+    } catch { void 0; }
+  }, [location.pathname, members]);
 
   if (authLoading || chatLoading) {
     return (
@@ -155,7 +221,7 @@ const Komoniti = () => {
   }
 
   const MainLayout = () => (
-    <div className="h-screen bg-[var(--color-gray-900)] flex text-white overflow-hidden">
+    <div className="discond-root h-screen bg-[var(--color-gray-900)] flex text-white overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-10 left-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
@@ -164,7 +230,7 @@ const Komoniti = () => {
 
       {/* Server Sidebar (desktop) */}
       <div className="hidden md:flex">
-        <ServerSidebar onProfileClick={() => setShowProfileModal(true)} />
+        <ServerSidebar onProfileClick={() => setShowProfileModal(true)} onAuthRequest={() => setShowAuthModal(true)} />
       </div>
 
       {/* Channel Sidebar (desktop) */}
@@ -238,7 +304,20 @@ const Komoniti = () => {
 
       {/* Profile Modal */}
       {showProfileModal && (
-        <UserProfile onClose={() => setShowProfileModal(false)} />
+        <UserProfile
+          onClose={() => {
+            setShowProfileModal(false);
+            setProfileMember(null);
+            try {
+              if (location.pathname.includes('/profile/')) navigate('/discord', { replace: true });
+            } catch { /* ignore */ }
+          }}
+          member={profileMember}
+        />
+      )}
+
+      {showDMModal && dmIdState && (
+        <DMModal dmId={dmIdState} onClose={() => { setShowDMModal(false); setDmIdState(null); try { if (location.pathname.includes('/dm/')) navigate('/discord', { replace: true }); } catch {} }} />
       )}
     </div>
   );
@@ -254,7 +333,7 @@ const Komoniti = () => {
       {/* Server sidebar (mobile) */}
       {showMobileServers && (
         <div className="fixed left-0 top-0 bottom-0 z-50 md:hidden">
-          <ServerSidebar onProfileClick={() => { setShowProfileModal(true); setShowMobileServers(false); }} mobileClose={() => setShowMobileServers(false)} />
+          <ServerSidebar onProfileClick={() => { setShowProfileModal(true); setShowMobileServers(false); }} mobileClose={() => setShowMobileServers(false)} onAuthRequest={() => { setShowAuthModal(true); setShowMobileServers(false); }} />
         </div>
       )}
 
@@ -282,6 +361,11 @@ const Komoniti = () => {
         <Route path="servers/:serverId" element={<MainLayout />} />
         <Route path="servers/:serverId/channels/:channelId" element={<MainLayout />} />
         <Route path="profile/:userId" element={<MainLayout />} />
+        <Route path="help" element={<ChannelHelp />} />
+        <Route path="help/channel" element={<Help />} />
+        <Route path="channel-help" element={<ChannelHelp />} />
+        <Route path="channel-help/:channelId" element={<ChannelHelp />} />
+        <Route path="version" element={<Version />} />
         {/* fallback to main layout for any other nested paths */}
         <Route path="*" element={<MainLayout />} />
       </Routes>

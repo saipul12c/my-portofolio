@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import api from '../../lib/api';
 
 const ChannelSidebar = ({ mobileClose }) => {
-  const { selectedServer, selectedChannel, setSelectedChannel } = useChat();
+  const { selectedServer, selectedChannel, setSelectedChannel, members } = useChat();
   const { user } = useAuth();
   const { channels: serverChannels } = useChat();
   const [activeChannels, setActiveChannels] = useState([]);
@@ -29,14 +29,14 @@ const ChannelSidebar = ({ mobileClose }) => {
 
   if (!selectedServer) {
     return (
-      <div className="w-60 bg-[#2f3136] flex flex-col">
-        <div className="md:hidden bg-[#2f3136] p-2 flex items-center justify-between">
+      <div className="w-60 bg-[var(--dc-bg-2)] flex flex-col">
+        <div className="md:hidden bg-[var(--dc-bg-2)] p-2 flex items-center justify-between">
           <div className="text-white text-sm font-semibold">Channels</div>
           <button onClick={() => mobileClose?.()} className="text-gray-300 p-1">
             <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="p-4 border-b border-gray-700">
+        <div className="p-4 border-b border-[rgba(255,255,255,0.06)]">
           <h2 className="text-white font-semibold">Top Channel Aktif</h2>
         </div>
         <div className="flex-1 p-2 overflow-y-auto">
@@ -44,7 +44,7 @@ const ChannelSidebar = ({ mobileClose }) => {
             <p className="text-gray-400 text-sm p-4">Tidak ada channel aktif atau backend belum tersedia.</p>
           )}
           {activeChannels.map(ch => (
-            <div key={ch.id} className="px-3 py-2 m-2 rounded bg-[#262729] hover:bg-[#34373c] cursor-pointer" onClick={() => setSelectedChannel(ch)}>
+            <div key={ch.id} className="px-3 py-2 m-2 rounded bg-[var(--dc-surface)] hover:bg-[var(--dc-surface-2)] cursor-pointer" onClick={() => setSelectedChannel(ch)}>
               <div className="flex items-center justify-between">
                 <div className="text-white font-medium">{ch.server_name} / {ch.name}</div>
                 <div className="text-gray-400 text-sm">{ch.member_count}👥</div>
@@ -58,15 +58,15 @@ const ChannelSidebar = ({ mobileClose }) => {
   }
 
   return (
-    <div className="w-60 bg-[#2f3136] flex flex-col">
-      <div className="md:hidden bg-[#2f3136] p-2 flex items-center justify-between">
+    <div className="w-60 bg-[var(--dc-bg-2)] flex flex-col">
+      <div className="md:hidden bg-[var(--dc-bg-2)] p-2 flex items-center justify-between">
         <div className="text-white text-sm font-semibold">Channels</div>
         <button onClick={() => mobileClose?.()} className="text-gray-300 p-1">
           <X className="w-5 h-5" />
         </button>
       </div>
       {/* Server Header */}
-      <div className="p-4 border-b border-gray-700 shadow-sm">
+      <div className="p-4 border-b border-[rgba(255,255,255,0.06)] shadow-sm">
         <h2 className="text-white font-semibold flex items-center justify-between">
           {selectedServer.name}
           <Settings className="w-4 h-4 text-gray-400 hover:text-white cursor-pointer" />
@@ -87,10 +87,10 @@ const ChannelSidebar = ({ mobileClose }) => {
               <motion.div
                 key={channel.id}
                 whileHover={{ backgroundColor: 'rgba(79, 84, 92, 0.16)' }}
-                className={`px-4 py-1 mx-2 rounded flex items-center space-x-2 cursor-pointer ${
+                className={`px-4 py-1 mx-2 rounded flex items-center space-x-2 cursor-pointer transition-colors ${
                   selectedChannel?.id === channel.id
-                    ? 'bg-[#42464d] text-white'
-                    : 'text-gray-400 hover:text-gray-300'
+                    ? 'bg-[var(--dc-surface-2)] text-white shadow-inner'
+                    : 'text-gray-400 hover:text-gray-300 hover:bg-[var(--dc-surface)]'
                 }`}
                 onClick={() => setSelectedChannel(channel)}
               >
@@ -118,7 +118,7 @@ const ChannelSidebar = ({ mobileClose }) => {
                 whileHover={{ backgroundColor: 'rgba(79, 84, 92, 0.16)' }}
                 className={`px-4 py-1 mx-2 rounded flex items-center space-x-2 cursor-pointer ${
                   selectedChannel?.id === channel.id
-                    ? 'bg-[#42464d] text-white'
+                    ? 'bg-[var(--dc-surface-2)] text-white'
                     : 'text-gray-400 hover:text-gray-300'
                 }`}
                 onClick={() => setSelectedChannel(channel)}
@@ -133,12 +133,18 @@ const ChannelSidebar = ({ mobileClose }) => {
         {/* Online Members Preview */}
         <div className="mt-6 px-4">
           <div className="text-gray-400 text-sm font-semibold mb-2">
-            ANGGOTA ONLINE — 12
+            ANGGOTA ONLINE — {(members && members.filter(m => (m.presence || '').toLowerCase() === 'online').length) || 0}
           </div>
           <div className="space-y-2">
-            {[1, 2, 3, 4, 5].map(i => (
+            {(members || []).filter(m => (m.presence || '').toLowerCase() === 'online').slice(0,5).map((m) => (
+              <div key={m.id} className="flex items-center space-x-2 text-gray-400 hover:text-gray-300 cursor-pointer">
+                <div className="w-2 h-2 bg-[var(--dc-accent)] rounded-full"></div>
+                <span className="text-sm">{m.username || m.name || (`user-${m.id}`)}</span>
+              </div>
+            ))}
+            {(!(members || []).length) && [1,2,3,4,5].map(i => (
               <div key={i} className="flex items-center space-x-2 text-gray-400 hover:text-gray-300 cursor-pointer">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-[var(--dc-accent)] rounded-full"></div>
                 <span className="text-sm">User{i}</span>
               </div>
             ))}

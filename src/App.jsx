@@ -50,6 +50,8 @@ import CVsaya from "./pages/cv/CVsaya";
 import Streming from "./pages/streming/Tubs";
 import AI_Docs from "./pages/help/AI_Docs";
 import AI_DocDetail from "./pages/help/ai/AI_DocDetail";
+import Owner from "./pages/owner/Profile_admin";
+import HelpFAQriwayat from "./components/helpbutton/faq/riwayat/HelpFAQriwayat";
 
 import Hobbies from "./pages/hub/Hobbies";
 import HobbiesDetail from "./pages/hub/HobbyDetail.jsx"
@@ -66,6 +68,12 @@ import Discond from "./pages/discond/Komoniti";
 import { AuthProvider } from "./pages/discond/contexts/AuthContext";
 import { ChatProvider } from "./pages/discond/contexts/ChatContext";
 import { CommunityProvider } from './context/CommunityContext';
+import { AuthProvider as AppAuthProvider } from './context/AuthContext';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
+import Profile from './pages/auth/Profile';
+import RequireAuth from './components/RequireAuth';
+import ProfileKomuniti from "./pages/discond/components/auth/UserProfile.jsx";
 
 // ⚠️ Halaman error kustom
 import NotFound from "./pages/errors/NotFound";
@@ -91,7 +99,8 @@ const DefaultLayout = ({ children }) => {
   const location = useLocation();
 
   // Routes where we DON'T want the Navbar, Footer and HelpButton shown.
-  const hideLayoutPaths = ["/streming", "/zodiak", "/qodam", "/discord", "/komunitas"];
+  // Keep each path as a separate string. For profile routes we match by prefix.
+  const hideLayoutPaths = ["/streming", "/zodiak", "/qodam", "/discord", "/komunitas", "/discord/profile"];
 
   // If the pathname begins with any of these, hide header/footer
   const shouldHide = hideLayoutPaths.some((p) =>
@@ -133,7 +142,8 @@ export default function App() {
   return (
     <Router>
       <ErrorProvider>
-        <CommunityProvider>
+        <AppAuthProvider>
+          <CommunityProvider>
           <div className="flex flex-col min-h-screen bg-[var(--color-gray-900)] text-white selection:bg-cyan-400/30 selection:text-cyan-200">
             {/* Pindahkan usePageTracker ke dalam Router */}
             <PageTracker />
@@ -153,6 +163,7 @@ export default function App() {
                         <Route path="/about" element={<About />} />
                         <Route path="/contact" element={<Contact />} />
                         <Route path="/photography" element={<Photography />} />
+
                         <Route path="/gallery" element={<Gallery />} />
                         <Route path="/gallery/shorts/:id" element={<ShortDetail />} />
                         <Route path="/gallery/images/:id" element={<ImageDetail />} />
@@ -172,6 +183,8 @@ export default function App() {
                         <Route path="/help/docs/ai" element={<AI_Docs />} />
                         <Route path="/help/docs/ai/:slug" element={<AI_DocDetail />} />
                         <Route path="/help/faq" element={<FAQ />} />
+                        <Route path="/help/faq/riwayat/ai" element={<HelpFAQriwayat />} />
+                        <Route path="/help/faq/riwayat/ai/:slug" element={<HelpFAQriwayat />} />
 
                         <Route path="/help/commitment" element={<Komit />} />
                         <Route path="/commitment/:id" element={<DetailCommitment />} />
@@ -204,12 +217,17 @@ export default function App() {
                         <Route path="/blog/authors/:slug" element={<Detailusers />} />
 
                         <Route path="/bahasa" element={<Bahasa />} />
+                        <Route path="/owner" element={<Owner />} />
 
                         {/* website tambahan */}
                         <Route path="/qodam" element={<Qodam />} />
                         <Route path="/zodiak" element={<Zodiak />} />
                         <Route path="/coming-soon" element={<Comingsoon />} />
-                        <Route path="/streming" element={<Streming />} />
+                        <Route path="/streming" element={<RequireAuth><Streming /></RequireAuth>} />
+                        <Route path="/projects" element={<RequireAuth><Projects /></RequireAuth>} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                        <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
 
                         {/* ⚠️ Halaman error */}
                         <Route
@@ -276,6 +294,7 @@ export default function App() {
             </Routes>
           </div>
         </CommunityProvider>
+        </AppAuthProvider>
       </ErrorProvider>
     </Router>
   );

@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { SEARCH_SUGGESTIONS } from '../../utils/constants';
 import { debounce } from '../../utils/helpers';
+import AuthButtons from '../AuthButtons';
 
 const Header = ({ 
   searchQuery, 
@@ -304,78 +305,9 @@ const Header = ({
           )}
         </div>
 
-        {/* User Menu */}
-        <div className="relative header-dropdown">
-          <button 
-            onClick={() => setShowUserMenu(!showUserMenu)}
-            className="flex items-center gap-2 p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-          >
-            <div className="w-8 h-8 rounded-full overflow-hidden">
-              <img 
-                src={user?.avatar || 'https://i.pravatar.cc/40'} 
-                alt="User" 
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            </div>
-          </button>
-
-          {/* User Menu Dropdown */}
-          {showUserMenu && (
-            <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-2xl overflow-hidden z-50">
-              <div className="p-4 border-b border-gray-200 dark:border-gray-800">
-                <div className="flex items-center gap-3">
-                  <img 
-                    src={user?.avatar || 'https://i.pravatar.cc/40'} 
-                    alt="User" 
-                    className="w-10 h-10 rounded-full"
-                    loading="lazy"
-                  />
-                  <div>
-                    <h4 className="font-semibold">{user?.name || 'User'}</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{user?.email || 'user@example.com'}</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="py-2">
-                <a href="#" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800">
-                  <User size={18} />
-                  <span>Your channel</span>
-                </a>
-                <a href="#" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800">
-                  <Play size={18} />
-                  <span>YouTube Studio</span>
-                </a>
-                <a href="#" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800">
-                  <Settings size={18} />
-                  <span>Settings</span>
-                </a>
-              </div>
-              
-              <div className="py-2 border-t border-gray-200 dark:border-gray-800">
-                <a href="#" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800">
-                  <Moon size={18} />
-                  <span>Appearance: {isDarkMode ? 'Dark' : 'Light'}</span>
-                </a>
-                <a href="#" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800">
-                  <Globe size={18} />
-                  <span>Language: English</span>
-                </a>
-                <a href="#" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800">
-                  <Shield size={18} />
-                  <span>Restricted Mode: Off</span>
-                </a>
-              </div>
-              
-              <div className="py-2 border-t border-gray-200 dark:border-gray-800">
-                <a href="#" className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 text-red-500">
-                  <LogOut size={18} />
-                  <span>Sign out</span>
-                </a>
-              </div>
-            </div>
-          )}
+        {/* Page-specific auth buttons for streming (Login/Register or Profile+Logout) */}
+        <div className="hidden md:flex items-center">
+          <AuthButtons />
         </div>
 
         {/* Mobile Menu Button */}

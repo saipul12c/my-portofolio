@@ -6,7 +6,7 @@ import { getSkillMapping } from "../utils/skillRouteMap";
 /**
  * Component untuk menampilkan external resources dan links terkait skill
  */
-export const SkillResources = React.memo(({ skillName, isProgramming }) => {
+export const SkillResources = React.memo(({ skillName }) => {
   const mapping = getSkillMapping(skillName);
 
   if (!mapping.resourceLinks || Object.values(mapping.resourceLinks).every(v => !v)) {

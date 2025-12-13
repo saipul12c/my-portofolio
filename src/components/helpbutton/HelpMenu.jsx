@@ -1,4 +1,6 @@
+// Import React untuk penggunaan JSX dan hooks jika diperlukan
 import React from "react";
+// Import ikon dari paket `lucide-react` yang digunakan di UI
 import {
   ExternalLink,
   FileText,
@@ -7,16 +9,23 @@ import {
   ShieldCheck,
   MessageCircle,
 } from "lucide-react";
+// Mengimpor data dokumentasi statis untuk ditampilkan pada badge versi
 import docsData from "./docs/data/docsSections.json";
+// Mengimpor utilitas untuk mengambil informasi versi terbaru dari data docs
 import { getLatestVersionInfo } from "./docs/lib/versionUtils";
 
+// Komponen kecil untuk item dalam menu bantuan yang dapat menjadi tautan internal atau eksternal
 function HelpMenuItem({ title, subtitle, icon: Icon, to, external = false }) {
+  // Handler klik untuk navigasi atau membuka tab baru saat eksternal
   const handleClick = (e) => {
+    // Mencegah perilaku default tombol/anchor
     e.preventDefault();
+    // Jika tautan eksternal, buka di tab baru dengan atribut keamanan
     if (external) {
       window.open(to, "_blank", "noopener,noreferrer");
       return;
     }
+    // Coba gunakan assign untuk navigasi SPA; fallback ke href
     try {
       window.location.assign(to);
     } catch {
@@ -24,42 +33,53 @@ function HelpMenuItem({ title, subtitle, icon: Icon, to, external = false }) {
     }
   };
 
+  // Render tombol/menu item dengan ikon, judul, dan subtitle jika ada
   return (
     <button
       onClick={handleClick}
       className="flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors text-left w-full"
       aria-label={title}
     >
+      {/* Kontainer ikon */}
       <div className="w-9 h-9 flex items-center justify-center rounded-md bg-white/5 shrink-0">
+        {/* Tampilkan ikon yang diberikan atau fallback ke FileText */}
         {Icon ? (
           <Icon size={18} className="text-cyan-300" />
         ) : (
           <FileText size={18} />
         )}
       </div>
+      {/* Kontainer teks judul + subtitle */}
       <div className="flex-1">
+        {/* Judul menu */}
         <div className="text-sm font-medium text-white/90 leading-tight">
           {title}
         </div>
+        {/* Subtitle jika tersedia */}
         {subtitle && (
           <div className="text-xs text-gray-400 mt-0.5">{subtitle}</div>
         )}
       </div>
+      {/* Ikon eksternal bila benar */}
       {external && <ExternalLink size={14} className="text-gray-400 mt-1" />}
     </button>
   );
 }
 
+// Komponen badge yang menampilkan versi aplikasi berdasarkan data docs
 function VersionBadge() {
-  // Sinkronisasi versi dengan HelpVersionInfo
+  // Ambil info versi terbaru dari data dokumentasi
   const latest = getLatestVersionInfo(docsData);
+  // Pilih properti versi yang tersedia
   const version = latest?.version || latest?.versiWebsite;
 
+  // Handler untuk membuka halaman detail versi
   const handleOpenVersionPage = (e) => {
     e.preventDefault();
     window.location.assign("/help/version");
   };
 
+  // Render badge versi dengan tombol untuk melihat detail
   return (
     <div className="flex items-center justify-between gap-3">
       <div className="flex items-center gap-2">
@@ -83,7 +103,9 @@ function VersionBadge() {
 }
 
 // Komponen untuk tombol chatbot di dalam menu
+// Tombol khusus dalam menu untuk membuka chatbot; dapat dinonaktifkan lewat prop
 function HelpChatbotButton({ onOpenChat, enabled = true }) {
+  // Handler klik yang menghentikan aksi bila fitur dinonaktifkan
   const handleClick = (e) => {
     if (!enabled) {
       e.preventDefault();
@@ -92,6 +114,7 @@ function HelpChatbotButton({ onOpenChat, enabled = true }) {
     onOpenChat();
   };
 
+  // Render tombol chatbot dengan state enabled/disabled styling
   return (
     <button
       onClick={handleClick}
@@ -103,6 +126,7 @@ function HelpChatbotButton({ onOpenChat, enabled = true }) {
       aria-label={enabled ? "Buka Chatbot SaipulAI" : "Chatbot SaipulAI dinonaktifkan karna perbaikan"}
       disabled={!enabled}
     >
+      {/* Ikon chatbot */}
       <div className={`w-9 h-9 flex items-center justify-center rounded-md shrink-0
         ${enabled ? "bg-white/5" : "bg-gray-700/30"}`}>
         <MessageCircle 
@@ -110,6 +134,7 @@ function HelpChatbotButton({ onOpenChat, enabled = true }) {
           className={enabled ? "text-cyan-300" : "text-gray-500"} 
         />
       </div>
+      {/* Konten teks tombol */}
       <div className="flex-1">
         <div className={`text-sm font-medium leading-tight
           ${enabled ? "text-white/90" : "text-gray-500"}`}>
@@ -119,6 +144,7 @@ function HelpChatbotButton({ onOpenChat, enabled = true }) {
           {enabled ? "Tanya apa saja ke AI" : "Fitur sedang dinonaktifkan"}
         </div>
       </div>
+      {/* Label OFF bila dinonaktifkan */}
       {!enabled && (
         <div className="text-[10px] text-gray-500 mt-1 px-2 py-1 bg-gray-800/50 rounded">
           OFF
@@ -128,7 +154,9 @@ function HelpChatbotButton({ onOpenChat, enabled = true }) {
   );
 }
 
+// Komponen utama menu bantuan yang merangkum item, tombol chatbot, dan badge versi
 export default function HelpMenu({ onOpenChat, chatbotEnabled = true }) {
+  // Render kontainer dialog menu bantuan dengan styling dan aksesibilitas
   return (
     <div
       className="w-72 rounded-2xl border border-white/10 shadow-[0_0_25px_rgba(56,189,248,0.2)]
@@ -137,10 +165,12 @@ export default function HelpMenu({ onOpenChat, chatbotEnabled = true }) {
       role="dialog"
       aria-label="Menu Bantuan"
     >
+      {/* Judul menu kecil */}
       <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 pl-1">
         Menu Bantuan
       </div>
 
+      {/* Daftar item menu */}
       <div className="flex flex-col gap-2">
         <HelpMenuItem
           title="FAQ (Pertanyaan Umum)"
@@ -161,7 +191,7 @@ export default function HelpMenu({ onOpenChat, chatbotEnabled = true }) {
           to="/help/commitment"
         />
         
-        {/* 🔹 Tombol Chatbot - Dikontrol oleh prop chatbotEnabled */}
+        {/* Seksi khusus tombol chatbot */}
         <div className="mt-2 border-t border-gray-700/40 pt-3">
           <HelpChatbotButton 
             onOpenChat={onOpenChat} 
@@ -170,12 +200,14 @@ export default function HelpMenu({ onOpenChat, chatbotEnabled = true }) {
         </div>
       </div>
       
+      {/* Bagian footer dengan badge versi */}
       <div className="mt-4 pt-3 border-t border-gray-700/40">
         <VersionBadge />
       </div>
 
+      {/* Copyright kecil di bawah */}
       <div className="text-[10px] text-gray-500 text-center mt-3">
-        © {new Date().getFullYear()}{" "}
+        © {new Date().getFullYear()} {" "}
         <span className="text-cyan-400">Project Portofolio</span>
       </div>
     </div>

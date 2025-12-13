@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../../lib/api';
+import { likedVideos } from '../../utils/storage';
 import { 
   Clock, MoreVertical, Play, CheckCircle, Watch, 
   Save, Download, Share, Flag, ThumbsUp, UserPlus,
@@ -10,12 +12,26 @@ const VideoCard = ({ video, onVideoClick, onMenuAction }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
 
+  useEffect(() => {
+    try {
+      setIsLiked(likedVideos.isLiked(video.id));
+    } catch (err) {
+      // ignore
+    }
+  }, [video.id]);
+
   const handleLikeClick = (e) => {
     e.stopPropagation();
-    setIsLiked(!isLiked);
-    if (onMenuAction) {
-      onMenuAction('like', video, !isLiked);
+    const next = !isLiked;
+    setIsLiked(next);
+    try {
+      likedVideos.toggle({ id: video.id, title: video.title });
+      // Call backend endpoint to persist like/unlike (non-fatal)
+      api.videos.like(video.id, next).catch(() => {});
+    } catch (err) {
+      console.error('Failed toggling like', err);
     }
+    if (onMenuAction) onMenuAction('like', video, next);
   };
 
   const handleMenuClick = (action, e) => {
@@ -142,6 +158,10 @@ const VideoCard = ({ video, onVideoClick, onMenuAction }) => {
                 <span>{video.uploadTime}</span>
               </>
             )}
+            <span className={`flex items-center gap-1 text-xs ${isLiked ? 'text-red-500' : 'text-gray-400'}`}>
+              <ThumbsUp size={14} />
+              <span className="ml-0">{Number(video.likes || 0).toLocaleString()}</span>
+            </span>
             {video.isNew && (
               <span className="px-1.5 py-0.5 bg-red-600 text-white text-xs rounded-sm">
                 NEW

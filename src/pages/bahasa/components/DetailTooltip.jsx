@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useCallback } from "react";
 import { motion } from "framer-motion";
 import { Target, Sparkles, Zap, Code, Globe, X } from "lucide-react";
 import { ProgressBar } from "./ProgressBar";

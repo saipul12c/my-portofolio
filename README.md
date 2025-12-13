@@ -398,6 +398,28 @@ Project ini dapat digunakan sesuai kebutuhan. Hubungi untuk informasi lisensi le
 ## 📞 Kontak
 
 Hubungi melalui:
+ 
+---
+
+## 🛠️ Quick Dev: Jalankan Frontend + Backend
+
+Untuk development jalankan frontend (Vite) dan backend (Express) di dua terminal terpisah. Backend di project ini secara default berjalan di port `8080`.
+
+```powershell
+# Terminal A: backend
+cd backend
+npm install
+copy .env.example .env
+npm run dev
+
+# Terminal B: frontend (project root)
+cd ..
+npm install
+npm run dev
+```
+
+Vite sudah dikonfigurasi untuk mem-proxy request `/api`, `/socket.io`, dan `/avatar` ke `http://localhost:8080` (lihat `vite.config.js`), sehingga `fetch('/api/...')` di frontend akan diarahkan ke backend tanpa perubahan tambahan.
+
 - **Form Kontak** - Di halaman `/admin/contact`
 - **Email** - Gunakan form kontak atau EmailJS
 - **Social Media** - Links tersedia di footer & halaman kontak

@@ -62,11 +62,12 @@ const AuthModal = ({ onClose }) => {
             </label>
             <input
               type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Pilih username..."
-              className="w-full bg-[#40444b] border border-[#40444b] rounded px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500"
-              required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Pilih username..."
+                autoComplete="username"
+                className="w-full bg-[#40444b] border border-[#40444b] rounded px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500"
+                required
             />
           </div>
         )}
@@ -80,6 +81,7 @@ const AuthModal = ({ onClose }) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="email@example.com"
+            autoComplete="email"
             className="w-full bg-[#40444b] border border-[#40444b] rounded px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500"
             required
           />
@@ -94,6 +96,7 @@ const AuthModal = ({ onClose }) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Masukkan password..."
+            autoComplete={isLogin ? 'current-password' : 'new-password'}
             className="w-full bg-[#40444b] border border-[#40444b] rounded px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500"
             required
             minLength={6}

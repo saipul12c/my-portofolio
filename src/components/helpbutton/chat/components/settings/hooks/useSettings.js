@@ -1,34 +1,8 @@
 import { useState, useEffect } from "react";
+import { DEFAULT_SETTINGS, SETTINGS_KEY } from '../../logic/utils/fileProcessor';
 
 export function useSettings(knowledgeBase = {}) {
-  const [settings, setSettings] = useState({
-    activeTab: "umum",
-    theme: "system",
-    accent: "cyan",
-    language: "auto",
-    aiModel: "enhanced",
-    calculationPrecision: "high",
-    enablePredictions: true,
-    dataAnalysis: true,
-    memoryContext: true,
-    autoSuggestions: true,
-    voiceResponse: false,
-    privacyMode: false,
-    advancedMath: true,
-    creativeMode: false,
-    responseSpeed: "balanced",
-    temperature: 0.7,
-    maxTokens: 1500,
-    enableFileUpload: true,
-    useUploadedData: true,
-    maxFileSize: 10,
-    allowedFileTypes: ['txt', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'json', 'csv', 'md'],
-    extractTextFromImages: false,
-    processSpreadsheets: true,
-    autoSave: true,
-    backupInterval: 30,
-    enableAnalytics: false
-  });
+  const [settings, setSettings] = useState({ ...DEFAULT_SETTINGS });
 
   const safeKnowledgeBase = {
     AI: {},
@@ -52,7 +26,7 @@ export function useSettings(knowledgeBase = {}) {
 
   useEffect(() => {
     try {
-      const savedSettings = localStorage.getItem("saipul_settings");
+      const savedSettings = localStorage.getItem(SETTINGS_KEY);
       if (savedSettings) {
         const parsed = JSON.parse(savedSettings);
         setSettings(prev => ({ ...prev, ...parsed }));
@@ -78,36 +52,9 @@ export function useSettings(knowledgeBase = {}) {
   };
 
   const handleReset = () => {
-    const defaultSettings = {
-      theme: "system",
-      accent: "cyan",
-      language: "auto",
-      aiModel: "enhanced",
-      calculationPrecision: "high",
-      enablePredictions: true,
-      dataAnalysis: true,
-      memoryContext: true,
-      autoSuggestions: true,
-      voiceResponse: false,
-      privacyMode: false,
-      advancedMath: true,
-      creativeMode: false,
-      responseSpeed: "balanced",
-      temperature: 0.7,
-      maxTokens: 1500,
-      enableFileUpload: true,
-      useUploadedData: true,
-      maxFileSize: 10,
-      allowedFileTypes: ['txt', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'json', 'csv', 'md'],
-      extractTextFromImages: false,
-      processSpreadsheets: true,
-      autoSave: true,
-      backupInterval: 30,
-      enableAnalytics: false
-    };
-    setSettings(defaultSettings);
+    setSettings(prev => ({ ...DEFAULT_SETTINGS, activeTab: prev.activeTab }));
     try {
-      localStorage.setItem("saipul_settings", JSON.stringify(defaultSettings));
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(DEFAULT_SETTINGS));
       window.dispatchEvent(new Event("storage"));
     } catch (e) {
       console.error("Error resetting settings:", e);

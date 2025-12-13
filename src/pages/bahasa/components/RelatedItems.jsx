@@ -102,7 +102,7 @@ export const RelatedItems = React.memo(({
                 {/* Header dengan Icon dan Type */}
                 <div className="flex items-start justify-between mb-2 sm:mb-3">
                   <div className="flex items-center gap-2 sm:gap-2.5">
-                    <span className="text-lg sm:text-xl">{item.icon}</span>
+                    <span className="text-lg sm:text-xl">{getIcon(item.type) || item.icon}</span>
                     <div className="flex-1">
                       <h5 className="text-xs sm:text-sm font-semibold text-white group-hover:text-cyan-300 transition-colors line-clamp-2">
                         {item.title}

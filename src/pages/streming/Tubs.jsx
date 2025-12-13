@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import { 
   Sliders, MoreVertical, Search, TrendingUp, 
   Video, Camera, Plus, Sparkles, Zap
@@ -7,12 +8,13 @@ import Sidebar from './components/Sidebar/Sidebar';
 import Header from './components/Header/Header';
 import FilterBar from './components/FilterBar/FilterBar';
 import VideoCard from './components/VideoCard/VideoCard';
-import VideoPlayerModal from './components/VideoPlayerModal/VideoPlayerModal';
-import ShortsPlayer from './components/ShortsPlayer/ShortsPlayer';
+const VideoPlayerModal = React.lazy(() => import('./components/VideoPlayerModal/VideoPlayerModal'));
+const ShortsPlayer = React.lazy(() => import('./components/ShortsPlayer/ShortsPlayer'));
 import RecommendationBanner from './components/RecommendationBanner/RecommendationBanner';
 // Data is now loaded from backend API endpoints (/api/videos, /api/shorts, /api/streaming-users)
 import { NOTIFICATIONS } from './utils/constants';
 import { videoHistory, likedVideos, userSettings } from './utils/storage';
+import api from './lib/api';
 
 const Tubs = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -26,11 +28,14 @@ const Tubs = () => {
   const [isShortsOpen, setIsShortsOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState('All');
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [user, setUser] = useState(null);
+  const [fetchedUser, setFetchedUser] = useState(null);
   const [loadingData, setLoadingData] = useState(true);
   const [notifications] = useState(NOTIFICATIONS);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [sortBy, setSortBy] = useState('recommended');
+
+  const { user: authUser } = useAuth();
+  const user = authUser || fetchedUser;
 
   // Load user settings
   useEffect(() => {
@@ -43,23 +48,19 @@ const Tubs = () => {
     const load = async () => {
       try {
         setLoadingData(true);
-        const [videosRes, shortsRes, usersRes] = await Promise.all([
-          fetch('/api/videos'),
-          fetch('/api/shorts'),
-          fetch('/api/streaming-users')
-        ]);
+        // Use centralized API client (handles parsing and errors)
         const [videosJson, shortsJson, usersJson] = await Promise.all([
-          videosRes.ok ? videosRes.json() : [],
-          shortsRes.ok ? shortsRes.json() : [],
-          usersRes.ok ? usersRes.json() : null
+          api.videos.list().catch(() => []),
+          api.shorts.list().catch(() => []),
+          api.streamingUsers.list().catch(() => null)
         ]);
         if (!mounted) return;
         setAllVideos(Array.isArray(videosJson) ? videosJson : []);
         setVideos(Array.isArray(videosJson) ? videosJson : []);
         setShorts(Array.isArray(shortsJson) ? shortsJson : []);
-        // usersJson may be an object or array; use first user object as `user` prop for components
-        if (Array.isArray(usersJson)) setUser(usersJson[0] || null);
-        else setUser(usersJson || null);
+        // usersJson may be an object or array; use first user object as `fetchedUser` prop for components
+        if (Array.isArray(usersJson)) setFetchedUser(usersJson[0] || null);
+        else setFetchedUser(usersJson || null);
       } catch (err) {
         console.error('Failed to load streaming data', err);
       } finally {
@@ -144,10 +145,24 @@ const Tubs = () => {
     }
   };
 
-  const handleMenuAction = (action, video) => {
+  const handleMenuAction = (action, video, meta) => {
     switch (action) {
       case 'like':
-        likedVideos.toggle(video);
+        try {
+          // meta may be boolean indicating liked state
+          if (typeof meta === 'boolean') {
+            // update local storage already handled by VideoCard
+            setVideos(prev => prev.map(v => {
+              if (String(v.id) === String(video.id)) {
+                const delta = meta ? 1 : -1;
+                return { ...v, likes: Math.max(0, (Number(v.likes || 0) + delta)) };
+              }
+              return v;
+            }));
+          } else {
+            likedVideos.toggle(video);
+          }
+        } catch (err) { console.error(err); }
         break;
       case 'watchLater':
         // Add to watch later
@@ -276,29 +291,30 @@ const Tubs = () => {
                       viewMode === 'grid' ? 'bg-white dark:bg-gray-700' : ''
                     }`}
                   >
-                    <div className="w-5 h-5 grid grid-cols-2 gap-0.5">
-                      <div className="bg-current rounded-sm"></div>
-                      <div className="bg-current rounded-sm"></div>
-                      <div className="bg-current rounded-sm"></div>
-                      <div className="bg-current rounded-sm"></div>
-                    </div>
-                  <button 
-                    onClick={() => {
-                      setSearchQuery('');
-                      setActiveFilter('All');
-                      setVideos(allVideos);
-                    }}
-                    className="px-6 py-3 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-full transition-colors font-medium"
-                  >
-                    Browse trending videos
-                  </button>
-                  >
-                    <div className="w-5 h-5 flex flex-col justify-between">
-                      <div className="w-full h-1 bg-current rounded-sm"></div>
-                      <div className="w-full h-1 bg-current rounded-sm"></div>
-                      <div className="w-full h-1 bg-current rounded-sm"></div>
-                    </div>
-                  </button>
+                      <div className="w-5 h-5 grid grid-cols-2 gap-0.5">
+                        <div className="bg-current rounded-sm"></div>
+                        <div className="bg-current rounded-sm"></div>
+                        <div className="bg-current rounded-sm"></div>
+                        <div className="bg-current rounded-sm"></div>
+                      </div>
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setSearchQuery('');
+                        setActiveFilter('All');
+                        setVideos(allVideos);
+                      }}
+                      className="px-6 py-3 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-full transition-colors font-medium"
+                    >
+                      Browse trending videos
+                    </button>
+                    <button className="p-2 ml-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white transition-colors">
+                      <div className="w-5 h-5 flex flex-col justify-between">
+                        <div className="w-full h-1 bg-current rounded-sm"></div>
+                        <div className="w-full h-1 bg-current rounded-sm"></div>
+                        <div className="w-full h-1 bg-current rounded-sm"></div>
+                      </div>
+                    </button>
                 </div>
                 
                 {/* Sort Options */}
@@ -441,21 +457,26 @@ const Tubs = () => {
 
           {/* Video Player Modal */}
           {selectedVideo && (
-            <VideoPlayerModal
-              video={selectedVideo}
-              isOpen={isPlayerOpen}
-              onClose={() => setIsPlayerOpen(false)}
-            />
+            <Suspense fallback={<div aria-hidden className="fixed inset-0 flex items-center justify-center z-50">Loading player...</div>}>
+              <VideoPlayerModal
+                video={selectedVideo}
+                isOpen={isPlayerOpen}
+                onClose={() => setIsPlayerOpen(false)}
+                onLike={handleMenuAction}
+              />
+            </Suspense>
           )}
 
           {/* Shorts Player Modal */}
           {selectedShort && (
-            <ShortsPlayer
-              short={selectedShort}
-              onClose={() => setIsShortsOpen(false)}
-              onNext={nextShort}
-              onPrevious={previousShort}
-            />
+            <Suspense fallback={<div aria-hidden className="fixed inset-0 flex items-center justify-center z-50">Loading player...</div>}>
+              <ShortsPlayer
+                short={selectedShort}
+                onClose={() => setIsShortsOpen(false)}
+                onNext={nextShort}
+                onPrevious={previousShort}
+              />
+            </Suspense>
           )}
         </main>
       </div>

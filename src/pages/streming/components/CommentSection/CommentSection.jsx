@@ -1,61 +1,85 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import api from '../../lib/api';
+import { debounce } from '../../utils/helpers';
 import { 
   Send, ThumbsUp, MoreVertical, ChevronDown, 
   ChevronUp, MessageCircle, Flag, Heart, 
   Smile, Image as ImageIcon, AtSign
 } from 'lucide-react';
 
-const CommentSection = () => {
+const CommentSection = ({ videoId }) => {
   const [comment, setComment] = useState('');
   const [replies, setReplies] = useState({});
   const [showReply, setShowReply] = useState({});
   const [sortBy, setSortBy] = useState('top');
+  const [comments, setComments] = useState([]);
+  const [page, setPage] = useState(1);
+  const [per] = useState(10);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const debouncedPostRef = useRef(null);
 
-  // Mock comments data
-  const comments = [
-    {
-      id: 1,
-      user: {
-        name: 'Alex Johnson',
-        avatar: 'https://i.pravatar.cc/40?img=1',
-        verified: true
-      },
-      text: 'This tutorial saved me hours of research! The explanation of hooks is crystal clear.',
-      time: '2 hours ago',
-      likes: 245,
-      liked: false,
-      replies: 3
-    },
-    {
-      id: 2,
-      user: {
-        name: 'Sarah Chen',
-        avatar: 'https://i.pravatar.cc/40?img=2',
-        verified: false
-      },
-      text: 'Could you make a video about React Server Components? I think many would find it helpful!',
-      time: '5 hours ago',
-      likes: 189,
-      liked: true,
-      replies: 12
-    },
-    {
-      id: 3,
-      user: {
-        name: 'Tech Guru',
-        avatar: 'https://i.pravatar.cc/40?img=3',
-        verified: true
-      },
-      text: 'The performance optimization tips were exactly what I needed for my project. Thanks!',
-      time: '1 day ago',
-      likes: 542,
-      liked: false,
-      replies: 8
-    }
-  ];
+  useEffect(() => {
+    let mounted = true;
+    const loadPage = async (p = 1) => {
+      if (!videoId) return;
+      try {
+        if (p === 1) setLoading(true); else setLoadingMore(true);
+        const res = await api.videos.comments(videoId, p, per).catch(() => null);
+        if (!mounted) return;
+        // res may be {page, per, total, data} or an array
+        if (res && Array.isArray(res.data)) {
+          if (p === 1) setComments(res.data); else setComments(prev => [...prev, ...res.data]);
+          setTotal(res.total || (res.data || []).length);
+        } else if (Array.isArray(res)) {
+          // fallback
+          setComments(res);
+          setTotal(res.length);
+        } else {
+          setComments([]);
+          setTotal(0);
+        }
+      } catch (err) {
+        console.error('Failed to load comments', err);
+      } finally {
+        setLoading(false);
+        setLoadingMore(false);
+      }
+    };
+
+    // reset when videoId changes
+    setPage(1);
+    loadPage(1);
+
+    return () => { mounted = false; };
+  }, [videoId, per]);
+
+  useEffect(() => {
+    // prepare debounced poster
+    debouncedPostRef.current = debounce(async (text) => {
+      if (!videoId) return;
+      setSubmitting(true);
+      try {
+        const author = localStorage.getItem('username') || 'You';
+        const res = await api.videos.postComment(videoId, author, text);
+        // backend returns created comment object
+        setComments(prev => [res, ...prev]);
+      } catch (err) {
+        console.error('Failed to post comment', err);
+        setComments(prev => [{ id: Date.now(), author: localStorage.getItem('username') || 'You', message: text, created_at: new Date().toISOString() }, ...prev]);
+      } finally {
+        setSubmitting(false);
+      }
+    }, 800);
+    return () => { debouncedPostRef.current = null; };
+  }, [videoId]);
+
+  // comments loaded from backend (api.videos.comments)
 
   const handleLikeComment = (commentId) => {
-    // Implement like functionality
+    // Implement like functionality (client-side for now)
     console.log('Liking comment:', commentId);
   };
 
@@ -68,10 +92,29 @@ const CommentSection = () => {
 
   const handleSubmitComment = (e) => {
     e.preventDefault();
-    if (comment.trim()) {
-      // Submit comment
-      console.log('Submitting comment:', comment);
-      setComment('');
+    if (!comment.trim() || !videoId || !debouncedPostRef.current) return;
+    // call debounced post
+    debouncedPostRef.current(comment.trim());
+    setComment('');
+  };
+
+  const handleLoadMore = async () => {
+    const next = page + 1;
+    setPage(next);
+    try {
+      setLoadingMore(true);
+      const res = await api.videos.comments(videoId, next, per).catch(() => null);
+      if (res && Array.isArray(res.data)) {
+        setComments(prev => [...prev, ...res.data]);
+        setTotal(res.total || total);
+      } else if (Array.isArray(res)) {
+        setComments(prev => [...prev, ...res]);
+        setTotal((prev) => prev + (res.length || 0));
+      }
+    } catch (err) {
+      console.error('Failed to load more comments', err);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
@@ -83,6 +126,9 @@ const CommentSection = () => {
     });
     setShowReply({ ...showReply, [commentId]: false });
   };
+
+  const noMoreComments = comments.length >= total;
+  const loadMoreClass = `px-6 py-2 rounded-full transition-colors ${noMoreComments ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-gray-800 hover:bg-gray-700'}`;
 
   return (
     <div className="space-y-6">
@@ -154,33 +200,42 @@ const CommentSection = () => {
 
       {/* Comments List */}
       <div className="space-y-6">
-        {comments.map(comment => (
-          <div key={comment.id} className="space-y-4">
+        {comments.map(comment => {
+          const authorName = comment.user?.name || comment.author || comment.username || 'User';
+          const authorAvatar = comment.user?.avatar || `https://i.pravatar.cc/40?u=${authorName}`;
+          const verified = comment.user?.verified || false;
+          const time = comment.time || comment.created_at || 'Just now';
+          const text = comment.text || comment.message || comment.body || '';
+          const likes = comment.likes || 0;
+          const liked = comment.liked || false;
+
+          return (
+          <div key={comment.id || comment.video_id || Math.random()} className="space-y-4">
             {/* Main Comment */}
             <div className="flex gap-3">
               <img 
-                src={comment.user.avatar} 
-                alt={comment.user.name}
+                src={authorAvatar} 
+                alt={authorName}
                 className="w-10 h-10 rounded-full"
                 loading="lazy"
               />
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="font-semibold">{comment.user.name}</span>
-                  {comment.user.verified && (
+                  <span className="font-semibold">{authorName}</span>
+                  {verified && (
                     <span className="text-xs bg-blue-500 text-white px-1.5 py-0.5 rounded">✓</span>
                   )}
-                  <span className="text-gray-400 text-sm">{comment.time}</span>
+                  <span className="text-gray-400 text-sm">{time}</span>
                 </div>
-                <p className="mb-2">{comment.text}</p>
+                <p className="mb-2">{text}</p>
                 
                 <div className="flex items-center gap-4">
                   <button 
                     onClick={() => handleLikeComment(comment.id)}
-                    className={`flex items-center gap-1 ${comment.liked ? 'text-blue-400' : 'text-gray-400 hover:text-white'}`}
+                    className={`flex items-center gap-1 ${liked ? 'text-blue-400' : 'text-gray-400 hover:text-white'}`}
                   >
                     <ThumbsUp size={16} />
-                    <span className="text-sm">{comment.likes}</span>
+                    <span className="text-sm">{likes}</span>
                   </button>
                   
                   <button 
@@ -250,14 +305,23 @@ const CommentSection = () => {
               </div>
             ))}
           </div>
-        ))}
+        );
+      })}
       </div>
 
       {/* Load More Comments */}
       <div className="text-center">
-        <button className="px-6 py-2 bg-gray-800 hover:bg-gray-700 rounded-full transition-colors">
-          Load more comments
-        </button>
+        {loadingMore ? (
+          <button className="px-6 py-2 bg-gray-800 rounded-full" disabled>Loading...</button>
+        ) : (
+          <button
+            onClick={handleLoadMore}
+            disabled={noMoreComments}
+            className={loadMoreClass}
+          >
+            {noMoreComments ? 'No more comments' : 'Load more comments'}
+          </button>
+        )}
       </div>
     </div>
   );

@@ -60,7 +60,6 @@
         "tips": "Kalau kamu baru pertama kali buka, ikuti alurnya dari atas ke bawah biar nggak ketinggalan konteks. 😉"
       }
     ],
-    "relatedDocs": ["fitur-utama", "halaman-proyek", "tips-dan-trik"],
     "resources": [
       {
         "type": "link",
@@ -218,6 +217,63 @@
         "type": "article",
         "label": "Panduan Personal Branding Portofolio",
         "url": "https://blog.portfolio.dev/personal-branding"
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "title": "Dokumentasi AI & Chatbot - Patch 1.18.35",
+    "slug": "dokumentasi-ai-1-18-35",
+    "icon": "Robot",
+    "lastUpdated": "2025-12-12",
+    "author": "Tim Dokumentasi AI",
+    "version": "1.18.35",
+    "versionCode": "build-2025.12.12.001",
+    "versionType": "patch",
+    "releaseChannel": "production",
+    "estimatedReadTime": "4 menit",
+    "tags": ["ai", "chatbot", "changelog", "release"],
+    "content": "Ringkasan perubahan patch 1.18.35: konsolidasi util pemrosesan berkas, refactor hooks/settings, integrasi berkas ke KB secara realtime, shortcuts yang dapat dikonfigurasi, progress upload, engine math yang ditingkatkan, dan perbaikan speech recognition.",
+    "changelog": [
+      {
+        "date": "2025-12-12",
+        "version": "1.18.35",
+        "changes": "Menambahkan util sentral `fileProcessor.js`, merombak hooks dan settings untuk memakai util bersama, dispatch event saat file tersimpan (`saipul_kb_updated`, `saipul_file_processed`), shortcut keyboard yang dapat dikonfigurasi dan UI Settings untuk mengedit, progress upload dan event `saipul_upload_progress`, mengganti evaluator math dengan `mathjs`, serta memperbarui hook speech recognition untuk callback dan toggle via event.",
+        "type": "patch"
+      }
+    ],
+    "versionHistory": [
+      {
+        "version": "1.18.35",
+        "date": "2025-12-12",
+        "status": "CURRENT",
+        "breakingChanges": false,
+        "migrationRequired": false
+      }
+    ],
+    "visual": {
+      "summary": "Update patch kecil untuk fitur chat/AI: konsolidasi util, perbaikan integrasi file, shortcuts, progress, math engine, dan speech.",
+      "badge": "AI Patch",
+      "color": "#8b5cf6"
+    },
+    "compatibility": {
+      "minRequired": "1.11.0",
+      "testedUpTo": "1.30.10",
+      "browserSupport": ["chrome 120+", "firefox 118+", "safari 16+", "edge 122+"],
+      "apiCompatibility": "v4"
+    },
+    "subsections": [
+      {
+        "subtitle": "Ringkasan Perubahan",
+        "details": "Detail: util file terpusat, refactor hooks/settings, integrasi KB realtime, shortcuts konfigurabel, progress upload, migrasi ke mathjs, dan perbaikan speech recognition. Lihat daftar file yang terpengaruh untuk rincian lebih lanjut."
+      }
+    ],
+    "relatedDocs": ["fitur-ai-pencarian", "integrasi", "testing-qa"],
+    "resources": [
+      {
+        "type": "link",
+        "label": "AI Documentation",
+        "url": "/help/version/dokumentasi-ai"
       }
     ]
   },

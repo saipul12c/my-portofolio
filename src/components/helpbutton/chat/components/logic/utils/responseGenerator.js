@@ -3,6 +3,7 @@ import { getKnowledgeResponse } from './knowledgeBase';
 import { handleConversion } from './conversions';
 import { generatePrediction, analyzeData, calculateStatistics } from './analytics';
 import { extractThemes, getRandomItem } from './helpers';
+import { getFileIcon } from './fileIcons';
 
 export function getSmartReply(msg, settings, conversationContext, safeKnowledgeBase, knowledgeStats) {
   const text = msg.toLowerCase().trim();
@@ -42,7 +43,7 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
 
   if ((text.includes('data') && text.includes('tersedia')) || text.includes('knowledge base') || text.includes('info data')) {
     const stats = knowledgeStats;
-    let response = `📚 **Knowledge Base SaipulAI v6.0**\n\n`;
+    let response = `📚 **Knowledge Base SaipulAI v7.0.0**\n\n`;
     
     if (stats.aiConcepts > 0) response += `• 🤖 **AI Concepts**: ${stats.aiConcepts} konsep\n`;
     if (stats.hobbies > 0) response += `• 🎯 **Hobbies**: ${stats.hobbies} aktivitas\n`;
@@ -70,20 +71,20 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
   }
 
   if (text.includes('halo') || text.includes('hai') || text.includes('hi') || text.includes('hello'))
-    return `Hai juga! 👋 Aku SaipulAI v6.0 Enhanced dengan kemampuan:\n\n• 🧮 **Matematika Lanjutan** & Scientific Computing\n• 📊 **Multi-format File Processing** (PDF, DOCX, XLSX, Images)\n• 🤖 **Dynamic Knowledge Base** Integration\n• 🎯 **Context-Aware Intelligent Responses**\n• 📁 **Advanced File Management** & Metadata\n• 🔍 **Smart Search** Across All Data Sources\n\n💡 **Tips**: Coba upload file atau tanyakan tentang topik spesifik!`;
+    return `Hai juga! 👋 Aku SaipulAI v7.0.0 Enhanced dengan kemampuan:\n\n• 🧮 **Matematika Lanjutan** & Scientific Computing\n• 📊 **Multi-format File Processing** (PDF, DOCX, XLSX, Images)\n• 🤖 **Dynamic Knowledge Base** Integration\n• 🎯 **Context-Aware Intelligent Responses**\n• 📁 **Advanced File Management** & Metadata\n• 🔍 **Smart Search** Across All Data Sources\n\n💡 **Tips**: Coba upload file atau tanyakan tentang topik spesifik!`;
 
   if (text.includes('terima kasih') || text.includes('thanks') || text.includes('thank you')) 
     return "Sama-sama! 😊 Senang bisa membantu analisis dan pencarian informasimu. Jika ada yang lain, jangan ragu untuk bertanya!";
 
   if (text.includes('versi') || text.includes('version'))
-    return `🤖 **SaipulAI v6.0 Enhanced**\n• Model: ${settings.aiModel.toUpperCase()}\n• Presisi: ${settings.calculationPrecision}\n• Memori: ${settings.memoryContext ? 'Aktif' : 'Nonaktif'}\n• File Support: ${settings.allowedFileTypes.join(', ')}\n• Data Sources: ${knowledgeStats.totalCategories || 0} kategori\n• File Upload: ${settings.enableFileUpload ? 'Aktif' : 'Nonaktif'}`;
+    return `🤖 **SaipulAI v7.0.0 Enhanced**\n• Model: ${settings.aiModel.toUpperCase()}\n• Presisi: ${settings.calculationPrecision}\n• Memori: ${settings.memoryContext ? 'Aktif' : 'Nonaktif'}\n• File Support: ${settings.allowedFileTypes.join(', ')}\n• Data Sources: ${knowledgeStats.totalCategories || 0} kategori\n• File Upload: ${settings.enableFileUpload ? 'Aktif' : 'Nonaktif'}`;
 
   if ((text.includes('hapus') || text.includes('clear')) && text.includes('chat')) {
     return "🗑️ **Riwayat percakapan telah dibersihkan**\nSekarang kita mulai fresh! Ada yang bisa kubantu analisis, hitung, atau proses hari ini?";
   }
 
   if (text.includes('fitur') || text.includes('bisa apa') || text.includes('help') || text.includes('bantuan'))
-    return `🤖 **Fitur SaipulAI v6.0 Enhanced**:\n\n🧮 **MATEMATIKA & ANALISIS**\n• Scientific Calculations & Calculus\n• Statistical Analysis & Probability\n• Data Forecasting & Predictions\n• Unit Conversions & Measurements\n\n📁 **FILE PROCESSING**\n• Multi-format Upload (PDF, DOC, XLS, Images)\n• Text Extraction & Content Analysis\n• Metadata Management & Tracking\n• Smart Search Across Files\n\n🤖 **KNOWLEDGE BASE**\n• AI Concepts & Machine Learning\n• Professional Skills & Certificates\n• Personal Interests & Hobbies\n• Dynamic Data Integration\n\n🎯 **SMART FEATURES**\n• Context-Aware Conversations\n• Voice Input & Speech Recognition\n• Advanced Search Algorithms\n• Real-time Data Processing\n\n💡 **FITUR LANJUT**\n• Creative Mode & Analytical Mode\n• Privacy Controls & Data Management\n• Export/Import Capabilities\n• Customizable Settings`;
+    return `🤖 **Fitur SaipulAI v7.0.0 Enhanced**:\n\n🧮 **MATEMATIKA & ANALISIS**\n• Scientific Calculations & Calculus\n• Statistical Analysis & Probability\n• Data Forecasting & Predictions\n• Unit Conversions & Measurements\n\n📁 **FILE PROCESSING**\n• Multi-format Upload (PDF, DOC, XLS, Images)\n• Text Extraction & Content Analysis\n• Metadata Management & Tracking\n• Smart Search Across Files\n\n🤖 **KNOWLEDGE BASE**\n• AI Concepts & Machine Learning\n• Professional Skills & Certificates\n• Personal Interests & Hobbies\n• Dynamic Data Integration\n\n🎯 **SMART FEATURES**\n• Context-Aware Conversations\n• Voice Input & Speech Recognition\n• Advanced Search Algorithms\n• Real-time Data Processing\n\n💡 **FITUR LANJUT**\n• Creative Mode & Analytical Mode\n• Privacy Controls & Data Management\n• Export/Import Capabilities\n• Customizable Settings`;
 
   const lastUserMessages = conversationContext.filter(msg => msg.role === 'user').slice(-3);
   const commonThemes = extractThemes(lastUserMessages);
@@ -98,20 +99,4 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
   return getRandomItem(fallbacks);
 }
 
-function getFileIcon(extension) {
-  const icons = {
-    'pdf': '📄',
-    'doc': '📝',
-    'docx': '📝',
-    'txt': '📃',
-    'xls': '📊',
-    'xlsx': '📊',
-    'csv': '📈',
-    'jpg': '🖼️',
-    'jpeg': '🖼️',
-    'png': '🖼️',
-    'json': '⚙️',
-    'md': '📋'
-  };
-  return icons[extension] || '📁';
-}
+// `getFileIcon` imported from shared fileIcons

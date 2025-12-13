@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
-export function useSpeechRecognition(settings, setInput, handleSend) {
+export function useSpeechRecognition(settings, setInput) {
   const [isListening, setIsListening] = useState(false);
 
-  const startSpeechRecognition = () => {
+  const startSpeechRecognition = (onEndCallback) => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
       alert("Browser tidak mendukung speech recognition");
       return;
@@ -14,7 +14,7 @@ export function useSpeechRecognition(settings, setInput, handleSend) {
     
     recognition.continuous = false;
     recognition.interimResults = true;
-    recognition.lang = settings.language === 'id' ? 'id-ID' : 'en-US';
+    recognition.lang = settings && settings.language === 'id' ? 'id-ID' : 'en-US';
 
     recognition.start();
     setIsListening(true);
@@ -43,9 +43,11 @@ export function useSpeechRecognition(settings, setInput, handleSend) {
     recognition.onend = () => {
       setIsListening(false);
       if (finalTranscript.trim()) {
-        setTimeout(() => handleSend(), 500);
+        if (typeof onEndCallback === 'function') onEndCallback(finalTranscript.trim());
       }
     };
+
+    return recognition;
   };
 
   return {

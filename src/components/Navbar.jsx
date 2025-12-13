@@ -6,6 +6,9 @@ export default function Navbar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
+  // Auth buttons were moved into the special pages (streming & discond)
+  // to allow custom layouts per-page. Navbar no longer renders auth links.
+
   const links = [
     { to: "/", label: "Home" },
     { to: "/about", label: "About" },
@@ -36,7 +39,7 @@ export default function Navbar() {
         </button>
 
         {/* Menu Desktop */}
-        <ul className="hidden md:flex items-center gap-10">
+        <ul className="hidden md:flex items-center gap-6">
           {links.map((item) => (
             <li key={item.to}>
               <Link
@@ -51,6 +54,8 @@ export default function Navbar() {
               </Link>
             </li>
           ))}
+
+          {/* Auth controls removed from global Navbar. */}
         </ul>
       </div>
 
@@ -92,6 +97,8 @@ export default function Navbar() {
               </Link>
             </li>
           ))}
+
+          {/* Auth controls removed from mobile menu too. */}
         </ul>
       </div>
     </nav>

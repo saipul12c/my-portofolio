@@ -1,1 +1,9 @@
-[]
+[
+	{
+		"id": "UC_example_1",
+		"title": "ReactID Channel",
+		"description": "Konten tutorial React dan demo project",
+		"published_at": "2025-10-01T08:00:00.000Z",
+		"subscriber_count": 2540
+	}
+]

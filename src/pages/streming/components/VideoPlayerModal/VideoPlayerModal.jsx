@@ -7,14 +7,17 @@ import {
   Send, ThumbsDown, ExternalLink, RotateCcw
 } from 'lucide-react';
 import CommentSection from '../CommentSection/CommentSection';
+import api from '../../lib/api';
+import { likedVideos } from '../../utils/storage';
 import useVideoPlayer from '../../hooks/useVideoPlayer';
 
-const VideoPlayerModal = ({ video, isOpen, onClose }) => {
+const VideoPlayerModal = ({ video, isOpen, onClose, onLike }) => {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
   const [showSettings, setShowSettings] = useState(false);
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
+  const [likesCount, setLikesCount] = useState(video.likes || 0);
   const [subscribed, setSubscribed] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showDescription, setShowDescription] = useState(false);
@@ -102,9 +105,21 @@ const VideoPlayerModal = ({ video, isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const handleLike = () => {
-    setLiked(!liked);
-    if (disliked) setDisliked(false);
-    // Save like to storage
+    const next = !liked;
+    setLiked(next);
+    if (disliked && next) setDisliked(false);
+    try {
+      // persist via helper storage
+      likedVideos.toggle({ id: video.id, title: video.title });
+      const nowLiked = likedVideos.isLiked(video.id);
+      setLikesCount(prev => nowLiked ? (Number(prev || 0) + 1) : Math.max(0, Number(prev || 0) - 1));
+      // Optional: persist to backend (non-fatal)
+      api.videos.like(video.id, nowLiked).catch(() => {});
+      // Notify parent (so parent can sync its `videos` list)
+      if (typeof onLike === 'function') onLike('like', video, nowLiked);
+    } catch (err) {
+      console.error('Like error', err);
+    }
   };
 
   const handleDislike = () => {
@@ -386,7 +401,7 @@ const VideoPlayerModal = ({ video, isOpen, onClose }) => {
                       className={`px-4 py-2 flex items-center gap-2 transition-colors ${liked ? 'text-blue-400 bg-blue-400/10' : 'hover:bg-gray-700'}`}
                     >
                       <ThumbsUp size={20} />
-                      <span>{video.likes.toLocaleString()}</span>
+                      <span>{Number(likesCount || 0).toLocaleString()}</span>
                     </button>
                     <div className="w-px h-6 bg-gray-700"></div>
                     <button 
@@ -472,7 +487,7 @@ const VideoPlayerModal = ({ video, isOpen, onClose }) => {
 
               {/* Tab Content */}
               {activeTab === 'comments' && (
-                <CommentSection />
+                <CommentSection videoId={video.id} />
               )}
             </div>
           </div>

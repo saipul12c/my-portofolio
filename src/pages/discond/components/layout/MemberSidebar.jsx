@@ -1,25 +1,38 @@
+import React, { useState } from 'react';
 import { motion } from "framer-motion";
 import { Search, Plus, X } from 'lucide-react';
 import { useChat } from '../../contexts/ChatContext';
+import UserProfile from '../auth/UserProfile';
 
 const MemberSidebar = ({ mobileClose }) => {
   const { members, selectedServer } = useChat();
 
-  // Mock data untuk members - dalam aplikasi nyata ini akan diambil dari database
-  const mockMembers = [
-    { id: 1, name: 'JohnDoe', status: 'online', color: '#ff6b6b', isBot: false },
-    { id: 2, name: 'JaneSmith', status: 'idle', color: '#4ecdc4', isBot: false },
-    { id: 3, name: 'BotHelper', status: 'online', color: '#45b7d1', isBot: true },
-    { id: 4, name: 'MikeJohnson', status: 'dnd', color: '#96ceb4', isBot: false },
-    { id: 5, name: 'SarahWilson', status: 'offline', color: '#feca57', isBot: false },
+  // If backend members are available, use them; otherwise fall back to a small mock set
+  const fallback = [
+    { id: 'local-1', username: 'JohnDoe', presence: 'online', color: '#ff6b6b', isBot: false },
+    { id: 'local-2', username: 'JaneSmith', presence: 'idle', color: '#4ecdc4', isBot: false },
+    { id: 'local-3', username: 'BotHelper', presence: 'online', color: '#45b7d1', isBot: true },
+    { id: 'local-4', username: 'MikeJohnson', presence: 'dnd', color: '#96ceb4', isBot: false },
+    { id: 'local-5', username: 'SarahWilson', presence: 'offline', color: '#feca57', isBot: false },
   ];
 
+  const list = (members && members.length > 0) ? members.map(m => ({
+    id: m.id,
+    name: m.username || m.name || (`user-${m.id}`),
+    status: (m.presence || 'offline'),
+    color: m.avatar_color || m.color || '#6b6b6b',
+    isBot: !!m.isBot,
+    typing: !!m.typing
+  })) : fallback.map(m => ({ id: m.id, name: m.username || m.name, status: m.presence, color: m.color, isBot: m.isBot, typing: false }));
+
   const statusGroups = {
-    online: mockMembers.filter(m => m.status === 'online'),
-    idle: mockMembers.filter(m => m.status === 'idle'),
-    dnd: mockMembers.filter(m => m.status === 'dnd'),
-    offline: mockMembers.filter(m => m.status === 'offline')
+    online: list.filter(m => m.status === 'online'),
+    idle: list.filter(m => m.status === 'idle'),
+    dnd: list.filter(m => m.status === 'dnd'),
+    offline: list.filter(m => m.status === 'offline' || !m.status)
   };
+
+  const [selectedMember, setSelectedMember] = useState(null);
 
   const StatusIcon = ({ status }) => {
     const icons = {
@@ -59,14 +72,14 @@ const MemberSidebar = ({ mobileClose }) => {
         </button>
       </div>
       {/* Header */}
-      <div className="p-4 border-b border-gray-700">
+      <div className="p-3 border-b border-gray-700">
         <div className="relative">
           <input
             type="text"
             placeholder="Cari anggota"
-            className="w-full bg-[#202225] text-white text-sm px-2 py-1 rounded focus:outline-none focus:ring-1 focus:ring-white"
+            className="w-full bg-[#202225] text-sm px-2 py-1 rounded focus:outline-none focus:ring-1 focus:ring-white text-gray-200"
           />
-          <Search className="w-4 h-4 text-gray-400 absolute right-2 top-1.5" />
+          <Search className="w-4 h-4 text-gray-400 absolute right-2 top-2" />
         </div>
       </div>
 
@@ -75,9 +88,9 @@ const MemberSidebar = ({ mobileClose }) => {
         {/* Online Members */}
         {statusGroups.online.length > 0 && (
           <div>
-            <div className="text-gray-400 text-xs font-semibold mb-2 flex items-center justify-between">
+            <div className="text-gray-400 text-[10px] uppercase tracking-wider mb-2 flex items-center justify-between">
               <span>ONLINE — {statusGroups.online.length}</span>
-              <Plus className="w-3 h-3 cursor-pointer hover:text-white" />
+              <Plus className="w-3 h-3 cursor-pointer hover:text-white text-gray-400" />
             </div>
             <div className="space-y-1">
               {statusGroups.online.map(member => (
@@ -85,6 +98,7 @@ const MemberSidebar = ({ mobileClose }) => {
                   key={member.id}
                   whileHover={{ backgroundColor: 'rgba(79, 84, 92, 0.16)' }}
                   className="flex items-center space-x-2 p-1 rounded cursor-pointer group"
+                  onClick={() => setSelectedMember(member)}
                 >
                   <div className="relative">
                     <div 
@@ -93,15 +107,25 @@ const MemberSidebar = ({ mobileClose }) => {
                     >
                       {member.name.substring(0, 2).toUpperCase()}
                     </div>
-                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#2f3136] rounded-full flex items-center justify-center">
+                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[var(--dc-bg)] rounded-full flex items-center justify-center">
                       <StatusIcon status={member.status} />
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-1">
+                    <div className="flex items-center space-x-2">
                       <span className="text-white text-sm truncate">{member.name}</span>
                       {member.isBot && (
                         <span className="bg-cyan-600 text-white text-xs px-1 rounded">BOT</span>
+                      )}
+                      {member.typing && (
+                        <span className="ml-2 text-xs text-gray-300 italic flex items-center">
+                          <span className="mr-1">typing</span>
+                          <span className="inline-flex items-center gap-0.5">
+                            <span className="w-1 h-1 bg-gray-300 rounded-full animate-pulse" />
+                            <span className="w-1 h-1 bg-gray-300 rounded-full animate-pulse delay-75" />
+                            <span className="w-1 h-1 bg-gray-300 rounded-full animate-pulse delay-150" />
+                          </span>
+                        </span>
                       )}
                     </div>
                   </div>
@@ -123,6 +147,7 @@ const MemberSidebar = ({ mobileClose }) => {
                   key={member.id}
                   whileHover={{ backgroundColor: 'rgba(79, 84, 92, 0.16)' }}
                   className="flex items-center space-x-2 p-1 rounded cursor-pointer group"
+                  onClick={() => setSelectedMember(member)}
                 >
                   <div className="relative">
                     <div 
@@ -154,6 +179,7 @@ const MemberSidebar = ({ mobileClose }) => {
                   key={member.id}
                   whileHover={{ backgroundColor: 'rgba(79, 84, 92, 0.16)' }}
                   className="flex items-center space-x-2 p-1 rounded cursor-pointer group"
+                  onClick={() => setSelectedMember(member)}
                 >
                   <div className="relative">
                     <div 
@@ -185,6 +211,7 @@ const MemberSidebar = ({ mobileClose }) => {
                   key={member.id}
                   whileHover={{ backgroundColor: 'rgba(79, 84, 92, 0.16)' }}
                   className="flex items-center space-x-2 p-1 rounded cursor-pointer group"
+                  onClick={() => setSelectedMember(member)}
                 >
                   <div className="relative">
                     <div 
@@ -204,6 +231,9 @@ const MemberSidebar = ({ mobileClose }) => {
           </div>
         )}
       </div>
+      {selectedMember && (
+        <UserProfile member={selectedMember} onClose={() => setSelectedMember(null)} />
+      )}
     </div>
   );
 };

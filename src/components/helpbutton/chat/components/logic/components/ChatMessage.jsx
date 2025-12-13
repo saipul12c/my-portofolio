@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ThumbsUp, ThumbsDown, RefreshCw, Flag } from "lucide-react";
+import { ThumbsUp, ThumbsDown, RefreshCw, Flag, Trash, Copy, Check } from "lucide-react";
 import ReportModal from "./ReportModal";
 import { useState } from "react";
 
@@ -10,6 +10,77 @@ export function ChatMessage({ message, handleQuickAction }) {
   const openReportModal = () => setReportModalOpen(true);
   const closeReportModal = () => setReportModalOpen(false);
 
+  const renderInline = (text) => {
+    if (!text) return null;
+    const parts = text.split(/\*\*(.*?)\*\*/g);
+    return parts.map((part, i) =>
+      i % 2 === 1 ? <strong key={i}>{part}</strong> : <span key={i}>{part}</span>
+    );
+  };
+
+  const formatTextToElements = (txt) => {
+    if (!txt) return null;
+    // Normalize line endings
+    const blocks = txt.split(/\n\n+/);
+    return blocks.map((block, idx) => {
+      const lines = block.split(/\n/).map((l) => l.trim()).filter(Boolean);
+
+      // If all lines are list items (start with • or -)
+      const isList = lines.every((l) => l.startsWith("•") || l.startsWith("-"));
+      if (isList) {
+        return (
+          <ul key={idx} className="list-disc list-inside text-sm mb-2">
+            {lines.map((l, i) => (
+              <li key={i} className="leading-relaxed">{renderInline(l.replace(/^•\s?|-\s?/, ""))}</li>
+            ))}
+          </ul>
+        );
+      }
+
+      // Header line like: 🧮 **MATEMATIKA & ANALISIS**
+      const firstLine = lines[0] || "";
+      const headerMatch = firstLine.match(/^(.*?)?\s*\*\*(.+?)\*\*/);
+      if (headerMatch) {
+        const emoji = headerMatch[1] ? headerMatch[1].trim() : "";
+        const headerText = headerMatch[2];
+        const rest = lines.slice(1).join("\n");
+        return (
+          <div key={idx} className="mb-2">
+            <div className="text-sm font-semibold flex items-center gap-2">{emoji && <span>{emoji}</span>}<span>{headerText}</span></div>
+            {rest && <p className="text-sm mt-1">{renderInline(rest)}</p>}
+          </div>
+        );
+      }
+
+      // Fallback paragraph
+      return (
+        <p key={idx} className="text-sm mb-2 leading-relaxed">
+          {lines.map((ln, i) => (
+            <span key={i}>{renderInline(ln)}{i < lines.length - 1 && <br />}</span>
+          ))}
+        </p>
+      );
+    });
+  };
+
+  const [copied, setCopied] = useState(false);
+  const handleCopy = async () => {
+    try {
+      const text = message?.text || "";
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      // Dispatch global event so parent window can show a toast
+      try {
+        window.dispatchEvent(new CustomEvent('saipul_copy', { detail: { text: 'Tersalin' } }));
+      } catch (e) {
+        // ignore
+      }
+      setTimeout(() => setCopied(false), 1600);
+    } catch (e) {
+      console.error('Copy failed', e);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -18,53 +89,66 @@ export function ChatMessage({ message, handleQuickAction }) {
       className={`flex ${isUser ? "justify-end" : "justify-start"} my-2`}
     >
       <div
-        className={`px-4 py-2 rounded-lg max-w-xs break-words shadow-md ${
-          isUser
-            ? "bg-blue-500 text-white rounded-br-none"
-            : "bg-gray-300 text-gray-800 rounded-bl-none"
-        }`}
-      >
-        <p>{message.text}</p>
+        className={`px-4 py-2 rounded-lg max-w-md break-words shadow-md selection:bg-slate-200 selection:text-slate-900 ${isUser ? "bg-sky-200 text-sky-900 rounded-br-none" : "bg-slate-100 text-gray-900 rounded-bl-none"}`}>
+        {formatTextToElements(message?.text)}
         <span className="block text-xs mt-1 text-right opacity-70">
-          {new Date(message.timestamp).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
+                {message?.timestamp ? new Date(message.timestamp).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }) : ""}
         </span>
 
         {/* Quick Actions */}
-        {!isUser && (
-          <div className="flex gap-2 mt-2">
-            <button
-              onClick={() => handleQuickAction("like", message.id)}
-              className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
-              title="Like"
-            >
-              <ThumbsUp size={16} />
-            </button>
-            <button
-              onClick={() => handleQuickAction("dislike", message.id)}
-              className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
-              title="Dislike"
-            >
-              <ThumbsDown size={16} />
-            </button>
-            <button
-              onClick={() => handleQuickAction("regenerate", message.id)}
-              className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
-              title="Regenerate"
-            >
-              <RefreshCw size={16} />
-            </button>
-            <button
-              onClick={openReportModal}
-              className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
-              title="Report"
-            >
-              <Flag size={16} />
-            </button>
-          </div>
-        )}
+        <div className="flex gap-2 mt-2">
+          {/* Delete available for both user and bot messages */}
+          <button
+            onClick={() => handleQuickAction("delete", message.id)}
+            className="p-1 rounded-full bg-slate-200 hover:bg-slate-300 text-gray-800"
+            title="Hapus"
+          >
+            <Trash size={16} />
+          </button>
+
+          {!isUser && (
+            <>
+              <button
+                onClick={handleCopy}
+                className="p-1 rounded-full bg-slate-200 hover:bg-slate-300 text-gray-800"
+                title="Salin"
+              >
+                {copied ? <Check size={16} /> : <Copy size={16} />}
+              </button>
+              <button
+                onClick={() => handleQuickAction("like", message.id)}
+                className="p-1 rounded-full bg-slate-200 hover:bg-slate-300 text-gray-800"
+                title="Like"
+              >
+                <ThumbsUp size={16} />
+              </button>
+              <button
+                onClick={() => handleQuickAction("dislike", message.id)}
+                className="p-1 rounded-full bg-slate-200 hover:bg-slate-300 text-gray-800"
+                title="Dislike"
+              >
+                <ThumbsDown size={16} />
+              </button>
+              <button
+                onClick={() => handleQuickAction("regenerate", message.id)}
+                className="p-1 rounded-full bg-slate-200 hover:bg-slate-300 text-gray-800"
+                title="Regenerate"
+              >
+                <RefreshCw size={16} />
+              </button>
+              <button
+                onClick={openReportModal}
+                className="p-1 rounded-full bg-slate-200 hover:bg-slate-300 text-gray-800"
+                title="Report"
+              >
+                <Flag size={16} />
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Report Modal */}

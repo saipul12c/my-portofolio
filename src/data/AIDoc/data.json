@@ -1,12 +1,16 @@
 {
   "header_information": {
     "title": "SaipulAI — Dokumentasi & Panduan",
-    "version": "7.0.10",
+    "version": "7.0.11",
     "config_location": "src/components/helpbutton/chat/config.js",
-    "last_update": "2025-12-06"
+    "last_update": "2025-12-12"
   },
   
   "change_log_sesi_terakhir": [
+    {
+      "date": "2025-12-12",
+      "description": "Rilis v7.0.11: konsolidasi util pemrosesan berkas, refactor hooks/settings, integrasi file ke KB realtime, shortcut konfigurabel, progress upload, migrasi ke mathjs, dan perbaikan speech recognition."
+    },
     {
       "date": "2025-12-06",
       "description": "Memperbarui versi chatbot ke 7.0.10 dan menyimpan versi sebelumnya sebagai riwayat"
@@ -18,6 +22,24 @@
   ],
   
   "version_history_detail": [
+    {
+      "version": "v7.0.11",
+      "date": "2025-12-12",
+      "type": "patch",
+      "supported": true,
+      "summary": "Patch: konsolidasi util pemrosesan file, integrasi realtime, shortcuts konfigurabel, progress upload, mathjs migration, speech recognition improvements.",
+      "features": [
+        "Menambahkan util terpusat `fileProcessor.js` untuk pemrosesan, validasi, ekstraksi teks, dan ekspor KB.",
+        "Refactor `useFileUpload`, `useFileManagement`, `useSettings`, dan `ChatbotSettings` untuk menggunakan util bersama dan mengurangi duplikasi.",
+        "Dispatch event saat file tersimpan (`saipul_kb_updated`, `saipul_file_processed`) agar KB ter-update secara realtime.",
+        "Keyboard shortcuts yang dapat dikonfigurasi via Settings; termasuk `openUpload` dan `toggleSpeech`.",
+        "Upload progress realtime (`saipul_upload_progress`) dan progress bar UI di Settings/FileSettings.",
+        "Migrasi evaluator matematika ke `mathjs` untuk dukungan turunan simbolik dan integrasi numerik yang lebih aman.",
+        "Perbaikan hook `useSpeechRecognition` untuk callback dan toggle via event `saipul_toggle_speech`."
+      ],
+      "contributors": ["saipul@local","frontend-team","docs-team"],
+      "notes": "Setelah menarik pembaruan, jalankan `npm install` untuk menambahkan `mathjs` dan restart dev server (npm run dev)."
+    },
     {
       "version": "v7.0.10",
       "date": "2025-12-06",
@@ -1262,8 +1284,8 @@
     "knowledge_base_files": "7 file",
     "ukuran_bundle": "1.2MB",
     "waktu_respons": "<200ms",
-    "total_versi_dokumentasi": "86 versi",
-    "rentang_waktu": "2024-05-15 hingga 2025-12-06",
+    "total_versi_dokumentasi": "87 versi",
+    "rentang_waktu": "2024-05-15 hingga 2025-12-12",
     "rata_rata_release": "5.2 hari per versi"
   },
   
@@ -1271,18 +1293,22 @@
     "masalah_diperbaiki": [
       "Respons chatbot yang hanya menampilkan teks 'Smart reply for: <input>' (disebabkan placeholder lokal yang mengembalikan input pengguna)",
       "Beberapa impor file mengarah ke lokasi yang salah sehingga modul tidak ditemukan oleh Vite (contoh: path hooks, path config)",
-      "Error runtime karena pemanggilan fungsi sebelum deklarasi (Temporal Dead Zone) di useChatbot.js"
+      "Error runtime karena pemanggilan fungsi sebelum deklarasi (Temporal Dead Zone) di useChatbot.js",
+      "Duplikasi logika pemrosesan file dihilangkan dengan penambahan util terpusat (`fileProcessor.js`)",
+      "Evaluator matematika yang rentan diganti dengan `mathjs` untuk dukungan simbolik dan numerical yang lebih aman"
     ],
-    "catatan": "Perbaikan di atas menargetkan akar masalah tersebut — memperbaiki impor, memperbaiki urutan deklarasi, dan mengganti penggunaan placeholder respons dengan generator respons yang lengkap."
+    "catatan": "Perbaikan di atas menargetkan akar masalah tersebut — memperbaiki impor, memperbaiki urutan deklarasi, memperkenalkan util pemrosesan file terpusat, dan mengganti evaluator matematika. Pastikan menjalankan `npm install` setelah menarik pembaruan karena dependency baru (mis. mathjs)."
   },
   
-  "ringkasan_singkat": "SaipulAI adalah asisten lokal ringan yang menggabungkan: knowledge base berbasis file JSON, modul kalkulator matematika, utilitas konversi, dan mekanisme saran otomatis. Semua proses utama berjalan secara lokal di aplikasi — tidak terhubung ke API eksternal kecuali dikonfigurasi secara eksplisit.",
+  "ringkasan_singkat": "SaipulAI adalah asisten lokal ringan yang menggabungkan: knowledge base berbasis file JSON, utilitas pemrosesan file terpusat, kalkulator berbasis mathjs, keyboard shortcuts konfigurabel, dan mekanisme saran otomatis. File yang diunggah dapat diindeks ke KB secara lokal dan diproses realtime melalui event internal.",
   
   "fitur_utama": [
-    "📚 Knowledge Base dinamis — sumber utama berasal dari file JSON di src/components/helpbutton/chat/data/",
-    "🧮 Kalkulator matematika canggih — dukungan fungsi trig, log, konstanta, dan ekspresi kompleks",
+    "📚 Knowledge Base dinamis — sumber utama berasal dari file JSON di src/components/helpbutton/chat/data/; file yang diunggah juga dapat diindeks secara lokal",
+    "🧮 Kalkulator matematika (mathjs) — dukungan turunan simbolik dan integrasi numerik yang lebih aman",
     "🔁 Konversi & utilitas — suhu, mata uang dasar, dan analisis statistik sederhana",
-    "📁 Dukungan upload (opsional) — file diindeks ke knowledge base bila diaktifkan",
+    "📁 Dukungan upload & progress realtime — file diindeks ke KB, dilaporkan lewat event dan progress bar di UI",
+    "⌨️ Keyboard Shortcuts yang dapat dikonfigurasi — atur kombinasi di Settings",
+    "🎙️ Input suara & speech recognition — integrasi Web Speech API dengan toggle dan callback",
     "💡 Saran kontekstual & quick actions berdasarkan topik percakapan"
   ],
   
@@ -1294,11 +1320,12 @@
     "src/components/helpbutton/chat/data/interests.json",
     "src/components/helpbutton/chat/data/profile.json",
     "src/components/helpbutton/chat/data/softskills.json"
+    ,"Uploaded files / saved KB (localStorage via fileProcessor)"
   ],
   
   "pengaturan_konfigurasi": {
     "default_settings": {
-      "chatbotVersion": "7.0.10",
+      "chatbotVersion": "7.0.11",
       "aiDocsPath": "/help/ai",
       "calculationPrecision": 12,
       "maxActivityLogs": 100,
@@ -1314,7 +1341,7 @@
       "language": "id",
       "responseTimeout": 10000
     },
-    "catatan": "Konfigurasi default dapat dilihat di src/components/helpbutton/chat/config.js. Untuk mengubah perilaku (mis. presisi matematika, penggunaan file terunggah), edit file konfigurasi lalu restart dev server."
+    "catatan": "Konfigurasi default dapat dilihat di src/components/helpbutton/chat/config.js. Untuk mengubah perilaku (mis. presisi matematika, penggunaan file terunggah), edit file konfigurasi lalu restart dev server. Setelah menarik pembaruan, jalankan `npm install` untuk menginstal dependency baru (mis. mathjs)."
   },
   
   "contoh_pertanyaan_cara_kerja": [
@@ -1333,19 +1360,26 @@
       "input": "Tampilkan softskills",
       "output": "Menampilkan entri terkait dari softskills.json"
     }
+    ,
+    {
+      "tipe": "upload_lookup",
+      "input": "Unggah file panduan.txt lalu tanyakan 'Apa poin utama dari file ini?'",
+      "output": "SaipulAI mencari dalam file yang diindeks dan mengembalikan ringkasan atau jawaban berdasarkan konten yang diunggah"
+    }
   ],
   
   "troubleshooting_error_umum": [
     "Import gagal: pastikan semua file yang di-import ada di path yang benar (lihat pesan error Vite). Jika menambahkan file baru, restart dev server",
     "Jawaban kosong/tidak relevan: periksa struktur JSON & gunakan kunci yang spesifik untuk lookup cepat",
-    "Masalah kalkulator: pastikan ekspresi valid; fitur matematika dapat dibatasi oleh konfigurasi calculationPrecision"
+    "Masalah kalkulator: pastikan ekspresi valid; fitur matematika dapat dibatasi oleh konfigurasi calculationPrecision",
+    "Dependency baru ditambahkan (mis. mathjs): jalankan `npm install` dan restart dev server jika menemukan error import setelah pembaruan"
   ],
   
-  "privasi_keamanan": "Secara default, SaipulAI memproses data secara lokal. File yang diunggah hanya disimpan/diindeks bila fitur upload diaktifkan. Jangan unggah data sensitif tanpa enkripsi; selalu review kebijakan privasi aplikasi Anda sebelum menyimpan data user.",
+  "privasi_keamanan": "Secara default, SaipulAI memproses data secara lokal. File yang diunggah hanya disimpan/diindeks bila fitur upload diaktifkan; proses ini bersifat lokal dan dapat dipicu/diakses melalui event internal. Jangan unggah data sensitif tanpa enkripsi; selalu review kebijakan privasi aplikasi Anda sebelum menyimpan data user.",
   
   "cara_kontribusi_menambah_data": [
     "Edit atau buat file JSON di src/components/helpbutton/chat/data/ dengan struktur yang konsisten",
-    "Jika menambahkan modul utilitas baru, tempatkan di src/components/helpbutton/chat/components/logic/utils/ atau src/components/helpbutton/chat/logic/utils/",
+    "Jika menambahkan modul utilitas baru, tempatkan di src/components/helpbutton/chat/components/logic/utils/ (contoh: fileProcessor.js) atau src/components/helpbutton/chat/logic/utils/",
     "Restart aplikasi (npm run dev) agar perubahan ter-load"
   ],
   

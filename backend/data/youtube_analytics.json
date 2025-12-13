@@ -1,1 +1,16 @@
-[]
+[
+	{
+		"video_id": "vid-1",
+		"date_range": {"from": "2025-10-05","to": "2025-10-12"},
+		"views": 10234,
+		"likes": 520,
+		"average_watch_time_seconds": 320
+	},
+	{
+		"video_id": "vid-2",
+		"date_range": {"from": "2025-10-12","to": "2025-10-19"},
+		"views": 8420,
+		"likes": 410,
+		"average_watch_time_seconds": 290
+	}
+]

@@ -1,1 +1,12 @@
-[]
+[
+	{
+		"id": "yls-1",
+		"channel_id": "UC_example_1",
+		"title": "Live Q&A: Troubleshooting React",
+		"status": "ended",
+		"scheduled_start": "2025-11-28T10:00:00.000Z",
+		"actual_start": "2025-11-28T10:05:00.000Z",
+		"actual_end": "2025-11-28T12:05:00.000Z",
+		"viewer_peak": 180
+	}
+]

@@ -1,17 +1,18 @@
 import { Send } from "lucide-react";
 import { AI_DOCS_PATH, CHATBOT_VERSION } from '../../../config';
 
-export function ChatInput({ input, setInput, handleSend }) {
+export function ChatInput({ input, setInput, handleSend, inputRef, handleKeyDown }) {
   return (
-    <div className="p-3 bg-gray-200 border-t border-gray-300">
+    <div className="p-3 bg-gray-50 border-t border-gray-200">
       <div className="flex items-center gap-2">
         <input
           type="text"
+          ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Type your message..."
-          className="flex-grow p-2 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          style={{ color: '#111', backgroundColor: '#fff' }}
+          className="flex-grow p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 text-gray-900"
         />
         <button
           onClick={handleSend}

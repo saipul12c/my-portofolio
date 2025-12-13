@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { useChat } from '../../contexts/ChatContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { getTierColor } from '../../utils/helpers';
+import AuthButtons from '../auth/AuthButtons';
 
-const ServerSidebar = ({ onProfileClick, mobileClose }) => {
+const ServerSidebar = ({ onProfileClick, mobileClose, onAuthRequest }) => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newServerName, setNewServerName] = useState('');
   const { servers, selectedServer, setSelectedServer, createServer } = useChat();
@@ -24,21 +25,21 @@ const ServerSidebar = ({ onProfileClick, mobileClose }) => {
   return (
     <>
       {/* Mobile top bar with close button */}
-      <div className="md:hidden bg-[#202225] p-2 flex items-center justify-between">
+      <div className="md:hidden bg-[var(--dc-surface-2)] p-2 flex items-center justify-between">
         <div className="text-white text-sm font-semibold">Servers</div>
         <button onClick={() => mobileClose?.()} className="text-gray-300 p-1">
           <X className="w-5 h-5" />
         </button>
       </div>
-      <div className="w-16 bg-[#202225] flex flex-col items-center py-3 space-y-4 overflow-y-auto">
+      <div className="w-20 bg-[var(--dc-surface-2)] flex flex-col items-center py-3 space-y-4 overflow-y-auto">
         {/* Direct Messages */}
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           className={`w-12 h-12 rounded-3xl transition-all duration-200 flex items-center justify-center ${
             !selectedServer 
-              ? 'bg-cyan-600 text-white rounded-2xl' 
-              : 'bg-[#36393f] text-gray-300 hover:bg-cyan-600 hover:text-white hover:rounded-2xl'
+              ? 'bg-[var(--dc-cyan)] text-white rounded-2xl shadow-md' 
+              : 'bg-[var(--dc-bg)] text-gray-300 hover:bg-[var(--dc-cyan)] hover:text-white hover:rounded-2xl hover:shadow-md'
           }`}
           onClick={() => setSelectedServer(null)}
           type="button"
@@ -56,16 +57,16 @@ const ServerSidebar = ({ onProfileClick, mobileClose }) => {
             whileTap={{ scale: 0.9 }}
             className={`w-12 h-12 rounded-3xl transition-all duration-200 flex items-center justify-center relative ${
               selectedServer?.id === server.id
-                ? 'bg-cyan-600 text-white rounded-2xl'
-                : 'bg-[#36393f] text-gray-300 hover:bg-cyan-600 hover:text-white hover:rounded-2xl'
+                ? 'bg-[var(--dc-cyan)] text-white rounded-2xl shadow-md'
+                : 'bg-[var(--dc-bg)] text-gray-300 hover:bg-[var(--dc-cyan)] hover:text-white hover:rounded-2xl'
             }`}
             onClick={() => setSelectedServer(server)}
             type="button"
           >
-            <span className="text-lg font-semibold">{server.icon || '🖥️'}</span>
+            <span className="text-lg font-semibold server-icon">{server.icon || '🖥️'}</span>
             
             {selectedServer?.id === server.id && (
-              <div className="absolute -left-1 w-1 h-8 bg-white rounded-r-full"></div>
+              <div className="absolute -left-1 w-1 h-8 bg-[var(--dc-accent)] rounded-r-full"></div>
             )}
           </motion.button>
         ))}
@@ -74,24 +75,18 @@ const ServerSidebar = ({ onProfileClick, mobileClose }) => {
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          className="w-12 h-12 rounded-3xl bg-[#36393f] text-green-500 hover:bg-green-600 hover:text-white hover:rounded-2xl transition-all duration-200 flex items-center justify-center"
+          className="w-12 h-12 rounded-3xl bg-[var(--dc-bg)] text-[var(--dc-accent)] hover:bg-[var(--dc-accent)] hover:text-white hover:rounded-2xl transition-all duration-200 flex items-center justify-center shadow-sm"
           onClick={() => setShowCreateModal(true)}
           type="button"
         >
           <Plus className="w-6 h-6" />
         </motion.button>
 
-        {/* User Profile */}
-        <div className="mt-auto">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm cursor-pointer"
-            style={{ backgroundColor: getTierColor(user?.tier) }}
-            onClick={onProfileClick}
-            title={user?.username}
-          >
-            {user?.username?.substring(0, 2).toUpperCase()}
-          </motion.div>
+        {/* User Profile / Auth Controls */}
+        <div className="mt-auto w-full px-2">
+          <div className="p-2 rounded hover:bg-[rgba(255,255,255,0.02)]">
+            <AuthButtons onAuthRequest={onAuthRequest} />
+          </div>
         </div>
       </div>
 

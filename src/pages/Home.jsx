@@ -21,7 +21,7 @@ import Maintenance from "./errors/Maintenance"; // 🧩 impor halaman Maintenanc
 import projectsData from "../data/projects.json";
 import blogData from "../data/blog/data.json";
 import galleryData from "../data/galleryData.json";
-import comingSoonData from "../data/comingsoon/data.json"; // 🆕 Import data coming soon
+import comingSoonData from "../data/comingsoon/data.json"; 
 
 export default function Home() {
   const [projects, setProjects] = useState([]);
@@ -29,6 +29,7 @@ export default function Home() {
   const [gallery, setGallery] = useState([]);
   const [comingSoon, setComingSoon] = useState([]);
   const [days, setDays] = useState(0);
+  const [years, setYears] = useState(0);
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
@@ -51,16 +52,34 @@ export default function Home() {
     if (!comingSoon || comingSoon.length === 0 || !comingSoon[0]?.launchDate) return;
 
     const launchDate = new Date(comingSoon[0].launchDate).getTime();
-    
+
     const interval = setInterval(() => {
       const now = new Date().getTime();
       const distance = launchDate - now;
 
       if (distance > 0) {
-        setDays(Math.floor(distance / (1000 * 60 * 60 * 24)));
-        setHours(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
-        setMinutes(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)));
-        setSeconds(Math.floor((distance % (1000 * 60)) / 1000));
+        const dayMs = 1000 * 60 * 60 * 24;
+        const yearMs = dayMs * 365;
+
+        const y = Math.floor(distance / yearMs);
+        let remainder = distance % yearMs;
+
+        const d = y > 0 ? Math.floor(remainder / dayMs) : Math.floor(distance / dayMs);
+        if (y > 0) {
+          remainder = remainder % dayMs;
+        } else {
+          remainder = distance % dayMs;
+        }
+
+        const h = Math.floor(remainder / (1000 * 60 * 60));
+        const m = Math.floor((remainder % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((remainder % (1000 * 60)) / 1000);
+
+        setYears(y);
+        setDays(d);
+        setHours(h);
+        setMinutes(m);
+        setSeconds(s);
       } else {
         clearInterval(interval);
       }
@@ -751,17 +770,32 @@ export default function Home() {
                         </p>
                       </div>
                       <div className="grid grid-cols-4 gap-3 text-center">
-                        {[
-                          { value: days, label: project?.countdownLabels?.days || "Days" },
-                          { value: hours, label: project?.countdownLabels?.hours || "Hours" },
-                          { value: minutes, label: project?.countdownLabels?.minutes || "Minutes" },
-                          { value: seconds, label: project?.countdownLabels?.seconds || "Seconds" }
-                        ].map((item, index) => (
-                          <div key={index} className="bg-orange-500/10 rounded-lg p-3 border border-orange-500/20 hover:bg-orange-500/20 transition-colors">
-                            <div className="text-2xl font-bold text-white">{item.value}</div>
-                            <div className="text-xs text-orange-300 mt-1">{item.label}</div>
-                          </div>
-                        ))}
+                        {(() => {
+                          const labelYears = project?.countdownLabels?.years || "Years";
+                          const labelDays = project?.countdownLabels?.days || "Days";
+                          const labelHours = project?.countdownLabels?.hours || "Hours";
+                          const labelMinutes = project?.countdownLabels?.minutes || "Minutes";
+                          const labelSeconds = project?.countdownLabels?.seconds || "Seconds";
+
+                          const items = years > 0 ? [
+                            { value: years, label: labelYears },
+                            { value: days, label: labelDays },
+                            { value: hours, label: labelHours },
+                            { value: minutes, label: labelMinutes }
+                          ] : [
+                            { value: days, label: labelDays },
+                            { value: hours, label: labelHours },
+                            { value: minutes, label: labelMinutes },
+                            { value: seconds, label: labelSeconds }
+                          ];
+
+                          return items.map((item, index) => (
+                            <div key={index} className="bg-orange-500/10 rounded-lg p-3 border border-orange-500/20 hover:bg-orange-500/20 transition-colors">
+                              <div className="text-2xl font-bold text-white">{item.value}</div>
+                              <div className="text-xs text-orange-300 mt-1">{item.label}</div>
+                            </div>
+                          ));
+                        })()}
                       </div>
                     </div>
                       

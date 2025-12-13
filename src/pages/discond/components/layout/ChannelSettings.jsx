@@ -4,6 +4,8 @@ import { Settings as SettingsIcon, Pin as PinIcon, Bell as BellIcon, BellOff, Tr
 import Modal from '../ui/Modal';
 import api from '../../lib/api';
 import { useChat } from '../../contexts/ChatContext';
+import PinnedMessages from './PinnedMessages';
+import MembersList from './MembersList';
 
 const ChannelSettings = ({ channel, openTab = 'notifications', onClose }) => {
   const [tab, setTab] = useState(openTab);
@@ -74,50 +76,23 @@ const ChannelSettings = ({ channel, openTab = 'notifications', onClose }) => {
           {tab === 'pins' && (
             <div>
               <div className="text-gray-400 text-sm mb-2">Pesan yang dipin di channel ini.</div>
-              <div className="space-y-2">
-                {(() => {
-                  const pinnedFromMsgs = (messages || []).filter(m => m.pinned || (settings.pinned_ids || []).includes(m.id));
-                  if (!pinnedFromMsgs || pinnedFromMsgs.length === 0) {
-                    return <div className="p-3 rounded bg-[#2b2d30] text-gray-300">Belum ada pesan yang dipin.</div>;
-                  }
-                  return pinnedFromMsgs.map(m => {
-                    const isPinned = !!(m.pinned || (settings.pinned_ids || []).includes(m.id));
-                    return (
-                      <motion.div key={m.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="p-3 rounded bg-[#2b2d30] flex items-start justify-between">
-                        <div>
-                          <div className="text-white font-medium">{m.profiles?.username || 'Unknown'}</div>
-                          <div className="text-gray-300 text-sm">{m.content}</div>
-                        </div>
-                        <div className="ml-4 flex flex-col space-y-1">
-                          <button title={isPinned ? 'Lepas pin' : 'Pin pesan'} onClick={async () => {
-                            // try server-side pin/unpin first
-                            try {
-                              if (isPinned) await api.messages.unpin(m.id).catch(() => null);
-                              else await api.messages.pin(m.id).catch(() => null);
-                            } catch (e) { console.error(e); }
-                            // update settings.pinned_ids fallback
-                            const ids = new Set(settings.pinned_ids || []);
-                            if (ids.has(m.id)) ids.delete(m.id); else ids.add(m.id);
-                            const newSettings = { ...settings, pinned_ids: Array.from(ids) };
-                            setSettings(newSettings);
-                            try { await api.channels.settings.set(channel.id, newSettings); } catch (e) { console.error(e); }
-                          }} className="px-2 py-1 rounded bg-[#42464d] text-sm flex items-center space-x-2">
-                            <PinIcon className="w-4 h-4" />
-                            <span>{isPinned ? 'Unpin' : 'Pin'}</span>
-                          </button>
-                        </div>
-                      </motion.div>
-                    );
-                  });
-                })()}
-              </div>
+              <PinnedMessages channelId={channel.id} onUnpin={(id) => {
+                // sync settings pinned_ids after unpin
+                try {
+                  const ids = new Set(settings.pinned_ids || []);
+                  ids.delete(id);
+                  const newSettings = { ...settings, pinned_ids: Array.from(ids) };
+                  setSettings(newSettings);
+                  api.channels.settings.set(channel.id, newSettings).catch(() => null);
+                } catch (e) { /* ignore */ }
+              }} />
             </div>
           )}
 
           {tab === 'members' && (
             <div>
               <div className="text-gray-400 text-sm mb-2">Daftar anggota (preview).</div>
-              <div className="p-3 rounded bg-[#2b2d30] text-gray-300">Menampilkan anggota membutuhkan backend; ini hanya contoh.</div>
+              <div className="p-3 rounded bg-[#2b2d30] text-gray-300"><MembersList /></div>
             </div>
           )}
 

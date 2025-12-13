@@ -1,13 +1,13 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-
-const CommunityContext = createContext(undefined);
+import React, { useState, useEffect } from 'react';
+import { CommunityContext } from './communityContextObject';
 
 export const CommunityProvider = ({ children }) => {
   const [selectedCommunity, setSelectedCommunity] = useState(() => {
     try {
       const raw = localStorage.getItem('selectedCommunity');
       return raw ? JSON.parse(raw) : null;
-    } catch (e) {
+    } catch (err) {
+      console.error('Error reading selectedCommunity from localStorage:', err);
       return null;
     }
   });
@@ -19,8 +19,8 @@ export const CommunityProvider = ({ children }) => {
       } else {
         localStorage.removeItem('selectedCommunity');
       }
-    } catch (e) {
-      // ignore storage errors
+    } catch (err) {
+      console.warn('Error saving selectedCommunity to localStorage:', err);
     }
   }, [selectedCommunity]);
 
@@ -36,10 +36,8 @@ export const CommunityProvider = ({ children }) => {
   );
 };
 
-export const useCommunity = () => {
-  const ctx = useContext(CommunityContext);
-  if (ctx === undefined) throw new Error('useCommunity must be used within CommunityProvider');
-  return ctx;
-};
+export default CommunityProvider;
 
-export default CommunityContext;
+// Re-export the `useCommunity` hook for convenience so importing
+// from `CommunityContext` still works in places that expect it.
+export { useCommunity } from './useCommunity';

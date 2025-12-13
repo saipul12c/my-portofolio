@@ -1,1 +1,20 @@
-[]
+[
+	{
+		"id": "vid-1",
+		"channel_id": "UC_example_1",
+		"title": "Mengenal React Hooks - Dasar sampai Mahir",
+		"description": "Penjelasan Hooks dan contoh penggunaan praktis.",
+		"published_at": "2025-10-05T09:00:00.000Z",
+		"view_count": 10234,
+		"like_count": 520
+	},
+	{
+		"id": "vid-2",
+		"channel_id": "UC_example_1",
+		"title": "Membangun Project React: ToDo App",
+		"description": "Langkah demi langkah membuat ToDo App dengan React.",
+		"published_at": "2025-10-12T09:00:00.000Z",
+		"view_count": 8420,
+		"like_count": 410
+	}
+]
