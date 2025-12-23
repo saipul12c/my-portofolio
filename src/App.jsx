@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 
 // 🌐 Komponen global
@@ -148,6 +148,14 @@ export default function App() {
             {/* Pindahkan usePageTracker ke dalam Router */}
             <PageTracker />
             <Routes>
+              {/* Redirects: direct certain paths to /coming-soon */}
+              <Route path="/discord" element={<Navigate to="/coming-soon" replace />} />
+              <Route path="/discord/profile" element={<Navigate to="/coming-soon" replace />} />
+              <Route path="/komunitas" element={<Navigate to="/coming-soon" replace />} />
+              <Route path="/streming" element={<Navigate to="/coming-soon" replace />} />
+              <Route path="/login" element={<Navigate to="/coming-soon" replace />} />
+              <Route path="/register" element={<Navigate to="/coming-soon" replace />} />
+
               {/* 🚀 Halaman Launching — berdiri sendiri */}
               <Route path="/launching" element={<LaunchingPage />} />
               

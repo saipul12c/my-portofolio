@@ -39,7 +39,7 @@
     "music": {
       "title": "Evening Breeze",
       "artist": "Acoustic Vibes",
-      "src": "https://example.com/music/evening-breeze.mp3",
+      "src": "https://syaiful-mukmin.netlify.app/music/evening-breeze.mp3",
       "license": "free",
       "genre": "Acoustic",
       "bpm": 75,
@@ -117,7 +117,7 @@
     "music": {
       "title": "Forest Whisper",
       "artist": "Nature Sounds",
-      "src": "https://example.com/music/forest-whisper.mp3",
+      "src": "https://syaiful-mukmin.netlify.app/music/forest-whisper.mp3",
       "license": "free",
       "genre": "Ambient",
       "bpm": 60,

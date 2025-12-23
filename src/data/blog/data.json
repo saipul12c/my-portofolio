@@ -50,7 +50,7 @@
     "source": "Blog Pribadi",
     "language": "id",
     "translations": { "en": "beginner-photography-tips" },
-    "canonicalUrl": "https://example.com/blog/tips-fotografi-pemula"
+    "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/tips-fotografi-pemula"
   },
   {
     "id": "2",
@@ -96,7 +96,7 @@
     "source": "StudioTech Blog",
     "language": "id",
     "translations": { "en": "managing-digital-projects" },
-    "canonicalUrl": "https://example.com/blog/cara-mengelola-proyek-digital"
+    "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/cara-mengelola-proyek-digital"
   },
   {
     "id": "3",
@@ -135,7 +135,7 @@
     "source": "Digital Studio Magazine",
     "language": "id",
     "translations": { "en": "understanding-ui-ux-design" },
-    "canonicalUrl": "https://example.com/blog/mengenal-ui-ux-design"
+    "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/mengenal-ui-ux-design"
   },
   {
     "id": "4",
@@ -181,7 +181,7 @@
     "source": "Marketing Insight Blog",
     "language": "id",
     "translations": { "en": "social-media-branding-strategy" },
-    "canonicalUrl": "https://example.com/blog/strategi-branding-di-media-sosial"
+    "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/strategi-branding-di-media-sosial"
   },
   {
   "id": "5",
@@ -228,7 +228,7 @@
   "source": "Blog Pendidikan",
   "language": "id",
   "translations": { "en": "teacher-role-digital-era" },
-  "canonicalUrl": "https://example.com/blog/peran-guru-era-digital"
+  "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/peran-guru-era-digital"
 },
 {
   "id": "6",
@@ -275,7 +275,7 @@
   "source": "Blog Pendidikan",
   "language": "id",
   "translations": { "en": "educational-games-for-kids" },
-  "canonicalUrl": "https://example.com/blog/game-edukasi-anak"
+  "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/game-edukasi-anak"
 },
 {
   "id": "7",
@@ -315,7 +315,7 @@
   "source": "Blog Pendidikan",
   "language": "id",
   "translations": { "en": "effective-learning-strategies" },
-  "canonicalUrl": "https://example.com/blog/strategi-belajar-efektif"
+  "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/strategi-belajar-efektif"
 },
 {
   "id": "8",
@@ -362,7 +362,7 @@
   "source": "Blog Teknologi & Pendidikan",
   "language": "id",
   "translations": { "en": "indonesian-game-industry" },
-  "canonicalUrl": "https://example.com/blog/game-buatan-indonesia"
+  "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/game-buatan-indonesia"
 },
 {
   "id": "9",
@@ -402,7 +402,7 @@
   "source": "Blog Pendidikan",
   "language": "id",
   "translations": { "en": "virtual-classroom-technology" },
-  "canonicalUrl": "https://example.com/blog/teknologi-virtual-classroom"
+  "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/teknologi-virtual-classroom"
 },
 {
   "id": "10",
@@ -449,7 +449,7 @@
   "source": "Blog Pendidikan & Kesehatan",
   "language": "id",
   "translations": { "en": "games-mental-health-impact" },
-  "canonicalUrl": "https://example.com/blog/game-dan-kesehatan-mental"
+  "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/game-dan-kesehatan-mental"
   },
   {
       "id": "11",
@@ -489,7 +489,7 @@
     "source": "Blog Pendidikan",
     "language": "id",
     "translations": { "en": "teacher-creativity-in-teaching" },
-    "canonicalUrl": "https://example.com/blog/kreativitas-guru-mengajar"
+    "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/kreativitas-guru-mengajar"
   },
   {
     "id": "12",
@@ -536,7 +536,7 @@
     "source": "Blog Teknologi & Karir",
     "language": "id",
     "translations": { "en": "esports-as-career" },
-    "canonicalUrl": "https://example.com/blog/esports-sebagai-karier"
+    "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/esports-sebagai-karier"
   },
   {
     "id": "13",
@@ -583,7 +583,7 @@
     "source": "Blog Pendidikan",
     "language": "id",
     "translations": { "en": "importance-character-education" },
-    "canonicalUrl": "https://example.com/blog/pentingnya-pendidikan-karakter"
+    "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/pentingnya-pendidikan-karakter"
   },
   {
     "id": "14",
@@ -623,7 +623,7 @@
     "source": "Blog Pendidikan & Game",
     "language": "id",
     "translations": { "en": "game-based-learning-in-schools" },
-    "canonicalUrl": "https://example.com/blog/game-based-learning-sekolah"
+    "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/game-based-learning-sekolah"
   },
   {
   "id": "15",
@@ -682,7 +682,7 @@
   "source": "Blog Pendidikan & Teknologi",
   "language": "id",
   "translations": { "en": "digital-education-revolution" },
-  "canonicalUrl": "https://example.com/blog/revolusi-pendidikan-digital"
+  "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/revolusi-pendidikan-digital"
   },
   {
     "id": "16",
@@ -741,7 +741,7 @@
     "source": "Blog Pendidikan & Psikologi",
     "language": "id",
     "translations": { "en": "psychology-of-games-and-learning" },
-    "canonicalUrl": "https://example.com/blog/psikologi-game-dan-pembelajaran"
+    "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/psikologi-game-dan-pembelajaran"
   },
   {
     "id": "17",
@@ -800,7 +800,7 @@
     "source": "Blog Pendidikan & Pengembangan Profesi",
     "language": "id",
     "translations": { "en": "future-of-teaching-profession" },
-    "canonicalUrl": "https://example.com/blog/profesi-guru-masa-depan"
+    "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/profesi-guru-masa-depan"
   },
   {
     "id": "18",
@@ -859,7 +859,7 @@
     "source": "Blog Pendidikan & Game Development",
     "language": "id",
     "translations": { "en": "educational-game-development-guide" },
-    "canonicalUrl": "https://example.com/blog/game-development-edukasi"
+    "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/game-development-edukasi"
   },
   {
     "id": "19",
@@ -918,7 +918,7 @@
     "source": "Blog Pendidikan & Kebijakan",
     "language": "id",
     "translations": { "en": "21st-century-curriculum-redesign" },
-    "canonicalUrl": "https://example.com/blog/kurikulum-abad-21"
+    "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/kurikulum-abad-21"
   },
   {
     "id": "20",
@@ -977,7 +977,7 @@
     "source": "Blog Pendidikan & Teknologi",
     "language": "id",
     "translations": { "en": "ethics-in-educational-technology" },
-    "canonicalUrl": "https://example.com/blog/etika-teknologi-pendidikan"
+    "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/etika-teknologi-pendidikan"
   },
   {
     "id": "21",
@@ -1036,7 +1036,7 @@
     "source": "Blog Pendidikan & Neurosains",
     "language": "id",
     "translations": { "en": "neuroscience-of-learning-and-games" },
-    "canonicalUrl": "https://example.com/blog/neurosains-pembelajaran-game"
+    "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/neurosains-pembelajaran-game"
   },
   {
     "id": "22",
@@ -1095,7 +1095,7 @@
     "source": "Blog Pendidikan & Inklusi",
     "language": "id",
     "translations": { "en": "inclusivity-in-digital-education" },
-    "canonicalUrl": "https://example.com/blog/inklusivitas-pendidikan-digital"
+    "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/inklusivitas-pendidikan-digital"
   },
   {
     "id": "23",
@@ -1154,7 +1154,7 @@
     "source": "Blog Pendidikan & Kreativitas",
     "language": "id",
     "translations": { "en": "games-and-creativity" },
-    "canonicalUrl": "https://example.com/blog/game-dan-kreativitas"
+    "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/game-dan-kreativitas"
   },
   {
     "id": "24",
@@ -1213,7 +1213,7 @@
     "source": "Blog Pendidikan & Assessment",
     "language": "id",
     "translations": { "en": "assessment-for-21st-century" },
-    "canonicalUrl": "https://example.com/blog/assessment-abad-21"
+    "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/assessment-abad-21"
   },
   {
     "id": "25",
@@ -1272,6 +1272,6 @@
     "source": "Blog Pendidikan & Filsafat",
     "language": "id",
     "translations": { "en": "philosophy-of-education-and-games" },
-    "canonicalUrl": "https://example.com/blog/filosofi-pendidikan-game"
+    "canonicalUrl": "https://syaiful-mukmin.netlify.app/blog/filosofi-pendidikan-game"
   }
 ]

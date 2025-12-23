@@ -40,7 +40,7 @@
     "music": {
       "title": "Sunny Day",
       "artist": "Acoustic Vibes",
-      "src": "https://example.com/music/sunnyday.mp3",
+      "src": "https://syaiful-mukmin.netlify.app/music/sunnyday.mp3",
       "license": "free",
       "genre": "Acoustic",
       "bpm": 90,
@@ -114,7 +114,7 @@
     "music": {
       "title": "Ocean Breeze",
       "artist": "Nature Sounds",
-      "src": "https://example.com/music/oceanbreeze.mp3",
+      "src": "https://syaiful-mukmin.netlify.app/music/oceanbreeze.mp3",
       "license": "royalty-free",
       "genre": "Ambient",
       "bpm": 65,
@@ -233,7 +233,7 @@
     "music": {
       "title": "Background Vibe",
       "artist": "Studio Tools",
-      "src": "https://example.com/music/backgroundvibe.mp3",
+      "src": "https://syaiful-mukmin.netlify.app/music/backgroundvibe.mp3",
       "license": "royalty-free",
       "genre": "Electronic",
       "bpm": 110,
@@ -359,7 +359,7 @@
     "music": {
       "title": "Morning Brew",
       "artist": "Chill Beats",
-      "src": "https://example.com/music/morningbrew.mp3",
+      "src": "https://syaiful-mukmin.netlify.app/music/morningbrew.mp3",
       "license": "free",
       "genre": "Lo-fi",
       "bpm": 75,
@@ -478,7 +478,7 @@
     "music": {
       "title": "Runway Beat",
       "artist": "Fashion Sound",
-      "src": "https://example.com/music/runwaybeat.mp3",
+      "src": "https://syaiful-mukmin.netlify.app/music/runwaybeat.mp3",
       "license": "royalty-free",
       "genre": "Electronic",
       "bpm": 120,
@@ -596,7 +596,7 @@
     "music": {
       "title": "Island Dreams",
       "artist": "Tropical Beats",
-      "src": "https://example.com/music/islanddreams.mp3",
+      "src": "https://syaiful-mukmin.netlify.app/music/islanddreams.mp3",
       "license": "royalty-free",
       "genre": "Ambient",
       "bpm": 85,
@@ -714,7 +714,7 @@
     "music": {
       "title": "Night Drive",
       "artist": "Urban Sounds",
-      "src": "https://example.com/music/nightdrive.mp3",
+      "src": "https://syaiful-mukmin.netlify.app/music/nightdrive.mp3",
       "license": "royalty-free",
       "genre": "Synthwave",
       "bpm": 95,
@@ -832,7 +832,7 @@
     "music": {
       "title": "Mountain Dawn",
       "artist": "Nature Symphony",
-      "src": "https://example.com/music/mountaindawn.mp3",
+      "src": "https://syaiful-mukmin.netlify.app/music/mountaindawn.mp3",
       "license": "royalty-free",
       "genre": "Orchestral",
       "bpm": 70,
@@ -951,7 +951,7 @@
     "music": {
       "title": "Deep Blue",
       "artist": "Ocean Waves",
-      "src": "https://example.com/music/deepblue.mp3",
+      "src": "https://syaiful-mukmin.netlify.app/music/deepblue.mp3",
       "license": "royalty-free",
       "genre": "Ambient",
       "bpm": 60,
@@ -1069,7 +1069,7 @@
     "music": {
       "title": "Kitchen Rhythm",
       "artist": "Culinary Beats",
-      "src": "https://example.com/music/kitchenrhythm.mp3",
+      "src": "https://syaiful-mukmin.netlify.app/music/kitchenrhythm.mp3",
       "license": "royalty-free",
       "genre": "Jazz",
       "bpm": 100,
@@ -1188,7 +1188,7 @@
     "music": {
       "title": "Traditional Beat",
       "artist": "Cultural Sounds",
-      "src": "https://example.com/music/traditionalbeat.mp3",
+      "src": "https://syaiful-mukmin.netlify.app/music/traditionalbeat.mp3",
       "license": "royalty-free",
       "genre": "World",
       "bpm": 115,
