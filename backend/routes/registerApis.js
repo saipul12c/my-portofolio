@@ -3,11 +3,11 @@ module.exports = function registerApis(app, deps = {}) {
   const { ensureDataFiles, readJSON, writeJSON, DATA_FILES, USERS_DIR, MESSAGES_DIR, JWT_SECRET, getUserFromAuthHeader, getProfileForUser, readChannelMessagesFile, writeChannelMessagesFile, tryReadStreamingFile, io } = deps;
 
   try {
-    const registerApiGlobal = require('../ApiGlobal');
-    const registerApiKomunita = require('../ApiKomunita');
-    const registerApiTubs = require('../ApiTubs');
+    const registerApiGlobal = require('../modules/ApiGlobal');
+    const registerApiKomunita = require('../modules/ApiKomunita');
+    const registerApiTubs = require('../modules/ApiTubs');
     // AI proxies (OpenAI, etc.)
-    const registerApiAI = require('../ApiAI');
+    const registerApiAI = require('../modules/ApiAI');
 
     registerApiGlobal(app, { ensureDataFiles, readJSON, writeJSON, DATA_FILES, USERS_DIR, MESSAGES_DIR, JWT_SECRET, getUserFromAuthHeader, getProfileForUser });
     registerApiKomunita(app, { ensureDataFiles, readJSON, writeJSON, DATA_FILES, USERS_DIR, MESSAGES_DIR, readChannelMessagesFile, writeChannelMessagesFile, getProfileForUser, io });

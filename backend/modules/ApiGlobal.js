@@ -80,12 +80,11 @@ module.exports = function registerApiGlobal(app, deps = {}) {
 
   router.get('/api/users/:id', async (req, res) => {
     await ensureDataFiles();
-    // try per-user file first
     try {
       const txt = await require('fs').promises.readFile(require('path').join(USERS_DIR, `${req.params.id}.json`), 'utf8');
       return res.json(JSON.parse(txt || '{}'));
     } catch (err) {
-      // fallback to central users list
+      // fallback
     }
     const profile = (await readJSON(DATA_FILES.users)).find(u => String(u.id) === String(req.params.id));
     if (!profile) return res.status(404).json({ error: 'User not found' });

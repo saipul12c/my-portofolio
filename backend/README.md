@@ -48,9 +48,71 @@ Catatan: ini adalah backend file-based sederhana untuk development. Untuk produk
 Struktur pendaftaran route
 - `backend/index.js` adalah entry-point: menginisialisasi Express, Socket.IO, static assets dan memanggil `routes/registerApis.js`.
 - API dikelompokkan ke modul fungsional:
-	- `ApiGlobal.js` — auth, users, profiles, search, stats, account tiers, account-related helpers
-	- `ApiKomunita.js` — communities, channels, messages, bots, discord-like endpoints
-	- `ApiTubs.js` — streaming/video/YouTube-like endpoints, uploads, streams, recordings, clips
+	- `backend/modules/ApiGlobal.js` — auth, users, profiles, search, stats, account tiers, account-related helpers
+	- `backend/modules/ApiKomunita.js` — communities, channels, messages, bots, discord-like endpoints
+	- `backend/modules/ApiTubs.js` — streaming/video/YouTube-like endpoints, uploads, streams, recordings, clips
+- Shared helpers berada di `lib/helpers.js` (lokasi `DATA_FILES`, I/O helpers, per-channel messages, JWT helper).
+
+---
+
+Daftar lengkap route (singkat)
+
+Format: `HTTP_VERB PATH` — fungsi singkat, body (jika ada).
+
+````markdown
+# Backend (JSON-file DB + Realtime)
+
+Backend ini menggunakan file JSON lokal (di `backend/data/`) untuk menyimpan data dan menyediakan REST API + realtime via Socket.IO.
+
+Ringkasan fitur
+- Auth (email/password) dengan JWT
+- CRUD untuk communities
+- Servers / Channels (turunan dari channels)
+- Messages yang dipersist dan realtime via Socket.IO
+- Bot management, Discord/YouTube/Streaming mock endpoints, dan helper endpoints (stats, search, summaries)
+
+Persyaratan
+- Node 16+
+
+Menjalankan lokal (singkat)
+
+1. Masuk ke folder `backend`:
+
+```powershell
+cd backend
+```
+
+2. Install dependencies:
+
+```powershell
+npm install
+```
+
+3. Salin `.env.example` ke `.env` lalu set `JWT_SECRET` dan `ALLOWED_ORIGINS` jika perlu:
+
+```powershell
+copy .env.example .env
+```
+
+4. Jalankan server:
+
+```powershell
+npm run dev    # requires nodemon
+npm run start  # run normally
+```
+
+Server default: `http://localhost:8080` (atau sesuai `PORT` di `.env`).
+
+Catatan: ini adalah backend file-based sederhana untuk development. Untuk produksi gunakan DB nyata dan simpan `JWT_SECRET` dengan aman.
+
+---
+
+Struktur pendaftaran route
+- `backend/index.js` adalah entry-point: menginisialisasi Express, Socket.IO, static assets dan memanggil `routes/registerApis.js`.
+- API dikelompokkan ke modul fungsional:
+	- `backend/modules/ApiGlobal.js` — auth, users, profiles, search, stats, account tiers, account-related helpers
+	- `backend/modules/ApiKomunita.js` — communities, channels, messages, bots, discord-like endpoints
+	- `backend/modules/ApiTubs.js` — streaming/video/YouTube-like endpoints, uploads, streams, recordings, clips
 - Shared helpers berada di `lib/helpers.js` (lokasi `DATA_FILES`, I/O helpers, per-channel messages, JWT helper).
 
 ---
@@ -66,13 +128,13 @@ Format: `HTTP_VERB PATH` — fungsi singkat, body (jika ada).
 - GET `/avatar/*` — serve avatar dari `backend/public/avatar`.
 - GET `/api/static/*` — serve JSON/asset dari `public/data/*` atau `src/data/*`.
 
-**Auth & Profiles (ApiGlobal)**
+**Auth & Profiles (backend/modules/ApiGlobal)**
 - POST `/api/auth/signup` — daftar baru. Body: `{ email, password, username? }`. Response: `{ user, token }`.
 - POST `/api/auth/signin` — login. Body: `{ email, password }`. Response: `{ user, token }`.
 - GET `/api/auth/me` — ambil user dari `Authorization` header. Response: `{ id, email, username, role }`.
 - PUT `/api/profiles/:id` — update profil publik. Body: allowed fields (e.g. `username`, `avatar_url`, `display_name`, `description`).
 
-**Users (ApiGlobal / ApiKomunita overlap intentionally)**
+**Users (backend/modules/ApiGlobal / backend/modules/ApiKomunita overlap intentionally)**
 - GET `/api/users` — list semua user (sanitized). Query `q` optional.
 - GET `/api/users/:id` — public profile (per-user file preferred, fallback central list).
 - POST `/api/users/:id/avatar` — update avatar. Body `{ avatar_url }`.
@@ -153,7 +215,7 @@ Catatan: ini adalah backend file-based sederhana untuk development. Untuk produk
 ---
 
 Ringkasan dan Daftar Route
-Berikut adalah daftar lengkap route yang ada di kode sumber (`index.js`, `routes/registerApis.js`, `ApiGlobal.js`, `ApiKomunita.js`, `ApiTubs.js`, `ApiAI.js`) — dikelompokkan menurut fungsi dan modul.
+Berikut adalah daftar lengkap route yang ada di kode sumber (`index.js`, `routes/registerApis.js`, `backend/modules/ApiGlobal.js`, `backend/modules/ApiKomunita.js`, `backend/modules/ApiTubs.js`, `backend/modules/ApiAI.js`) — dikelompokkan menurut fungsi dan modul.
 
 **Health & Static**
 - `GET /health`: health check — `{ status: 'ok' }`.
@@ -162,13 +224,13 @@ Berikut adalah daftar lengkap route yang ada di kode sumber (`index.js`, `routes
 - `GET /avatar/*`: serve avatar files from `backend/public/avatar`.
 - `GET /api/static/*`: serve JSON/assets from `public/data/*` or `src/data/*`.
 
-**Auth & Profiles (ApiGlobal & extra routes)**
+**Auth & Profiles (backend/modules/ApiGlobal & extra routes)**
 - `POST /api/auth/signup` — register. Body: `{ email, password, username? }`. Response: `{ user, token }`.
 - `POST /api/auth/signin` — login. Body: `{ email, password }`. Response: `{ user, token }`.
 - `GET /api/auth/me` — get authenticated user (requires `Authorization: Bearer <token>`).
 - `PUT /api/profiles/:id` — update public profile. Body: allowed profile fields.
 
-Extra (compat) auth routes (registered by `registerExtraRoutes` in `ApiKomunita`):
+Extra (compat) auth routes (registered by `registerExtraRoutes` in `backend/modules/ApiKomunita`):
 - `POST /auth/register` — alias register (same concept as `/api/auth/signup`).
 - `POST /auth/login` — alias login.
 - `POST /auth/logout` — stateless logout (returns `{ ok: true }`).
@@ -332,5 +394,8 @@ Additional recently-added endpoints
 - `POST /api/presence` — set presence (body: `{ user_id, status }`). Broadcasts `presence` socket event.
 - `POST /api/typing` — typing indicator (body: `{ channel_id, user_id, typing }`). Broadcasts `typing` socket event to channel room.
 - `POST /api/uploads` — direct multipart upload (form key: `file`). Files stored under `backend/public/uploads` and served at `/uploads/*`.
+
+
+````
 
 
