@@ -117,12 +117,12 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, kno
   };
 
   return (
-    <div className="fixed bottom-6 right-6 w-full max-w-md h-[80vh] bg-white shadow-lg rounded-lg flex flex-col overflow-hidden">
+    <div className="saipul-chat-root fixed bottom-4 right-4 left-4 sm:right-6 sm:left-auto w-full sm:max-w-md max-h-[92vh] h-auto sm:h-[80vh] shadow-lg rounded-lg flex flex-col overflow-hidden" style={{ background: 'var(--saipul-surface)', color: 'var(--saipul-text)' }}>
       {/* Header */}
       <ChatHeader onClose={onClose} onOpenSettings={onOpenSettings} />
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 bg-gray-100">
+      <div className="flex-1 overflow-y-auto p-4" style={{ WebkitOverflowScrolling: 'touch' }}>
         {messages.map((message, index) => (
           <ChatMessage
             key={index}
@@ -137,7 +137,7 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, kno
       </div>
 
       {/* Input */}
-      <div className="p-4 bg-white border-t border-gray-200">
+      <div className="p-4" style={{ background: 'var(--saipul-surface)', borderTop: '1px solid var(--saipul-border)' }}>
         {suggestions && suggestions.length > 0 && (
           <div className="mb-3">
             <Suggestions
@@ -164,7 +164,7 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, kno
       {/* Toast */}
       <div className="pointer-events-none">
         <div className={`fixed z-50 transition-opacity duration-200 ${toast.show ? 'opacity-100' : 'opacity-0'}`}>
-          <div className="absolute -bottom-16 right-8 bg-black/80 text-white text-xs px-3 py-2 rounded-md shadow-lg">
+          <div className="absolute -bottom-16 right-8 md:right-12 bg-black/80 text-white text-xs px-3 py-2 rounded-md shadow-lg">
             {toast.text}
           </div>
         </div>

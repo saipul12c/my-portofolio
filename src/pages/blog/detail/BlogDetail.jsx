@@ -1,8 +1,10 @@
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { useState, useEffect } from "react";
+import { cleanContent } from "../utils/blogUtils";
+import { useState, useEffect, useRef, useMemo } from "react";
 import blogs from "../../../data/blog/data.json";
+import blogService from "../helpers/BlogService";
 import {
   FiArrowLeft,
   FiCalendar,
@@ -26,9 +28,18 @@ export default function BlogDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const post = blogs.find((b) => b.slug === slug);
+  const location = useLocation();
+  const endRef = useRef(null);
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [relatedLimit, _setRelatedLimit] = useState(6);
+
+  const related = useMemo(() => {
+    if (!post) return [];
+    const posts = blogService.getRelatedPosts(post.slug, relatedLimit || 6) || [];
+    return posts.map(p => ({ post: p, reason: p.relatedPosts && p.relatedPosts.includes(p.slug) ? 'Direkomendasikan' : 'Terkait' }));
+  }, [post, relatedLimit]);
 
   // Scroll ke atas saat artikel berubah
   useEffect(() => {
@@ -49,6 +60,15 @@ export default function BlogDetail() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Jika datang dari popup dengan permintaan scroll ke akhir
+  useEffect(() => {
+    if (location?.state?.scrollToEnd) {
+      setTimeout(() => {
+        endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 250);
+    }
+  }, [location]);
+
   // === 💡 Fungsi Redirect ke Detail Profile Author ===
   const handleAuthorClick = (e, author) => {
     e.stopPropagation();
@@ -68,18 +88,10 @@ export default function BlogDetail() {
         <section className="max-w-3xl mx-auto text-center">
           <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/60 rounded-2xl sm:rounded-3xl p-8 sm:p-12 border border-gray-700/50 backdrop-blur-lg">
             <div className="text-6xl mb-6">📝</div>
-            <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-white">
-              Artikel Tidak Ditemukan
-            </h1>
-            <p className="text-gray-400 mb-8 text-lg">
-              Maaf, artikel yang kamu cari tidak tersedia atau telah dihapus.
-            </p>
-            <Link
-              to="/blog"
-              className="inline-flex items-center gap-3 bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl transition-all duration-300 font-medium hover:shadow-lg hover:shadow-cyan-500/20 hover:scale-105"
-            >
-              <FiArrowLeft className="w-5 h-5" />
-              Kembali ke Blog
+            <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-white">Artikel Tidak Ditemukan</h1>
+            <p className="text-gray-400 mb-8 text-lg">Maaf, artikel yang kamu cari tidak tersedia atau telah dihapus.</p>
+            <Link to="/blog" className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800/60 text-sm text-gray-200 rounded-lg border border-gray-700/50 hover:bg-gray-800">
+              <FiArrowLeft className="w-4 h-4" /> Kembali ke Blog
             </Link>
           </div>
         </section>
@@ -87,16 +99,43 @@ export default function BlogDetail() {
     );
   }
 
-  // === 🔗 Artikel Terkait ===
-  const related = Array.isArray(post.relatedPosts)
-    ? blogs.filter((b) => post.relatedPosts.includes(b.slug))
-    : [];
-
   // === 🕓 Format waktu baca ===
   const formatReadTime = (time) => {
     if (!time) return "Waktu baca tidak tersedia";
     const num = parseInt(time);
     return isNaN(num) ? time : `${num} menit baca`;
+  };
+
+  // === 🕰️ Format waktu relatif (Indonesia) ===
+  const formatRelativeTime = (input) => {
+    if (!input) return '-';
+    const date = new Date(input);
+    if (isNaN(date)) return input;
+    const now = new Date();
+    let diff = Math.floor((now - date) / 1000); // seconds
+
+    const units = [
+      { name: 'tahun', secs: 31536000 },
+      { name: 'bulan', secs: 2592000 },
+      { name: 'minggu', secs: 604800 },
+      { name: 'hari', secs: 86400 },
+      { name: 'jam', secs: 3600 },
+      { name: 'menit', secs: 60 },
+      { name: 'detik', secs: 1 },
+    ];
+
+    const isFuture = diff < 0;
+    diff = Math.abs(diff);
+
+    for (const u of units) {
+      if (diff >= u.secs) {
+        const val = Math.floor(diff / u.secs);
+        const label = val === 1 ? `satu ${u.name}` : `${val} ${u.name}`;
+        return isFuture ? `dalam ${label}` : `${label} lalu`;
+      }
+    }
+
+    return 'baru saja';
   };
 
   // === 📊 Status Badge ===
@@ -152,9 +191,12 @@ export default function BlogDetail() {
     blockquote: (props) => (
       <blockquote className="border-l-4 border-cyan-500 pl-6 italic bg-gray-800/50 py-4 rounded-r-lg my-6 text-cyan-100" {...props} />
     ),
-    code: (props) => (
-      <code className="bg-gray-800 px-2 py-1 rounded-lg text-cyan-300 text-sm font-mono" {...props} />
-    ),
+    code: ({inline, children, ...props}) =>
+      inline ? (
+        <code className="bg-gray-800 px-2 py-1 rounded-lg text-cyan-300 text-sm font-mono" {...props}>{children}</code>
+      ) : (
+        <pre className="bg-gray-900 p-4 rounded-lg overflow-auto"><code className="text-sm font-mono text-gray-200" {...props}>{children}</code></pre>
+      ),
   };
 
   // === 🎨 Label Colors ===
@@ -259,12 +301,7 @@ export default function BlogDetail() {
             {post.date && (
               <span className="flex items-center gap-2 bg-gray-800/50 px-3 py-2 rounded-lg border border-gray-700/50">
                 <FiCalendar className="w-4 h-4 text-green-400" />
-                {new Date(post.date).toLocaleDateString("id-ID", { 
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
+                {formatRelativeTime(post.date)}
               </span>
             )}
             {post.readTime && (
@@ -388,8 +425,10 @@ export default function BlogDetail() {
                 remarkPlugins={[remarkGfm]}
                 components={MarkdownComponents}
               >
-                {post.content}
+                {cleanContent(post.content)}
               </ReactMarkdown>
+              {/* anchor untuk scroll ke akhir ketika diminta dari popup */}
+              <div ref={endRef} id="scroll-anchor-end" className="w-full h-1" />
             </div>
           ) : (
             <div className="text-center py-12 bg-gray-800/30 rounded-2xl border border-gray-700/50">
@@ -527,13 +566,7 @@ export default function BlogDetail() {
                     <div>
                       <h4 className="font-semibold text-white">{c.name}</h4>
                       <p className="text-gray-400 text-sm">
-                        {c.date
-                          ? new Date(c.date).toLocaleDateString("id-ID", {
-                              day: 'numeric',
-                              month: 'long',
-                              year: 'numeric'
-                            })
-                          : "Tanggal tidak diketahui"}
+                        {c.date ? formatRelativeTime(c.date) : "Tanggal tidak diketahui"}
                       </p>
                     </div>
                   </div>
@@ -565,7 +598,10 @@ export default function BlogDetail() {
               Artikel Terkait
             </h3>
             <div className="grid md:grid-cols-2 gap-6">
-              {related.map((r) => (
+              {related.map((item) => {
+                const r = item.post;
+                const reason = item.reason;
+                return (
                 <Link
                   key={r.slug}
                   to={`/blog/${r.slug}`}
@@ -581,9 +617,12 @@ export default function BlogDetail() {
                       />
                     )}
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-white mb-2 line-clamp-2 group-hover:text-cyan-300 transition-colors">
-                        {r.title}
-                      </h4>
+                      <div className="flex items-start justify-between gap-3">
+                        <h4 className="font-bold text-white mb-2 line-clamp-2 group-hover:text-cyan-300 transition-colors">
+                          {r.title}
+                        </h4>
+                        <span className="text-xs text-gray-300 bg-gray-800/40 px-2 py-1 rounded-full ml-2">{reason}</span>
+                      </div>
                       <p className="text-gray-400 text-sm line-clamp-2 mb-2">
                         {r.excerpt || "Baca artikel selengkapnya..."}
                       </p>
@@ -594,7 +633,8 @@ export default function BlogDetail() {
                     </div>
                   </div>
                 </Link>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -610,8 +650,8 @@ export default function BlogDetail() {
               Kembali ke Daftar Blog
             </Link>
             
-            <div className="flex items-center gap-4 text-sm text-gray-400">
-              <span>Terakhir diperbarui: {post.updatedAt ? new Date(post.updatedAt).toLocaleDateString("id-ID") : '-'}</span>
+              <div className="flex items-center gap-4 text-sm text-gray-400">
+              <span>Terakhir diperbarui: {post.updatedAt ? formatRelativeTime(post.updatedAt) : '-'}</span>
               <span>•</span>
               <span>Tingkat bacaan: {post.readingLevel || 'Umum'}</span>
             </div>

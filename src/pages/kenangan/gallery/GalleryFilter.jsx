@@ -108,13 +108,14 @@ export default function GalleryFilter({ onFilter, allTags = [], allMedia = [] })
           })
           .slice(0, 12)
           .forEach((m) =>
-            results.push({
-              type: "internal",
-              id: m.id,
-              title: m.title || m.desc || `${m.type} ${m.id}`,
-              mediaType: m.type,
-              url: `/kenangan/${m.type}/${m.id}`,
-            })
+              results.push({
+                type: "internal",
+                id: m.id,
+                title: m.title || m.desc || `${m.type} ${m.id}`,
+                mediaType: m.type,
+                // use same route mapping as app routes: short -> shorts, image -> images, video -> videos, album -> albums
+                url: `/gallery/${{ short: "shorts", image: "images", video: "videos", album: "albums" }[m.type] || m.type}/${m.id}`,
+              })
           );
 
         // Bookmarks

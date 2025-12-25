@@ -4,8 +4,8 @@ import { ToggleSwitch } from "../components/ToggleSwitch";
 export function StorageSettings({ settings, handleSave, exportKnowledgeBase, fileStats, formatFileSize, knowledgeStats }) {
   return (
     <div className="space-y-4">
-      <div className="p-4 bg-gradient-to-r from-blue-900/20 to-cyan-900/20 rounded-lg border border-blue-500/30">
-        <h4 className="font-medium text-blue-400 mb-2">Storage Overview</h4>
+      <div className="p-4 rounded-lg border saipul-panel storage-overview">
+        <h4 className="font-medium mb-2" style={{ color: 'var(--saipul-accent)' }}>Storage Overview</h4>
         <div className="text-xs space-y-2">
           <div className="flex justify-between">
             <span>Total Files:</span>
@@ -27,10 +27,10 @@ export function StorageSettings({ settings, handleSave, exportKnowledgeBase, fil
       </div>
 
       <div className="space-y-3">
-        <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+        <div className="flex items-center justify-between p-3 rounded-lg saipul-row">
           <div>
-            <span className="text-white">Auto Backup</span>
-            <p className="text-xs text-gray-500">Backup otomatis data penting</p>
+            <span style={{ color: 'var(--saipul-text)' }}>Auto Backup</span>
+            <p className="text-xs" style={{ color: 'var(--saipul-muted)' }}>Backup otomatis data penting</p>
           </div>
           <ToggleSwitch 
             checked={settings.autoSave}
@@ -39,10 +39,10 @@ export function StorageSettings({ settings, handleSave, exportKnowledgeBase, fil
           />
         </div>
 
-        <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+        <div className="flex items-center justify-between p-3 rounded-lg saipul-row">
           <div>
-            <span className="text-white">Analytics</span>
-            <p className="text-xs text-gray-500">Kumpulkan data penggunaan</p>
+            <span style={{ color: 'var(--saipul-text)' }}>Analytics</span>
+            <p className="text-xs" style={{ color: 'var(--saipul-muted)' }}>Kumpulkan data penggunaan</p>
           </div>
           <ToggleSwitch 
             checked={settings.enableAnalytics}
@@ -57,7 +57,8 @@ export function StorageSettings({ settings, handleSave, exportKnowledgeBase, fil
         <select 
           value={settings.backupInterval}
           onChange={(e) => handleSave("backupInterval", parseInt(e.target.value))}
-          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+          className="w-full rounded-lg px-3 py-2"
+          style={{ background: 'var(--saipul-surface)', border: '1px solid var(--saipul-border)', color: 'var(--saipul-text)' }}
         >
           <option value={15}>15 menit</option>
           <option value={30}>30 menit</option>
@@ -69,7 +70,8 @@ export function StorageSettings({ settings, handleSave, exportKnowledgeBase, fil
       <div className="grid grid-cols-2 gap-2">
         <button
           onClick={exportKnowledgeBase}
-          className="px-4 py-2 rounded-lg bg-green-900/30 hover:bg-green-800/50 transition text-green-400 border border-green-500/30 flex items-center justify-center gap-2"
+          className="px-4 py-2 rounded-lg saipul-btn saipul-btn-export flex items-center justify-center gap-2"
+          style={{ border: '1px solid var(--saipul-border)', color: 'var(--saipul-accent)' }}
         >
           <Download size={14} />
           Export Data
@@ -97,7 +99,8 @@ export function StorageSettings({ settings, handleSave, exportKnowledgeBase, fil
             };
             input.click();
           }}
-          className="px-4 py-2 rounded-lg bg-blue-900/30 hover:bg-blue-800/50 transition text-blue-400 border border-blue-500/30 flex items-center justify-center gap-2"
+          className="px-4 py-2 rounded-lg saipul-btn saipul-btn-import flex items-center justify-center gap-2"
+          style={{ border: '1px solid var(--saipul-border)', color: 'var(--saipul-text)' }}
         >
           <Upload size={14} />
           Import Data

@@ -370,7 +370,7 @@ function AboutHeader({ profile }) {
             onClick={handleDownloadCV}
             className="group px-8 py-3.5 rounded-full bg-white text-black font-bold hover:bg-gray-100 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)] hover:scale-105 active:scale-95"
           >
-            Download CV
+            Lihat CV 
           </button>
           
           {/* Perubahan: Tombol View Projects menggunakan Link ke route /projects */}

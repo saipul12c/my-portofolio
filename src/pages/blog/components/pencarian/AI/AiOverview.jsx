@@ -2,26 +2,64 @@ import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import nlp from "compromise";
 
-export default function AiOverview({ searchTerm, filteredBlogs }) {
+export default function AiOverview({ searchTerm, filteredBlogs, allBlogs, setSearchTerm, setCurrentPage, onSearch }) {
   const [visible, setVisible] = useState(false);
   const [isThinking, setIsThinking] = useState(true);
   const navigate = useNavigate();
 
+  // Handle clicks on suggested keywords/labels so they update the search state
+  const handleSearchClick = (text) => {
+    if (!text) return;
+    // Prefer centralized onSearch if provided
+    if (typeof onSearch === "function") {
+      onSearch(text);
+    } else {
+      if (setSearchTerm) setSearchTerm(text);
+      if (setCurrentPage) setCurrentPage(1);
+      navigate(`/blog?search=${encodeURIComponent(text)}`);
+    }
+
+    // scroll to top for better UX (guarded)
+    if (typeof window !== "undefined" && typeof window.scrollTo === "function") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   // === 🧠 AI Reasoning & Analysis ===
   const aiAnalysis = useMemo(() => {
-    if (!filteredBlogs || filteredBlogs.length === 0) return null;
+    const dataSource = (filteredBlogs && filteredBlogs.length > 0)
+      ? filteredBlogs
+      : (allBlogs && allBlogs.length > 0 ? allBlogs : null);
+
+    if (!dataSource) return null;
 
     setIsThinking(true);
-    const total = filteredBlogs.length;
-    const authors = Array.from(new Set(filteredBlogs.map((p) => p.author))).slice(0, 5);
-    const categories = Array.from(new Set(filteredBlogs.map((p) => p.category))).slice(0, 3);
-    const allLabels = filteredBlogs.flatMap((p) => p.labels || []);
+    const total = dataSource.length;
+    const authors = Array.from(new Set(dataSource.map((p) => p.author))).slice(0, 5);
+    const categories = Array.from(new Set(dataSource.map((p) => p.category))).slice(0, 3);
+    const allLabels = dataSource.flatMap((p) => p.labels || []);
     const popularLabels = Array.from(new Set(allLabels)).slice(0, 6);
 
     // Gabungkan seluruh konten artikel untuk analisis
-    const combinedText = filteredBlogs.map((p) => p.content || "").join(" ");
+    const combinedText = dataSource.map((p) => p.content || "").join(" ");
     const doc = nlp(combinedText);
     const sentences = doc.sentences().out("array");
+
+    // === 🔧 Text sanitizer to remove markdown and tidy sentences ===
+    const cleanText = (s) => {
+      if (!s || typeof s !== "string") return s;
+      let t = s;
+      // Remove bold/italic/backticks and markdown links
+      t = t.replace(/\*\*(.*?)\*\*/g, "$1");
+      t = t.replace(/\*(.*?)\*/g, "$1");
+      t = t.replace(/`(.*?)`/g, "$1");
+      t = t.replace(/\[(.*?)\]\((.*?)\)/g, "$1");
+      // Collapse whitespace and trim
+      t = t.replace(/\s+/g, " ").trim();
+      // Capitalize first letter if necessary
+      if (t.length > 1) t = t.charAt(0).toUpperCase() + t.slice(1);
+      return t;
+    };
 
     // === 🎯 AI Question Analysis ===
     const lowerSearch = searchTerm.toLowerCase();
@@ -62,7 +100,7 @@ export default function AiOverview({ searchTerm, filteredBlogs }) {
         ) || relevantSentences[0];
         
         answer = definition ? 
-          `Berdasarkan analisis konten, ${definition.toLowerCase()}` :
+          `Berdasarkan analisis konten, ${cleanText(definition)}` :
           `Terkait "${searchTerm}", artikel-artikel ini membahas konsep dan implementasinya dalam konteks ${isTech ? "teknologi" : isDesign ? "desain" : isMarketing ? "marketing" : "umum"}.`;
           
       } else if (questionType.isHow) {
@@ -71,7 +109,7 @@ export default function AiOverview({ searchTerm, filteredBlogs }) {
         ).slice(0, 3);
         
         answer = steps.length > 0 ? 
-          `Untuk ${searchTerm}, berikut pendekatan yang disarankan: ${steps.join(" ")}` :
+          `Untuk ${searchTerm}, berikut pendekatan yang disarankan: ${cleanText(steps.join(" "))}` :
           `Artikel menyajikan berbagai metode dan praktik terbaik untuk ${searchTerm} dengan fokus pada implementasi yang efektif.`;
           
       } else if (questionType.isWhy) {
@@ -80,7 +118,7 @@ export default function AiOverview({ searchTerm, filteredBlogs }) {
         ).slice(0, 2);
         
         answer = reasons.length > 0 ?
-          `Alasan utama ${searchTerm} adalah: ${reasons.join(" ")}` :
+          `Alasan utama ${searchTerm} adalah: ${cleanText(reasons.join(" "))}` :
           `Artikel menjelaskan pentingnya ${searchTerm} dalam konteks perkembangan saat ini.`;
           
       } else if (questionType.isRecommendation) {
@@ -89,13 +127,13 @@ export default function AiOverview({ searchTerm, filteredBlogs }) {
         ).slice(0, 3);
         
         answer = tips.length > 0 ?
-          `Rekomendasi untuk ${searchTerm}: ${tips.join(" ")}` :
+          `Rekomendasi untuk ${searchTerm}: ${cleanText(tips.join(" "))}` :
           `Berdasarkan analisis, berikut beberapa praktik terbaik untuk ${searchTerm}.`;
       } else {
         // Default answer untuk pertanyaan umum
         const keyInsights = relevantSentences.slice(0, 2);
         answer = keyInsights.length > 0 ?
-          `Tentang "${searchTerm}": ${keyInsights.join(" ")}` :
+          `Tentang "${searchTerm}": ${cleanText(keyInsights.join(" "))}` :
           `Artikel-artikel ini memberikan wawasan mendalam tentang ${searchTerm} dari berbagai perspektif.`;
         confidence = "medium";
       }
@@ -140,8 +178,8 @@ export default function AiOverview({ searchTerm, filteredBlogs }) {
 
     // === 📈 Content Quality Assessment ===
     const qualityMetrics = {
-      depth: filteredBlogs.length > 3 ? "mendalam" : filteredBlogs.length > 1 ? "cukup" : "pengenalan",
-      recency: filteredBlogs.some(p => {
+      depth: dataSource.length > 3 ? "mendalam" : dataSource.length > 1 ? "cukup" : "pengenalan",
+      recency: dataSource.some(p => {
         const postDate = new Date(p.date);
         const sixMonthsAgo = new Date();
         sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
@@ -157,8 +195,8 @@ export default function AiOverview({ searchTerm, filteredBlogs }) {
     const generateInsights = () => {
       const insights = [];
       
-      if (filteredBlogs.length >= 3) {
-        insights.push(`Terdapat ${filteredBlogs.length} artikel yang membahas topik ini secara komprehensif.`);
+      if (dataSource.length >= 3) {
+        insights.push(`Terdapat ${dataSource.length} artikel yang membahas topik ini secara komprehensif.`);
       }
       
       if (topNouns.length >= 3) {
@@ -178,7 +216,7 @@ export default function AiOverview({ searchTerm, filteredBlogs }) {
       ];
     };
 
-    const topRelatedArticles = filteredBlogs
+    const topRelatedArticles = (dataSource || [])
       .sort((a, b) => (b.rating + b.views / 1000) - (a.rating + a.views / 1000))
       .slice(0, 3);
 
@@ -207,17 +245,18 @@ export default function AiOverview({ searchTerm, filteredBlogs }) {
     setTimeout(() => setIsThinking(false), 800);
 
     return analysisResult;
-  }, [searchTerm, filteredBlogs]);
+  }, [searchTerm, filteredBlogs, allBlogs]);
 
   // === ✨ Transition Effects ===
   useEffect(() => {
-    if (filteredBlogs && filteredBlogs.length > 0) {
+    const hasData = (filteredBlogs && filteredBlogs.length > 0) || (allBlogs && allBlogs.length > 0 && searchTerm);
+    if (hasData) {
       const timer = setTimeout(() => setVisible(true), 300);
       return () => clearTimeout(timer);
     } else {
       setVisible(false);
     }
-  }, [filteredBlogs]);
+  }, [filteredBlogs, allBlogs, searchTerm]);
 
   if (!aiAnalysis || !visible) return null;
 
@@ -341,7 +380,7 @@ export default function AiOverview({ searchTerm, filteredBlogs }) {
                 {aiAnalysis.topKeywords.map((word, i) => (
                   <button
                     key={i}
-                    onClick={() => navigate(`/blog?search=${encodeURIComponent(word)}`)}
+                    onClick={() => handleSearchClick(word)}
                     className="text-[10px] sm:text-xs bg-fuchsia-400/10 border border-fuchsia-400/30 text-fuchsia-300 
                     px-2 sm:px-3 py-0.5 sm:py-1 rounded-full hover:bg-fuchsia-400/20 hover:border-fuchsia-400/50 transition"
                   >
@@ -357,7 +396,7 @@ export default function AiOverview({ searchTerm, filteredBlogs }) {
                 {aiAnalysis.popularLabels.map((label, i) => (
                   <button
                     key={i}
-                    onClick={() => navigate(`/blog?search=${encodeURIComponent(label)}`)}
+                    onClick={() => handleSearchClick(label)}
                     className="text-[10px] sm:text-xs bg-cyan-400/10 border border-cyan-400/30 text-cyan-300 
                     px-2 sm:px-3 py-0.5 sm:py-1 rounded-full hover:bg-cyan-400/20 hover:border-cyan-400/50 transition"
                   >

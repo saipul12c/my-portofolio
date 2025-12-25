@@ -1,24 +1,40 @@
 import { motion } from "framer-motion";
-import { Heart, Github, Linkedin, Instagram, Mail } from "lucide-react";
+import {
+  Heart,
+  Github,
+  Linkedin,
+  Instagram,
+  Mail,
+  Folder,
+  FileText,
+  Image,
+  Award,
+  Eye,
+  Info,
+  Users,
+  BookOpen,
+  MessageSquare,
+  Globe,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   const portfolioLinks = [
-    { to: "/projects", label: "Projects" },
-    { to: "/blog", label: "Blog & Berita" },
-    { to: "/gallery", label: "Gallery" },
-    { to: "/certificates", label: "Certificates" },
-    { to: "/visi", label: "Visi & Misi" },
+    { to: "/projects", label: "Projects", icon: <Folder className="w-4 h-4 text-cyan-300" /> },
+    { to: "/blog", label: "Blog & Berita", icon: <FileText className="w-4 h-4 text-cyan-300" /> },
+    { to: "/gallery", label: "Gallery", icon: <Image className="w-4 h-4 text-cyan-300" /> },
+    { to: "/certificates", label: "Certificates", icon: <Award className="w-4 h-4 text-cyan-300" /> },
+    { to: "/visi", label: "Visi & Misi", icon: <Eye className="w-4 h-4 text-cyan-300" /> },
   ];
 
   const personalLinks = [
-    { to: "/about", label: "About Me" },
-    { to: "/SoftSkills", label: "Soft Skills" },
-    { to: "/education", label: "Pendidikan" },
-    { to: "/testimoni", label: "Testimonials" },
-    { to: "/bahasa", label: "Kemampuan Bahasa" },
+    { to: "/about", label: "About Me", icon: <Info className="w-4 h-4 text-cyan-300" /> },
+    { to: "/SoftSkills", label: "Soft Skills", icon: <Users className="w-4 h-4 text-cyan-300" /> },
+    { to: "/education", label: "Pendidikan", icon: <BookOpen className="w-4 h-4 text-cyan-300" /> },
+    { to: "/testimoni", label: "Testimonials", icon: <MessageSquare className="w-4 h-4 text-cyan-300" /> },
+    { to: "/bahasa", label: "Kemampuan Bahasa", icon: <Globe className="w-4 h-4 text-cyan-300" /> },
   ];
 
   return (
@@ -43,7 +59,7 @@ export default function Footer() {
             {/* SOCIAL ICONS */}
             <div className="flex gap-5 mt-5">
               <a
-                href="https://github.com/username"
+                href="https://github.com/saipul12c"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-cyan-400 transition-transform hover:scale-110"
@@ -86,9 +102,10 @@ export default function Footer() {
                   <li key={item.to}>
                     <Link
                       to={item.to}
-                      className="hover:text-cyan-400 hover:translate-x-1 transition-all duration-200 inline-block"
+                      className="flex items-center gap-2 hover:text-cyan-400 hover:translate-x-1 transition-all duration-200"
                     >
-                      {item.label}
+                      <span className="flex-shrink-0">{item.icon}</span>
+                      <span>{item.label}</span>
                     </Link>
                   </li>
                 ))}
@@ -105,9 +122,10 @@ export default function Footer() {
                   <li key={item.to}>
                     <Link
                       to={item.to}
-                      className="hover:text-cyan-400 hover:translate-x-1 transition-all duration-200 inline-block"
+                      className="flex items-center gap-2 hover:text-cyan-400 hover:translate-x-1 transition-all duration-200"
                     >
-                      {item.label}
+                      <span className="flex-shrink-0">{item.icon}</span>
+                      <span>{item.label}</span>
                     </Link>
                   </li>
                 ))}

@@ -730,7 +730,7 @@ export default function Contact() {
             { 
               icon: <Github size={22} />, 
               label: "GitHub", 
-              href: "https://github.com/",
+              href: "https://github.com/saipul12c",
               color: "from-gray-600 to-gray-800",
               desc: "Open source"
             },
@@ -744,7 +744,7 @@ export default function Contact() {
             { 
               icon: <Instagram size={22} />, 
               label: "Instagram", 
-              href: "https://instagram.com/",
+              href: "https://instagram.com/saipul16_",
               color: "from-pink-400 to-purple-500",
               desc: "Daily updates"
             },

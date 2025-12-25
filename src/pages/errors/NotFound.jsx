@@ -62,24 +62,24 @@ export default function NotFound() {
   );
 
   const [index, setIndex] = useState(0);
+  // `explore` holds the path currently loading, or null when idle
   const [buttonState, setButtonState] = useState({
     home: false,
     reload: false,
-    explore: false,
+    explore: null,
   });
 
-  // 🎲 Ambil rute random berbeda dari halaman sebelumnya
-  const randomRoutes = useMemo(() => {
+  // 🎲 Ambil rute random berbeda dari halaman sebelumnya dan jangan duplikat
+  const { randomRoutes, otherRoutes, featuredRoute } = useMemo(() => {
     const filtered = AVAILABLE_ROUTES.filter((route) => route.path !== previousPath);
     const shuffled = [...filtered].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 3); // Ambil 3 rute random
+    const pick = shuffled.slice(0, 3);
+    const remaining = shuffled.filter((r) => !pick.find((p) => p.path === r.path)).slice(0, 4);
+    const featured = pick.length
+      ? pick[Math.floor(Math.random() * pick.length)]
+      : { path: "/projects", label: "🌍 Jelajahi" };
+    return { randomRoutes: pick, otherRoutes: remaining, featuredRoute: featured };
   }, [previousPath]);
-
-  // Rute yang di-highlight untuk tombol explore
-  const featuredRoute = useMemo(
-    () => randomRoutes[Math.floor(Math.random() * randomRoutes.length)] || { path: "/projects", label: "🌍 Jelajahi" },
-    [randomRoutes]
-  );
 
   // Ganti pesan otomatis
   useEffect(() => {
@@ -103,7 +103,23 @@ export default function NotFound() {
   );
 
   // Tombol aman dengan feedback
-  const handleAction = async (type, action) => {
+  // For `explore`, key should be the route path so only that button shows loading
+  const handleAction = async (type, action, key = null) => {
+    if (type === "explore") {
+      if (buttonState.explore) return; // another explore action in progress
+      setButtonState((prev) => ({ ...prev, explore: key }));
+      try {
+        await action();
+      } catch (err) {
+        console.error(`Gagal menjalankan aksi ${type}:`, err);
+      } finally {
+        setTimeout(() => {
+          setButtonState((prev) => ({ ...prev, explore: null }));
+        }, 500);
+      }
+      return;
+    }
+
     if (buttonState[type]) return; // cegah spam klik
     setButtonState((prev) => ({ ...prev, [type]: true }));
 
@@ -112,7 +128,6 @@ export default function NotFound() {
     } catch (err) {
       console.error(`Gagal menjalankan aksi ${type}:`, err);
     } finally {
-      // Hanya reset loading state jika diperlukan
       setTimeout(() => {
         setButtonState((prev) => ({ ...prev, [type]: false }));
       }, 500);
@@ -121,8 +136,8 @@ export default function NotFound() {
 
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden text-center text-white bg-gradient-to-br from-slate-950 via-slate-900 to-gray-900">
-      {/* 🌌 Efek Bintang */}
-      <div className="absolute inset-0 overflow-hidden">
+      {/* 🌌 Efek Bintang (non-interactive so it doesn't block clicks) */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
         {stars.map((star) => (
           <motion.div
             key={star.id}
@@ -146,8 +161,8 @@ export default function NotFound() {
         transition={{ duration: 1 }}
         className="relative flex flex-col items-center space-y-4 z-10"
       >
-        <Sparkles className="w-12 h-12 md:w-16 md:h-16 text-cyan-400 drop-shadow-[0_0_20px_#22d3ee]" />
-        <Search className="w-16 h-16 md:w-20 md:h-20 text-cyan-400 animate-pulse drop-shadow-[0_0_20px_#22d3ee]" />
+        <Sparkles aria-hidden="true" className="w-12 h-12 md:w-16 md:h-16 text-cyan-400 drop-shadow-[0_0_20px_#22d3ee]" />
+        <Search aria-hidden="true" className="w-16 h-16 md:w-20 md:h-20 text-cyan-400 animate-pulse drop-shadow-[0_0_20px_#22d3ee]" />
       </motion.div>
 
       {/* 🧭 Judul */}
@@ -197,6 +212,7 @@ export default function NotFound() {
       >
         {/* Home */}
         <button
+          aria-label="Beranda"
           onClick={() => handleAction("home", () => navigate("/"))}
           disabled={buttonState.home}
           className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-xl font-semibold shadow-lg transition-all text-sm md:text-base ${
@@ -205,14 +221,18 @@ export default function NotFound() {
               : "bg-cyan-500 hover:bg-cyan-600 text-white hover:shadow-cyan-400/40"
           }`}
         >
-          <Home size={16} className="md:w-5 md:h-5" />
+          <Home aria-hidden="true" size={16} className="md:w-5 md:h-5" />
           {buttonState.home ? "Menuju..." : "Beranda"}
         </button>
 
         {/* Reload */}
         <button
+          aria-label="Muat ulang halaman"
           onClick={() =>
-            handleAction("reload", () => Promise.resolve(window.location.reload()))
+            handleAction("reload", () => {
+              window.location.reload();
+              return Promise.resolve();
+            })
           }
           disabled={buttonState.reload}
           className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-xl font-semibold shadow-lg transition-all text-sm md:text-base ${
@@ -221,24 +241,25 @@ export default function NotFound() {
               : "bg-slate-700 hover:bg-slate-600 text-gray-200"
           }`}
         >
-          <RefreshCw size={16} className="md:w-5 md:h-5" />
+          <RefreshCw aria-hidden="true" size={16} className="md:w-5 md:h-5" />
           {buttonState.reload ? "Memuat..." : "Muat Ulang"}
         </button>
 
         {/* Explore Random */}
         <button
+          aria-label={`Jelajahi ${featuredRoute.label}`}
           onClick={() =>
-            handleAction("explore", () => navigate(featuredRoute.path))
+            handleAction("explore", () => navigate(featuredRoute.path), featuredRoute.path)
           }
-          disabled={buttonState.explore}
+          disabled={buttonState.explore === featuredRoute.path}
           className={`flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-xl font-semibold shadow-lg transition-all text-sm md:text-base ${
-            buttonState.explore
+            buttonState.explore === featuredRoute.path
               ? "bg-teal-700 text-gray-300 cursor-not-allowed animate-pulse"
               : "bg-teal-600 hover:bg-teal-700 text-gray-200"
           }`}
         >
-          <Compass size={16} className="md:w-5 md:h-5" />
-          {buttonState.explore ? "Membuka..." : featuredRoute.label}
+          <Compass aria-hidden="true" size={16} className="md:w-5 md:h-5" />
+          {buttonState.explore === featuredRoute.path ? "Membuka..." : featuredRoute.label}
         </button>
       </motion.div>
 
@@ -258,12 +279,10 @@ export default function NotFound() {
               key={route.path}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() =>
-                handleAction("explore", () => navigate(route.path))
-              }
-              disabled={buttonState.explore}
+              onClick={() => handleAction("explore", () => navigate(route.path), route.path)}
+              disabled={buttonState.explore === route.path}
               className={`px-3 md:px-4 py-2 rounded-lg font-medium text-xs md:text-sm transition-all ${
-                buttonState.explore
+                buttonState.explore === route.path
                   ? "bg-gray-700 text-gray-400 cursor-not-allowed"
                   : "bg-gray-800 hover:bg-purple-600 text-gray-200 hover:text-white shadow-md"
               }`}
@@ -271,26 +290,22 @@ export default function NotFound() {
               {route.label}
             </motion.button>
           ))}
-          {AVAILABLE_ROUTES.slice(randomRoutes.length, randomRoutes.length + 4)
-            .filter((route) => route.path !== previousPath)
-            .map((route) => (
-              <motion.button
-                key={route.path}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() =>
-                  handleAction("explore", () => navigate(route.path))
-                }
-                disabled={buttonState.explore}
-                className={`px-3 md:px-4 py-2 rounded-lg font-medium text-xs md:text-sm transition-all ${
-                  buttonState.explore
-                    ? "bg-gray-700 text-gray-400 cursor-not-allowed"
-                    : "bg-gray-800 hover:bg-indigo-600 text-gray-200 hover:text-white shadow-md"
-                }`}
-              >
-                {route.label}
-              </motion.button>
-            ))}
+          {otherRoutes.map((route) => (
+            <motion.button
+              key={route.path}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => handleAction("explore", () => navigate(route.path), route.path)}
+              disabled={buttonState.explore === route.path}
+              className={`px-3 md:px-4 py-2 rounded-lg font-medium text-xs md:text-sm transition-all ${
+                buttonState.explore === route.path
+                  ? "bg-gray-700 text-gray-400 cursor-not-allowed"
+                  : "bg-gray-800 hover:bg-indigo-600 text-gray-200 hover:text-white shadow-md"
+              }`}
+            >
+              {route.label}
+            </motion.button>
+          ))}
         </div>
       </motion.div>
 

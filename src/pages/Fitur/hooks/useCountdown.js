@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 
 const useCountdown = (launchDate) => {
   const [timeLeft, setTimeLeft] = useState({
+    years: 0,
     days: 0,
     hours: 0,
     minutes: 0,
@@ -14,8 +15,11 @@ const useCountdown = (launchDate) => {
       const distance = launchDate - now;
 
       if (distance > 0) {
+        const years = Math.floor(distance / (1000 * 60 * 60 * 24 * 365));
+        const days = Math.floor((distance % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24));
         setTimeLeft({
-          days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+          years,
+          days,
           hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
           minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
           seconds: Math.floor((distance % (1000 * 60)) / 1000)

@@ -1,7 +1,9 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
 import { PlayCircle, UserCheck, Tag, AlertCircle } from "lucide-react";
-import videos from "../../../data/gallery/videos.json";
+
+// load videos lazily to avoid bundling large json into main chunk
+
 
 // 🔍 Filter helper function
 function filterVideos(videoList, searchTerm = "", selectedTags = []) {
@@ -29,13 +31,26 @@ function filterVideos(videoList, searchTerm = "", selectedTags = []) {
 
 export default function GalleryVideos({ onSelect, filterSettings = {}, onFilteredDataChange }) {
   const [visibleCount, setVisibleCount] = useState(9);
-  
+  const [videos, setVideos] = useState([]);
+  const tickingRef = useRef(false);
+
   const { searchTerm = "", tags: selectedTags = [] } = filterSettings;
+
+  useEffect(() => {
+    let mounted = true;
+    import("../../../data/gallery/videos.json")
+      .then((m) => {
+        if (!mounted) return;
+        setVideos(m.default || []);
+      })
+      .catch((err) => console.error("Failed to load videos.json", err));
+    return () => { mounted = false; };
+  }, []);
 
   // 🔍 Filter videos based on search and tags
   const filteredVideos = useMemo(() => {
     return filterVideos(videos, searchTerm, selectedTags);
-  }, [searchTerm, selectedTags]);
+  }, [videos, searchTerm, selectedTags]);
 
   // 📢 Notify parent of filtered data (use effect to avoid updates during render)
   useEffect(() => {
@@ -48,9 +63,14 @@ export default function GalleryVideos({ onSelect, filterSettings = {}, onFiltere
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
-        setVisibleCount((prev) => prev + 6);
-      }
+      if (tickingRef.current) return;
+      tickingRef.current = true;
+      requestAnimationFrame(() => {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+          setVisibleCount((prev) => prev + 6);
+        }
+        tickingRef.current = false;
+      });
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -88,12 +108,12 @@ export default function GalleryVideos({ onSelect, filterSettings = {}, onFiltere
             onClick={() => onSelect(vid)}
             className="relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 hover:border-purple-400 transition-all cursor-pointer group"
           >
-            {/* Video Preview */}
+            {/* Video Preview (do not autoplay in grid) */}
             <video
               src={vid.src}
               muted
               loop
-              autoPlay
+              preload="none"
               className="w-full h-64 object-cover rounded-2xl opacity-90 group-hover:opacity-100 transition"
             />
 

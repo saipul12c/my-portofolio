@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight, Heart, MessageCircle, Share2, Eye, Tag, UserCheck, Music } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import GalleryShareBar from "../GalleryShareBar";
 
 export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, currentIndex, setCurrentIndex }) {
@@ -191,24 +191,20 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
                         </div>
                       </div>
                     ))}
-                      <button
-                        onClick={() => {
-                          navigate(`/gallery/${selectedMedia.type === 'image' ? 'images' : selectedMedia.type === 'video' ? 'videos' : selectedMedia.type === 'album' ? 'albums' : 'shorts'}/${selectedMedia.id}`);
-                          setSelectedMedia(null);
-                        }}
-                        className="text-sm px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30"
+                      <Link
+                        to={`/gallery/${selectedMedia.type === 'image' ? 'images' : selectedMedia.type === 'video' ? 'videos' : selectedMedia.type === 'album' ? 'albums' : 'shorts'}/${selectedMedia.id}`}
+                        onClick={() => setSelectedMedia(null)}
+                        className="text-sm px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 text-center"
                       >
                         Lihat detail
-                      </button>
-                      <button
-                        onClick={() => {
-                          navigate(`/gallery/${selectedMedia.type === 'image' ? 'images' : selectedMedia.type === 'video' ? 'videos' : selectedMedia.type === 'album' ? 'albums' : 'shorts'}/${selectedMedia.id}`);
-                          setSelectedMedia(null);
-                        }}
-                        className="text-sm px-3 py-1 rounded-lg border border-white/10 text-gray-300 hover:bg-white/5"
+                      </Link>
+                      <Link
+                        to={`/gallery/${selectedMedia.type === 'image' ? 'images' : selectedMedia.type === 'video' ? 'videos' : selectedMedia.type === 'album' ? 'albums' : 'shorts'}/${selectedMedia.id}`}
+                        onClick={() => setSelectedMedia(null)}
+                        className="text-sm px-3 py-1 rounded-lg border border-white/10 text-gray-300 hover:bg-white/5 text-center"
                       >
                         Lihat semua komentar
-                      </button>
+                      </Link>
                   </div>
                 </div>
               )}

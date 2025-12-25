@@ -24,6 +24,17 @@ export function SettingsContent({
   knowledgeStats,
   
 }) {
+  const tabLabels = {
+    umum: 'Tampilan & Umum',
+    ai: 'AI & Model',
+    data: 'Data & Analisis',
+    files: 'File & Data',
+    storage: 'Storage & Backup',
+    perform: 'Performa',
+    privacy: 'Privasi & Keamanan',
+    shortcuts: 'Keyboard Shortcuts'
+  };
+
   const renderTabContent = () => {
     const commonProps = {
       settings,
@@ -68,14 +79,13 @@ export function SettingsContent({
             clearUploadedData={clearUploadedData}
           />
         );
-      case "shortcuts":
-        {
-          const shortcuts = settings.shortcuts || {};
+      case "shortcuts": {
+        const shortcuts = settings.shortcuts || {};
         return (
           <div className="space-y-4">
             <h4 className="text-white font-medium">Keyboard Shortcuts</h4>
             <div className="text-xs text-gray-400">Gunakan kombinasi keyboard berikut untuk mempercepat interaksi dengan Live Chat. Anda dapat mengubah kombinasi dan menyimpannya.</div>
-            <div className="mt-3 grid grid-cols-1 gap-3 text-sm">
+            <div className="mt-3 space-y-3 text-sm">
               {[
                 {key: 'send', label: 'Send message'},
                 {key: 'clear', label: 'Clear chat'},
@@ -85,13 +95,15 @@ export function SettingsContent({
                 {key: 'regenerate', label: 'Regenerate last bot response'},
                 {key: 'openUpload', label: 'Open upload dialog'}
               ].map(item => (
-                <div key={item.key} className="flex items-center gap-3">
-                  <div className="w-44 text-gray-200">{item.label}</div>
+                <div key={item.key} className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+                  <div className="text-gray-200 md:w-44">
+                    {item.label}
+                  </div>
                   <input
                     type="text"
                     value={shortcuts[item.key] || ''}
                     onChange={(e) => handleSave('shortcuts', { ...(settings.shortcuts || {}), [item.key]: e.target.value })}
-                    className="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white"
+                    className="w-full md:flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white"
                   />
                 </div>
               ))}
@@ -99,7 +111,7 @@ export function SettingsContent({
             <div className="text-xs text-gray-500">Gunakan format seperti <code>Ctrl+Enter</code> atau <code>Ctrl+Shift+U</code>.</div>
           </div>
         );
-        }
+      }
       default:
         return <GeneralSettings {...commonProps} />;
     }
@@ -108,13 +120,19 @@ export function SettingsContent({
   return (
     <div className="flex-1 p-4 text-sm space-y-4 overflow-y-auto">
       <div className="flex justify-between items-center">
-        <h3 className="font-semibold text-white text-lg bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-          Pengaturan Lanjutan SaipulAI
-        </h3>
+        <div>
+          <h3 className="font-semibold text-white text-lg bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+            Pengaturan Lanjutan SaipulAI
+          </h3>
+          <div className="mt-1 text-xs text-gray-400">
+            <span style={{ background: 'var(--saipul-accent-gradient)', color: 'white' }} className="inline-block px-2 py-0.5 rounded">{tabLabels[activeTab] || 'Umum'}</span>
+          </div>
+        </div>
         <div className="flex gap-2">
           <button
             onClick={exportKnowledgeBase}
-            className="px-3 py-1 text-xs rounded-lg bg-green-900/30 hover:bg-green-800/50 transition text-green-400 border border-green-500/30 flex items-center gap-1"
+            className="px-3 py-1 text-xs rounded-lg transition text-white border flex items-center gap-1"
+            style={{ background: 'var(--saipul-accent-gradient)', borderColor: 'rgba(255,255,255,0.06)' }}
           >
             <Download size={12} />
             Export
@@ -143,7 +161,8 @@ export function SettingsContent({
         </div>
         <button
           onClick={onClose}
-          className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 transition text-white font-medium"
+          className="px-4 py-2 rounded-lg transition text-white font-medium"
+          style={{ background: 'var(--saipul-accent-gradient)' }}
         >
           Simpan & Tutup
         </button>

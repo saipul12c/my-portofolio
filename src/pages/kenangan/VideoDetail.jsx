@@ -1,9 +1,17 @@
 import { useParams, Link } from "react-router-dom";
-import videos from "../../data/gallery/videos.json";
+import { useGalleryData } from "./hooks/useGalleryData";
 
 export default function VideoDetail() {
   const { id } = useParams();
-  const item = videos.find(v => String(v.id) === String(id));
+  const { allMedia, loading } = useGalleryData();
+
+  if (loading) return (
+    <main className="min-h-screen flex items-center justify-center p-8">
+      <div className="max-w-xl bg-[#0b0b0b] p-8 rounded-2xl text-gray-300">Memuat...</div>
+    </main>
+  );
+
+  const item = allMedia.find(v => String(v.id) === String(id) && v.type === "video");
 
   if (!item) return (
     <main className="min-h-screen flex items-center justify-center p-8">

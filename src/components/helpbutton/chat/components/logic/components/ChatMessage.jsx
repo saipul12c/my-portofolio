@@ -89,7 +89,10 @@ export function ChatMessage({ message, handleQuickAction }) {
       className={`flex ${isUser ? "justify-end" : "justify-start"} my-2`}
     >
       <div
-        className={`px-4 py-2 rounded-lg max-w-md break-words shadow-md selection:bg-slate-200 selection:text-slate-900 ${isUser ? "bg-sky-200 text-sky-900 rounded-br-none" : "bg-slate-100 text-gray-900 rounded-bl-none"}`}>
+        className={`saipul-chat-message px-4 py-2 rounded-lg max-w-[80%] sm:max-w-md break-words shadow-md selection:bg-slate-200 selection:text-slate-900 ${isUser ? "rounded-br-none" : "rounded-bl-none"}`} style={{
+          background: isUser ? 'var(--saipul-accent)' : 'var(--saipul-surface)',
+          color: isUser ? 'var(--saipul-surface)' : 'var(--saipul-text)'
+        }}>
         {formatTextToElements(message?.text)}
         <span className="block text-xs mt-1 text-right opacity-70">
                 {message?.timestamp ? new Date(message.timestamp).toLocaleTimeString([], {
@@ -103,7 +106,7 @@ export function ChatMessage({ message, handleQuickAction }) {
           {/* Delete available for both user and bot messages */}
           <button
             onClick={() => handleQuickAction("delete", message.id)}
-            className="p-1 rounded-full bg-slate-200 hover:bg-slate-300 text-gray-800"
+            className="saipul-action-btn p-1 rounded-full"
             title="Hapus"
           >
             <Trash size={16} />
@@ -113,35 +116,35 @@ export function ChatMessage({ message, handleQuickAction }) {
             <>
               <button
                 onClick={handleCopy}
-                className="p-1 rounded-full bg-slate-200 hover:bg-slate-300 text-gray-800"
+                className="saipul-action-btn p-1 rounded-full"
                 title="Salin"
               >
                 {copied ? <Check size={16} /> : <Copy size={16} />}
               </button>
               <button
                 onClick={() => handleQuickAction("like", message.id)}
-                className="p-1 rounded-full bg-slate-200 hover:bg-slate-300 text-gray-800"
+                className="saipul-action-btn p-1 rounded-full"
                 title="Like"
               >
                 <ThumbsUp size={16} />
               </button>
               <button
                 onClick={() => handleQuickAction("dislike", message.id)}
-                className="p-1 rounded-full bg-slate-200 hover:bg-slate-300 text-gray-800"
+                className="saipul-action-btn p-1 rounded-full"
                 title="Dislike"
               >
                 <ThumbsDown size={16} />
               </button>
               <button
                 onClick={() => handleQuickAction("regenerate", message.id)}
-                className="p-1 rounded-full bg-slate-200 hover:bg-slate-300 text-gray-800"
+                className="saipul-action-btn p-1 rounded-full"
                 title="Regenerate"
               >
                 <RefreshCw size={16} />
               </button>
               <button
                 onClick={openReportModal}
-                className="p-1 rounded-full bg-slate-200 hover:bg-slate-300 text-gray-800"
+                className="saipul-action-btn p-1 rounded-full"
                 title="Report"
               >
                 <Flag size={16} />

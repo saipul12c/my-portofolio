@@ -1,7 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Image, UserCheck, Tag, ChevronLeft, ChevronRight, AlertCircle } from "lucide-react";
-import albums from "../../../data/gallery/albums.json";
+
+// load albums lazily to reduce bundle size
+
 
 // 🔍 Filter helper function
 function filterAlbums(albumList, searchTerm = "", selectedTags = []) {
@@ -29,14 +31,26 @@ function filterAlbums(albumList, searchTerm = "", selectedTags = []) {
 
 export default function GalleryAlbums({ onSelect, filterSettings = {}, onFilteredDataChange }) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [albums, setAlbums] = useState([]);
   const albumsPerPage = 9;
   
   const { searchTerm = "", tags: selectedTags = [] } = filterSettings;
 
+  useEffect(() => {
+    let mounted = true;
+    import("../../../data/gallery/albums.json")
+      .then((m) => {
+        if (!mounted) return;
+        setAlbums(m.default || []);
+      })
+      .catch((err) => console.error("Failed to load albums.json", err));
+    return () => { mounted = false; };
+  }, []);
+
   // 🔍 Filter albums based on search and tags
   const filteredAlbums = useMemo(() => {
     return filterAlbums(albums, searchTerm, selectedTags);
-  }, [searchTerm, selectedTags]);
+  }, [albums, searchTerm, selectedTags]);
 
   // 📢 Notify parent of filtered data (use effect to avoid updates during render)
   useEffect(() => {

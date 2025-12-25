@@ -21,7 +21,7 @@ const ComingSoon = () => {
   const [email, setEmail] = useState('');
 
   const launchDate = new Date(currentConfig.launchDate).getTime();
-  const { days, hours, minutes, seconds } = useCountdown(launchDate);
+  const { years, days, hours, minutes, seconds } = useCountdown(launchDate);
 
   const handleNewsletterSubmit = (e) => {
     e.preventDefault();
@@ -39,6 +39,7 @@ const ComingSoon = () => {
         return (
           <MainContent
             currentConfig={currentConfig}
+            years={years}
             days={days}
             hours={hours}
             minutes={minutes}
@@ -68,10 +69,10 @@ const ComingSoon = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-12 text-center"
         >
-          <h1 className="text-5xl font-extrabold bg-gradient-to-r from-orange-400 via-red-400 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-orange-400 via-red-400 to-purple-500 bg-clip-text text-transparent">
             {currentConfig.brand.name}
           </h1>
-          <p className="text-gray-400 mt-2 text-lg">{currentConfig.brand.slogan}</p>
+          <p className="text-gray-400 mt-2 text-base sm:text-lg">{currentConfig.brand.slogan}</p>
         </motion.div>
 
         <NavigationTabs

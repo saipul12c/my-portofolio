@@ -73,7 +73,8 @@ export function useGalleryData() {
         id: item.id,
         title: item.title || item.desc || `${item.type} ${item.id}`,
         mediaType: item.type,
-        url: `/kenangan/${item.type}/${item.id}`,
+        // normalize route segments to match app routes (short -> shorts, image -> images, video -> videos, album -> albums)
+        url: `/gallery/${{ short: "shorts", image: "images", video: "videos", album: "albums" }[item.type] || item.type}/${item.id}`,
       }));
   };
 

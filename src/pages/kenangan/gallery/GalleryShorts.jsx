@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Film, Calendar, MapPin, Tag, Play, AlertCircle } from "lucide-react";
-import shortsData from "../../../data/gallery/shorts.json";
+
+// load shorts data lazily to avoid bundling large json into main chunk
+
 
 // 🔀 Acak urutan data
 function shuffleArray(array) {
@@ -46,12 +48,24 @@ export default function GalleryShorts({ onSelect, filterSettings = {}, onFiltere
   const ITEMS_PER_PAGE = 3;
   const MAX_PAGES_DISPLAY = 10;
   const [currentPage, setCurrentPage] = useState(1);
+  const [shortsData, setShortsData] = useState([]);
   
   const { searchTerm = "", tags: selectedTags = [] } = filterSettings;
 
+  useEffect(() => {
+    let mounted = true;
+    import("../../../data/gallery/shorts.json")
+      .then((m) => {
+        if (!mounted) return;
+        setShortsData(m.default || []);
+      })
+      .catch((err) => console.error("Failed to load shorts.json", err));
+    return () => { mounted = false; };
+  }, []);
+
   // 🔄 Filter hanya video lokal & bagi data per halaman
   const { pages, allFilteredData } = useMemo(() => {
-    const localVideos = shortsData.filter((short) => isLocalVideo(short.src));
+    const localVideos = (shortsData || []).filter((short) => isLocalVideo(short.src));
     const filtered = filterShorts(localVideos, searchTerm, selectedTags);
     const shuffled = shuffleArray(filtered);
     const totalPages = Math.ceil(shuffled.length / ITEMS_PER_PAGE);
@@ -60,7 +74,7 @@ export default function GalleryShorts({ onSelect, filterSettings = {}, onFiltere
       chunks.push(shuffled.slice(i * ITEMS_PER_PAGE, (i + 1) * ITEMS_PER_PAGE));
     }
     return { pages: chunks, allFilteredData: filtered };
-  }, [searchTerm, selectedTags]);
+  }, [shortsData, searchTerm, selectedTags]);
 
   // 📢 Notify parent of filtered data (use effect to avoid updates during render)
   useEffect(() => {
@@ -116,8 +130,8 @@ export default function GalleryShorts({ onSelect, filterSettings = {}, onFiltere
                       src={short.src}
                       muted
                       loop
-                      autoPlay
                       playsInline
+                      preload="none"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
 

@@ -1,9 +1,17 @@
 import { useParams, Link } from "react-router-dom";
-import albums from "../../data/gallery/albums.json";
+import { useGalleryData } from "./hooks/useGalleryData";
 
 export default function AlbumDetail() {
   const { id } = useParams();
-  const item = albums.find(a => String(a.id) === String(id));
+  const { allMedia, loading } = useGalleryData();
+
+  if (loading) return (
+    <main className="min-h-screen flex items-center justify-center p-8">
+      <div className="max-w-xl bg-[#0b0b0b] p-8 rounded-2xl text-gray-300">Memuat...</div>
+    </main>
+  );
+
+  const item = allMedia.find(a => String(a.id) === String(id) && a.type === "album");
 
   if (!item) return (
     <main className="min-h-screen flex items-center justify-center p-8">
@@ -18,9 +26,11 @@ export default function AlbumDetail() {
         <p className="text-gray-300 text-sm sm:text-base mb-4">{item.desc}</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          {item.src.map((s, idx) => (
+          {Array.isArray(item.src) ? item.src.map((s, idx) => (
             <img key={idx} src={s} className="w-full h-48 sm:h-56 lg:h-64 rounded-lg object-cover" loading="lazy" />
-          ))}
+          )) : (
+            <img src={item.src} className="w-full h-48 sm:h-56 lg:h-64 rounded-lg object-cover" loading="lazy" />
+          )}
         </div>
 
         <div>

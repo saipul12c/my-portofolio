@@ -9,12 +9,18 @@ export function GeneralSettings({ settings, handleSave }) {
           <select 
             value={settings.theme}
             onChange={(e) => handleSave("theme", e.target.value)}
-            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+            className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:border-transparent"
+            style={{ background: 'var(--saipul-surface)', color: 'var(--saipul-text)', borderColor: 'var(--saipul-border)' }}
           >
             <option value="system">System Auto</option>
             <option value="dark">Dark Mode</option>
             <option value="light">Light Mode</option>
             <option value="auto">Auto Switch</option>
+            <option value="sepia">Sepia (Warm)</option>
+            <option value="solar">Solar (Soft)</option>
+            <option value="midnight">Midnight (Deep)</option>
+            <option value="soft">Soft Light</option>
+            <option value="contrast">High Contrast</option>
           </select>
         </div>
 
@@ -23,13 +29,19 @@ export function GeneralSettings({ settings, handleSave }) {
           <select 
             value={settings.accent}
             onChange={(e) => handleSave("accent", e.target.value)}
-            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+            className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:border-transparent"
+            style={{ background: 'var(--saipul-surface)', color: 'var(--saipul-text)', borderColor: 'var(--saipul-border)' }}
           >
             <option value="cyan">Cyan</option>
+            <option value="blue">Blue</option>
             <option value="purple">Purple</option>
             <option value="green">Green</option>
             <option value="orange">Orange</option>
-            <option value="indigo">Indigo</option>
+            <option value="teal">Teal</option>
+            <option value="rose">Rose</option>
+            <option value="lime">Lime</option>
+            <option value="amber">Amber</option>
+            <option value="pink">Pink</option>
           </select>
         </div>
       </div>

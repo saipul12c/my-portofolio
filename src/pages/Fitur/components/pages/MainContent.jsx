@@ -5,6 +5,7 @@ import { containerVariants, itemVariants } from '../../utils/animations';
 
 const MainContent = ({ 
   currentConfig, 
+  years,
   days, 
   hours, 
   minutes, 
@@ -16,7 +17,7 @@ const MainContent = ({
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    className="bg-gradient-to-br from-orange-500/20 via-purple-500/10 to-red-500/20 border border-orange-500/30 backdrop-blur-xl rounded-2xl p-8 hover:shadow-2xl transition-all group relative overflow-hidden"
+    className="bg-gradient-to-br from-orange-500/20 via-purple-500/10 to-red-500/20 border border-orange-500/30 backdrop-blur-xl rounded-2xl p-4 sm:p-6 md:p-8 hover:shadow-2xl transition-all group relative overflow-hidden"
   >
     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 transform scale-150 opacity-10"></div>
 
@@ -27,7 +28,7 @@ const MainContent = ({
             {React.createElement(getIconComponent(currentConfig.brand.logo), { className: "w-8 h-8 text-orange-400" })}
           </div>
           <div>
-            <h2 className="text-4xl font-bold text-white">{currentConfig.content.title}</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">{currentConfig.content.title}</h2>
             <p className="text-orange-300 text-sm mt-1">{currentConfig.brand.slogan}</p>
           </div>
         </div>
@@ -69,19 +70,20 @@ const MainContent = ({
       )}
 
       {/* Countdown Timer */}
-      <div className="bg-black/30 rounded-xl p-6 border border-orange-500/20">
+      <div className="bg-black/30 rounded-xl p-4 sm:p-6 border border-orange-500/20">
         <div className="flex items-center gap-2 justify-center mb-4">
           {React.createElement(getIconComponent(currentConfig.countdownLabels.icon), { className: "w-4 h-4 text-orange-300" })}
           <p className="text-sm text-orange-300 font-semibold text-center">
             ⏰ Launch Countdown
           </p>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
           {[
-            { value: days, label: currentConfig.countdownLabels.days },
-            { value: hours, label: currentConfig.countdownLabels.hours },
-            { value: minutes, label: currentConfig.countdownLabels.minutes },
-            { value: seconds, label: currentConfig.countdownLabels.seconds }
+            { value: years, label: (currentConfig.countdownLabels && currentConfig.countdownLabels.years) || 'Years' },
+            { value: days, label: (currentConfig.countdownLabels && currentConfig.countdownLabels.days) || 'Days' },
+            { value: hours, label: (currentConfig.countdownLabels && currentConfig.countdownLabels.hours) || 'Hours' },
+            { value: minutes, label: (currentConfig.countdownLabels && currentConfig.countdownLabels.minutes) || 'Minutes' },
+            { value: seconds, label: (currentConfig.countdownLabels && currentConfig.countdownLabels.seconds) || 'Seconds' }
           ].map((item, index) => (
             <motion.div
               key={index}

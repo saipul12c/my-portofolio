@@ -470,8 +470,8 @@ export default function LaunchingPage() {
           animate="visible"
         >
           {[
-            { icon: <FaInstagram />, href: "https://instagram.com/username" },
-            { icon: <FaGithub />, href: "https://github.com/username" },
+            { icon: <FaInstagram />, href: "https://instagram.com/saipul16_" },
+            { icon: <FaGithub />, href: "https://github.com/saipul12c" },
             { icon: <FaLinkedin />, href: "https://linkedin.com/in/username" },
             { icon: <FaYoutube />, href: "https://youtube.com/@username" },
           ].map((item, i) => (

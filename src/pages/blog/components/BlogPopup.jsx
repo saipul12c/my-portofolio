@@ -1,9 +1,13 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FiX, FiCheckCircle, FiUser, FiBookmark, FiShare2 } from "react-icons/fi";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { useState, useRef } from 'react';
 import { 
   getLabelColor, 
   getTagColor, 
   cleanContent, 
+  markdownToHtml,
   formatNumber, 
   formatDate,
   STATS_CONFIG 
@@ -26,6 +30,7 @@ export default function BlogPopup({
     >
       <div
         onClick={(e) => e.stopPropagation()}
+        data-popup-slug={selectedPost?.slug}
         className="relative bg-gradient-to-br from-gray-900 to-gray-800 backdrop-blur-2xl rounded-2xl sm:rounded-3xl shadow-2xl 
           w-full max-w-4xl sm:max-w-5xl 
           max-h-[90vh] sm:max-h-[95vh] 
@@ -39,7 +44,7 @@ export default function BlogPopup({
           onHideTooltip={onHideTooltip}
           showTooltip={showTooltip}
         />
-        <PopupContent post={selectedPost} />
+        <PopupContent post={selectedPost} onClosePopup={onClosePopup} />
       </div>
     </div>
   );
@@ -155,13 +160,13 @@ function AuthorButton({ author, slug, onAuthorClick, onShowTooltip, onHideToolti
   );
 }
 
-function PopupContent({ post }) {
+function PopupContent({ post, onClosePopup }) {
   return (
     <div className="p-6 sm:p-8 overflow-y-auto flex-grow">
       <StatsGrid post={post} />
       <CategorySection post={post} />
       <ExcerptSection excerpt={post.excerpt} />
-      <ContentSection content={post.content} />
+      <ContentSection content={post.content} onClosePopup={onClosePopup} post={post} />
       <TagsSection tags={post.tags} />
       <ActionButtons slug={post.slug} />
       <PostInfo post={post} />
@@ -172,17 +177,20 @@ function PopupContent({ post }) {
 function StatsGrid({ post }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
-      {STATS_CONFIG.map((stat, index) => (
-        <div key={index} className="flex items-center justify-center p-3 sm:p-4 bg-gray-800/40 rounded-xl border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 group">
-          <div className="text-center">
-            <stat.icon className={`w-6 h-6 sm:w-7 sm:h-7 text-${stat.color}-400 mb-2 mx-auto group-hover:scale-110 transition-transform`} />
-            <span className="text-lg sm:text-xl font-bold text-white block">
-              {formatNumber(post[stat.valueKey] || 0)}
-            </span>
-            <span className="text-xs text-gray-400">{stat.label}</span>
+      {STATS_CONFIG.map((stat, index) => {
+        const Icon = stat.icon;
+        return (
+          <div key={index} className="flex items-center justify-center p-3 sm:p-4 bg-gray-800/40 rounded-xl border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 group">
+            <div className="text-center">
+              <Icon className={`w-6 h-6 sm:w-7 sm:h-7 text-${stat.color}-400 mb-2 mx-auto group-hover:scale-110 transition-transform`} />
+              <span className="text-lg sm:text-xl font-bold text-white block">
+                {formatNumber(post[stat.valueKey] || 0)}
+              </span>
+              <span className="text-xs text-gray-400">{stat.label}</span>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -223,7 +231,73 @@ function ExcerptSection({ excerpt }) {
   );
 }
 
-function ContentSection({ content }) {
+function ContentSection({ content, onClosePopup, post }) {
+  const navigate = useNavigate();
+  const [visibleWords, setVisibleWords] = useState(100);
+  const [clickCount, setClickCount] = useState(0); // max 2 clicks
+
+  const remainingRef = useRef(visibleWords);
+  const truncatedRef = useRef(false);
+
+  const totalWords = content ? String(content).split(/\s+/).filter(Boolean).length : 0;
+
+  const handleShowMore = () => {
+    if (clickCount >= 2) return;
+    const nextVisible = Math.min(300, visibleWords + 100);
+    const nextCount = clickCount + 1;
+    setVisibleWords(nextVisible);
+    setClickCount(nextCount);
+
+    if (nextCount >= 2) {
+      if (typeof onClosePopup === 'function') onClosePopup();
+      setTimeout(() => {
+        const targetSlug = post?.slug || document.querySelector('[data-popup-slug]')?.getAttribute('data-popup-slug') || '';
+        if (targetSlug) {
+          navigate(`/blog/${targetSlug}`, { state: { scrollToEnd: true } });
+        }
+      }, 150);
+    }
+  };
+
+  // helper: render inline mdast nodes while consuming the remaining word budget
+  const renderInline = (nodes) => {
+    if (!nodes || !Array.isArray(nodes)) return null;
+    return nodes.map((child, idx) => {
+      if (remainingRef.current <= 0) return null;
+      switch (child.type) {
+        case 'text': {
+          const words = String(child.value || '').split(/\s+/).filter(Boolean);
+          if (words.length === 0) return null;
+          if (words.length <= remainingRef.current) {
+            remainingRef.current -= words.length;
+            return words.join(' ') + (idx < nodes.length - 1 ? ' ' : '');
+          }
+          const take = remainingRef.current;
+          const part = words.slice(0, take).join(' ');
+          remainingRef.current = 0;
+          truncatedRef.current = true;
+          return part + '...';
+        }
+        case 'emphasis':
+          return <em key={idx} className="not-italic italic">{renderInline(child.children)}</em>;
+        case 'strong':
+          return <strong key={idx} className="font-semibold">{renderInline(child.children)}</strong>;
+        case 'link':
+          return <a key={idx} href={child.url} className="text-cyan-300 underline" target="_blank" rel="noopener noreferrer">{renderInline(child.children)}</a>;
+        case 'inlineCode':
+          return <code key={idx} className="rounded bg-gray-900 px-1 py-0.5">{child.value}</code>;
+        case 'break':
+          return <br key={idx} />;
+        default:
+          if (child.children) return <span key={idx}>{renderInline(child.children)}</span>;
+          return null;
+      }
+    });
+  };
+
+  // ensure remaining counter resets each render
+  remainingRef.current = visibleWords;
+  truncatedRef.current = false;
   return (
     <div className="mb-6">
       <div className="flex items-center gap-2 mb-4">
@@ -232,19 +306,71 @@ function ContentSection({ content }) {
       </div>
       
       <div className="bg-gray-800/30 rounded-xl p-5 border border-gray-700/50">
-        <div className="prose prose-invert max-w-none prose-sm sm:prose-base">
-          <div className="text-gray-200 leading-relaxed whitespace-pre-line text-sm sm:text-base space-y-4">
-            {cleanContent(content)
-              .split('\n\n')
-              .map((paragraph, index) => (
-                paragraph.trim() && (
-                  <p key={index} className="mb-4 last:mb-0 text-justify leading-7">
-                    {paragraph}
-                  </p>
-                )
-              ))
-            }
-          </div>
+        <div className="max-w-none">
+          <ReactMarkdown remarkPlugins={[remarkGfm]} components={{
+            // Headings and paragraphs: render inline children while consuming word budget
+            h1: ({node, ...props}) => {
+              const children = renderInline(node.children);
+              if (!children || (Array.isArray(children) && children.length === 0)) return null;
+              return <h1 className="mt-4 mb-2 font-bold text-white text-2xl" {...props}>{children}</h1>;
+            },
+            h2: ({node, ...props}) => {
+              const children = renderInline(node.children);
+              if (!children || (Array.isArray(children) && children.length === 0)) return null;
+              return <h2 className="mt-3 mb-2 font-semibold text-white text-xl" {...props}>{children}</h2>;
+            },
+            h3: ({node, ...props}) => {
+              const children = renderInline(node.children);
+              if (!children || (Array.isArray(children) && children.length === 0)) return null;
+              return <h3 className="mt-3 mb-2 font-semibold text-white text-lg" {...props}>{children}</h3>;
+            },
+            p: ({node, ...props}) => {
+              const children = renderInline(node.children);
+              if (!children || (Array.isArray(children) && children.length === 0)) return null;
+              return <p className="mb-4 text-gray-200 leading-7 text-sm sm:text-base" {...props}>{children}</p>;
+            },
+            li: ({node, ...props}) => {
+              const parts = node.children.map((cn, i) => {
+                if (cn.type === 'paragraph') return <span key={i}>{renderInline(cn.children)}</span>;
+                if (cn.type === 'list') {
+                  const Tag = cn.ordered ? 'ol' : 'ul';
+                  return (
+                    <Tag key={i} className="pl-6 mb-2">
+                      {cn.children.map((liNode, liIdx) => (
+                        <li key={liIdx} className="mb-1 text-gray-200 leading-6">{renderInline(liNode.children)}</li>
+                      ))}
+                    </Tag>
+                  );
+                }
+                return null;
+              });
+              if (!parts || parts.length === 0) return null;
+              return <li className="mb-1 text-gray-200 leading-6" {...props}>{parts}</li>;
+            },
+            a: ({node, ...props}) => <a className="text-cyan-300 underline" {...props} />,
+            code: ({inline, className, children, ...props}) =>
+              inline ? (
+                <code className="rounded bg-gray-900 px-1 py-0.5" {...props}>{children}</code>
+              ) : (
+                <pre className="bg-gray-900 p-3 rounded overflow-auto"><code {...props}>{children}</code></pre>
+              ),
+          }}>
+            {cleanContent(content)}
+          </ReactMarkdown>
+
+          {/* Show more button */}
+          {totalWords > visibleWords && (
+            <div className="mt-4 flex items-center justify-center">
+              <button
+                onClick={handleShowMore}
+                data-popup-slug={undefined}
+                className={`px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-medium transition-all duration-200 ${clickCount >= 2 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={clickCount >= 2}
+              >
+                Tampilkan lebih banyak ({Math.min(2 - clickCount, 2)} tersisa)
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

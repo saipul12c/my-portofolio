@@ -15,7 +15,7 @@ export function Suggestions({ suggestions = [], setInput, onSelect }) {
             key={index}
             type="button"
             onClick={() => handleClick(suggestion)}
-            className="text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded transition border border-gray-600 max-w-[45%] truncate"
+            className="saipul-suggestion-btn text-xs px-2 py-1 rounded transition border max-w-[45%] truncate"
             title={suggestion}
           >
             {suggestion}

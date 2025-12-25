@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Image, UserCheck, Tag, AlertCircle } from "lucide-react";
-import imagesData from "../../../data/gallery/images.json";
+
+// load images lazily to avoid large bundle and duplicate static imports
+
 
 // 🔀 Fungsi acak (Fisher-Yates)
 function shuffleArray(array) {
@@ -40,8 +42,23 @@ function filterImages(images, searchTerm = "", selectedTags = []) {
 export default function GalleryImages({ onSelect, filterSettings = {}, onFilteredDataChange }) {
   const ITEMS_PER_PAGE = 10;
   const [currentPage, setCurrentPage] = useState(1);
+  const [imagesData, setImagesData] = useState([]);
   
   const { searchTerm = "", tags: selectedTags = [] } = filterSettings;
+
+  // load data lazily (code-splitting) to avoid large initial bundle
+  useEffect(() => {
+    let mounted = true;
+    import("../../../data/gallery/images.json")
+      .then((m) => {
+        if (!mounted) return;
+        setImagesData(m.default || []);
+      })
+      .catch((err) => {
+        console.error("Failed to load images.json", err);
+      });
+    return () => { mounted = false; };
+  }, []);
 
   // 🔄 Acak data & bagi ke halaman
   const { pages, allFilteredData } = useMemo(() => {
@@ -53,7 +70,7 @@ export default function GalleryImages({ onSelect, filterSettings = {}, onFiltere
       chunks.push(shuffled.slice(i * ITEMS_PER_PAGE, (i + 1) * ITEMS_PER_PAGE));
     }
     return { pages: chunks, allFilteredData: filtered };
-  }, [searchTerm, selectedTags]);
+  }, [imagesData, searchTerm, selectedTags]);
 
   // 📢 Notify parent of filtered data (use effect to avoid updates during render)
   useEffect(() => {

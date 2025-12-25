@@ -1,9 +1,17 @@
 import { useParams, Link } from "react-router-dom";
-import images from "../../data/gallery/images.json";
+import { useGalleryData } from "./hooks/useGalleryData";
 
 export default function ImageDetail() {
   const { id } = useParams();
-  const item = images.find(i => String(i.id) === String(id));
+  const { allMedia, loading } = useGalleryData();
+
+  if (loading) return (
+    <main className="min-h-screen flex items-center justify-center p-8">
+      <div className="max-w-xl bg-[#0b0b0b] p-8 rounded-2xl text-gray-300">Memuat...</div>
+    </main>
+  );
+
+  const item = allMedia.find(i => String(i.id) === String(id) && i.type === "image");
 
   if (!item) return (
     <main className="min-h-screen flex items-center justify-center p-8">
@@ -16,7 +24,7 @@ export default function ImageDetail() {
       <div className="max-w-5xl mx-auto bg-[#0f1724] rounded-2xl overflow-hidden shadow-lg p-4 sm:p-6">
         <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
           <div className="w-full lg:w-1/2">
-            <img src={item.src} alt={item.title} className="w-full h-auto max-h-[60vh] lg:max-h-[70vh] rounded-lg object-contain" />
+            <img src={item.src} alt={item.title} className="w-full h-auto max-h-[60vh] lg:max-h-[70vh] rounded-lg object-contain" loading="lazy" />
           </div>
           <div className="w-full lg:w-1/2 flex flex-col gap-4">
             <h1 className="text-xl sm:text-2xl font-bold">{item.title}</h1>

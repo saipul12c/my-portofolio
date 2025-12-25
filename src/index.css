@@ -43,3 +43,82 @@ html, body { overflow-x: hidden; }
 input::placeholder {
   transition: opacity 0.3s ease;
 }
+
+/* Scoped rules for settings modal dropdowns to ensure contrast across themes */
+.saipul-settings-root select,
+.saipul-settings-root select option {
+  background: var(--saipul-surface) !important;
+  color: var(--saipul-text) !important;
+  border-color: var(--saipul-border) !important;
+}
+
+/* Enhance focus/hover visibility for native selects inside modal */
+.saipul-settings-root select:focus {
+  outline: 2px solid rgba(0,0,0,0.08);
+  box-shadow: 0 0 0 3px var(--saipul-button-hover);
+}
+
+/* Chat UI styling driven by saipul variables */
+.saipul-chat-root {
+  --saipul-inner-surface: color-mix(in srgb, var(--saipul-surface) 92%, black 0%);
+}
+
+.saipul-chat-root .saipul-chat-message {
+  border: 1px solid var(--saipul-border);
+}
+
+.saipul-chat-root .saipul-action-btn {
+  background: var(--saipul-surface);
+  color: var(--saipul-text);
+  transition: background-color 0.12s ease, transform 0.08s ease;
+}
+.saipul-chat-root .saipul-action-btn:hover {
+  background: var(--saipul-button-hover);
+  transform: translateY(-1px);
+}
+
+.saipul-chat-root .saipul-chat-message a {
+  color: var(--saipul-accent);
+}
+
+.saipul-chat-root .saipul-chat-message ::selection {
+  background: var(--saipul-accent-2);
+  color: var(--saipul-surface);
+}
+
+/* Suggestions button */
+.saipul-suggestion-btn {
+  background: color-mix(in srgb, var(--saipul-surface) 92%, black 0%);
+  color: var(--saipul-text);
+  border: 1px solid var(--saipul-border);
+}
+.saipul-suggestion-btn:hover { background: var(--saipul-button-hover); }
+
+/* Help button item */
+.saipul-help-item { color: var(--saipul-text); }
+.saipul-help-item:hover { background: color-mix(in srgb, var(--saipul-surface) 88%, var(--saipul-accent) 12%); }
+.saipul-help-badge { box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+.saipul-help-icon { color: var(--saipul-surface) !important; }
+.saipul-presence-badge { background: var(--saipul-accent); border: 2px solid var(--saipul-border); }
+.saipul-online-dot { background: var(--saipul-accent); border: 1px solid var(--saipul-border); width: .5rem; height: .5rem; }
+
+/* Settings panels/buttons inside modal */
+.saipul-settings-root .saipul-panel { background: color-mix(in srgb, var(--saipul-surface) 96%, black 0%); border: 1px solid var(--saipul-border); }
+.saipul-settings-root .saipul-row { background: color-mix(in srgb, var(--saipul-surface) 96%, black 0%); border: 1px solid var(--saipul-border); }
+.saipul-settings-root .saipul-btn { background: transparent; padding: .5rem 1rem; border-radius: .5rem; }
+.saipul-settings-root .saipul-btn-export:hover { background: var(--saipul-button-hover); }
+.saipul-settings-root .saipul-btn-import:hover { background: var(--saipul-button-hover); }
+.saipul-settings-root .saipul-btn-danger:hover { background: var(--saipul-button-hover); }
+.saipul-settings-root .saipul-btn-warning:hover { background: var(--saipul-button-hover); }
+
+/* Toggle and input overrides inside modal */
+.saipul-settings-root input, .saipul-settings-root textarea {
+  background: var(--saipul-surface); color: var(--saipul-text); border: 1px solid var(--saipul-border);
+}
+
+.saipul-suggestion-btn {
+  background: color-mix(in srgb, var(--saipul-surface) 80%, var(--saipul-accent) 20%);
+  border-color: color-mix(in srgb, var(--saipul-border) 60%, var(--saipul-accent) 20%);
+  color: var(--saipul-text);
+}
+.saipul-suggestion-btn:hover { background: var(--saipul-button-hover); color: var(--saipul-surface); }

@@ -73,3 +73,116 @@ export const STATS_CONFIG = [
   { icon: FiMessageSquare, valueKey: 'commentCount', label: 'Comments', color: 'green' },
   { icon: FiStar, valueKey: 'rating', label: 'Rating', color: 'yellow' }
 ];
+
+// Minimal Markdown -> HTML renderer (supports headings, paragraphs, lists, bold, italic, code, links)
+const escapeHtml = (str) =>
+  String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+
+const inlineFormat = (text) => {
+  if (!text) return '';
+  // escape first
+  let t = escapeHtml(text);
+  // links [text](url)
+  t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+  // bold **text**
+  t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  // italic *text*
+  t = t.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  // inline code `code`
+  t = t.replace(/`(.+?)`/g, '<code class="rounded bg-gray-900 px-1 py-0.5">$1</code>');
+  return t;
+};
+
+export const markdownToHtml = (raw) => {
+  if (!raw) return '';
+  const content = String(raw).replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const lines = content.split('\n');
+
+  let html = '';
+  let paragraphBuffer = [];
+  const listStack = []; // [{type: 'ul'|'ol', indent}]
+
+  const flushParagraph = () => {
+    if (paragraphBuffer.length === 0) return;
+    const txt = paragraphBuffer.join(' ').trim();
+    if (txt) html += `<p>${inlineFormat(txt)}</p>`;
+    paragraphBuffer = [];
+  };
+
+  const closeListsTo = (targetIndent) => {
+    while (listStack.length && listStack[listStack.length - 1].indent >= targetIndent) {
+      const last = listStack.pop();
+      html += `</${last.type}>`;
+    }
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (/^\s*$/.test(line)) {
+      flushParagraph();
+      closeListsTo(0);
+      continue;
+    }
+
+    // Heading
+    const hMatch = line.match(/^\s*(#{1,6})\s+(.*)$/);
+    if (hMatch) {
+      flushParagraph();
+      closeListsTo(0);
+      const level = hMatch[1].length;
+      const text = inlineFormat(hMatch[2].trim());
+      html += `<h${level} class="mt-4 mb-2 font-bold text-white">${text}</h${level}>`;
+      continue;
+    }
+
+    // List item
+    const listMatch = line.match(/^(\s*)([-*+]|\d+\.)\s+(.*)$/);
+    if (listMatch) {
+      const indentSpaces = listMatch[1].length;
+      const marker = listMatch[2];
+      const isOrdered = /\d+\./.test(marker);
+      const type = isOrdered ? 'ol' : 'ul';
+      const itemText = listMatch[3];
+
+      const indentLevel = Math.floor(indentSpaces / 2);
+
+      // open nested lists if needed
+      if (!listStack.length || indentLevel > listStack[listStack.length - 1].indent) {
+        // open new list
+        html += `<${type} class="pl-6 mb-2">`;
+        listStack.push({ type, indent: indentLevel });
+      } else if (indentLevel < listStack[listStack.length - 1].indent) {
+        // close until matching
+        closeListsTo(indentLevel);
+        // if top list type differs, open new
+        if (!listStack.length || listStack[listStack.length - 1].type !== type) {
+          html += `<${type} class="pl-6 mb-2">`;
+          listStack.push({ type, indent: indentLevel });
+        }
+      } else {
+        // same level, if type differs replace
+        if (listStack[listStack.length - 1].type !== type) {
+          closeListsTo(indentLevel);
+          html += `<${type} class="pl-6 mb-2">`;
+          listStack.push({ type, indent: indentLevel });
+        }
+      }
+
+      html += `<li class="mb-1 text-gray-200 leading-6">${inlineFormat(itemText.trim())}</li>`;
+      continue;
+    }
+
+    // Normal paragraph line
+    paragraphBuffer.push(line.trim());
+  }
+
+  flushParagraph();
+  closeListsTo(0);
+
+  return html;
+};

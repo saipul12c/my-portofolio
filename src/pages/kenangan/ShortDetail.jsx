@@ -1,9 +1,17 @@
 import { useParams, Link } from "react-router-dom";
-import shorts from "../../data/gallery/shorts.json";
+import { useGalleryData } from "./hooks/useGalleryData";
 
 export default function ShortDetail() {
   const { id } = useParams();
-  const item = shorts.find(s => String(s.id) === String(id));
+  const { allMedia, loading } = useGalleryData();
+
+  if (loading) return (
+    <main className="min-h-screen flex items-center justify-center p-8">
+      <div className="max-w-xl bg-[#0b0b0b] p-8 rounded-2xl text-gray-300">Memuat...</div>
+    </main>
+  );
+
+  const item = allMedia.find(s => String(s.id) === String(id) && s.type === "short");
 
   if (!item) return (
     <main className="min-h-screen flex items-center justify-center p-8">

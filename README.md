@@ -472,7 +472,7 @@ Ikuti langkah-langkah berikut untuk menjalankan proyek ini di lingkungan lokal:
 
 1. **Clone repository**
    ```bash
-   git clone https://github.com/username/portfolio-website.git
+   git clone https://github.com/saipul12c/portfolio-website.git
    cd portfolio-website
    ```
 
@@ -518,7 +518,7 @@ Jika Anda memiliki pertanyaan atau ingin berkolaborasi, silakan hubungi saya mel
 
 - **Email**: your.email@example.com
 - **LinkedIn**: [Your LinkedIn Profile](https://linkedin.com/in/yourprofile)
-- **GitHub**: [Your GitHub Profile](https://github.com/yourusername)
+- **GitHub**: [Your GitHub Profile](https://github.com/saipul12c)
 
 ## 📄 Lisensi
 

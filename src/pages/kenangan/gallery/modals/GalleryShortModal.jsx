@@ -12,7 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import GalleryShareBar from "../GalleryShareBar";
 
@@ -183,20 +183,22 @@ export default function GalleryShortModal({
                     </div>
                   ))}
 
-                  <div className="flex gap-2 mt-2">
-                    <button
-                      onClick={() => navigate(`/gallery/shorts/${selectedMedia.id}`)}
-                      className="text-sm px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30"
-                    >
-                      Lihat detail
-                    </button>
-                    <button
-                      onClick={() => navigate(`/gallery/shorts/${selectedMedia.id}`)}
-                      className="text-sm px-3 py-1 rounded-lg border border-white/10 text-gray-300 hover:bg-white/5"
-                    >
-                      Lihat semua komentar
-                    </button>
-                  </div>
+                    <div className="flex gap-2 mt-2">
+                      <Link
+                        to={`/gallery/shorts/${selectedMedia.id}`}
+                        onClick={() => setSelectedMedia(null)}
+                        className="text-sm px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 text-center"
+                      >
+                        Lihat detail
+                      </Link>
+                      <Link
+                        to={`/gallery/shorts/${selectedMedia.id}`}
+                        onClick={() => setSelectedMedia(null)}
+                        className="text-sm px-3 py-1 rounded-lg border border-white/10 text-gray-300 hover:bg-white/5 text-center"
+                      >
+                        Lihat semua komentar
+                      </Link>
+                    </div>
                 </div>
               </div>
             )}

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import blogs from "../../data/blog/data.json";
 import AiOverview from "./components/pencarian/AI/AiOverview";
 import SearchBar from "./components/pencarian/SearchBar"; 
@@ -23,6 +23,7 @@ export default function Blog() {
   const [showTooltip, setShowTooltip] = useState(null);
   
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Custom hooks untuk data processing
   const processedBlogs = useBlogData(blogs);
@@ -63,6 +64,25 @@ export default function Blog() {
     document.body.style.overflow = "auto";
   };
 
+  // Sync search term from URL ?search=... so clicking links updates the search box
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const q = params.get("search") || "";
+    if (q !== searchTerm) {
+      setSearchTerm(q);
+      setCurrentPage(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search]);
+
+  // Centralized handler for searches initiated from AI overview
+  const handleAiSearch = (text) => {
+    if (!text) return;
+    setSearchTerm(text);
+    setCurrentPage(1);
+    navigate(`/blog?search=${encodeURIComponent(text)}`);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[var(--color-gray-900)] via-[var(--color-gray-800)] to-[var(--color-gray-900)]">
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20 text-gray-50 relative" style={{ zIndex: 1 }}>
@@ -81,9 +101,14 @@ export default function Blog() {
         />
 
         {/* AI Overview */}
-        {searchTerm && filteredBlogs.length > 0 && (
+        {searchTerm && (
           <div className="mb-8 sm:mb-10">
-            <AiOverview searchTerm={searchTerm} filteredBlogs={filteredBlogs} />
+            <AiOverview
+              searchTerm={searchTerm}
+              filteredBlogs={filteredBlogs}
+              allBlogs={processedBlogs}
+              onSearch={handleAiSearch}
+            />
           </div>
         )}
 
