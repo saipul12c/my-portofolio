@@ -205,12 +205,12 @@ export default function App() {
                 {/* Redirects: direct certain paths to /coming-soon
                   Disabled temporarily to re-enable development for these routes.
                   Previous redirect lines are kept here (commented) so nothing is deleted. */}
-                {/* <Route path="/discord" element={<Navigate to="/coming-soon" replace />} /> */}
-                {/* <Route path="/discord/profile" element={<Navigate to="/coming-soon" replace />} /> */}
-                {/* <Route path="/komunitas" element={<Navigate to="/coming-soon" replace />} /> */}
-                {/* <Route path="/streming" element={<Navigate to="/coming-soon" replace />} /> */}
-                {/* <Route path="/login" element={<Navigate to="/coming-soon" replace />} /> */}
-                {/* <Route path="/register" element={<Navigate to="/coming-soon" replace />} /> */}
+                <Route path="/discord" element={<Navigate to="/coming-soon" replace />} />
+                <Route path="/discord/profile" element={<Navigate to="/coming-soon" replace />} />
+                <Route path="/komunitas" element={<Navigate to="/coming-soon" replace />} />
+                <Route path="/streming" element={<Navigate to="/coming-soon" replace />} />
+                <Route path="/login" element={<Navigate to="/coming-soon" replace />} />
+                <Route path="/register" element={<Navigate to="/coming-soon" replace />} />
 
               {/* 🚀 Halaman Launching — berdiri sendiri */}
               <Route path="/launching" element={<LaunchingPage />} />
