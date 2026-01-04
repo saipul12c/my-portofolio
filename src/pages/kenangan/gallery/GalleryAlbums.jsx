@@ -1,38 +1,15 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Image, UserCheck, Tag, ChevronLeft, ChevronRight, AlertCircle } from "lucide-react";
+import { filterMediaItems } from "../utils/filterHelpers";
+import { GALLERY_CONFIG } from "../utils/constants";
 
 // load albums lazily to reduce bundle size
-
-
-// 🔍 Filter helper function
-function filterAlbums(albumList, searchTerm = "", selectedTags = []) {
-  let filtered = albumList;
-
-  if (searchTerm) {
-    const term = searchTerm.toLowerCase();
-    filtered = filtered.filter(
-      (alb) =>
-        alb.title?.toLowerCase().includes(term) ||
-        alb.desc?.toLowerCase().includes(term) ||
-        alb.category?.toLowerCase().includes(term) ||
-        alb.tags?.some((tag) => tag.toLowerCase().includes(term))
-    );
-  }
-
-  if (selectedTags.length > 0) {
-    filtered = filtered.filter((alb) =>
-      selectedTags.some((tag) => alb.tags?.includes(tag))
-    );
-  }
-
-  return filtered;
-}
 
 export default function GalleryAlbums({ onSelect, filterSettings = {}, onFilteredDataChange }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [albums, setAlbums] = useState([]);
-  const albumsPerPage = 9;
+  const albumsPerPage = GALLERY_CONFIG.ITEMS_PER_PAGE.ALBUMS;
   
   const { searchTerm = "", tags: selectedTags = [] } = filterSettings;
 
@@ -49,7 +26,7 @@ export default function GalleryAlbums({ onSelect, filterSettings = {}, onFiltere
 
   // 🔍 Filter albums based on search and tags
   const filteredAlbums = useMemo(() => {
-    return filterAlbums(albums, searchTerm, selectedTags);
+    return filterMediaItems(albums, searchTerm, selectedTags);
   }, [albums, searchTerm, selectedTags]);
 
   // 📢 Notify parent of filtered data (use effect to avoid updates during render)
@@ -186,6 +163,8 @@ export default function GalleryAlbums({ onSelect, filterSettings = {}, onFiltere
                 onClick={goToPrevPage}
                 disabled={currentPage === 1}
                 className="p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-pink-500/20 hover:border-pink-400/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                aria-label="Go to previous page"
+                aria-disabled={currentPage === 1}
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -201,6 +180,8 @@ export default function GalleryAlbums({ onSelect, filterSettings = {}, onFiltere
                         ? "bg-pink-500 text-white border border-pink-400"
                         : "bg-white/5 border border-white/10 text-gray-300 hover:bg-pink-500/20 hover:border-pink-400/30"
                     }`}
+                    aria-label={`Go to page ${page}`}
+                    aria-current={currentPage === page ? 'page' : undefined}
                   >
                     {page}
                   </button>
@@ -212,6 +193,8 @@ export default function GalleryAlbums({ onSelect, filterSettings = {}, onFiltere
                 onClick={goToNextPage}
                 disabled={currentPage === totalPages}
                 className="p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-pink-500/20 hover:border-pink-400/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                aria-label="Go to next page"
+                aria-disabled={currentPage === totalPages}
               >
                 <ChevronRight className="w-4 h-4" />
               </button>

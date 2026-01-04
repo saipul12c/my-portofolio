@@ -1,9 +1,13 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useGalleryData } from "./hooks/useGalleryData";
+import MediaNotFound from "./components/MediaNotFound";
+import { sanitizeVideoUrl, sanitizeUrl, generateAltText } from "./utils/sanitizers";
 
 export default function VideoDetail() {
   const { id } = useParams();
   const { allMedia, loading } = useGalleryData();
+  const [videoError, setVideoError] = useState(false);
 
   if (loading) return (
     <main className="min-h-screen flex items-center justify-center p-8">
@@ -13,18 +17,28 @@ export default function VideoDetail() {
 
   const item = allMedia.find(v => String(v.id) === String(id) && v.type === "video");
 
-  if (!item) return (
-    <main className="min-h-screen flex items-center justify-center p-8">
-      <div className="max-w-xl bg-[#0b0b0b] p-8 rounded-2xl text-gray-300">Video tidak ditemukan.</div>
-    </main>
-  );
+  if (!item) return <MediaNotFound type="video" id={id} />;
 
   return (
     <main className="min-h-screen p-4 sm:p-6 md:p-8 bg-[var(--color-gray-900)] text-white">
       <div className="max-w-5xl mx-auto bg-[#0f1724] rounded-2xl overflow-hidden shadow-lg p-4 sm:p-6">
         <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
           <div className="w-full lg:w-1/2">
-            <video src={item.src} controls className="w-full h-auto max-h-[60vh] lg:max-h-[70vh] rounded-lg" />
+            {!videoError ? (
+              <video 
+                src={sanitizeVideoUrl(item.src)} 
+                controls 
+                preload="metadata"
+                poster={item.thumbnail || item.poster}
+                onError={() => setVideoError(true)}
+                className="w-full h-auto max-h-[60vh] lg:max-h-[70vh] rounded-lg"
+                aria-label={`Video: ${item.title}`}
+              />
+            ) : (
+              <div className="w-full h-64 bg-red-500/10 border border-red-400/30 rounded-lg flex items-center justify-center">
+                <p className="text-red-300">Video gagal dimuat</p>
+              </div>
+            )}
           </div>
           <div className="w-full lg:w-1/2 flex flex-col gap-4">
             <h1 className="text-xl sm:text-2xl font-bold">{item.title}</h1>
@@ -41,7 +55,12 @@ export default function VideoDetail() {
                 {item.comments_preview && item.comments_preview.length > 0 ? (
                   item.comments_preview.map((c, idx) => (
                     <div key={idx} className="flex items-start gap-3">
-                      <img src={c.avatar} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full" loading="lazy" />
+                      <img 
+                        src={sanitizeUrl(c.avatar, '/default-avatar.jpg')} 
+                        alt={`${c.user} avatar`}
+                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full" 
+                        loading="lazy" 
+                      />
                       <div>
                         <div className="text-sm font-medium text-purple-300">{c.user}</div>
                         <div className="text-sm text-gray-300">{c.comment}</div>

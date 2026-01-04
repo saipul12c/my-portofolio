@@ -1,11 +1,15 @@
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 // 🌐 Komponen global
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedErrorPage from "./components/ProtectedErrorPage";
 import { ErrorProvider } from "./context/ErrorContext";
+
+// 🎬 Loader animasi
+import Loader from "./pages/loader/loader";
 
 // tombol bantuan
 import HelpButton from "./components/HelpButton";
@@ -36,6 +40,7 @@ import ShortDetail from "./pages/kenangan/ShortDetail";
 import ImageDetail from "./pages/kenangan/ImageDetail";
 import VideoDetail from "./pages/kenangan/VideoDetail";
 import AlbumDetail from "./pages/kenangan/AlbumDetail";
+import TahunBaru from "./pages/website/tahunbaru/happynewyears"
 
 import Testimoni from "./pages/pengalaman/Testimoni";
 import DetailPenggunaPage from "./pages/pengalaman/users/DetailPenggunaPage";
@@ -50,8 +55,13 @@ import CVsaya from "./pages/cv/CVsaya";
 import Streming from "./pages/streming/Tubs";
 import AI_Docs from "./pages/help/AI_Docs";
 import AI_DocDetail from "./pages/help/ai/AI_DocDetail";
+import Keamanan from "./pages/help/panduan/Keamanan";
+import Privasi from "./pages/help/panduan/Privasi";
+import ChatbotSettingsRoute from "./pages/help/ChatbotSettingsRoute";
+import ChatbotSettingsTabRoute from "./pages/help/ChatbotSettingsTabRoute";
 import Owner from "./pages/owner/Profile_admin";
 import HelpFAQriwayat from "./components/helpbutton/faq/riwayat/HelpFAQriwayat";
+import Portal from "./pages/portal/Portal";
 
 import Hobbies from "./pages/hub/Hobbies";
 import HobbiesDetail from "./pages/hub/HobbyDetail.jsx"
@@ -60,6 +70,7 @@ import Blog from "./pages/blog/Blog";
 import BlogDetail from "./pages/blog/detail/BlogDetail";
 import Detailusers from "./pages/blog/users/DetailProfile";
 import Bahasa from "./pages/bahasa/Bahasa";
+import DetailBahasa from "./pages/bahasa/detailbahasa/detail";
 import Komunitas from "./pages/Komunitas/Komo";
 import Comingsoon from "./pages/Fitur/comingsoon";
 
@@ -97,15 +108,33 @@ const KomonitiWrapper = () => (
 const DefaultLayout = ({ children }) => {
   // useLocation is imported from react-router-dom above
   const location = useLocation();
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Deteksi mobile/desktop
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // Tailwind md breakpoint
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Routes where we DON'T want the Navbar, Footer and HelpButton shown.
   // Keep each path as a separate string. For profile routes we match by prefix.
   const hideLayoutPaths = ["/streming", "/zodiak", "/qodam", "/discord", "/komunitas", "/discord/profile"];
 
   // If the pathname begins with any of these, hide header/footer
-  const shouldHide = hideLayoutPaths.some((p) =>
+  const shouldHideAlways = hideLayoutPaths.some((p) =>
     location.pathname === p || location.pathname.startsWith(`${p}/`)
   );
+
+  // Untuk /portal, hanya hide di mobile
+  const isPortal = location.pathname === "/portal";
+  const shouldHidePortal = isPortal && isMobile;
+
+  const shouldHide = shouldHideAlways || shouldHidePortal;
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -139,22 +168,49 @@ function PageTracker() {
 }
 
 export default function App() {
+  // State untuk mengontrol tampilan loader
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Efek untuk menyembunyikan loader setelah aplikasi siap
+  useEffect(() => {
+    // Simulasi loading time (bisa disesuaikan)
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000); // 3 detik (memberikan waktu untuk animasi loader berjalan sempurna)
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <Router>
       <ErrorProvider>
         <AppAuthProvider>
           <CommunityProvider>
           <div className="flex flex-col min-h-screen bg-[var(--color-gray-900)] text-white selection:bg-cyan-400/30 selection:text-cyan-200">
-            {/* Pindahkan usePageTracker ke dalam Router */}
-            <PageTracker />
+            {/* Animasi Loader */}
+            <AnimatePresence mode="wait">
+              {isLoading && <Loader key="loader" />}
+            </AnimatePresence>
+
+            {/* Konten utama aplikasi */}
+            {!isLoading && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+              >
+                {/* Pindahkan usePageTracker ke dalam Router */}
+                <PageTracker />
             <Routes>
-              {/* Redirects: direct certain paths to /coming-soon */}
-              <Route path="/discord" element={<Navigate to="/coming-soon" replace />} />
-              <Route path="/discord/profile" element={<Navigate to="/coming-soon" replace />} />
-              <Route path="/komunitas" element={<Navigate to="/coming-soon" replace />} />
-              <Route path="/streming" element={<Navigate to="/coming-soon" replace />} />
-              <Route path="/login" element={<Navigate to="/coming-soon" replace />} />
-              <Route path="/register" element={<Navigate to="/coming-soon" replace />} />
+                {/* Redirects: direct certain paths to /coming-soon
+                  Disabled temporarily to re-enable development for these routes.
+                  Previous redirect lines are kept here (commented) so nothing is deleted. */}
+                {/* <Route path="/discord" element={<Navigate to="/coming-soon" replace />} /> */}
+                {/* <Route path="/discord/profile" element={<Navigate to="/coming-soon" replace />} /> */}
+                {/* <Route path="/komunitas" element={<Navigate to="/coming-soon" replace />} /> */}
+                {/* <Route path="/streming" element={<Navigate to="/coming-soon" replace />} /> */}
+                {/* <Route path="/login" element={<Navigate to="/coming-soon" replace />} /> */}
+                {/* <Route path="/register" element={<Navigate to="/coming-soon" replace />} /> */}
 
               {/* 🚀 Halaman Launching — berdiri sendiri */}
               <Route path="/launching" element={<LaunchingPage />} />
@@ -193,6 +249,18 @@ export default function App() {
                         <Route path="/help/faq" element={<FAQ />} />
                         <Route path="/help/faq/riwayat/ai" element={<HelpFAQriwayat />} />
                         <Route path="/help/faq/riwayat/ai/:slug" element={<HelpFAQriwayat />} />
+                        <Route path="/live-cs/security" element={<Keamanan />} />
+                        <Route path="/live-cs/privacy" element={<Privasi />} />
+                        <Route path="/help/chatbot/settings" element={<ChatbotSettingsRoute />} />
+                        <Route path="/help/chatbot/settings/general" element={<ChatbotSettingsTabRoute tab="general" />} />
+                        <Route path="/help/chatbot/settings/ai" element={<ChatbotSettingsTabRoute tab="ai" />} />
+                        <Route path="/help/chatbot/settings/data" element={<ChatbotSettingsTabRoute tab="data" />} />
+                        <Route path="/help/chatbot/settings/file" element={<ChatbotSettingsTabRoute tab="file" />} />
+                        <Route path="/help/chatbot/settings/performance" element={<ChatbotSettingsTabRoute tab="performance" />} />
+                        <Route path="/help/chatbot/settings/privacy" element={<ChatbotSettingsTabRoute tab="privacy" />} />
+                        <Route path="/help/chatbot/settings/storage" element={<ChatbotSettingsTabRoute tab="storage" />} />
+                        <Route path="/help/chatbot/settings/advanced" element={<ChatbotSettingsTabRoute tab="advanced" />} />
+                        <Route path="/year-end" element={<TahunBaru />} />
 
                         <Route path="/help/commitment" element={<Komit />} />
                         <Route path="/commitment/:id" element={<DetailCommitment />} />
@@ -225,6 +293,7 @@ export default function App() {
                         <Route path="/blog/authors/:slug" element={<Detailusers />} />
 
                         <Route path="/bahasa" element={<Bahasa />} />
+                        <Route path="/bahasa/detail/:slug" element={<DetailBahasa />} />
                         <Route path="/owner" element={<Owner />} />
 
                         {/* website tambahan */}
@@ -236,6 +305,7 @@ export default function App() {
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
                         <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
+                        <Route path="/portal" element={<Portal />} />
 
                         {/* ⚠️ Halaman error */}
                         <Route
@@ -300,6 +370,8 @@ export default function App() {
                 }
               />
             </Routes>
+              </motion.div>
+            )}
           </div>
         </CommunityProvider>
         </AppAuthProvider>

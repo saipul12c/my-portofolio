@@ -1,4 +1,5 @@
 import { ToggleSwitch } from "../components/ToggleSwitch";
+import { CACHE_SIZES } from '../settingsConfig';
 import { Battery, Cpu, HardDrive, Zap } from "lucide-react";
 
 export function PerformanceSettings({ settings, handleSave }) {
@@ -82,10 +83,7 @@ export function PerformanceSettings({ settings, handleSave }) {
           onChange={(e) => handleSave("cacheSize", e.target.value)}
           className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
         >
-          <option value="small">Small (50MB)</option>
-          <option value="medium">Medium (100MB)</option>
-          <option value="large">Large (250MB)</option>
-          <option value="unlimited">Unlimited</option>
+          {CACHE_SIZES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
         </select>
         <p className="text-xs text-gray-500 mt-1">Ukuran cache untuk meningkatkan kecepatan respons</p>
       </div>

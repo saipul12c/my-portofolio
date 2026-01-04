@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { getFileIcon } from '../../logic/utils/fileIcons';
 import { processFileGeneric, saveUploadedData, STORAGE_KEYS, exportKnowledgeBase as exportKB } from '../../logic/utils/fileProcessor';
+import { storageService } from '../../logic/utils/storageService';
 
 export function useFileManagement(settings, updateKnowledgeBase, safeKnowledgeBase, knowledgeStats) {
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -10,18 +11,15 @@ export function useFileManagement(settings, updateKnowledgeBase, safeKnowledgeBa
     byType: {},
     recentUploads: []
   });
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [_uploadProgress, setUploadProgress] = useState(0);
 
   const loadFileStatistics = useCallback(() => {
     try {
-      const savedUploadedData = localStorage.getItem(STORAGE_KEYS.UPLOADED_DATA);
-      const savedFileMetadata = localStorage.getItem(STORAGE_KEYS.FILE_METADATA);
+      const savedUploadedData = storageService.get(STORAGE_KEYS.UPLOADED_DATA, []);
+      const savedFileMetadata = storageService.get(STORAGE_KEYS.FILE_METADATA, []);
       
-      let files = [];
-      let metadata = [];
-      
-      if (savedUploadedData) files = JSON.parse(savedUploadedData);
-      if (savedFileMetadata) metadata = JSON.parse(savedFileMetadata);
+      let files = Array.isArray(savedUploadedData) ? savedUploadedData : [];
+      let metadata = Array.isArray(savedFileMetadata) ? savedFileMetadata : [];
 
       setUploadedFiles(metadata.map(file => ({
         name: file.fileName,
@@ -81,22 +79,22 @@ export function useFileManagement(settings, updateKnowledgeBase, safeKnowledgeBa
             processedCount++;
             const pct = Math.round((processedCount / totalFiles) * 100);
             setUploadProgress(pct);
-            try { window.dispatchEvent(new CustomEvent('saipul_upload_progress', { detail: { file: file.name, progress: pct } })); } catch (e) {}
+            try { window.dispatchEvent(new CustomEvent('saipul_upload_progress', { detail: { file: file.name, progress: pct } })); } catch (e) { void e; }
 
             loadFileStatistics();
 
             if (processedCount === totalFiles) {
               setTimeout(() => setUploadProgress(0), 800);
-              try { window.dispatchEvent(new CustomEvent('saipul_all_files_processed', { detail: { count: processedCount } })); } catch (e) {}
+              try { window.dispatchEvent(new CustomEvent('saipul_all_files_processed', { detail: { count: processedCount } })); } catch (e) { void e; }
             }
           })
           .catch(error => {
             console.error(`Error processing file ${file.name}:`, error);
-            try { window.dispatchEvent(new CustomEvent('saipul_file_process_error', { detail: { file: file.name, error: error.message } })); } catch (e) {}
+            try { window.dispatchEvent(new CustomEvent('saipul_file_process_error', { detail: { file: file.name, error: error.message } })); } catch (e) { void e; }
           });
       }, index * 500);
     });
-  }, [settings.enableFileUpload, processFileGeneric, updateKnowledgeBase, loadFileStatistics]);
+  }, [settings, updateKnowledgeBase, loadFileStatistics]);
 
   const clearUploadedData = useCallback(() => {
     if (confirm("Apakah Anda yakin ingin menghapus semua data yang diupload? Tindakan ini tidak dapat dibatalkan.")) {

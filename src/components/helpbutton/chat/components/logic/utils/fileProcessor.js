@@ -7,49 +7,7 @@ export const SETTINGS_KEY = 'saipul_settings';
 
 export const DEFAULT_ALLOWED_TYPES = ['txt','md','csv','json','pdf','doc','docx','xls','xlsx','jpg','jpeg','png'];
 
-export const DEFAULT_SETTINGS = {
-  activeTab: 'umum',
-  theme: 'system',
-  accent: 'cyan',
-  language: 'auto',
-  aiModel: 'enhanced',
-  calculationPrecision: 'high',
-  enablePredictions: true,
-  dataAnalysis: true,
-  memoryContext: true,
-  autoSuggestions: true,
-  voiceResponse: false,
-  privacyMode: false,
-  advancedMath: true,
-  creativeMode: false,
-  responseSpeed: 'balanced',
-  temperature: 0.7,
-  maxTokens: 1500,
-  enableFileUpload: true,
-  useUploadedData: true,
-  maxFileSize: 10,
-  allowedFileTypes: DEFAULT_ALLOWED_TYPES,
-  extractTextFromImages: false,
-  processSpreadsheets: true,
-  autoSave: true,
-  backupInterval: 30,
-  enableAnalytics: false,
-  batterySaver: false,
-  hardwareAcceleration: true,
-  cacheSize: 'medium',
-  realTimeProcessing: true
-  ,
-  shortcuts: {
-    send: 'Ctrl+Enter',
-    clear: 'Ctrl+K',
-    export: 'Ctrl+E',
-    openSettings: 'Ctrl+Shift+S',
-    focusInput: 'Ctrl+Shift+F',
-    regenerate: 'Ctrl+R',
-    openUpload: 'Ctrl+Shift+U',
-    toggleSpeech: 'Ctrl+Shift+M'
-  }
-};
+import { DEFAULT_SETTINGS } from '../../../config.js';
 
 export function extractSentences(text = '', max = 200) {
   if (!text) return [];
@@ -70,8 +28,24 @@ export function formatFileSize(bytes) {
 }
 
 export function saveUploadedData(fileData) {
-  const existingData = JSON.parse(localStorage.getItem(STORAGE_KEYS.UPLOADED_DATA) || '[]');
-  const existingMetadata = JSON.parse(localStorage.getItem(STORAGE_KEYS.FILE_METADATA) || '[]');
+  const maybeDecompress = (v) => {
+    try {
+      if (!v) return null;
+      if (window && window.LZString && typeof window.LZString.decompress === 'function') return JSON.parse(window.LZString.decompress(v));
+      return JSON.parse(v);
+    } catch (e) { void e; try { return JSON.parse(v); } catch (_e) { void _e; return null; } }
+  };
+
+  const maybeCompress = (obj) => {
+    try {
+      const str = JSON.stringify(obj);
+      if (window && window.LZString && typeof window.LZString.compress === 'function') return window.LZString.compress(str);
+      return str;
+    } catch (e) { void e; return JSON.stringify(obj); }
+  };
+
+  const existingData = maybeDecompress(localStorage.getItem(STORAGE_KEYS.UPLOADED_DATA)) || [];
+  const existingMetadata = maybeDecompress(localStorage.getItem(STORAGE_KEYS.FILE_METADATA)) || [];
 
   const updatedData = [...existingData, fileData];
   const meta = {
@@ -86,8 +60,14 @@ export function saveUploadedData(fileData) {
   };
   const updatedMetadata = [...existingMetadata, meta];
 
-  localStorage.setItem(STORAGE_KEYS.UPLOADED_DATA, JSON.stringify(updatedData));
-  localStorage.setItem(STORAGE_KEYS.FILE_METADATA, JSON.stringify(updatedMetadata));
+  try {
+    localStorage.setItem(STORAGE_KEYS.UPLOADED_DATA, maybeCompress(updatedData));
+    localStorage.setItem(STORAGE_KEYS.FILE_METADATA, maybeCompress(updatedMetadata));
+  } catch (e) { void e;
+    // fallback to plain JSON
+    try { localStorage.setItem(STORAGE_KEYS.UPLOADED_DATA, JSON.stringify(updatedData)); } catch (_e) { void _e; }
+    try { localStorage.setItem(STORAGE_KEYS.FILE_METADATA, JSON.stringify(updatedMetadata)); } catch (_e) { void _e; }
+  }
 
   // Dispatch an event so other parts of the app (useChatbot) can refresh KB state
   try {

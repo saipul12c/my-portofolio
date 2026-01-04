@@ -1,0 +1,46 @@
+{
+  "hobbies": [
+    {
+      "id": 1,
+      "title": "Web Development",
+      "description": "Menciptakan aplikasi web interaktif dan responsif menggunakan teknologi modern seperti React, Tailwind CSS, dan JavaScript",
+      "emoji": "🌐",
+      "skills": ["React", "JavaScript", "CSS", "UI Design"]
+    },
+    {
+      "id": 2,
+      "title": "UI/UX Design",
+      "description": "Merancang antarmuka pengguna yang intuitif dan pengalaman pengguna yang menyenangkan melalui prototyping dan iterasi desain",
+      "emoji": "🎨",
+      "skills": ["Figma", "Prototyping", "User Research", "Design Systems"]
+    },
+    {
+      "id": 3,
+      "title": "Fotografi Digital",
+      "description": "Mengabadikan momen berharga dan menciptakan visual yang menarik melalui fotografi digital profesional",
+      "emoji": "📸",
+      "skills": ["Composition", "Lighting", "Post-processing", "Visual Storytelling"]
+    },
+    {
+      "id": 4,
+      "title": "Media Pembelajaran Interaktif",
+      "description": "Mengembangkan platform dan konten pembelajaran yang inovatif dan engaging untuk generasi digital",
+      "emoji": "📚",
+      "skills": ["Educational Design", "Interactive Content", "Accessibility", "Engagement"]
+    },
+    {
+      "id": 5,
+      "title": "Teknologi AI & Machine Learning",
+      "description": "Mempelajari dan mengimplementasikan teknologi AI serta machine learning untuk solusi inovatif",
+      "emoji": "🤖",
+      "skills": ["Machine Learning", "Neural Networks", "Data Analysis", "AI Ethics"]
+    },
+    {
+      "id": 6,
+      "title": "Edukasi & Mentoring",
+      "description": "Membimbing dan menginspirasi generasi muda untuk mengembangkan kemampuan teknologi dan kreativitas mereka",
+      "emoji": "👨‍🏫",
+      "skills": ["Teaching", "Mentorship", "Curriculum Design", "Student Engagement"]
+    }
+  ]
+}

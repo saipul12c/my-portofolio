@@ -2,10 +2,42 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Home, Info, Camera, Folder, Image, Mail } from "lucide-react";
+import pkg from "../../package.json";
+import docsData from "./helpbutton/docs/data/docsSections.json";
+import PLANNED_VERSIONS from "./helpbutton/versiWeb/data/plannedVersions";
 
 export default function Navbar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+
+  const rawVersion = pkg?.version || "1.0.0";
+  const displayVersion = rawVersion.startsWith("v") ? rawVersion : `v${rawVersion}`;
+  const versionSlug = displayVersion.toLowerCase().replace(/\./g, "-").replace(/[^a-z0-9-]/g, "");
+
+  // Try to resolve a slug that HelpVersionDetail expects:
+  // 1) Look up in docsData (uses doc.slug)
+  // 2) Look up in PLANNED_VERSIONS (uses vX-X-X -> slug vX-X-X)
+  const normalizedVersion = rawVersion.replace(/^v/, "");
+  let resolvedVersionSlug = null;
+
+  try {
+    const docMatch = docsData.find(d => d && (d.version === normalizedVersion || d.version === rawVersion || d.version === displayVersion.replace(/^v/, '')));
+    if (docMatch && docMatch.slug) {
+      resolvedVersionSlug = docMatch.slug;
+    }
+  } catch {
+    // ignore if docsData not available
+  }
+
+  if (!resolvedVersionSlug) {
+    const plannedMatch = PLANNED_VERSIONS.find(p => p.version && p.version.replace(/^v/, "") === normalizedVersion);
+    if (plannedMatch) {
+      resolvedVersionSlug = plannedMatch.version.toLowerCase().replace(/\./g, "-");
+    }
+  }
+
+  // Fallback to the vX-X-X style slug we computed earlier
+  if (!resolvedVersionSlug) resolvedVersionSlug = versionSlug;
 
   // Auth buttons were moved into the special pages (streming & discond)
   // to allow custom layouts per-page. Navbar no longer renders auth links.
@@ -175,12 +207,15 @@ export default function Navbar() {
                     <div className="flex items-center justify-center space-x-2">
                       <div className="w-2 h-2 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 animate-pulse"></div>
                       <div className="text-xs text-gray-400">
-                        <span className="text-cyan-300 font-bold">Muhammad Syaiful Mukmin</span> • Full Stack Developer
+                        <Link to="/owner" onClick={() => setIsOpen(false)} className="text-cyan-300 font-bold hover:underline">
+                          Muhammad Syaiful Mukmin
+                        </Link>
+                        <span> • Full Stack Developer</span>
                       </div>
                       <div className="w-2 h-2 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 animate-pulse"></div>
                     </div>
                     <div className="text-[10px] text-gray-500 mt-2 tracking-wide">
-                      © {new Date().getFullYear()} • v1.0.0-beta • Terakhir diperbarui: {new Date().toLocaleDateString('id-ID')}
+                      © {new Date().getFullYear()} • <Link to={`/help/version/${resolvedVersionSlug}`} onClick={() => setIsOpen(false)} className="text-cyan-300 hover:underline">Versi {displayVersion}</Link> • Terakhir diperbarui: {new Date().toLocaleDateString('id-ID')}
                     </div>
                   </div>
                 </div>

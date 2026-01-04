@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { processFileGeneric, saveUploadedData, exportKnowledgeBase as exportKB, DEFAULT_ALLOWED_TYPES } from './logic/utils/fileProcessor';
 import { SettingsSidebar } from "./settings/bar/SettingsSidebar";
 import { SettingsContent } from "./settings/conten/SettingsContent";
@@ -38,6 +38,10 @@ export function ChatbotSettings({
     realTimeProcessing: true
   });
 
+  // Debounce timer ref untuk prevent rapid settings saves
+  const saveDebounceRef = useRef(null);
+  const lastSaveRef = useRef(null);
+
   // Enhanced settings validation dari file kedua
   const validateSettings = (settings) => {
     if (settings.maxFileSize <= 0) {
@@ -67,19 +71,59 @@ export function ChatbotSettings({
     loadFileStatistics();
 
     // Validate settings saat komponen dimuat — only save if different
+    // BUT dengan debounce untuk prevent multiple rapid saves
     const validatedSettings = validateSettings({ ...settings, ...performanceSettings });
-    try {
-      const current = JSON.stringify(settings || {});
-      const validated = JSON.stringify(validatedSettings || {});
-      if (current !== validated) {
-        handleSave("settings", validatedSettings);
-      }
-    } catch (err) {
-      console.warn("Error comparing settings:", err);
-      // Fallback: if stringify fails, still attempt to save once
-      handleSave("settings", validatedSettings);
+    
+    // Clear previous debounce timer
+    if (saveDebounceRef.current) {
+      clearTimeout(saveDebounceRef.current);
     }
+
+    // Set new debounce timer (300ms to batch rapid changes)
+    saveDebounceRef.current = setTimeout(() => {
+      try {
+        const current = JSON.stringify(lastSaveRef.current || {});
+        const validated = JSON.stringify(validatedSettings || {});
+        
+        if (current !== validated) {
+          handleSave("settings", validatedSettings);
+          lastSaveRef.current = validatedSettings;
+        }
+      } catch (err) {
+        console.warn("Error comparing settings:", err);
+      }
+      saveDebounceRef.current = null;
+    }, 300);
+
+    // Cleanup debounce on unmount
+    return () => {
+      if (saveDebounceRef.current) {
+        clearTimeout(saveDebounceRef.current);
+      }
+    };
   }, [safeKnowledgeBase, settings, performanceSettings, handleSave, loadFileStatistics]);
+
+  // Listen for external requests to open a specific settings tab
+  const handler = useCallback((e) => {
+    try {
+      const tab = e?.detail?.tab;
+      const context = e?.detail?.context;
+      if (tab) {
+        handleSave("activeTab", tab);
+      }
+      if (context) {
+        // store context in settings so child components can react
+        try {
+          handleSave('settingsContext', context);
+        } catch (_e) { void _e; }
+      }
+    } catch (err) { void err; }
+  }, [handleSave]);
+
+  useEffect(() => {
+    window.addEventListener('saipul_open_settings_tab', handler);
+    return () => window.removeEventListener('saipul_open_settings_tab', handler);
+  }, [handler]);
 
   // Enhanced reset function yang termasuk performance settings
   const enhancedHandleReset = () => {
@@ -93,11 +137,11 @@ export function ChatbotSettings({
   };
 
   // Enhanced close handler dengan validation
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     const validatedSettings = validateSettings({ ...settings, ...performanceSettings });
     handleSave("settings", validatedSettings);
     onClose();
-  };
+  }, [settings, performanceSettings, handleSave, onClose]);
 
   // Enhanced export knowledge base dengan performance settings
   const enhancedExportKnowledgeBase = () => {
@@ -132,7 +176,7 @@ export function ChatbotSettings({
     if (!files.length) return;
 
     let processedCount = 0;
-    const totalFiles = files.length;
+    const _totalFiles = files.length;
 
     for (const file of files) {
       try {
@@ -174,7 +218,7 @@ export function ChatbotSettings({
         });
         modalRef.current._saipul_modified = null;
       }
-    } catch (e) {}
+    } catch (_e) { void _e; }
 
     const accentMap = {
       cyan: ['#06b6d4', '#0ea5e9'],
@@ -227,6 +271,17 @@ export function ChatbotSettings({
 
     try {
       const el = modalRef.current;
+      if (!el) return;  // Guard: element not yet mounted
+      
+      // Only apply styles if they've actually changed (check via dataset)
+      const currentTheme = el.dataset.saipulTheme;
+      const currentAccent = el.dataset.saipulAccent;
+      
+      if (currentTheme === theme && currentAccent === accent) {
+        // No change needed
+        return;
+      }
+      
       el.style.setProperty('--saipul-accent-1', c1);
       el.style.setProperty('--saipul-accent-2', c2);
       el.style.setProperty('--saipul-accent-gradient', `linear-gradient(90deg, ${c1}, ${c2})`);
@@ -256,10 +311,10 @@ export function ChatbotSettings({
             try {
               o.style.backgroundColor = 'var(--saipul-surface)';
               o.style.color = 'var(--saipul-text)';
-            } catch (e) {}
+            } catch (_e) { void _e; }
           });
         });
-      } catch (e) {}
+      } catch (_e) { void _e; }
 
       // If light-like theme, adjust common dark utility classes inside modal to readable light equivalents
       const isLightLike = ['light','sepia','solar','soft'].includes(theme) || (theme === 'system' && !window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -289,9 +344,7 @@ export function ChatbotSettings({
         // store modified elements so we can cleanup next run
         el._saipul_modified = modified;
       }
-    } catch (e) {
-      // ignore
-    }
+    } catch (_e) { void _e; }
   }, [settings]);
 
   return (

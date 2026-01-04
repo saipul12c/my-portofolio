@@ -2,6 +2,9 @@ import { useState, useEffect, useMemo } from "react";
 import { MessageCircle, Sparkles } from "lucide-react";
 import { ChatbotWindow } from "./components/ChatbotWindow";
 import { ChatbotSettings } from "./components/ChatbotSettings";
+import ErrorBoundary from "./components/ErrorBoundary";
+import { storageService } from "./components/logic/utils/storageService";
+import { loadKnowledgeBaseData, safeAccessKnowledgeBase } from "./components/logic/utils/dataLoader";
 
 export default function HelpChatbotItem() {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -27,11 +30,33 @@ export default function HelpChatbotItem() {
     "Apa fungsi neural network?": "Neural network berfungsi meniru cara kerja otak manusia untuk mengenali pola, membuat prediksi, dan mengambil keputusan berdasarkan data input."
   }), []);
 
-  // Enhanced knowledge base loader dengan error handling
+  // Enhanced knowledge base loader dengan error handling & data validation
   useEffect(() => {
     const loadKnowledgeBase = async () => {
       try {
-        const combinedKnowledge = {
+        // Gunakan utility untuk load dan validate data
+        const { knowledgeBase: loadedData, loadResult } = await loadKnowledgeBaseData();
+        
+        // Merge dengan defaultAIBase jika AI data kosong
+        if (!loadedData.AI || Object.keys(loadedData.AI).length === 0) {
+          loadedData.AI = defaultAIBase;
+        } else {
+          // Merge dengan default untuk ensure semua concepts ada
+          loadedData.AI = { ...defaultAIBase, ...loadedData.AI };
+        }
+        
+        // Safe accessor memastikan semua field ada
+        const safeKnowledgeBase = safeAccessKnowledgeBase(loadedData);
+        setKnowledgeBase(safeKnowledgeBase);
+        
+        // Log untuk debugging
+        if (process.env.NODE_ENV === 'development') {
+          console.log('✅ Knowledge Base Loading Complete:', loadResult);
+        }
+      } catch (error) {
+        console.error("❌ Error loading knowledge base:", error);
+        // Fallback dengan default AI base + empty arrays
+        const fallbackKnowledgeBase = {
           AI: defaultAIBase,
           hobbies: [],
           cards: [],
@@ -43,47 +68,21 @@ export default function HelpChatbotItem() {
           uploadedData: [],
           fileMetadata: []
         };
-
-        const jsonFiles = [
-          'public/data/about/cards.json',
-          'public/data/about/certificates.json',
-          'public/data/about/collaborations.json',
-          'public/data/about/interests.json',
-          'public/data/about/profile.json',
-          'public/data/about/softskills.json'
-        ];
-
-        for (const file of jsonFiles) {
-          try {
-            const response = await fetch(file);
-            if (!response.ok) {
-              console.error(`Failed to load ${file}:`, response.statusText);
-              continue;
-            }
-            const data = await response.json();
-            const key = file.split('/').slice(-1)[0].replace('.json', '');
-            combinedKnowledge[key] = data;
-          } catch (error) {
-            console.error(`Error loading ${file}:`, error);
-          }
-        }
-
-        setKnowledgeBase(combinedKnowledge);
-      } catch (error) {
-        console.error("Error loading knowledge base:", error);
+        const safeKnowledgeBase = safeAccessKnowledgeBase(fallbackKnowledgeBase);
+        setKnowledgeBase(safeKnowledgeBase);
       }
     };
 
     loadKnowledgeBase();
-  }, [defaultAIBase]); // Added dependency
+  }, [defaultAIBase]);
 
   // Enhanced unread message tracking
   useEffect(() => {
     const handleStorageChange = () => {
       try {
-        const chatHistory = localStorage.getItem("saipul_chat_history");
-        if (chatHistory) {
-          const messages = JSON.parse(chatHistory);
+        const chatHistory = storageService.get("saipul_chat_history");
+        if (chatHistory && Array.isArray(chatHistory)) {
+          const messages = chatHistory;
           const lastMessage = messages[messages.length - 1];
           if (lastMessage && lastMessage.from === "bot" && !isChatOpen) {
             setUnreadCount(prev => Math.min(prev + 1, 99)); // Limit to 99
@@ -129,10 +128,10 @@ export default function HelpChatbotItem() {
     setKnowledgeBase(prev => {
       const updated = { ...prev, ...newData };
 
-      // Auto-save uploaded data to localStorage
+      // Auto-save uploaded data to storage
       if (newData.uploadedData) {
         try {
-          localStorage.setItem("saipul_uploaded_data", JSON.stringify(newData.uploadedData));
+          storageService.set("saipul_uploaded_data", newData.uploadedData);
         } catch (e) {
           console.error("Error saving uploaded data:", e);
         }
@@ -140,7 +139,7 @@ export default function HelpChatbotItem() {
 
       if (newData.fileMetadata) {
         try {
-          localStorage.setItem("saipul_file_metadata", JSON.stringify(newData.fileMetadata));
+          storageService.set("saipul_file_metadata", newData.fileMetadata);
         } catch (e) {
           console.error("Error saving file metadata:", e);
         }
@@ -221,26 +220,30 @@ export default function HelpChatbotItem() {
 
       {/* Enhanced Chatbot Window */}
       {isChatOpen && (
-        <ChatbotWindow
-          onClose={closeChat}
-          onOpenSettings={() => {
-            closeChat();
-            openSettings();
-          }}
-          knowledgeBase={knowledgeBase}
-          updateKnowledgeBase={updateKnowledgeBase}
-          knowledgeStats={stats}
-        />
+        <ErrorBoundary>
+          <ChatbotWindow
+            onClose={closeChat}
+            onOpenSettings={() => {
+              closeChat();
+              openSettings();
+            }}
+            knowledgeBase={knowledgeBase}
+            updateKnowledgeBase={updateKnowledgeBase}
+            knowledgeStats={stats}
+          />
+        </ErrorBoundary>
       )}
 
       {/* Enhanced Settings Window */}
       {isSettingsOpen && (
-        <ChatbotSettings 
-          onClose={closeSettings} 
-          knowledgeBase={knowledgeBase}
-          updateKnowledgeBase={updateKnowledgeBase}
-          knowledgeStats={stats}
-        />
+        <ErrorBoundary>
+          <ChatbotSettings 
+            onClose={closeSettings} 
+            knowledgeBase={knowledgeBase}
+            updateKnowledgeBase={updateKnowledgeBase}
+            knowledgeStats={stats}
+          />
+        </ErrorBoundary>
       )}
     </>
   );

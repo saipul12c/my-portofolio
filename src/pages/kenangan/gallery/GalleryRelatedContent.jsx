@@ -13,7 +13,7 @@ export default function GalleryRelatedContent() {
       try {
         // Load projects data
         const projectsRes = await import("../../../data/projects.json");
-        setProjectsData(projectsRes.default?.slice(0, 3) || []);
+        setProjectsData(projectsRes.default?.projects?.slice(0, 3) || []);
 
         // Load blog data
         const blogRes = await import("../../../data/blog/data.json");

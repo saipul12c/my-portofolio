@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { SkillCard } from "./SkillCard";
 
-export const LanguageSection = React.memo(({ 
+const LanguageSectionComponent = ({ 
   title, 
   data, 
   icon, 
@@ -27,7 +27,7 @@ export const LanguageSection = React.memo(({
         <div>
           <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">{title}</h2>
           <p className="text-gray-300 text-sm sm:text-base">
-            {data.length} dari {isProgramming ? data.length : data.length} item ditampilkan
+            {data.length} item ditampilkan
           </p>
         </div>
       </motion.div>
@@ -36,18 +36,21 @@ export const LanguageSection = React.memo(({
         "grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4" : 
         "space-y-2 sm:space-y-3"
       }>
-        {data.map((item, index) => (
-          <SkillCard 
-            key={`${item.nama}-${index}`}
-            bahasa={item}
-            isProgramming={isProgramming}
-            delay={index * 50}
-            isList={viewMode === "list"}
-            setSelectedSkill={setSelectedSkill}
-            expandedTags={expandedTags}
-            toggleExpandedTags={toggleExpandedTags}
-          />
-        ))}
+        {data.map((item, index) => {
+          const skillId = `${item.nama}-${isProgramming ? 'prog' : 'lang'}`;
+          return (
+            <SkillCard 
+              key={skillId}
+              bahasa={item}
+              isProgramming={isProgramming}
+              delay={index * 50}
+              isList={viewMode === "list"}
+              setSelectedSkill={setSelectedSkill}
+              isExpanded={!!expandedTags[skillId]}
+              onToggle={() => toggleExpandedTags(skillId)}
+            />
+          );
+        })}
       </div>
 
       {data.length === 0 && (
@@ -61,4 +64,7 @@ export const LanguageSection = React.memo(({
       )}
     </section>
   );
-});
+};
+
+export const LanguageSection = React.memo(LanguageSectionComponent);
+LanguageSectionComponent.displayName = "LanguageSection";

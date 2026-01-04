@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { Lightbulb, ChevronRight, Calendar, User } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 
-export default function GalleryRecommendations({ allMedia = [], currentMedia = null }) {
+const GalleryRecommendations = memo(function GalleryRecommendations({ allMedia = [], currentMedia = null }) {
   const recommendations = useMemo(() => {
     if (!currentMedia || !allMedia.length) return [];
 
@@ -100,4 +100,6 @@ export default function GalleryRecommendations({ allMedia = [], currentMedia = n
       </motion.p>
     </motion.aside>
   );
-}
+});
+
+export default GalleryRecommendations;

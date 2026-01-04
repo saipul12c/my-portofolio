@@ -13,8 +13,9 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import GalleryShareBar from "../GalleryShareBar";
+import { sanitizeVideoUrl, sanitizeUrl } from "../../utils/sanitizers";
 
 export default function GalleryShortModal({
   selectedMedia,
@@ -24,9 +25,34 @@ export default function GalleryShortModal({
   handlePrev,
 }) {
   const [isMuted, setIsMuted] = useState(true);
+  const [videoError, setVideoError] = useState(false);
+  const [videoLoading, setVideoLoading] = useState(true);
   const newRef = useRef(null);
   const localVideoRef = videoRef || newRef;
   const navigate = useNavigate();
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!selectedMedia || selectedMedia.type !== "short") return;
+      
+      if (e.key === 'Escape') {
+        setSelectedMedia(null);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        handlePrev();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        handleNext();
+      } else if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault();
+        setIsMuted(prev => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedMedia, handlePrev, handleNext, setSelectedMedia]);
 
   const handleVideoHover = () => {
     // Optional: Add hover effects if needed
@@ -36,11 +62,29 @@ export default function GalleryShortModal({
     // Optional: Add leave effects if needed
   };
 
+  const handleVideoError = (e) => {
+    console.error('Video playback error:', e);
+    setVideoError(true);
+    setVideoLoading(false);
+  };
+
+  const handleVideoLoadStart = () => {
+    setVideoLoading(true);
+    setVideoError(false);
+  };
+
+  const handleVideoLoadedData = () => {
+    setVideoLoading(false);
+  };
+
   if (!selectedMedia || selectedMedia.type !== "short") return null;
 
   return (
     <AnimatePresence>
       <motion.div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="short-modal-title"
         className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-2 sm:p-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -49,6 +93,7 @@ export default function GalleryShortModal({
         {/* Close Button */}
         <button
           onClick={() => setSelectedMedia(null)}
+          aria-label="Tutup modal"
           className="absolute top-3 right-3 z-50 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition"
         >
           <X size={24} />
@@ -57,6 +102,7 @@ export default function GalleryShortModal({
         {/* Navigation Buttons */}
         <button
           onClick={handlePrev}
+          aria-label="Short sebelumnya"
           className="absolute left-2 sm:left-4 text-white bg-black/50 hover:bg-black/70 p-2 rounded-full transition z-50 hidden sm:block"
         >
           <ChevronLeft size={28} />
@@ -64,6 +110,7 @@ export default function GalleryShortModal({
 
         <button
           onClick={handleNext}
+          aria-label="Short berikutnya"
           className="absolute right-2 sm:right-4 text-white bg-black/50 hover:bg-black/70 p-2 rounded-full transition z-50 hidden sm:block"
         >
           <ChevronRight size={28} />
@@ -80,21 +127,42 @@ export default function GalleryShortModal({
           {/* Video Area */}
           <div className="w-full md:w-[55%] bg-black flex items-center justify-center p-2 sm:p-4">
             <div className="relative w-full max-w-[280px] sm:max-w-[320px] aspect-[9/16] flex items-center justify-center">
-              <video
-                ref={localVideoRef}
-                src={selectedMedia.src}
-                muted={isMuted}
-                loop
-                playsInline
-                autoPlay
-                className="w-full h-full object-cover rounded-xl shadow-lg"
-                onMouseEnter={handleVideoHover}
-                onMouseLeave={handleVideoLeave}
-              />
+              {videoError ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/90 rounded-xl">
+                  <X className="w-12 h-12 text-red-400 mb-2" />
+                  <p className="text-red-400 text-sm text-center px-4">Video gagal dimuat</p>
+                  <p className="text-gray-400 text-xs text-center px-4 mt-1">Periksa koneksi atau coba lagi</p>
+                </div>
+              ) : (
+                <>
+                  {videoLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/90 rounded-xl">
+                      <div className="animate-spin rounded-full h-12 w-12 border-4 border-cyan-400 border-t-transparent"></div>
+                    </div>
+                  )}
+                  <video
+                    ref={localVideoRef}
+                    src={sanitizeVideoUrl(selectedMedia.src)}
+                    muted={isMuted}
+                    loop
+                    playsInline
+                    autoPlay={false}
+                    preload="metadata"
+                    className="w-full h-full object-cover rounded-xl shadow-lg"
+                    onMouseEnter={handleVideoHover}
+                    onMouseLeave={handleVideoLeave}
+                    onError={handleVideoError}
+                    onLoadStart={handleVideoLoadStart}
+                    onLoadedData={handleVideoLoadedData}
+                    aria-label={`Short video: ${selectedMedia.title}`}
+                  />
+                </>
+              )}
 
               {/* Mute/Unmute Button */}
               <button
                 onClick={() => setIsMuted(!isMuted)}
+                aria-label={isMuted ? "Nyalakan suara" : "Matikan suara"}
                 className="absolute bottom-2 right-2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition"
               >
                 {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
@@ -109,7 +177,7 @@ export default function GalleryShortModal({
 
           {/* Video Information */}
           <div className="w-full md:w-[45%] bg-[#111] text-gray-200 p-4 sm:p-6 flex flex-col gap-3 overflow-y-auto">
-            <h2 className="text-base sm:text-lg font-bold text-white leading-tight">
+            <h2 id="short-modal-title" className="text-base sm:text-lg font-bold text-white leading-tight">
               {selectedMedia.title}
             </h2>
             <p className="text-sm text-gray-300 leading-snug line-clamp-3">

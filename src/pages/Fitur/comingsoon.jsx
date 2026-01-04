@@ -53,10 +53,10 @@ const ComingSoon = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-gray-900)] text-white flex flex-col px-6 sm:px-10 md:px-20 relative overflow-hidden py-20">
+    <div className="min-h-screen bg-[var(--color-gray-900)] text-white flex flex-col px-4 sm:px-6 md:px-10 lg:px-20 relative overflow-hidden py-10 sm:py-20">
       <BackgroundEffects />
 
-      <div className="max-w-6xl mx-auto w-full">
+      <div className="max-w-4xl mx-auto w-full">
         <ConfigSelector
           configList={configList}
           currentConfig={currentConfig}
@@ -67,12 +67,12 @@ const ComingSoon = () => {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-12 text-center"
+          className="mb-8 sm:mb-12 text-center"
         >
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-orange-400 via-red-400 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold bg-gradient-to-r from-orange-400 via-red-400 to-purple-500 bg-clip-text text-transparent">
             {currentConfig.brand.name}
           </h1>
-          <p className="text-gray-400 mt-2 text-base sm:text-lg">{currentConfig.brand.slogan}</p>
+          <p className="text-gray-400 mt-2 text-xs sm:text-base md:text-lg">{currentConfig.brand.slogan}</p>
         </motion.div>
 
         <NavigationTabs

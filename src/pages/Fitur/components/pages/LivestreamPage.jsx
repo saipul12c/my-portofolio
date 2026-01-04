@@ -7,22 +7,22 @@ const LivestreamPage = ({ currentConfig }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    className="bg-gradient-to-br from-red-500/20 to-pink-500/10 border border-red-500/30 backdrop-blur-xl rounded-2xl p-8 hover:shadow-2xl transition-all"
+    className="bg-gradient-to-br from-red-500/20 to-pink-500/10 border border-red-500/30 backdrop-blur-xl rounded-2xl p-3 sm:p-6 md:p-8 hover:shadow-2xl transition-all w-full max-w-3xl mx-auto"
   >
     <div className="space-y-8">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-3 sm:gap-0">
         <div className="flex items-center gap-3">
           <div className="p-3 bg-red-500/20 rounded-xl">
             {React.createElement(getIconComponent(currentConfig.pages.livestream.icon), { className: "w-8 h-8 text-red-400" })}
           </div>
           <div>
-            <h2 className="text-4xl font-bold text-white">{currentConfig.pages.livestream.title}</h2>
-            <p className="text-red-300 text-sm mt-1">Video & Streaming Platform</p>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">{currentConfig.pages.livestream.title}</h2>
+            <p className="text-red-300 text-xs sm:text-sm mt-1">Video & Streaming Platform</p>
           </div>
         </div>
       </div>
 
-      <p className="text-gray-300 text-lg leading-relaxed">
+      <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
         {currentConfig.pages.livestream.description}
       </p>
 
@@ -31,13 +31,13 @@ const LivestreamPage = ({ currentConfig }) => (
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6"
       >
         {/* Video Upload Features */}
         <motion.div
           variants={itemVariants}
           whileHover={{ scale: 1.02 }}
-          className="bg-black/30 rounded-xl p-6 border border-red-500/20 hover:border-red-500/40 transition-all"
+          className="bg-black/30 rounded-xl p-3 sm:p-6 border border-red-500/20 hover:border-red-500/40 transition-all"
         >
           <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
             {React.createElement(getIconComponent(currentConfig.pages.livestream.features.videoUpload.icon), { className: "w-5 h-5 text-red-400" })}
@@ -65,7 +65,7 @@ const LivestreamPage = ({ currentConfig }) => (
         <motion.div
           variants={itemVariants}
           whileHover={{ scale: 1.02 }}
-          className="bg-black/30 rounded-xl p-6 border border-red-500/20 hover:border-red-500/40 transition-all"
+          className="bg-black/30 rounded-xl p-3 sm:p-6 border border-red-500/20 hover:border-red-500/40 transition-all"
         >
           <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
             {React.createElement(getIconComponent(currentConfig.pages.livestream.features.livestream.icon), { className: "w-5 h-5 text-red-400" })}
@@ -93,7 +93,7 @@ const LivestreamPage = ({ currentConfig }) => (
         <motion.div
           variants={itemVariants}
           whileHover={{ scale: 1.02 }}
-          className="bg-black/30 rounded-xl p-6 border border-red-500/20 hover:border-red-500/40 transition-all"
+          className="bg-black/30 rounded-xl p-3 sm:p-6 border border-red-500/20 hover:border-red-500/40 transition-all"
         >
           <h3 className="text-xl font-bold text-white mb-4">Interaksi</h3>
           <div className="space-y-3">
@@ -119,7 +119,7 @@ const LivestreamPage = ({ currentConfig }) => (
         <motion.div
           variants={itemVariants}
           whileHover={{ scale: 1.02 }}
-          className="bg-black/30 rounded-xl p-6 border border-red-500/20 hover:border-red-500/40 transition-all"
+          className="bg-black/30 rounded-xl p-3 sm:p-6 border border-red-500/20 hover:border-red-500/40 transition-all"
         >
           <h3 className="text-xl font-bold text-white mb-4">Monetisasi</h3>
           <div className="space-y-3">
@@ -143,22 +143,22 @@ const LivestreamPage = ({ currentConfig }) => (
       </motion.div>
 
       {/* Content Categories */}
-      <div className="space-y-6">
-        <h3 className="text-2xl font-bold text-white">Kategori Konten</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="space-y-4 sm:space-y-6">
+        <h3 className="text-lg sm:text-2xl font-bold text-white">Kategori Konten</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
           {currentConfig.pages.livestream.contentCategories.map((category, index) => {
             const IconComponent = getIconComponent(category.icon);
             return (
               <motion.div
                 key={index}
                 whileHover={{ scale: 1.05 }}
-                className="bg-black/30 rounded-xl p-6 border border-red-500/20 hover:border-red-500/40 transition-all text-center"
+                className="bg-black/30 rounded-xl p-3 sm:p-6 border border-red-500/20 hover:border-red-500/40 transition-all text-center"
               >
-                <div className="flex items-center justify-center gap-2 mb-3">
+                <div className="flex items-center justify-center gap-2 mb-2 sm:mb-3">
                   <IconComponent className="w-5 h-5 text-red-400" />
-                  <div className="font-semibold text-red-300 text-lg">{category.name}</div>
+                  <div className="font-semibold text-red-300 text-base sm:text-lg">{category.name}</div>
                 </div>
-                <div className="text-sm text-gray-300 space-y-1">
+                <div className="text-xs sm:text-sm text-gray-300 space-y-1">
                   {category.subcategories.map((sub, subIndex) => (
                     <div key={subIndex} className="px-2 py-1 bg-red-500/10 rounded border border-red-500/20">
                       {sub}

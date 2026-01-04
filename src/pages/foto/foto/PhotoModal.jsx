@@ -1,9 +1,51 @@
-import { motion } from "framer-motion";
-import { X, MapPin, Calendar, FileText, Image, Zap } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, MapPin, Calendar, FileText, Image, Zap, Share2, Download, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
-export default function PhotoModal({ photo, onClose }) {
+export default function PhotoModal({ photo, onClose, onNavigate }) {
   const navigate = useNavigate();
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [showCopied, setShowCopied] = useState(false);
+  
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowLeft" && onNavigate) onNavigate("prev");
+      if (e.key === "ArrowRight" && onNavigate) onNavigate("next");
+      if (e.key === "z" || e.key === "Z") setIsZoomed(!isZoomed);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose, onNavigate, isZoomed]);
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: photo.title,
+          text: photo.description,
+          url: window.location.href,
+        });
+      } catch (err) {
+        console.log("Share cancelled");
+      }
+    } else {
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(window.location.href);
+      setShowCopied(true);
+      setTimeout(() => setShowCopied(false), 2000);
+    }
+  };
+
+  const handleDownload = () => {
+    const link = document.createElement("a");
+    link.href = photo.img;
+    link.download = `${photo.title}.jpg`;
+    link.click();
+  };
   
   return (
     <motion.div
@@ -15,27 +57,108 @@ export default function PhotoModal({ photo, onClose }) {
     >
       <motion.div
         className="relative flex flex-col md:flex-row bg-[#0b1120] rounded-xl sm:rounded-2xl overflow-hidden border border-white/10 max-w-6xl w-full max-h-[90vh] md:max-h-[80vh]"
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        transition={{ type: "spring", damping: 25 }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 z-50 text-white/70 hover:text-white transition bg-black/50 rounded-full p-1 backdrop-blur-sm"
-        >
-          <X size={20} />
-        </button>
+        {/* Action Buttons */}
+        <div className="absolute top-2 right-2 z-50 flex gap-2">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={handleShare}
+            className="text-white/70 hover:text-white transition bg-black/50 rounded-full p-2 backdrop-blur-sm"
+            title="Share"
+          >
+            <Share2 size={18} />
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={handleDownload}
+            className="text-white/70 hover:text-white transition bg-black/50 rounded-full p-2 backdrop-blur-sm"
+            title="Download"
+          >
+            <Download size={18} />
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setIsZoomed(!isZoomed)}
+            className="text-white/70 hover:text-white transition bg-black/50 rounded-full p-2 backdrop-blur-sm"
+            title={isZoomed ? "Zoom Out (Z)" : "Zoom In (Z)"}
+          >
+            {isZoomed ? <ZoomOut size={18} /> : <ZoomIn size={18} />}
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={onClose}
+            className="text-white/70 hover:text-white transition bg-black/50 rounded-full p-2 backdrop-blur-sm"
+            title="Close (ESC)"
+          >
+            <X size={20} />
+          </motion.button>
+        </div>
+
+        {/* Navigation Arrows */}
+        {onNavigate && (
+          <>
+            <motion.button
+              whileHover={{ scale: 1.1, x: -2 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => onNavigate("prev")}
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-50 text-white/70 hover:text-white transition bg-black/50 rounded-full p-2 backdrop-blur-sm"
+              title="Previous (←)"
+            >
+              <ChevronLeft size={24} />
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.1, x: 2 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => onNavigate("next")}
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-50 text-white/70 hover:text-white transition bg-black/50 rounded-full p-2 backdrop-blur-sm md:right-[420px]"
+              title="Next (→)"
+            >
+              <ChevronRight size={24} />
+            </motion.button>
+          </>
+        )}
+
+        {/* Copied Notification */}
+        <AnimatePresence>
+          {showCopied && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="absolute top-16 right-2 z-50 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg text-sm"
+            >
+              Link disalin! ✓
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Image Section */}
-        <div className="flex-1 bg-black flex items-center justify-center overflow-hidden min-h-[40vh] md:min-h-auto">
-          <img
+        <div className="flex-1 bg-black flex items-center justify-center overflow-hidden min-h-[40vh] md:min-h-auto relative">
+          <motion.img
             src={photo.img}
             alt={photo.title}
             className="h-full w-full object-contain transition-transform duration-300"
             loading="eager"
+            animate={{ scale: isZoomed ? 1.5 : 1 }}
+            transition={{ type: "spring", damping: 20 }}
+            drag={isZoomed}
+            dragConstraints={{ top: 0, bottom: 0, left: 0, right: 0 }}
+            dragElastic={0.1}
           />
+          {isZoomed && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-3 py-1.5 rounded-full text-xs backdrop-blur-sm">
+              Drag untuk menggeser gambar
+            </div>
+          )}
         </div>
 
         {/* Info Section */}

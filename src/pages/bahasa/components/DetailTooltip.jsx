@@ -2,18 +2,12 @@ import React, { useCallback } from "react";
 import { motion } from "framer-motion";
 import { Target, Sparkles, Zap, Code, Globe, X } from "lucide-react";
 import { ProgressBar } from "./ProgressBar";
+import { Link } from "react-router-dom";
 import { RelatedItems } from "./RelatedItems";
 import { SkillResources } from "./SkillResources";
 import { generateColor } from "../utils/colorGenerator";
-import { useRelatedProjects } from "../hooks/useRelatedProjects";
-import { useRelatedSkills } from "../hooks/useRelatedSkills";
-import { useRelatedBlogPosts } from "../hooks/useRelatedBlogPosts";
 
-export const DetailTooltip = React.memo(({ bahasa, isProgramming, onClose }) => {
-  // Fetch related content
-  const relatedProjects = useRelatedProjects(bahasa.nama);
-  const relatedSkills = useRelatedSkills(bahasa.nama, isProgramming);
-  const relatedBlogPosts = useRelatedBlogPosts(bahasa.nama);
+const DetailTooltipComponent = React.memo(({ bahasa, isProgramming, onClose }) => {
   const renderSection = useCallback((title, icon, content, color = "cyan", isArray = true) => {
     if (!content || (Array.isArray(content) && content.length === 0)) return null;
     
@@ -101,79 +95,64 @@ export const DetailTooltip = React.memo(({ bahasa, isProgramming, onClose }) => 
         {/* Content */}
         <div className="p-4 sm:p-6 max-h-[60vh] overflow-y-auto custom-scrollbar" style={{willChange: "scroll-position"}}>
           <div className="space-y-4 sm:space-y-6">
-            {/* Progress */}
-            <div className="space-y-3">
-              <h4 className="font-semibold text-gray-300 flex items-center text-sm sm:text-base">
-                <Target className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="ml-2">Tingkat Kemahiran</span>
-              </h4>
-              <ProgressBar level={bahasa.level} />
-            </div>
-
-            {/* Description */}
-            {bahasa.deskripsi && renderSection("Deskripsi", <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />, bahasa.deskripsi, "cyan", false)}
-
-            {/* Skills */}
-            {bahasa.kemampuan && renderSection("Kemampuan", <Zap className="w-4 h-4 sm:w-5 sm:h-5" />, bahasa.kemampuan, "cyan")}
-
-            {/* Programming-specific sections */}
-            {isProgramming && (
-              <>
-                {bahasa.framework && renderSection("Framework & Tools", <Code className="w-4 h-4 sm:w-5 sm:h-5" />, bahasa.framework, "blue")}
-                {bahasa.libraries && renderSection("Libraries", <Code className="w-4 h-4 sm:w-5 sm:h-5" />, bahasa.libraries, "purple")}
-                {bahasa.ecosystem && renderSection("Ecosystem", <Code className="w-4 h-4 sm:w-5 sm:h-5" />, bahasa.ecosystem, "green")}
-                {bahasa.tools && renderSection("Tools", <Code className="w-4 h-4 sm:w-5 sm:h-5" />, bahasa.tools, "orange")}
-                {bahasa.variasi && renderSection("Database Variants", <Code className="w-4 h-4 sm:w-5 sm:h-5" />, bahasa.variasi, "teal")}
-              </>
-            )}
-
-            {/* Experience */}
-            {bahasa.pengalaman && renderSection("Pengalaman", <Globe className="w-4 h-4 sm:w-5 sm:h-5" />, bahasa.pengalaman, "cyan", false)}
-
-            {/* Additional Details */}
-            {bahasa.detailTambahan && Object.entries(bahasa.detailTambahan).map(([key, value], index) => (
-              <motion.div
-                key={key}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="space-y-2"
-              >
-                <h4 className="font-semibold text-gray-300 text-sm sm:text-base capitalize">
-                  {key.replace(/([A-Z])/g, ' $1').trim()}
+            {/* Simplified popup: only show essential & interesting info */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <h4 className="font-semibold text-gray-300 flex items-center text-sm sm:text-base">
+                  <Target className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="ml-2">Tingkat Kemahiran</span>
                 </h4>
-                <p className="text-gray-300 text-sm sm:text-base leading-relaxed">{value}</p>
-              </motion.div>
-            ))}
+                <ProgressBar level={bahasa.level} />
+              </div>
 
-            {/* Certification */}
-            {bahasa.sertifikasi && (
-              typeof bahasa.sertifikasi === 'object' ? 
-              renderSection("Sertifikasi", <Target className="w-4 h-4 sm:w-5 sm:h-5" />, `${bahasa.sertifikasi.nama}: ${bahasa.sertifikasi.score} (${bahasa.sertifikasi.equivalent})`, "cyan", false) :
-              renderSection("Sertifikasi", <Target className="w-4 h-4 sm:w-5 sm:h-5" />, bahasa.sertifikasi, "cyan", false)
-            )}
+              {bahasa.deskripsi && (
+                <div>
+                  <h4 className="font-semibold text-gray-300 text-sm sm:text-base flex items-center">
+                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="ml-2">Deskripsi Singkat</span>
+                  </h4>
+                  <p className="text-gray-300 text-sm sm:text-base leading-relaxed mt-1">{String(bahasa.deskripsi).slice(0, 220)}{String(bahasa.deskripsi).length > 220 ? '…' : ''}</p>
+                </div>
+              )}
 
-            {/* Learning Goals */}
-            {bahasa.target && renderSection("Target Belajar", <Target className="w-4 h-4 sm:w-5 sm:h-5" />, bahasa.target, "cyan", false)}
+              {bahasa.kemampuan && Array.isArray(bahasa.kemampuan) && bahasa.kemampuan.length > 0 && (
+                <div>
+                  <h4 className="font-semibold text-gray-300 text-sm sm:text-base flex items-center">
+                    <Zap className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="ml-2">Kemampuan Utama</span>
+                  </h4>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {bahasa.kemampuan.slice(0, 3).map((s, i) => (
+                      <span key={i} className="text-xs px-2 py-1 rounded-lg bg-cyan-500/10 text-cyan-200 border border-cyan-500/20">{s}</span>
+                    ))}
+                    {bahasa.kemampuan.length > 3 && (
+                      <span className="text-xs px-2 py-1 rounded-lg bg-gray-800 text-gray-300 border border-gray-700">+{bahasa.kemampuan.length - 3} lainnya</span>
+                    )}
+                  </div>
+                </div>
+              )}
 
-            {/* Related Items Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="pt-4 sm:pt-6 border-t border-cyan-500/20"
-            >
-              <SkillResources skillName={bahasa.nama} isProgramming={isProgramming} />
-              <RelatedItems 
-                projects={relatedProjects}
-                blogPosts={relatedBlogPosts}
-                skills={relatedSkills}
-                skillName={bahasa.nama}
-              />
-            </motion.div>
+              {bahasa.pengalaman && (
+                <div>
+                  <h4 className="font-semibold text-gray-300 text-sm sm:text-base flex items-center">
+                    <Globe className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="ml-2">Ringkasan Pengalaman</span>
+                  </h4>
+                  <p className="text-gray-300 text-sm sm:text-base leading-relaxed mt-1">{String(bahasa.pengalaman).slice(0, 180)}{String(bahasa.pengalaman).length > 180 ? '…' : ''}</p>
+                </div>
+              )}
+
+              <div className="pt-3 border-t border-cyan-500/20 flex gap-2">
+                <Link to={`/bahasa/detail/${(bahasa.nama||"").toString().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'').replace(/-+/g,'-')}`} onClick={onClose} className="flex-1 text-center bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2 rounded-lg font-semibold">Lihat Detail</Link>
+                <button onClick={onClose} className="flex-1 text-center border border-gray-700 text-gray-300 px-4 py-2 rounded-lg">Tutup</button>
+              </div>
+            </div>
           </div>
         </div>
       </motion.div>
     </motion.div>
   );
 });
+
+export const DetailTooltip = DetailTooltipComponent;
+DetailTooltipComponent.displayName = "DetailTooltip";

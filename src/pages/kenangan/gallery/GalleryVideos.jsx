@@ -1,36 +1,14 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
 import { PlayCircle, UserCheck, Tag, AlertCircle } from "lucide-react";
+import { filterMediaItems } from "../utils/filterHelpers";
+import { GALLERY_CONFIG } from "../utils/constants";
+import { sanitizeVideoUrl, sanitizeUrl } from "../utils/sanitizers";
 
 // load videos lazily to avoid bundling large json into main chunk
 
-
-// 🔍 Filter helper function
-function filterVideos(videoList, searchTerm = "", selectedTags = []) {
-  let filtered = videoList;
-
-  if (searchTerm) {
-    const term = searchTerm.toLowerCase();
-    filtered = filtered.filter(
-      (vid) =>
-        vid.title?.toLowerCase().includes(term) ||
-        vid.desc?.toLowerCase().includes(term) ||
-        vid.category?.toLowerCase().includes(term) ||
-        vid.tags?.some((tag) => tag.toLowerCase().includes(term))
-    );
-  }
-
-  if (selectedTags.length > 0) {
-    filtered = filtered.filter((vid) =>
-      selectedTags.some((tag) => vid.tags?.includes(tag))
-    );
-  }
-
-  return filtered;
-}
-
 export default function GalleryVideos({ onSelect, filterSettings = {}, onFilteredDataChange }) {
-  const [visibleCount, setVisibleCount] = useState(9);
+  const [visibleCount, setVisibleCount] = useState(GALLERY_CONFIG.INITIAL_VISIBLE_COUNT);
   const [videos, setVideos] = useState([]);
   const tickingRef = useRef(false);
 
@@ -49,7 +27,7 @@ export default function GalleryVideos({ onSelect, filterSettings = {}, onFiltere
 
   // 🔍 Filter videos based on search and tags
   const filteredVideos = useMemo(() => {
-    return filterVideos(videos, searchTerm, selectedTags);
+    return filterMediaItems(videos, searchTerm, selectedTags);
   }, [videos, searchTerm, selectedTags]);
 
   // 📢 Notify parent of filtered data (use effect to avoid updates during render)
@@ -61,20 +39,29 @@ export default function GalleryVideos({ onSelect, filterSettings = {}, onFiltere
 
   const hasNoData = filteredVideos.length === 0;
 
+  // Reset visibleCount when filters change (prevents memory leak)
+  useEffect(() => {
+    setVisibleCount(GALLERY_CONFIG.INITIAL_VISIBLE_COUNT);
+  }, [searchTerm, selectedTags]);
+
+  // Infinite scroll with max limit
   useEffect(() => {
     const handleScroll = () => {
       if (tickingRef.current) return;
       tickingRef.current = true;
       requestAnimationFrame(() => {
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
-          setVisibleCount((prev) => prev + 6);
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - GALLERY_CONFIG.SCROLL_THRESHOLD) {
+          setVisibleCount((prev) => Math.min(prev + GALLERY_CONFIG.LOAD_MORE_COUNT, filteredVideos.length));
         }
         tickingRef.current = false;
       });
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      tickingRef.current = false;
+    };
+  }, [filteredVideos.length]);
 
   return (
     <section className="w-full max-w-7xl mb-24">
@@ -110,11 +97,12 @@ export default function GalleryVideos({ onSelect, filterSettings = {}, onFiltere
           >
             {/* Video Preview (do not autoplay in grid) */}
             <video
-              src={vid.src}
+              src={sanitizeVideoUrl(vid.src)}
               muted
               loop
               preload="none"
               className="w-full h-64 object-cover rounded-2xl opacity-90 group-hover:opacity-100 transition"
+              aria-label={`Video: ${vid.title}`}
             />
 
             {/* Overlay saat hover */}
@@ -126,8 +114,8 @@ export default function GalleryVideos({ onSelect, filterSettings = {}, onFiltere
               {vid.creator && (
                 <div className="flex items-center gap-2 mb-2">
                   <img
-                    src={vid.creator.avatar}
-                    alt={vid.creator.display_name}
+                    src={sanitizeUrl(vid.creator.avatar, '/default-avatar.jpg')}
+                    alt={`${vid.creator.display_name} avatar`}
                     className="w-6 h-6 rounded-full border border-white/20"
                   />
                   <p className="text-xs text-cyan-300 flex items-center gap-1">

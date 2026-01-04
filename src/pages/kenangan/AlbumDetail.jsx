@@ -1,5 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useGalleryData } from "./hooks/useGalleryData";
+import MediaNotFound from "./components/MediaNotFound";
+import { sanitizeUrl, generateAltText } from "./utils/sanitizers";
 
 export default function AlbumDetail() {
   const { id } = useParams();
@@ -13,11 +15,7 @@ export default function AlbumDetail() {
 
   const item = allMedia.find(a => String(a.id) === String(id) && a.type === "album");
 
-  if (!item) return (
-    <main className="min-h-screen flex items-center justify-center p-8">
-      <div className="max-w-xl bg-[#0b0b0b] p-8 rounded-2xl text-gray-300">Album tidak ditemukan.</div>
-    </main>
-  );
+  if (!item) return <MediaNotFound type="album" id={id} />;
 
   return (
     <main className="min-h-screen p-4 sm:p-6 md:p-8 bg-[var(--color-gray-900)] text-white">
@@ -27,9 +25,20 @@ export default function AlbumDetail() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           {Array.isArray(item.src) ? item.src.map((s, idx) => (
-            <img key={idx} src={s} className="w-full h-48 sm:h-56 lg:h-64 rounded-lg object-cover" loading="lazy" />
+            <img 
+              key={idx} 
+              src={sanitizeUrl(s)} 
+              alt={`${item.title} - Foto ${idx + 1} dari ${item.src.length}`}
+              className="w-full h-48 sm:h-56 lg:h-64 rounded-lg object-cover" 
+              loading="lazy" 
+            />
           )) : (
-            <img src={item.src} className="w-full h-48 sm:h-56 lg:h-64 rounded-lg object-cover" loading="lazy" />
+            <img 
+              src={sanitizeUrl(item.src)} 
+              alt={generateAltText(item)}
+              className="w-full h-48 sm:h-56 lg:h-64 rounded-lg object-cover" 
+              loading="lazy" 
+            />
           )}
         </div>
 
@@ -39,7 +48,12 @@ export default function AlbumDetail() {
             {item.comments_preview && item.comments_preview.length > 0 ? (
               item.comments_preview.map((c, idx) => (
                 <div key={idx} className="flex items-start gap-3">
-                  <img src={c.avatar} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full" loading="lazy" />
+                  <img 
+                    src={sanitizeUrl(c.avatar, '/default-avatar.jpg')} 
+                    alt={`${c.user} avatar`}
+                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-full" 
+                    loading="lazy" 
+                  />
                   <div>
                     <div className="text-sm font-medium text-pink-300">{c.user}</div>
                     <div className="text-sm text-gray-300">{c.comment}</div>

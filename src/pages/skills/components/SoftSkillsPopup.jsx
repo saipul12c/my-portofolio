@@ -26,7 +26,7 @@ export default function SoftSkillsPopup({ selectedSkill, setSelectedSkill, navig
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
-            className="bg-gray-900/90 border border-gray-700 rounded-2xl shadow-2xl max-w-5xl w-full overflow-y-auto p-6 relative flex flex-col md:flex-row gap-6 max-h-[90vh]"
+            className="bg-gray-900/90 border border-gray-700 rounded-2xl shadow-2xl max-w-3xl md:max-w-5xl w-full overflow-y-auto p-4 sm:p-6 relative flex flex-col md:flex-row gap-6 max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
@@ -41,7 +41,7 @@ export default function SoftSkillsPopup({ selectedSkill, setSelectedSkill, navig
                   navigate("/");
                 }
               }}
-              className="absolute top-4 right-4 p-2 bg-red-500 hover:bg-red-600 rounded-full text-white transition"
+              className="absolute top-2 right-2 sm:top-4 sm:right-4 p-2 bg-red-500 hover:bg-red-600 rounded-full text-white transition"
               aria-label="Tutup"
             >
               ✕

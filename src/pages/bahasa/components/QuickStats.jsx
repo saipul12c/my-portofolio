@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 
-export const QuickStats = React.memo(({ bahasaSehariHari, bahasaPemrograman }) => {
+const QuickStatsComponent = ({ bahasaSehariHari, bahasaPemrograman }) => {
   // Memoize stats calculation untuk menghindari recalculation
   const stats = useMemo(() => {
     const allBahasa = [...bahasaSehariHari, ...bahasaPemrograman];
@@ -60,4 +60,7 @@ export const QuickStats = React.memo(({ bahasaSehariHari, bahasaPemrograman }) =
       ))}
     </motion.div>
   );
-});
+};
+
+export const QuickStats = React.memo(QuickStatsComponent);
+QuickStatsComponent.displayName = "QuickStats";

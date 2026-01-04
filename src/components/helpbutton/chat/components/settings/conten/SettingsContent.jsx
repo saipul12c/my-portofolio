@@ -1,4 +1,5 @@
 import { Download, RefreshCw, Trash2, Upload } from "lucide-react";
+import { CHATBOT_VERSION, AI_DOCS_PATH } from '../../../config';
 import { GeneralSettings } from "../settings-tabs/GeneralSettings";
 import { AISettings } from "../settings-tabs/AISettings";
 import { DataSettings } from "../settings-tabs/DataSettings";
@@ -117,6 +118,8 @@ export function SettingsContent({
     }
   };
 
+  const isLiveCS = settings?.settingsContext === 'live-cs';
+
   return (
     <div className="flex-1 p-4 text-sm space-y-4 overflow-y-auto">
       <div className="flex justify-between items-center">
@@ -147,13 +150,33 @@ export function SettingsContent({
         </div>
       </div>
 
+      {isLiveCS && (
+        <div className="p-3 rounded-lg bg-cyan-900/10 border border-cyan-800/30 text-sm text-cyan-100">
+          <div className="font-semibold">Live CS Mode</div>
+          <div className="text-xs text-gray-200 mt-1">Anda sedang melihat pengaturan untuk Live CS SaipulAI. Mengubah pengaturan seperti <strong>Privacy</strong> atau <strong>Transcripts</strong> akan mempengaruhi bagaimana percakapan dibagikan ke tim Live CS.</div>
+          <div className="mt-2 text-xs">
+            - Ketersediaan Live CS: Senin–Jumat 09:00–17:00
+          </div>
+          <div className="mt-1 text-xs">
+            - Lihat panduan keamanan di <a href="/live-cs/security" className="text-cyan-200 underline">Panduan Keamanan</a>
+          </div>
+        </div>
+      )}
+
       <div className="text-xs text-gray-400">Perubahan pengaturan akan diterapkan langsung ke chat aktif.</div>
 
       {renderTabContent()}
 
       <div className="pt-4 flex justify-between items-center border-t border-gray-700">
         <div className="text-xs text-gray-500">
-          SaipulAI v7.0.0 • Enhanced Intelligence
+          <a
+            href={AI_DOCS_PATH}
+            onClick={(e) => { e.preventDefault(); window.location.href = AI_DOCS_PATH; }}
+            className="hover:underline"
+            style={{ color: 'var(--saipul-accent)' }}
+          >
+            SaipulAI {CHATBOT_VERSION} • Enhanced Intelligence
+          </a>
           <br />
           <span className="text-gray-600">
             {knowledgeStats.totalItems || 0} items • {fileStats.totalFiles} files

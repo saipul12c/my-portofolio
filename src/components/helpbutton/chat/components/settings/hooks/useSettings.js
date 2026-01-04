@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { DEFAULT_SETTINGS, SETTINGS_KEY } from '../../logic/utils/fileProcessor';
+import { DEFAULT_SETTINGS } from '../../../config.js';
+import { SETTINGS_KEY } from '../../logic/utils/fileProcessor';
+import { storageService } from '../../logic/utils/storageService';
 
 export function useSettings(knowledgeBase = {}) {
   const [settings, setSettings] = useState({ ...DEFAULT_SETTINGS });
@@ -78,10 +80,9 @@ export function useSettings(knowledgeBase = {}) {
 
   useEffect(() => {
     try {
-      const savedSettings = localStorage.getItem(SETTINGS_KEY);
+      const savedSettings = storageService.get(SETTINGS_KEY);
       if (savedSettings) {
-        const parsed = JSON.parse(savedSettings);
-        setSettings(prev => ({ ...prev, ...parsed }));
+        setSettings(prev => ({ ...prev, ...savedSettings }));
       }
     } catch (e) {
       console.error("Error loading settings:", e);
@@ -92,7 +93,7 @@ export function useSettings(knowledgeBase = {}) {
     const newSettings = { ...settings, [key]: value };
     setSettings(newSettings);
     try {
-      localStorage.setItem("saipul_settings", JSON.stringify(newSettings));
+      storageService.set(SETTINGS_KEY, newSettings);
       window.dispatchEvent(new Event("storage"));
       
       window.dispatchEvent(new CustomEvent('saipul_settings_updated', {
@@ -106,7 +107,7 @@ export function useSettings(knowledgeBase = {}) {
   const handleReset = () => {
     setSettings(prev => ({ ...DEFAULT_SETTINGS, activeTab: prev.activeTab }));
     try {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(DEFAULT_SETTINGS));
+      storageService.set(SETTINGS_KEY, DEFAULT_SETTINGS);
       window.dispatchEvent(new Event("storage"));
     } catch (e) {
       console.error("Error resetting settings:", e);

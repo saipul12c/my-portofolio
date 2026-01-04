@@ -17,27 +17,27 @@ const MainContent = ({
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    className="bg-gradient-to-br from-orange-500/20 via-purple-500/10 to-red-500/20 border border-orange-500/30 backdrop-blur-xl rounded-2xl p-4 sm:p-6 md:p-8 hover:shadow-2xl transition-all group relative overflow-hidden"
+    className="bg-gradient-to-br from-orange-500/20 via-purple-500/10 to-red-500/20 border border-orange-500/30 backdrop-blur-xl rounded-2xl p-3 sm:p-5 md:p-8 hover:shadow-2xl transition-all group relative overflow-hidden w-full max-w-3xl mx-auto"
   >
     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 transform scale-150 opacity-10"></div>
 
     <div className="relative space-y-8">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-3 sm:gap-0">
         <div className="flex items-center gap-3">
           <div className="p-3 bg-orange-500/20 rounded-xl group-hover:scale-110 transition-transform">
             {React.createElement(getIconComponent(currentConfig.brand.logo), { className: "w-8 h-8 text-orange-400" })}
           </div>
           <div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">{currentConfig.content.title}</h2>
-            <p className="text-orange-300 text-sm mt-1">{currentConfig.brand.slogan}</p>
+            <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-white">{currentConfig.content.title}</h2>
+            <p className="text-orange-300 text-xs sm:text-sm mt-1">{currentConfig.brand.slogan}</p>
           </div>
         </div>
-        <span className="px-4 py-2 bg-orange-500/20 text-orange-300 text-sm rounded-full border border-orange-500/30">
+        <span className="px-3 py-1 sm:px-4 sm:py-2 bg-orange-500/20 text-orange-300 text-xs sm:text-sm rounded-full border border-orange-500/30 mt-2 sm:mt-0">
           Coming Soon
         </span>
       </div>
 
-      <p className="text-gray-300 text-lg leading-relaxed max-w-2xl">
+      <p className="text-gray-300 text-base sm:text-lg leading-relaxed max-w-2xl">
         {currentConfig.content.description}
       </p>
 
@@ -47,7 +47,7 @@ const MainContent = ({
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
         >
           {currentConfig.content.features.map((feature, index) => {
             const IconComponent = getIconComponent(feature.icon);
@@ -70,14 +70,14 @@ const MainContent = ({
       )}
 
       {/* Countdown Timer */}
-      <div className="bg-black/30 rounded-xl p-4 sm:p-6 border border-orange-500/20">
+      <div className="bg-black/30 rounded-xl p-3 sm:p-6 border border-orange-500/20">
         <div className="flex items-center gap-2 justify-center mb-4">
           {React.createElement(getIconComponent(currentConfig.countdownLabels.icon), { className: "w-4 h-4 text-orange-300" })}
           <p className="text-sm text-orange-300 font-semibold text-center">
             ⏰ Launch Countdown
           </p>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-4 text-center">
           {[
             { value: years, label: (currentConfig.countdownLabels && currentConfig.countdownLabels.years) || 'Years' },
             { value: days, label: (currentConfig.countdownLabels && currentConfig.countdownLabels.days) || 'Days' },
@@ -98,23 +98,23 @@ const MainContent = ({
       </div>
 
       {/* Newsletter Signup */}
-      <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/5 rounded-xl p-6 border border-cyan-500/20">
-        <h3 className="text-lg font-semibold text-cyan-400 mb-4 flex items-center gap-2">
+      <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/5 rounded-xl p-4 sm:p-6 border border-cyan-500/20">
+        <h3 className="text-base sm:text-lg font-semibold text-cyan-400 mb-4 flex items-center gap-2">
           {React.createElement(getIconComponent(currentConfig.newsletter.icon), { className: "w-5 h-5" })}
           {currentConfig.newsletter.title}
         </h3>
-        <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3">
+        <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={currentConfig.newsletter.placeholder}
-            className="flex-1 px-4 py-3 rounded-lg bg-black/30 border border-cyan-500/30 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent backdrop-blur-sm"
+            className="flex-1 px-4 py-2 sm:py-3 rounded-lg bg-black/30 border border-cyan-500/30 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent backdrop-blur-sm w-full"
             required
           />
           <button 
             type="submit"
-            className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:opacity-90 transition-all duration-200 font-medium transform hover:scale-105 shadow-lg hover:shadow-cyan-500/25 flex items-center gap-2"
+            className="w-full sm:w-auto px-6 py-2 sm:py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:opacity-90 transition-all duration-200 font-medium transform hover:scale-105 shadow-lg hover:shadow-cyan-500/25 flex items-center justify-center gap-2"
           >
             {React.createElement(getIconComponent(currentConfig.newsletter.icon), { className: "w-4 h-4" })}
             {currentConfig.newsletter.buttonText}
@@ -124,9 +124,9 @@ const MainContent = ({
 
       {/* Technology Stack */}
       {currentConfig.technology && (
-        <div className="bg-black/30 rounded-xl p-6 border border-orange-500/20">
-          <h3 className="text-lg font-semibold text-orange-400 mb-4">Technology Stack</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-black/30 rounded-xl p-4 sm:p-6 border border-orange-500/20">
+          <h3 className="text-base sm:text-lg font-semibold text-orange-400 mb-4">Technology Stack</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div className="space-y-3">
               <h4 className="text-white font-semibold flex items-center gap-2">
                 {React.createElement(getIconComponent(currentConfig.technology.backend.icons.backend), { className: "w-4 h-4" })}

@@ -76,7 +76,7 @@ export function calculateMath(expression, calculationPrecision) {
 
             const val = simpson(f, a, b, 1000);
             return `🧮 **Hasil Perhitungan Integral**: \`${integrandRaw}\` dari ${a} sampai ${b} = **${fmt(val)}**\n📐 *Perhitungan integral numerik*`;
-          } catch (_) {
+          } catch (_) { void _;
             // Fallback to original method
             const integralMatch = lower.match(/integral\s+(.+?)\s+d[a-z]?\s*(?:dari\s*([-0-9.]+)\s*sampai\s*([-0-9.]+))?/i);
             if (integralMatch) {
@@ -133,7 +133,7 @@ export function calculateMath(expression, calculationPrecision) {
             const d = math.derivative(funcRaw, 'x');
             const val = d.evaluate({ x: point });
             return `🧮 **Hasil Turunan**: \`${funcRaw}\` pada x=${point} = **${fmt(val)}**\n📐 *Perhitungan turunan numerik/simbolik*`;
-          } catch (_) {
+          } catch (_) { void _;
             // Fallback to numeric method
             try {
               // Try with mathjs first
@@ -143,7 +143,7 @@ export function calculateMath(expression, calculationPrecision) {
               const h = 1e-6;
               const deriv = (f(point + h) - f(point - h)) / (2 * h);
               return `🧮 **Hasil Turunan (numerik)**: \`${funcRaw}\` pada x=${point} = **${fmt(deriv)}**`;
-            } catch (_) {
+            } catch (_) { void _;
               // Fallback to original method
               const funcExpr = mapMathTokens(funcRaw).replace(/[^0-9+\-*/().,%\s^*xXMathPIEa-zA-Z]/g, '');
               const f = Function('x', `return (${funcExpr})`);
@@ -162,6 +162,21 @@ export function calculateMath(expression, calculationPrecision) {
     }
 
     // --- GENERAL MATH EXPRESSION ---
+    // STRICT CHECK: Must contain actual math operators or functions
+    const hasMathOperators = /[\d+\-*/()^=<>]+/.test(expr);
+    const hasMathFunctions = /\b(sin|cos|tan|log|ln|sqrt|abs|exp|ceil|floor|round|min|max|pow)\b/i.test(expr);
+    const hasNumbers = /\d/.test(expr);
+    
+    // REJECT if no math indicators at all
+    if (!hasNumbers && !hasMathOperators && !hasMathFunctions) {
+      return null;
+    }
+    
+    // REJECT if it's just a single number or variable without operators
+    if (/^[a-zA-Z0-9]+$/.test(expr) && !hasMathFunctions) {
+      return null;
+    }
+    
     try {
       // First try with mathjs
       const result = math.evaluate(expr);
@@ -173,9 +188,13 @@ export function calculateMath(expression, calculationPrecision) {
         return `🧮 **Hasil Perhitungan**: \`${expression}\` = **${Number(result.toFixed(precision))}**`;
       }
       
-      // For non-numeric results (matrices, etc.) stringify
-      return `🧮 **Hasil**: \`${expression}\` = **${JSON.stringify(result)}**`;
-    } catch (_) {
+      // For non-numeric results (matrices, etc.) stringify only if it's actually a valid result
+      if (result && typeof result === 'object') {
+        return `🧮 **Hasil**: \`${expression}\` = **${JSON.stringify(result)}**`;
+      }
+      
+      return null;
+    } catch (_) { void _;
       // Fallback to original method if mathjs fails
       try {
         // Allow letters (variables) in the expression; remove only clearly unsafe characters
@@ -205,6 +224,10 @@ export function calculateMath(expression, calculationPrecision) {
         }
         return null;
       } catch (fallbackError) {
+        // Jika error karena ekspresi bukan matematika, tampilkan pesan ramah
+        if (fallbackError instanceof ReferenceError || fallbackError instanceof SyntaxError) {
+          return null;  // Return null instead of error message - let other handlers deal with it
+        }
         console.error('Error in calculateMath:', fallbackError);
         return null;
       }

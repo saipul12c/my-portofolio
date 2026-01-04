@@ -1,48 +1,17 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Image, UserCheck, Tag, AlertCircle } from "lucide-react";
+import { filterMediaItems, shuffleArray } from "../utils/filterHelpers";
+import { GALLERY_CONFIG } from "../utils/constants";
+import { sanitizeUrl, generateAltText } from "../utils/sanitizers";
 
 // load images lazily to avoid large bundle and duplicate static imports
 
-
-// 🔀 Fungsi acak (Fisher-Yates)
-function shuffleArray(array) {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
-
-// 🔍 Filter helper function
-function filterImages(images, searchTerm = "", selectedTags = []) {
-  let filtered = images;
-
-  if (searchTerm) {
-    const term = searchTerm.toLowerCase();
-    filtered = filtered.filter(
-      (img) =>
-        img.title?.toLowerCase().includes(term) ||
-        img.desc?.toLowerCase().includes(term) ||
-        img.category?.toLowerCase().includes(term) ||
-        img.tags?.some((tag) => tag.toLowerCase().includes(term))
-    );
-  }
-
-  if (selectedTags.length > 0) {
-    filtered = filtered.filter((img) =>
-      selectedTags.some((tag) => img.tags?.includes(tag))
-    );
-  }
-
-  return filtered;
-}
-
 export default function GalleryImages({ onSelect, filterSettings = {}, onFilteredDataChange }) {
-  const ITEMS_PER_PAGE = 10;
+  const ITEMS_PER_PAGE = GALLERY_CONFIG.ITEMS_PER_PAGE.IMAGES;
   const [currentPage, setCurrentPage] = useState(1);
   const [imagesData, setImagesData] = useState([]);
+  const [isShuffled, setIsShuffled] = useState(false);
   
   const { searchTerm = "", tags: selectedTags = [] } = filterSettings;
 
@@ -60,17 +29,21 @@ export default function GalleryImages({ onSelect, filterSettings = {}, onFiltere
     return () => { mounted = false; };
   }, []);
 
-  // 🔄 Acak data & bagi ke halaman
+  // 🔄 Acak data & bagi ke halaman - only shuffle once on initial load
   const { pages, allFilteredData } = useMemo(() => {
-    const filtered = filterImages(imagesData, searchTerm, selectedTags);
-    const shuffled = shuffleArray(filtered);
-    const totalPages = Math.ceil(shuffled.length / ITEMS_PER_PAGE);
+    const filtered = filterMediaItems(imagesData, searchTerm, selectedTags);
+    // Only shuffle if not already shuffled (performance optimization)
+    const processedData = isShuffled ? filtered : shuffleArray(filtered);
+    if (!isShuffled && filtered.length > 0) {
+      setIsShuffled(true);
+    }
+    const totalPages = Math.ceil(processedData.length / ITEMS_PER_PAGE);
     const chunks = [];
     for (let i = 0; i < totalPages; i++) {
-      chunks.push(shuffled.slice(i * ITEMS_PER_PAGE, (i + 1) * ITEMS_PER_PAGE));
+      chunks.push(processedData.slice(i * ITEMS_PER_PAGE, (i + 1) * ITEMS_PER_PAGE));
     }
     return { pages: chunks, allFilteredData: filtered };
-  }, [imagesData, searchTerm, selectedTags]);
+  }, [imagesData, searchTerm, selectedTags, ITEMS_PER_PAGE]);
 
   // 📢 Notify parent of filtered data (use effect to avoid updates during render)
   useEffect(() => {
@@ -78,6 +51,11 @@ export default function GalleryImages({ onSelect, filterSettings = {}, onFiltere
       onFilteredDataChange(allFilteredData);
     }
   }, [allFilteredData, onFilteredDataChange]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedTags]);
 
   const currentData = pages[currentPage - 1] || [];
   const hasNoData = allFilteredData.length === 0;
@@ -131,8 +109,8 @@ export default function GalleryImages({ onSelect, filterSettings = {}, onFiltere
               {/* Gambar + Watermark */}
               <div className="relative w-full h-64 overflow-hidden rounded-2xl">
                 <img
-                  src={img.src}
-                  alt={img.title}
+                  src={sanitizeUrl(img.src)}
+                  alt={generateAltText(img)}
                   loading="lazy"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
@@ -151,8 +129,8 @@ export default function GalleryImages({ onSelect, filterSettings = {}, onFiltere
                 {img.creator && (
                   <div className="flex items-center gap-2 mb-2">
                     <img
-                      src={img.creator.avatar}
-                      alt={img.creator.display_name}
+                      src={sanitizeUrl(img.creator.avatar, '/default-avatar.jpg')}
+                      alt={`${img.creator.display_name} avatar`}
                       className="w-6 h-6 rounded-full border border-white/20"
                     />
                     <p className="text-xs text-cyan-300 flex items-center gap-1">
@@ -197,10 +175,12 @@ export default function GalleryImages({ onSelect, filterSettings = {}, onFiltere
                     ? "opacity-50 cursor-not-allowed border-gray-700 text-gray-400"
                     : "border-cyan-400 text-cyan-300 hover:bg-cyan-400/10"
                 }`}
+                aria-label="Go to previous page"
+                aria-disabled={currentPage === 1}
               >
                 ⬅ Sebelumnya
               </button>
-              <span className="text-sm text-gray-400">
+              <span className="text-sm text-gray-400" aria-live="polite">
                 Halaman {currentPage} dari {pages.length}
               </span>
               <button
@@ -211,6 +191,8 @@ export default function GalleryImages({ onSelect, filterSettings = {}, onFiltere
                     ? "opacity-50 cursor-not-allowed border-gray-700 text-gray-400"
                     : "border-cyan-400 text-cyan-300 hover:bg-cyan-400/10"
                 }`}
+                aria-label="Go to next page"
+                aria-disabled={currentPage === pages.length}
               >
                 Berikutnya ➡
               </button>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { getMediaRoute } from "../utils/routeHelpers";
 
 export function useGalleryData() {
   const [allMedia, setAllMedia] = useState([]);
@@ -73,8 +74,8 @@ export function useGalleryData() {
         id: item.id,
         title: item.title || item.desc || `${item.type} ${item.id}`,
         mediaType: item.type,
-        // normalize route segments to match app routes (short -> shorts, image -> images, video -> videos, album -> albums)
-        url: `/gallery/${{ short: "shorts", image: "images", video: "videos", album: "albums" }[item.type] || item.type}/${item.id}`,
+        // Use shared route helper instead of duplicate mapping
+        url: `/gallery/${getMediaRoute(item.type)}/${item.id}`,
       }));
   };
 

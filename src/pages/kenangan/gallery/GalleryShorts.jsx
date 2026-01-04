@@ -1,52 +1,22 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Film, Calendar, MapPin, Tag, Play, AlertCircle } from "lucide-react";
+import { filterMediaItems, shuffleArray } from "../utils/filterHelpers";
+import { GALLERY_CONFIG } from "../utils/constants";
+import { validateVideoSource } from "../utils/sanitizers";
 
 // load shorts data lazily to avoid bundling large json into main chunk
 
-
-// 🔀 Acak urutan data
-function shuffleArray(array) {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
-
-// ⚙️ Cek apakah file lokal
+// ⚙️ Cek apakah file lokal dengan proper validation
 function isLocalVideo(src) {
-  return src && (src.endsWith(".mp4") || src.endsWith(".webm") || src.endsWith(".ogg"));
-}
-
-// 🔍 Filter helper function
-function filterShorts(shorts, searchTerm = "", selectedTags = []) {
-  let filtered = shorts;
-
-  if (searchTerm) {
-    const term = searchTerm.toLowerCase();
-    filtered = filtered.filter(
-      (short) =>
-        short.title?.toLowerCase().includes(term) ||
-        short.desc?.toLowerCase().includes(term) ||
-        short.category?.toLowerCase().includes(term) ||
-        short.tags?.some((tag) => tag.toLowerCase().includes(term))
-    );
-  }
-
-  if (selectedTags.length > 0) {
-    filtered = filtered.filter((short) =>
-      selectedTags.some((tag) => short.tags?.includes(tag))
-    );
-  }
-
-  return filtered;
+  if (!src) return false;
+  const validation = validateVideoSource(src);
+  return validation.isValid;
 }
 
 export default function GalleryShorts({ onSelect, filterSettings = {}, onFilteredDataChange }) {
-  const ITEMS_PER_PAGE = 3;
-  const MAX_PAGES_DISPLAY = 10;
+  const ITEMS_PER_PAGE = GALLERY_CONFIG.ITEMS_PER_PAGE.SHORTS;
+  const MAX_PAGES_DISPLAY = GALLERY_CONFIG.MAX_PAGES_DISPLAY;
   const [currentPage, setCurrentPage] = useState(1);
   const [shortsData, setShortsData] = useState([]);
   
@@ -66,7 +36,7 @@ export default function GalleryShorts({ onSelect, filterSettings = {}, onFiltere
   // 🔄 Filter hanya video lokal & bagi data per halaman
   const { pages, allFilteredData } = useMemo(() => {
     const localVideos = (shortsData || []).filter((short) => isLocalVideo(short.src));
-    const filtered = filterShorts(localVideos, searchTerm, selectedTags);
+    const filtered = filterMediaItems(localVideos, searchTerm, selectedTags);
     const shuffled = shuffleArray(filtered);
     const totalPages = Math.ceil(shuffled.length / ITEMS_PER_PAGE);
     const chunks = [];
@@ -74,7 +44,7 @@ export default function GalleryShorts({ onSelect, filterSettings = {}, onFiltere
       chunks.push(shuffled.slice(i * ITEMS_PER_PAGE, (i + 1) * ITEMS_PER_PAGE));
     }
     return { pages: chunks, allFilteredData: filtered };
-  }, [shortsData, searchTerm, selectedTags]);
+  }, [shortsData, searchTerm, selectedTags, ITEMS_PER_PAGE]);
 
   // 📢 Notify parent of filtered data (use effect to avoid updates during render)
   useEffect(() => {
@@ -82,6 +52,11 @@ export default function GalleryShorts({ onSelect, filterSettings = {}, onFiltere
       onFilteredDataChange(allFilteredData);
     }
   }, [allFilteredData, onFilteredDataChange]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedTags]);
 
   const currentData = pages[currentPage - 1] || [];
   const hasNoData = allFilteredData.length === 0;
@@ -133,6 +108,7 @@ export default function GalleryShorts({ onSelect, filterSettings = {}, onFiltere
                       playsInline
                       preload="none"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      aria-label={`Short video: ${short.title}`}
                     />
 
                     {/* Overlay Info */}

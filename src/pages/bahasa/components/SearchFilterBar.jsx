@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 
-export const SearchFilterBar = React.memo(({ 
+const SearchFilterBarComponent = ({ 
   searchTerm, 
   setSearchTerm, 
   filterLevel, 
@@ -84,4 +84,7 @@ export const SearchFilterBar = React.memo(({
       </p>
     </motion.div>
   </motion.div>
-));
+);
+
+export const SearchFilterBar = React.memo(SearchFilterBarComponent);
+SearchFilterBarComponent.displayName = "SearchFilterBar";

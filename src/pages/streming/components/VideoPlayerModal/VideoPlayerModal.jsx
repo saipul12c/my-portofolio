@@ -155,13 +155,13 @@ const VideoPlayerModal = ({ video, isOpen, onClose, onLike }) => {
           className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors"
         >
           <X size={24} />
-          <span>Back to browsing</span>
+          <span className="hidden sm:inline">Back to browsing</span>
         </button>
         
         <div className="flex items-center gap-4">
-          <button className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-full transition-colors">
-            <ExternalLink size={18} className="mr-2 inline" />
-            Open in app
+          <button className="px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-full transition-colors flex items-center gap-2">
+            <ExternalLink size={18} />
+            <span className="hidden sm:inline">Open in app</span>
           </button>
           <button className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-700">
             <MoreVertical size={20} />
@@ -169,7 +169,7 @@ const VideoPlayerModal = ({ video, isOpen, onClose, onLike }) => {
         </div>
       </div>
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
         {/* Video Player */}
         <div className="flex-1 flex flex-col">
           <div 
@@ -494,7 +494,7 @@ const VideoPlayerModal = ({ video, isOpen, onClose, onLike }) => {
         </div>
 
         {/* Related Videos Sidebar */}
-        <div className="w-96 border-l border-gray-800 overflow-y-auto p-6">
+        <div className="w-full md:w-96 border-t md:border-t-0 md:border-l border-gray-800 overflow-y-auto p-4 md:p-6">
           <h3 className="font-semibold text-lg mb-4">Up next</h3>
           {/* Related videos list would go here */}
         </div>

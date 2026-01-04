@@ -85,19 +85,36 @@ export default function HelpVersionInfo() {
   useEffect(() => {
     const extractVersions = () => {
       const versionMap = new Map();
+      // Normalisasi versi terbaru untuk perbandingan (selalu dengan leading 'v')
+      const latestNormalized = latest?.versiWebsite ? (latest.versiWebsite.startsWith('v') ? latest.versiWebsite : `v${latest.versiWebsite}`) : 'v0.0.0';
       
       // Tambahkan versi dari dokumen
       docsData.forEach(doc => {
         if (doc.version) {
-          if (!versionMap.has(doc.version)) {
-            versionMap.set(doc.version, {
-              version: doc.version,
+          // Normalisasi ke format 'vX.Y.Z'
+          const normVersion = doc.version.startsWith('v') ? doc.version : `v${doc.version}`;
+          if (!versionMap.has(normVersion)) {
+            // Bangun slug: tambahkan suffix versi ke slug dokumen kecuali jika
+            // versi tersebut adalah versi terbaru (jangan ubah route terbaru)
+            const baseSlug = doc.slug || (doc.title ? doc.title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-') : normVersion.toLowerCase().replace(/\./g, '-'));
+            const isLatest = normVersion === latestNormalized;
+            const versionSuffix = doc.version && doc.version.toString().startsWith('v') ? doc.version : `v${doc.version}`;
+            // Gunakan slug dengan suffix versi untuk semua versi agar routing konsisten
+            // (menghindari kasus detail gagal karena slug "bersih" untuk release terbaru)
+            const slugValue = `${baseSlug}-${versionSuffix}`;
+
+            // Last updated fallback: doc.lastUpdated -> versionHistory[0].date -> latest.lastUpdated
+            const lastUpdated = doc.lastUpdated || doc.versionHistory?.[0]?.date || latest.lastUpdated || 'Belum ada data';
+
+            versionMap.set(normVersion, {
+              version: normVersion,
               versionCode: doc.versionCode,
               versionType: doc.versionType,
               releaseChannel: doc.releaseChannel,
-              lastUpdated: doc.lastUpdated,
+              lastUpdated,
               title: doc.title,
-              slug: doc.slug,
+              slug: slugValue,
+              isLatest,
               author: doc.author,
               status: doc.versionHistory?.[0]?.status || "CURRENT",
               breakingChanges: doc.versionHistory?.[0]?.breakingChanges || false,
@@ -106,9 +123,15 @@ export default function HelpVersionInfo() {
               tags: doc.tags || [],
               content: doc.content,
               changelog: doc.changelog || [],
+              changelogSummary: doc.changelog?.[0]?.changes || '',
+              changelogCount: doc.changelog?.length || 0,
               versionHistory: doc.versionHistory || [],
               visual: doc.visual || {},
-              compatibility: doc.compatibility || {}
+              visualSummary: doc.visual?.summary || '',
+              compatibility: doc.compatibility || {},
+              relatedDocs: doc.relatedDocs || [],
+              resources: doc.resources || [],
+              docsReadTime: doc.estimatedReadTime || ''
             });
           }
         }
@@ -116,13 +139,21 @@ export default function HelpVersionInfo() {
       
       // Tambahkan versi planned
       PLANNED_VERSIONS.forEach(planned => {
-        versionMap.set(planned.version, {
+        // Pastikan versi planned disimpan konsisten (norm dengan leading 'v')
+        const normPlannedVersion = planned.version.startsWith('v') ? planned.version : `v${planned.version}`;
+        const vDash = normPlannedVersion.toLowerCase().replace(/\./g, '-').replace(/^v/, 'v');
+        const comingSlug = `comingsoon-${vDash}`;
+        const plannedLastUpdated = planned.date || 'Coming Soon — Akan segera dirilis dan digunakan oleh semua orang';
+
+        versionMap.set(normPlannedVersion, {
           ...planned,
+          version: normPlannedVersion,
           versionCode: "build-planned",
           releaseChannel: "Roadmap",
           versionType: planned.type.toLowerCase(),
-          lastUpdated: planned.date,
-          slug: planned.version.toLowerCase().replace(/\./g, '-'),
+          lastUpdated: plannedLastUpdated,
+          slug: comingSlug,
+          author: planned.author || 'Tim Produk',
           changelog: [],
           versionHistory: [],
           visual: {
@@ -153,7 +184,7 @@ export default function HelpVersionInfo() {
     };
     
     setVersions(extractVersions());
-  }, []);
+  }, [latest.versiWebsite, latest.lastUpdated]);
 
   // Filter versi berdasarkan tab aktif
   const filteredVersions = versions.filter(ver => {
@@ -213,11 +244,12 @@ export default function HelpVersionInfo() {
       labels.push({ text: "Coming Soon", color: "bg-gradient-to-r from-purple-500 to-purple-600 text-white" });
     }
     // Baru (new) jika versi adalah yang terbaru
-    if (version.version === latest.versiWebsite) {
+    const latestNorm = latest?.versiWebsite ? (latest.versiWebsite.startsWith('v') ? latest.versiWebsite : `v${latest.versiWebsite}`) : null;
+    if (latestNorm && version.version === latestNorm) {
       labels.push({ text: "Baru", color: "bg-gradient-to-r from-green-500 to-green-600 text-white" });
     }
     // Last Update
-    if (version.lastUpdated === latest.lastUpdated && version.version !== latest.versiWebsite) {
+    if (version.lastUpdated === latest.lastUpdated && version.version !== latestNorm) {
       labels.push({ text: "Last Update", color: "bg-gradient-to-r from-blue-500 to-blue-600 text-white" });
     }
     // Peluncuran pertama
@@ -245,7 +277,7 @@ export default function HelpVersionInfo() {
     <div className="min-h-screen bg-gradient-to-b from-[#0a1833] to-[#162447] p-4 md:p-6">
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-[#e6e6e6] mb-2">
               Website Versions & Release History
@@ -254,8 +286,8 @@ export default function HelpVersionInfo() {
               Track all versions of your portfolio website, from current releases to upcoming features
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-gradient-to-r from-[#162447] to-[#1f2a44] rounded-2xl border border-[#1f2a44]">
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <div className="w-full md:w-auto p-3 bg-gradient-to-r from-[#162447] to-[#1f2a44] rounded-2xl border border-[#1f2a44]">
               <div className="flex items-center gap-2">
                 <Rocket className="text-purple-400" size={20} />
                 <div>
@@ -268,7 +300,7 @@ export default function HelpVersionInfo() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <div className="bg-gradient-to-br from-[#162447] to-[#1f2a44] rounded-2xl p-6 border border-[#1f2a44]">
             <div className="flex items-center justify-between mb-4">
               <Package className="text-blue-400" size={24} />
@@ -326,7 +358,7 @@ export default function HelpVersionInfo() {
             onClick={() => setActiveTab("all")}
             className={`px-4 py-2 rounded-xl transition-all ${activeTab === "all" 
               ? "bg-gradient-to-r from-purple-500 to-purple-600 text-white" 
-              : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}
+              : "bg-gray-800 text-gray-400 hover:bg-gray-700 w-full sm:w-auto"}`}
           >
             All Versions
           </button>
@@ -334,7 +366,7 @@ export default function HelpVersionInfo() {
             onClick={() => setActiveTab("current")}
             className={`px-4 py-2 rounded-xl transition-all ${activeTab === "current" 
               ? "bg-gradient-to-r from-green-500 to-green-600 text-white" 
-              : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}
+              : "bg-gray-800 text-gray-400 hover:bg-gray-700 w-full sm:w-auto"}`}
           >
             Current
           </button>
@@ -342,7 +374,7 @@ export default function HelpVersionInfo() {
             onClick={() => setActiveTab("planned")}
             className={`px-4 py-2 rounded-xl transition-all ${activeTab === "planned" 
               ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white" 
-              : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}
+              : "bg-gray-800 text-gray-400 hover:bg-gray-700 w-full sm:w-auto"}`}
           >
             Planned
           </button>
@@ -350,7 +382,7 @@ export default function HelpVersionInfo() {
             onClick={() => setActiveTab("major")}
             className={`px-4 py-2 rounded-xl transition-all ${activeTab === "major" 
               ? "bg-gradient-to-r from-red-500 to-red-600 text-white" 
-              : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}
+              : "bg-gray-800 text-gray-400 hover:bg-gray-700 w-full sm:w-auto"}`}
           >
             Major
           </button>
@@ -358,7 +390,7 @@ export default function HelpVersionInfo() {
               onClick={() => setActiveTab("breaking")}
               className={`px-4 py-2 rounded-xl transition-all ${activeTab === "breaking" 
                 ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white" 
-                : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}
+                : "bg-gray-800 text-gray-400 hover:bg-gray-700 w-full sm:w-auto"}`}
             >
               Breaking Changes
             </button>
@@ -372,7 +404,7 @@ export default function HelpVersionInfo() {
               to={`/help/version/${version.slug}`}
               className="group block"
             >
-              <div className="bg-gradient-to-br from-[#162447]/60 to-[#1f2a44]/60 rounded-2xl p-6 border border-[#1f2a44] hover:border-purple-500/50 transition-all duration-300 hover:scale-[1.02]">
+              <div className="bg-gradient-to-br from-[#162447]/60 to-[#1f2a44]/60 rounded-2xl p-4 sm:p-6 border border-[#1f2a44] hover:border-purple-500/50 transition-all duration-300 hover:scale-[1.02]">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <div className="flex items-center gap-3 mb-2 flex-wrap">
@@ -396,7 +428,7 @@ export default function HelpVersionInfo() {
                   <ChevronRight className="text-[#bfc8e2] group-hover:text-purple-400 transition-colors" size={20} />
                 </div>
 
-                <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-700/50">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 pt-4 border-t border-gray-700/50 gap-3">
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                       <Calendar className="text-[#bfc8e2]" size={16} />
@@ -429,7 +461,7 @@ export default function HelpVersionInfo() {
                     {version.tags.slice(0, 3).map((tag, tagIndex) => (
                       <span 
                         key={tagIndex}
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${tagColors[tagIndex % tagColors.length]}`}
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${tagColors[tagIndex % tagColors.length]} select-none`}
                       >
                         {tag}
                       </span>

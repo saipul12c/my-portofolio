@@ -3,6 +3,7 @@ import { Hash, Pin, Bell, BellOff, Users, Inbox, HelpCircle, Search, Plus, Gift,
 import { useState, useRef, useEffect } from 'react';
 import ChannelSettings from './ChannelSettings';
 import Modal from '../ui/Modal';
+import { MessageReactions, ThreadView } from '../features';
 import api from '../../lib/api';
 import { useChat } from '../../contexts/ChatContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -23,6 +24,7 @@ const ChatArea = ({ onOpenServers, onOpenChannels, onOpenMembers }) => {
   const { selectedChannel, messages, sendMessage } = useChat();
   const { user } = useAuth();
   const { members, sendTyping } = useChat();
+  const [openThreadId, setOpenThreadId] = useState(null);
 
   const typingUsers = (members || []).filter(m => m.typing && String(m.id) !== String(user?.id));
 
@@ -246,18 +248,16 @@ const ChatArea = ({ onOpenServers, onOpenChannels, onOpenMembers }) => {
                 )}
               </div>
 
-              {/* Hover actions (react) */}
+              {/* Hover actions: reactions and open thread */}
               <div className="ml-2 flex items-start">
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button title="React 👍" onClick={async () => {
-                    try {
-                      const uid = (typeof window !== 'undefined' && localStorage.getItem('token')) ? null : null;
-                      // prefer auth user on server; frontend supplies nothing beyond api call
-                      await api.messages.react(msg.id, '👍', (typeof window !== 'undefined' && (localStorage.getItem('userId') || ( (window.__USER__ && window.__USER__.id) || null))) );
-                    } catch (err) {
-                      console.error('Failed to react', err);
-                    }
-                  }} className="p-1 bg-[var(--dc-surface)] rounded hover:bg-[var(--dc-surface-2)] text-gray-200">👍</button>
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
+                  <MessageReactions
+                    messageId={msg.id}
+                    onReact={(emoji, id) => {
+                      try { api.messages.react(id || msg.id, emoji); } catch (err) { console.error('Failed to react', err); }
+                    }}
+                  />
+                  <button title="Open thread" onClick={() => setOpenThreadId(msg.thread_id || msg.id)} className="p-1 bg-[var(--dc-surface)] rounded hover:bg-[var(--dc-surface-2)] text-gray-200">🧵</button>
                 </div>
               </div>
             </motion.div>
@@ -376,6 +376,13 @@ const ChatArea = ({ onOpenServers, onOpenChannels, onOpenMembers }) => {
                 <pre className="whitespace-pre-wrap text-sm bg-[#101113] p-3 rounded text-gray-200">{JSON.stringify(aiResponse, null, 2)}</pre>
               )}
             </div>
+          </div>
+        </Modal>
+      )}
+      {openThreadId && (
+        <Modal onClose={() => setOpenThreadId(null)} size="md">
+          <div className="text-white">
+            <ThreadView threadId={openThreadId} />
           </div>
         </Modal>
       )}

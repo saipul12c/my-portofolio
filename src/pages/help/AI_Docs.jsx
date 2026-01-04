@@ -1,6 +1,8 @@
+/* eslint-disable react-refresh/only-export-components */
 import React from "react";
 import { CHATBOT_VERSION, DEFAULT_SETTINGS } from "../../components/helpbutton/chat/config";
 import aiDocData from '../../data/AIDoc/data.json';
+import historyData from '../../data/AIDoc/riwayat/riwayat.json';
 import VersionDetail from './ai/AI_DocDetail';
 import { Link, useParams } from 'react-router-dom';
 import { 
@@ -28,6 +30,66 @@ import {
   SiJson,
   SiTailwindcss
 } from "react-icons/si";
+
+// Helper: parse numeric values from mixed strings
+const parseNumber = (val) => {
+  if (!val || typeof val !== 'string') return null;
+  const cleaned = val.replace(/[^0-9.]/g, "");
+  const num = parseFloat(cleaned);
+  return Number.isFinite(num) ? num : null;
+};
+
+// Simple SVG Bar Chart (no deps)
+const BarChart = ({ data = [], width = 600, height = 220 }) => {
+  const padding = 24;
+  const maxVal = Math.max(...data.map(d => d.value || 0), 1);
+  const barWidth = (width - padding * 2) / data.length;
+  return (
+    <svg width={width} height={height} className="w-full h-auto">
+      {/* Axis */}
+      <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="#374151" strokeWidth="1" />
+      {/* Bars */}
+      {data.map((d, i) => {
+        const barHeight = ((d.value || 0) / maxVal) * (height - padding * 2);
+        const x = padding + i * barWidth + barWidth * 0.1;
+        const y = height - padding - barHeight;
+        const w = barWidth * 0.8;
+        return (
+          <g key={i}>
+            <rect x={x} y={y} width={w} height={barHeight} rx={6} fill="url(#barGradient)" />
+            <text x={x + w / 2} y={height - padding + 14} fontSize="10" fill="#9CA3AF" textAnchor="middle">{d.label}</text>
+            <text x={x + w / 2} y={y - 6} fontSize="11" fill="#E5E7EB" textAnchor="middle">{d.value}</text>
+          </g>
+        );
+      })}
+      <defs>
+        <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#60A5FA" />
+          <stop offset="100%" stopColor="#06B6D4" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+};
+
+// Simple Gauge (progress-like)
+const Gauge = ({ label, value, unit = '', max = 100, goodIsLow = true }) => {
+  const pct = Math.max(0, Math.min(100, (value / max) * 100));
+  const color = goodIsLow
+    ? (pct < 40 ? 'from-emerald-500 to-green-500' : pct < 70 ? 'from-yellow-500 to-amber-500' : 'from-red-500 to-rose-500')
+    : (pct > 60 ? 'from-emerald-500 to-green-500' : pct > 30 ? 'from-yellow-500 to-amber-500' : 'from-red-500 to-rose-500');
+  return (
+    <div className="p-4 bg-gray-900/50 rounded-lg border border-gray-800">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm text-gray-300 font-medium">{label}</span>
+        <span className="text-sm text-gray-400">{value}{unit}</span>
+      </div>
+      <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+        <div className={`h-full bg-gradient-to-r ${color}`} style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
+};
 
 // Komponen untuk menampilkan konten berdasarkan section aktif
 const SectionContent = ({ activeSection, showAllVersions, showRawJson, aiDocData, versionStats }) => {
@@ -125,7 +187,7 @@ const SectionContent = ({ activeSection, showAllVersions, showRawJson, aiDocData
           </div>
 
           <div className="space-y-6">
-            {(aiDocData?.version_history_detail ?? []).slice(0,6).map((ver, idx) => (
+            {(historyData?.version_history_detail ?? []).slice(0,6).map((ver, idx) => (
               <div key={idx} className="bg-gray-900/50 rounded-lg border border-gray-800 p-5 hover:border-gray-700 transition-colors">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -183,7 +245,7 @@ const SectionContent = ({ activeSection, showAllVersions, showRawJson, aiDocData
 
             {showAllVersions && (
               <div className="mt-6">
-                <VersionDetail data={aiDocData?.version_history_detail ?? []} />
+                <VersionDetail data={historyData?.version_history_detail ?? []} />
               </div>
             )}
 
@@ -207,7 +269,7 @@ const SectionContent = ({ activeSection, showAllVersions, showRawJson, aiDocData
               </summary>
               <div className="mt-3 space-y-4">
                 <div className="space-y-4">
-                  {(aiDocData?.version_history_detail ?? []).slice(6).map((ver, idx) => (
+                  {(historyData?.version_history_detail ?? []).slice(6).map((ver, idx) => (
                     <div key={idx} className="pl-4 border-l border-gray-800">
                       <div className="flex items-center gap-3 mb-2">
                         <strong className="text-gray-300">{ver.version}</strong>
@@ -253,6 +315,35 @@ const SectionContent = ({ activeSection, showAllVersions, showRawJson, aiDocData
               </div>
             ))}
           </div>
+
+          {/* Charts from statistik_versi_saat_ini */}
+          {(() => {
+            const s = aiDocData?.statistik_versi_saat_ini || {};
+            const totalFitur = parseNumber(s.total_fitur) ?? 0;
+            const kbFiles = parseNumber(s.knowledge_base_files) ?? 0;
+            const totalVersi = parseNumber(s.total_versi_dokumentasi) ?? 0;
+            const rataRelease = parseNumber(s.rata_rata_release) ?? 0;
+            const bundleMB = parseNumber(s.ukuran_bundle) ?? 0;
+            const respMS = parseNumber(s.waktu_respons) ?? 0;
+            const barData = [
+              { label: 'Fitur', value: totalFitur },
+              { label: 'KB', value: kbFiles },
+              { label: 'Versi', value: totalVersi },
+              { label: 'Rilis/Hari', value: rataRelease },
+            ];
+            return (
+              <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 bg-gray-900/50 p-4 rounded-lg border border-gray-800">
+                  <h4 className="font-semibold text-gray-300 mb-3">Grafik Ringkasan</h4>
+                  <BarChart data={barData} />
+                </div>
+                <div className="space-y-4">
+                  <Gauge label="Ukuran Bundle" value={bundleMB} unit=" MB" max={50} goodIsLow={true} />
+                  <Gauge label="Waktu Respons" value={respMS} unit=" ms" max={1000} goodIsLow={true} />
+                </div>
+              </div>
+            );
+          })()}
           
           {/* Performance metrics */}
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -302,6 +393,135 @@ const SectionContent = ({ activeSection, showAllVersions, showRawJson, aiDocData
               </div>
             </div>
           </div>
+
+          {/* AI NLP quick stats if available */}
+          {aiDocData?.ai_nlp_statistik && (
+            <div className="mt-6 bg-gray-900/50 p-4 rounded-lg border border-gray-800">
+              <h4 className="font-semibold text-gray-300 mb-3">AI/NLP Statistik</h4>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {[
+                  { label: 'Core Modules', value: aiDocData.ai_nlp_statistik.core_modules },
+                  { label: 'Advanced Modules', value: aiDocData.ai_nlp_statistik.advanced_modules },
+                  { label: 'Knowledge Nodes', value: aiDocData.ai_nlp_statistik.knowledge_nodes },
+                  { label: 'Corpus Sentences', value: aiDocData.ai_nlp_statistik.corpus_sentences },
+                  { label: 'Dependencies', value: aiDocData.ai_nlp_statistik.dependencies },
+                  { label: 'Bahasa Didukung', value: aiDocData.ai_nlp_statistik.bahasa_didukung },
+                  { label: 'Intents Didukung', value: aiDocData.ai_nlp_statistik.intents_didukung },
+                  { label: 'Entities Didukung', value: aiDocData.ai_nlp_statistik.entities_didukung },
+                ].map((item, idx) => (
+                  <div key={idx} className="p-3 bg-gray-800/40 rounded border border-gray-700">
+                    <div className="text-sm text-gray-400">{item.label}</div>
+                    <div className="text-lg font-semibold text-white">{item.value}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* AI NLP Performance */}
+          {aiDocData?.ai_nlp_performa && (
+            <div className="mt-6 bg-gray-900/50 p-4 rounded-lg border border-gray-800">
+              <h4 className="font-semibold text-gray-300 mb-3">Performa AI/NLP</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-400">Quick NLU</span>
+                    <span className="text-sm text-green-400">{aiDocData.ai_nlp_performa.quick_nlu}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-400">Comprehensive NLU</span>
+                    <span className="text-sm text-green-400">{aiDocData.ai_nlp_performa.comprehensive_nlu}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-400">Knowledge Lookup</span>
+                    <span className="text-sm text-green-400">{aiDocData.ai_nlp_performa.knowledge_lookup}</span>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-400">Language Detection</span>
+                    <span className="text-sm text-green-400">{aiDocData.ai_nlp_performa.language_detection}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-400">Translation Processing</span>
+                    <span className="text-sm text-green-400">{aiDocData.ai_nlp_performa.translation_processing}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-400">Response Evaluation</span>
+                    <span className="text-sm text-green-400">{aiDocData.ai_nlp_performa.response_evaluation}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-3 p-3 bg-gray-800/40 rounded">
+                <div className="text-sm text-gray-400">End-to-End Response: <span className="text-green-400">{aiDocData.ai_nlp_performa.end_to_end_response}</span></div>
+              </div>
+            </div>
+          )}
+
+          {/* AI NLP Supported Features */}
+          {aiDocData?.ai_nlp_supported && (
+            <div className="mt-6 bg-gray-900/50 p-4 rounded-lg border border-gray-800">
+              <h4 className="font-semibold text-gray-300 mb-3">Fitur AI/NLP yang Didukung</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h5 className="text-sm font-medium text-gray-300 mb-2">NLU Dataset Intents</h5>
+                  <div className="flex flex-wrap gap-2">
+                    {(aiDocData.ai_nlp_supported.nlu_dataset_intents || []).map((intent, idx) => (
+                      <span key={idx} className="px-2 py-1 bg-blue-900/30 text-blue-300 rounded text-xs">{intent}</span>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h5 className="text-sm font-medium text-gray-300 mb-2">Advanced Intents</h5>
+                  <div className="flex flex-wrap gap-2">
+                    {(aiDocData.ai_nlp_supported.advanced_intents || []).map((intent, idx) => (
+                      <span key={idx} className="px-2 py-1 bg-purple-900/30 text-purple-300 rounded text-xs">{intent}</span>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h5 className="text-sm font-medium text-gray-300 mb-2">Entities</h5>
+                  <div className="flex flex-wrap gap-2">
+                    {(aiDocData.ai_nlp_supported.entities || []).map((entity, idx) => (
+                      <span key={idx} className="px-2 py-1 bg-green-900/30 text-green-300 rounded text-xs">{entity}</span>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h5 className="text-sm font-medium text-gray-300 mb-2">Sentence Types</h5>
+                  <div className="flex flex-wrap gap-2">
+                    {(aiDocData.ai_nlp_supported.sentence_types || []).map((type, idx) => (
+                      <span key={idx} className="px-2 py-1 bg-yellow-900/30 text-yellow-300 rounded text-xs">{type}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4">
+                <h5 className="text-sm font-medium text-gray-300 mb-2">Bahasa Didukung</h5>
+                <div className="flex flex-wrap gap-2">
+                  {(aiDocData.ai_nlp_supported.bahasa || []).map((lang, idx) => (
+                    <span key={idx} className="px-2 py-1 bg-indigo-900/30 text-indigo-300 rounded text-xs">{lang}</span>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-4">
+                <h5 className="text-sm font-medium text-gray-300 mb-2">Sentiment Types</h5>
+                <div className="flex flex-wrap gap-2">
+                  {(aiDocData.ai_nlp_supported.sentiment_types || []).map((sentiment, idx) => (
+                    <span key={idx} className="px-2 py-1 bg-pink-900/30 text-pink-300 rounded text-xs">{sentiment}</span>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-4">
+                <h5 className="text-sm font-medium text-gray-300 mb-2">Evaluation Metrics</h5>
+                <div className="flex flex-wrap gap-2">
+                  {(aiDocData.ai_nlp_supported.evaluation_metrics || []).map((metric, idx) => (
+                    <span key={idx} className="px-2 py-1 bg-orange-900/30 text-orange-300 rounded text-xs">{metric}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </section>
     ),
@@ -377,13 +597,13 @@ const SectionContent = ({ activeSection, showAllVersions, showRawJson, aiDocData
                   Fitur Utama
                 </h3>
                 <ul className="space-y-2">
-                  {[
+                  {(aiDocData?.fitur_utama ?? [
                     "📚 Knowledge Base dinamis — sumber utama berasal dari file JSON",
                     "🧮 Kalkulator matematika canggih — fungsi trig, log, konstanta",
                     "🔁 Konversi & utilitas — suhu, mata uang, statistik",
                     "📁 Dukungan upload opsional — file diindeks ke knowledge base",
                     "💡 Saran kontekstual & quick actions berdasarkan topik",
-                  ].map((feature, idx) => (
+                  ]).map((feature, idx) => (
                     <li key={idx} className="text-sm text-gray-400 flex items-start gap-2">
                       <span className="text-gray-500 mt-0.5">•</span>
                       {feature}
@@ -411,7 +631,168 @@ const SectionContent = ({ activeSection, showAllVersions, showRawJson, aiDocData
                   </div>
                 ))}
               </div>
+              
+              {/* AI NLP Ringkasan */}
+              {aiDocData?.ai_nlp_ringkasan && (
+                <div className="mt-6">
+                  <h4 className="font-semibold text-gray-300 mb-3">AI/NLP Pipeline</h4>
+                  <div className="space-y-4">
+                    <div>
+                      <h5 className="text-sm font-medium text-gray-300 mb-2">Komponen Inti</h5>
+                      <ul className="space-y-1">
+                        {(aiDocData.ai_nlp_ringkasan.komponen_inti || []).map((comp, idx) => (
+                          <li key={idx} className="text-xs text-gray-400 flex items-start gap-2">
+                            <span className="text-gray-500">•</span>
+                            {comp}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h5 className="text-sm font-medium text-gray-300 mb-2">Modul Lanjutan</h5>
+                      <ul className="space-y-1">
+                        {(aiDocData.ai_nlp_ringkasan.modul_lanjutan || []).map((mod, idx) => (
+                          <li key={idx} className="text-xs text-gray-400 flex items-start gap-2">
+                            <span className="text-gray-500">•</span>
+                            {mod}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    {aiDocData.ai_nlp_ringkasan.catatan && (
+                      <div className="p-3 bg-blue-900/10 border border-blue-900/30 rounded">
+                        <p className="text-xs text-blue-300">{aiDocData.ai_nlp_ringkasan.catatan}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
+          </div>
+        </div>
+      </section>
+    ),
+
+    "nlp-advancements": (
+      <section id="nlp-advancements" className="scroll-mt-8">
+        <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700 p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg">
+              <FaRocket className="text-xl" />
+            </div>
+            <h2 className="text-2xl font-bold">Peningkatan Bahasa & Evaluasi NLP</h2>
+          </div>
+          
+          <div className="space-y-6">
+            {/* Advanced Language Detection */}
+            {aiDocData?.peningkatan_bahasa_dan_evaluasi?.advanced_language_detection && (
+              <div className="bg-gray-900/50 rounded-lg border border-gray-800 p-5">
+                <h3 className="font-semibold text-gray-300 mb-3 flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                  Advanced Language Detection
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-400">{aiDocData.peningkatan_bahasa_dan_evaluasi.advanced_language_detection.linguistic_analysis}</p>
+                    <p className="text-sm text-gray-400">{aiDocData.peningkatan_bahasa_dan_evaluasi.advanced_language_detection.character_frequency}</p>
+                    <p className="text-sm text-gray-400">{aiDocData.peningkatan_bahasa_dan_evaluasi.advanced_language_detection.context_aware}</p>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-400">{aiDocData.peningkatan_bahasa_dan_evaluasi.advanced_language_detection.confidence_scoring}</p>
+                    <p className="text-sm text-gray-400">{aiDocData.peningkatan_bahasa_dan_evaluasi.advanced_language_detection.detailed_metadata}</p>
+                    <p className="text-sm text-green-400 font-medium">Akurasi: {aiDocData.peningkatan_bahasa_dan_evaluasi.advanced_language_detection.akurasi}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Bilingual Response System */}
+            {aiDocData?.peningkatan_bahasa_dan_evaluasi?.bilingual_response_system && (
+              <div className="bg-gray-900/50 rounded-lg border border-gray-800 p-5">
+                <h3 className="font-semibold text-gray-300 mb-3 flex items-center gap-2">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full" />
+                  Bilingual Response System
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-400">{aiDocData.peningkatan_bahasa_dan_evaluasi.bilingual_response_system.automatic_language_switching}</p>
+                    <p className="text-sm text-gray-400">{aiDocData.peningkatan_bahasa_dan_evaluasi.bilingual_response_system.translation_engine}</p>
+                    <p className="text-sm text-gray-400">{aiDocData.peningkatan_bahasa_dan_evaluasi.bilingual_response_system.grammar_post_processing}</p>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-400">{aiDocData.peningkatan_bahasa_dan_evaluasi.bilingual_response_system.context_aware_translation}</p>
+                    <p className="text-sm text-gray-400">{aiDocData.peningkatan_bahasa_dan_evaluasi.bilingual_response_system.intent_based_responses}</p>
+                    <p className="text-sm text-gray-400">{aiDocData.peningkatan_bahasa_dan_evaluasi.bilingual_response_system.multiple_variations}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Response Quality Evaluation */}
+            {aiDocData?.peningkatan_bahasa_dan_evaluasi?.response_quality_evaluation && (
+              <div className="bg-gray-900/50 rounded-lg border border-gray-800 p-5">
+                <h3 className="font-semibold text-gray-300 mb-3 flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full" />
+                  Response Quality Evaluation
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-400">Relevance ({aiDocData.peningkatan_bahasa_dan_evaluasi.response_quality_evaluation.relevance}%)</span>
+                      <Gauge label="" value={25} unit="" max={100} goodIsLow={false} />
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-400">Informativeness ({aiDocData.peningkatan_bahasa_dan_evaluasi.response_quality_evaluation.informativeness}%)</span>
+                      <Gauge label="" value={20} unit="" max={100} goodIsLow={false} />
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-400">Coherence ({aiDocData.peningkatan_bahasa_dan_evaluasi.response_quality_evaluation.coherence}%)</span>
+                      <Gauge label="" value={15} unit="" max={100} goodIsLow={false} />
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-400">Appropriateness ({aiDocData.peningkatan_bahasa_dan_evaluasi.response_quality_evaluation.appropriateness}%)</span>
+                      <Gauge label="" value={20} unit="" max={100} goodIsLow={false} />
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-400">Engagement ({aiDocData.peningkatan_bahasa_dan_evaluasi.response_quality_evaluation.engagement}%)</span>
+                      <Gauge label="" value={10} unit="" max={100} goodIsLow={false} />
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-400">Safety ({aiDocData.peningkatan_bahasa_dan_evaluasi.response_quality_evaluation.safety}%)</span>
+                      <Gauge label="" value={10} unit="" max={100} goodIsLow={false} />
+                    </div>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-400 mt-3">{aiDocData.peningkatan_bahasa_dan_evaluasi.response_quality_evaluation.weighted_scoring}</p>
+                <p className="text-sm text-gray-400">{aiDocData.peningkatan_bahasa_dan_evaluasi.response_quality_evaluation.automated_recommendations}</p>
+              </div>
+            )}
+
+            {/* Benefits */}
+            {aiDocData?.peningkatan_bahasa_dan_evaluasi?.benefits && (
+              <div className="bg-gray-900/50 rounded-lg border border-gray-800 p-5">
+                <h3 className="font-semibold text-gray-300 mb-3 flex items-center gap-2">
+                  <div className="w-2 h-2 bg-yellow-500 rounded-full" />
+                  Manfaat Peningkatan
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <ul className="space-y-2">
+                    {(aiDocData.peningkatan_bahasa_dan_evaluasi.benefits.multilingual_support ? [<li key="multi" className="text-sm text-gray-400 flex items-start gap-2"><span className="text-gray-500">•</span>{aiDocData.peningkatan_bahasa_dan_evaluasi.benefits.multilingual_support}</li>] : []).concat(
+                      aiDocData.peningkatan_bahasa_dan_evaluasi.benefits.better_user_experience ? [<li key="ux" className="text-sm text-gray-400 flex items-start gap-2"><span className="text-gray-500">•</span>{aiDocData.peningkatan_bahasa_dan_evaluasi.benefits.better_user_experience}</li>] : [],
+                      aiDocData.peningkatan_bahasa_dan_evaluasi.benefits.cultural_adaptation ? [<li key="culture" className="text-sm text-gray-400 flex items-start gap-2"><span className="text-gray-500">•</span>{aiDocData.peningkatan_bahasa_dan_evaluasi.benefits.cultural_adaptation}</li>] : [],
+                      aiDocData.peningkatan_bahasa_dan_evaluasi.benefits.global_accessibility ? [<li key="global" className="text-sm text-gray-400 flex items-start gap-2"><span className="text-gray-500">•</span>{aiDocData.peningkatan_bahasa_dan_evaluasi.benefits.global_accessibility}</li>] : []
+                    )}
+                  </ul>
+                  <ul className="space-y-2">
+                    {(aiDocData.peningkatan_bahasa_dan_evaluasi.benefits.intelligent_language_switching ? [<li key="switch" className="text-sm text-gray-400 flex items-start gap-2"><span className="text-gray-500">•</span>{aiDocData.peningkatan_bahasa_dan_evaluasi.benefits.intelligent_language_switching}</li>] : []).concat(
+                      aiDocData.peningkatan_bahasa_dan_evaluasi.benefits.continuous_improvement ? [<li key="improve" className="text-sm text-gray-400 flex items-start gap-2"><span className="text-gray-500">•</span>{aiDocData.peningkatan_bahasa_dan_evaluasi.benefits.continuous_improvement}</li>] : []
+                    )}
+                  </ul>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -503,21 +884,22 @@ const SectionContent = ({ activeSection, showAllVersions, showRawJson, aiDocData
               <div className="bg-gray-900/50 rounded-xl border border-gray-800 p-5">
                 <h4 className="font-semibold text-gray-300 mb-3 flex items-center gap-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full" />
-                  Lookup Sederhana
+                  Contoh dari data.json
                 </h4>
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-500">Input:</span>
-                    <code className="text-sm bg-gray-800 px-3 py-1 rounded flex-1">"Apa itu kecerdasan buatan?"</code>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-500">Proses:</span>
-                    <span className="text-sm text-gray-400">Dicocokkan dengan kunci di AI-base.json</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-500">Output:</span>
-                    <span className="text-sm text-gray-400">Jawaban langsung dari knowledge base</span>
-                  </div>
+                  {(aiDocData?.contoh_pertanyaan_cara_kerja ?? []).map((ex, idx) => (
+                    <div key={idx} className="p-2 bg-gray-800/30 rounded">
+                      <div className="text-xs text-gray-400">Tipe: {ex.tipe}</div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs text-gray-500">Input:</span>
+                        <code className="text-sm bg-gray-800 px-3 py-1 rounded flex-1">{ex.input}</code>
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs text-gray-500">Output:</span>
+                        <span className="text-sm text-gray-400">{ex.output}</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
               
@@ -592,59 +974,80 @@ const SectionContent = ({ activeSection, showAllVersions, showRawJson, aiDocData
           </div>
           
           <div className="space-y-4">
-            {[
-              {
-                problem: "Import gagal",
-                cause: "File yang di-import tidak ditemukan di path yang benar",
-                solution: "Pastikan semua file ada di path yang benar, restart dev server jika menambahkan file baru"
-              },
-              {
-                problem: "Jawaban kosong/tidak relevan",
-                cause: "Struktur JSON tidak sesuai atau kunci tidak ditemukan",
-                solution: "Periksa struktur JSON & gunakan kunci yang spesifik untuk lookup cepat"
-              },
-              {
-                problem: "Masalah kalkulator",
-                cause: "Ekspresi matematika tidak valid atau konfigurasi presisi",
-                solution: "Pastikan ekspresi valid; cek konfigurasi calculationPrecision"
-              },
-              {
-                problem: "Memory leak",
-                cause: "Cleanup useEffect tidak tepat",
-                solution: "Pastikan semua event listener dan subscription dibersihkan di cleanup function"
-              }
-            ].map((issue, idx) => (
+            {(aiDocData?.troubleshooting_error_umum ?? [
+              "Import gagal: pastikan semua file ada di path yang benar",
+              "Jawaban kosong/tidak relevan: periksa struktur JSON dan kunci",
+              "Masalah kalkulator: pastikan ekspresi valid; cek presisi",
+              "Memory leak: pastikan cleanup useEffect sudah benar"
+            ]).map((issueText, idx) => (
               <div key={idx} className="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 rounded-lg p-4 hover:border-gray-600 transition-colors">
                 <div className="flex items-start gap-3">
                   <div className={`p-2 rounded-lg ${
-                    idx === 0 ? 'bg-red-900/30' :
-                    idx === 1 ? 'bg-yellow-900/30' :
-                    idx === 2 ? 'bg-blue-900/30' :
+                    idx % 4 === 0 ? 'bg-red-900/30' :
+                    idx % 4 === 1 ? 'bg-yellow-900/30' :
+                    idx % 4 === 2 ? 'bg-blue-900/30' :
                     'bg-purple-900/30'
                   }`}>
                     <FaExclamationTriangle className={
-                      idx === 0 ? 'text-red-400' :
-                      idx === 1 ? 'text-yellow-400' :
-                      idx === 2 ? 'text-blue-400' :
+                      idx % 4 === 0 ? 'text-red-400' :
+                      idx % 4 === 1 ? 'text-yellow-400' :
+                      idx % 4 === 2 ? 'text-blue-400' :
                       'text-purple-400'
                     } />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-semibold text-gray-300 mb-2">{issue.problem}</h4>
-                    <div className="space-y-2">
-                      <div>
-                        <span className="text-xs text-gray-500">Penyebab:</span>
-                        <p className="text-sm text-gray-400">{issue.cause}</p>
-                      </div>
-                      <div>
-                        <span className="text-xs text-gray-500">Solusi:</span>
-                        <p className="text-sm text-gray-300">{issue.solution}</p>
-                      </div>
-                    </div>
+                    <p className="text-sm text-gray-300">{issueText}</p>
                   </div>
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+    ),
+
+    "experimental-research": (
+      <section id="experimental-research" className="scroll-mt-8">
+        <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700 p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg">
+              <FaGraduationCap className="text-xl" />
+            </div>
+            <h2 className="text-2xl font-bold">Riwayat Penelitian Eksperimental</h2>
+          </div>
+          
+          <div className="space-y-6">
+            {/* Catatan */}
+            {aiDocData?.riwayat_penelitian_eksperimental?.catatan && (
+              <div className="bg-gray-900/50 rounded-lg border border-gray-800 p-5">
+                <h3 className="font-semibold text-gray-300 mb-3">Catatan Penelitian</h3>
+                <p className="text-sm text-gray-400">{aiDocData.riwayat_penelitian_eksperimental.catatan}</p>
+              </div>
+            )}
+
+            {/* Kategori Riset */}
+            {aiDocData?.riwayat_penelitian_eksperimental?.kategori_riset && (
+              <div className="bg-gray-900/50 rounded-lg border border-gray-800 p-5">
+                <h3 className="font-semibold text-gray-300 mb-3">Kategori Riset yang Dieksplorasi</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {(aiDocData.riwayat_penelitian_eksperimental.kategori_riset || []).map((kategori, idx) => (
+                    <div key={idx} className="p-3 bg-gray-800/40 rounded border border-gray-700">
+                      <div className="text-sm text-gray-300 font-medium">{kategori}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Status */}
+            {aiDocData?.riwayat_penelitian_eksperimental?.status && (
+              <div className="bg-gray-900/50 rounded-lg border border-gray-800 p-5">
+                <h3 className="font-semibold text-gray-300 mb-3">Status Riset</h3>
+                <div className="p-4 bg-blue-900/10 border border-blue-900/30 rounded-lg">
+                  <p className="text-sm text-blue-300">{aiDocData.riwayat_penelitian_eksperimental.status}</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -684,20 +1087,9 @@ const SectionContent = ({ activeSection, showAllVersions, showRawJson, aiDocData
             <div className="space-y-4">
               <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-5">
                 <h4 className="font-semibold text-amber-300 mb-3">Peringatan</h4>
-                <ul className="space-y-2 text-sm text-gray-400">
-                  <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-amber-500 rounded-full mt-1.5 flex-shrink-0" />
-                    Jangan unggah data sensitif tanpa enkripsi
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-amber-500 rounded-full mt-1.5 flex-shrink-0" />
-                    Review kebijakan privasi aplikasi Anda
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-amber-500 rounded-full mt-1.5 flex-shrink-0" />
-                    Backup data secara berkala
-                  </li>
-                </ul>
+                <div className="space-y-2 text-sm text-gray-400">
+                  <p>{aiDocData?.privasi_keamanan ?? 'Jangan unggah data sensitif tanpa enkripsi; selalu review kebijakan privasi aplikasi Anda sebelum menyimpan data user.'}</p>
+                </div>
               </div>
             </div>
           </div>
@@ -762,6 +1154,19 @@ const SectionContent = ({ activeSection, showAllVersions, showRawJson, aiDocData
                   <div className="text-cyan-400">└── config.js <span className="text-gray-500"># Configuration file</span></div>
                 </div>
               </div>
+              
+              {/* AI NLP File Locations */}
+              {aiDocData?.ai_nlp_file_locations && (
+                <div className="mt-4">
+                  <h5 className="font-semibold text-gray-300 mb-2">Lokasi File AI/NLP</h5>
+                  <div className="font-mono text-sm text-gray-500">{aiDocData.ai_nlp_file_locations.path}</div>
+                  <div className="ml-4 mt-1 space-y-1">
+                    {(aiDocData.ai_nlp_file_locations.files || []).map((file, idx) => (
+                      <div key={idx} className="text-green-400">├── {file}</div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -807,10 +1212,12 @@ export default function AI_Docs() {
     { id: "stats", label: "Statistik Versi", icon: <FaChartLine /> },
     { id: "issues", label: "Masalah & Perbaikan", icon: <FaExclamationTriangle /> },
     { id: "features", label: "Fitur Utama", icon: <FaLightbulb /> },
+    { id: "nlp-advancements", label: "Peningkatan NLP", icon: <FaRocket /> },
     { id: "knowledge-base", label: "Sumber Data", icon: <FaDatabase /> },
     { id: "config", label: "Pengaturan", icon: <FaCogs /> },
     { id: "examples", label: "Contoh Penggunaan", icon: <FaGraduationCap /> },
     { id: "troubleshooting", label: "Troubleshooting", icon: <FaTools /> },
+    { id: "experimental-research", label: "Riset Eksperimental", icon: <FaQuestionCircle /> },
     { id: "privacy", label: "Privasi & Keamanan", icon: <FaShieldAlt /> },
     { id: "contribution", label: "Cara Kontribusi", icon: <FaQuestionCircle /> },
   ];

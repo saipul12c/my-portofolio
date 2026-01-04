@@ -11,6 +11,7 @@ import VideoCard from './components/VideoCard/VideoCard';
 const VideoPlayerModal = React.lazy(() => import('./components/VideoPlayerModal/VideoPlayerModal'));
 const ShortsPlayer = React.lazy(() => import('./components/ShortsPlayer/ShortsPlayer'));
 import RecommendationBanner from './components/RecommendationBanner/RecommendationBanner';
+import { RecommendationEngine, VideoStats } from './components/features';
 // Data is now loaded from backend API endpoints (/api/videos, /api/shorts, /api/streaming-users)
 import { NOTIFICATIONS } from './utils/constants';
 import { videoHistory, likedVideos, userSettings } from './utils/storage';
@@ -479,6 +480,12 @@ const Tubs = () => {
             </Suspense>
           )}
         </main>
+        {/* Right sidebar with additional streaming features */}
+        <aside className="hidden lg:block w-80 border-l border-gray-100 dark:border-gray-800 p-4">
+          <RecommendationEngine userId={fetchedUser?.id || user?.id} />
+          <div className="my-4" />
+          <VideoStats videoId={selectedVideo?.id || (videos[0] && videos[0].id)} />
+        </aside>
       </div>
     </div>
   );

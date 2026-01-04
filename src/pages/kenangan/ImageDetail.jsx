@@ -1,5 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useGalleryData } from "./hooks/useGalleryData";
+import MediaNotFound from "./components/MediaNotFound";
+import { sanitizeUrl, generateAltText } from "./utils/sanitizers";
 
 export default function ImageDetail() {
   const { id } = useParams();
@@ -13,18 +15,19 @@ export default function ImageDetail() {
 
   const item = allMedia.find(i => String(i.id) === String(id) && i.type === "image");
 
-  if (!item) return (
-    <main className="min-h-screen flex items-center justify-center p-8">
-      <div className="max-w-xl bg-[#0b0b0b] p-8 rounded-2xl text-gray-300">Foto tidak ditemukan.</div>
-    </main>
-  );
+  if (!item) return <MediaNotFound type="image" id={id} />;
 
   return (
     <main className="min-h-screen p-4 sm:p-6 md:p-8 bg-[var(--color-gray-900)] text-white">
       <div className="max-w-5xl mx-auto bg-[#0f1724] rounded-2xl overflow-hidden shadow-lg p-4 sm:p-6">
         <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
           <div className="w-full lg:w-1/2">
-            <img src={item.src} alt={item.title} className="w-full h-auto max-h-[60vh] lg:max-h-[70vh] rounded-lg object-contain" loading="lazy" />
+            <img 
+              src={sanitizeUrl(item.src)} 
+              alt={generateAltText(item)} 
+              className="w-full h-auto max-h-[60vh] lg:max-h-[70vh] rounded-lg object-contain" 
+              loading="lazy" 
+            />
           </div>
           <div className="w-full lg:w-1/2 flex flex-col gap-4">
             <h1 className="text-xl sm:text-2xl font-bold">{item.title}</h1>
@@ -41,7 +44,12 @@ export default function ImageDetail() {
                 {item.comments_preview && item.comments_preview.length > 0 ? (
                   item.comments_preview.map((c, idx) => (
                     <div key={idx} className="flex items-start gap-3">
-                      <img src={c.avatar} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full" loading="lazy" />
+                      <img 
+                        src={sanitizeUrl(c.avatar, '/default-avatar.jpg')} 
+                        alt={`${c.user} avatar`}
+                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full" 
+                        loading="lazy" 
+                      />
                       <div>
                         <div className="text-sm font-medium text-cyan-300">{c.user}</div>
                         <div className="text-sm text-gray-300">{c.comment}</div>

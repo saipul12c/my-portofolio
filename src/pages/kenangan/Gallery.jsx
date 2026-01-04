@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
 import Maintenance from "../errors/Maintenance";
 
@@ -34,51 +34,51 @@ export default function Gallery() {
 
   const { allTags, allMedia } = useGalleryData();
 
-  // 🌀 Navigasi ke short berikutnya
-  const handleNext = () => {
+  // 🌀 Navigasi ke short berikutnya (memoized to prevent re-creation)
+  const handleNext = useCallback(() => {
     if (!shortsList.length) return;
     const nextIndex = (currentIndex + 1) % shortsList.length;
     setSelectedMedia(shortsList[nextIndex]);
     setCurrentIndex(nextIndex);
-  };
+  }, [shortsList, currentIndex]);
 
-  // 🌀 Navigasi ke short sebelumnya
-  const handlePrev = () => {
+  // 🌀 Navigasi ke short sebelumnya (memoized to prevent re-creation)
+  const handlePrev = useCallback(() => {
     if (!shortsList.length) return;
     const prevIndex = (currentIndex - 1 + shortsList.length) % shortsList.length;
     setSelectedMedia(shortsList[prevIndex]);
     setCurrentIndex(prevIndex);
-  };
+  }, [shortsList, currentIndex]);
 
-  // 🔍 Handle filter changes
-  const handleFilter = (settings) => {
+  // 🔍 Handle filter changes (memoized)
+  const handleFilter = useCallback((settings) => {
     setFilterSettings(settings);
-  };
+  }, []);
 
-  // 📊 Collect filtered data from each section
-  const handleShortsFilteredData = (data) => {
+  // 📊 Collect filtered data from each section (memoized to prevent memory leaks)
+  const handleShortsFilteredData = useCallback((data) => {
     setFilteredData(prev => ({ ...prev, shorts: data }));
-  };
+  }, []);
 
-  const handleImagesFilteredData = (data) => {
+  const handleImagesFilteredData = useCallback((data) => {
     setFilteredData(prev => ({ ...prev, images: data }));
-  };
+  }, []);
 
-  const handleVideosFilteredData = (data) => {
+  const handleVideosFilteredData = useCallback((data) => {
     setFilteredData(prev => ({ ...prev, videos: data }));
-  };
+  }, []);
 
-  const handleAlbumsFilteredData = (data) => {
+  const handleAlbumsFilteredData = useCallback((data) => {
     setFilteredData(prev => ({ ...prev, albums: data }));
-  };
+  }, []);
 
-  // 📊 Combine all filtered data for statistics
-  const combinedFilteredMedia = [
+  // 📊 Combine all filtered data for statistics (memoized for performance)
+  const combinedFilteredMedia = useMemo(() => [
     ...filteredData.shorts,
     ...filteredData.images,
     ...filteredData.videos,
     ...filteredData.albums
-  ];
+  ], [filteredData]);
 
   if (isMaintenance) return <Maintenance />;
 

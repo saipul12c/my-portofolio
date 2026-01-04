@@ -1,14 +1,7 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 
-export const ProgressBar = React.memo(({ level, showLabel = true }) => {
-  const [animatedLevel, setAnimatedLevel] = useState(0);
-  
-  useEffect(() => {
-    const timer = setTimeout(() => setAnimatedLevel(level), 200);
-    return () => clearTimeout(timer);
-  }, [level]);
-
+const ProgressBarComponent = ({ level, showLabel = true }) => {
   const colorClass = useMemo(() => {
     if (level >= 90) return "from-emerald-500 to-green-500";
     if (level >= 80) return "from-cyan-500 to-blue-500";
@@ -29,11 +22,14 @@ export const ProgressBar = React.memo(({ level, showLabel = true }) => {
         <motion.div 
           className={`h-2.5 rounded-full bg-gradient-to-r ${colorClass} shadow-lg`}
           initial={{ width: 0 }}
-          animate={{ width: `${animatedLevel}%` }}
+          animate={{ width: `${level}%` }}
           transition={{ duration: 1, ease: "easeOut", delay: 0.1 }}
           style={{ willChange: "width" }}
         />
       </div>
     </div>
   );
-});
+};
+
+export const ProgressBar = React.memo(ProgressBarComponent);
+ProgressBar.displayName = "ProgressBar";

@@ -1,8 +1,12 @@
 import { Palette, Cpu, Database, FileText, Archive, Zap, Shield, Keyboard, Menu } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export function SettingsSidebar({ activeTab, setActiveTab }) {
   const [collapsed, setCollapsed] = useState(true);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isUserClickRef = useRef(false); // Track if user clicked button (prevent sync loop)
 
   useEffect(() => {
     // Default to collapsed on small screens, expanded on md+
@@ -25,10 +29,41 @@ export function SettingsSidebar({ activeTab, setActiveTab }) {
     { id: "shortcuts", label: "Keyboard Shortcuts", icon: Keyboard }
   ];
 
-  const getTabClasses = (tabId) => {
-    const baseClasses = "text-left flex items-center gap-2 rounded-lg transition-all";
-    return baseClasses;
-  };
+  // Mapping between URL path segment and tab id (memoized to keep stable reference)
+  const pathToTab = useMemo(() => ({
+    general: 'umum',
+    ai: 'ai',
+    data: 'data',
+    file: 'files',
+    performance: 'perform',
+    privacy: 'privacy',
+    storage: 'storage',
+    advanced: 'shortcuts'
+  }), []);
+
+  const tabToPath = useMemo(() => Object.entries(pathToTab).reduce((acc, [k, v]) => {
+    acc[v] = k; return acc;
+  }, {}), [pathToTab]);
+
+  // FIXED: Sync active tab from current route ONLY when user navigates via URL/back button
+  // Do NOT sync when user clicks button (isUserClickRef prevents this)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    // If user just clicked button, don't sync from route
+    if (isUserClickRef.current) {
+      isUserClickRef.current = false;
+      return;
+    }
+
+    // Sync from URL (e.g., browser back/forward, direct URL access)
+    const parts = location.pathname.split('/').filter(Boolean);
+    const last = parts[parts.length - 1] || 'general';
+    const mapped = pathToTab[last] || (last === 'settings' ? 'general' : null);
+    if (mapped && mapped !== activeTab) {
+      setActiveTab(mapped);
+    }
+  }, [location.pathname, pathToTab]);
 
   return (
     <div className={`bg-gray-800/80 border-gray-700 flex flex-col p-2 gap-2 ${collapsed ? 'w-14' : 'w-52'} md:w-52` }>
@@ -46,7 +81,18 @@ export function SettingsSidebar({ activeTab, setActiveTab }) {
         <button
           key={tab.id}
           className={`group relative flex items-center gap-2 ${collapsed ? 'justify-center w-10 h-10' : 'justify-start px-3 py-2'}`}
-          onClick={() => setActiveTab(tab.id)}
+          onClick={() => {
+            // FIXED: Mark that this is a user click, prevent sync loop in useEffect
+            isUserClickRef.current = true;
+            
+            // Update active tab immediately (synchronous state update)
+            setActiveTab(tab.id);
+            
+            // Navigate to route AFTER state is queued
+            // Use proper path mapping
+            const p = tabToPath[tab.id] || 'general';
+            navigate(`/help/chatbot/settings/${p}`);
+          }}
           aria-label={tab.label}
           style={activeTab === tab.id ? { background: 'var(--saipul-accent-gradient)', color: '#fff', border: '1px solid rgba(255,255,255,0.06)' } : { color: 'var(--saipul-muted-text)' }}
         >

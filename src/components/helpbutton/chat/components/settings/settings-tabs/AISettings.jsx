@@ -1,4 +1,5 @@
 import { ToggleSwitch } from "../components/ToggleSwitch";
+import { AI_MODELS, TOKEN_OPTIONS } from '../settingsConfig';
 
 export function AISettings({ settings, handleSave }) {
   return (
@@ -10,10 +11,7 @@ export function AISettings({ settings, handleSave }) {
           onChange={(e) => handleSave("aiModel", e.target.value)}
           className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
         >
-          <option value="basic">Basic (Cepat & Ringan)</option>
-          <option value="enhanced">Enhanced (Rekomendasi)</option>
-          <option value="advanced">Advanced (Akurasi Tinggi)</option>
-          <option value="expert">Expert (Max Performance)</option>
+          {AI_MODELS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
         </select>
         <p className="text-xs text-gray-500 mt-1">Enhanced: Optimalkan untuk analisis multidomain dan reasoning kompleks</p>
       </div>
@@ -44,10 +42,9 @@ export function AISettings({ settings, handleSave }) {
             onChange={(e) => handleSave("maxTokens", parseInt(e.target.value))}
             className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
           >
-            <option value={800}>Ringkas</option>
-            <option value={1500}>Standar</option>
-            <option value={2500}>Detail</option>
-            <option value={4000}>Komprehensif</option>
+            {TOKEN_OPTIONS.map(t => (
+              <option key={t} value={t}>{t === 800 ? 'Ringkas' : t === 1500 ? 'Standar' : t === 2500 ? 'Detail' : 'Komprehensif'}</option>
+            ))}
           </select>
         </div>
       </div>

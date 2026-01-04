@@ -1,7 +1,7 @@
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { cleanContent } from "../utils/blogUtils";
+import { cleanContent, getLabelColor, formatNumber } from "../utils/blogUtils";
 import { useState, useEffect, useRef, useMemo } from "react";
 import blogs from "../../../data/blog/data.json";
 import blogService from "../helpers/BlogService";
@@ -38,7 +38,7 @@ export default function BlogDetail() {
   const related = useMemo(() => {
     if (!post) return [];
     const posts = blogService.getRelatedPosts(post.slug, relatedLimit || 6) || [];
-    return posts.map(p => ({ post: p, reason: p.relatedPosts && p.relatedPosts.includes(p.slug) ? 'Direkomendasikan' : 'Terkait' }));
+    return posts.map(r => ({ post: r, reason: post.relatedPosts?.includes(r.slug) ? 'Direkomendasikan' : 'Terkait' }));
   }, [post, relatedLimit]);
 
   // Scroll ke atas saat artikel berubah
@@ -199,24 +199,7 @@ export default function BlogDetail() {
       ),
   };
 
-  // === 🎨 Label Colors ===
-  const getLabelColor = (label) => {
-    switch (label) {
-      case "Baru": return "bg-green-500/20 border-green-500/30 text-green-300";
-      case "Rekomendasi": return "bg-cyan-500/20 border-cyan-500/30 text-cyan-300";
-      case "Hot": return "bg-orange-500/20 border-orange-500/30 text-orange-300";
-      case "Premium": return "bg-purple-500/20 border-purple-500/30 text-purple-300";
-      default: return "bg-gray-500/20 border-gray-500/30 text-gray-300";
-    }
-  };
-
-  // Format number for stats
-  const formatNumber = (num) => {
-    if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'k';
-    }
-    return num;
-  };
+  // Menggunakan utilitas dari blogUtils untuk konsistensi
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
@@ -570,7 +553,7 @@ export default function BlogDetail() {
                       </p>
                     </div>
                   </div>
-                  <p className="text-gray-300 leading-relaxed pl-13">
+                  <p className="text-gray-300 leading-relaxed pl-12">
                     {c.message || ""}
                   </p>
                 </div>

@@ -161,7 +161,37 @@ export function getDocStats(docs = []) {
  */
 export function getDocBySlug(docs = [], slug = '') {
   if (!Array.isArray(docs) || !slug) return null;
-  return docs.find(doc => doc && doc.slug === slug) || null;
+
+  // Kumpulkan semua dokumen yang memiliki slug exact match
+  const matches = docs.filter(doc => doc && doc.slug === slug);
+  if (!matches || matches.length === 0) return null;
+
+  if (matches.length === 1) return matches[0];
+
+  // Jika ada beberapa entry dengan slug sama, prioritaskan yang statusnya CURRENT
+  const currentMatch = matches.find(m => {
+    const latestHistory = Array.isArray(m.versionHistory) ? m.versionHistory[0] : null;
+    return latestHistory && String(latestHistory.status).toUpperCase() === 'CURRENT';
+  });
+  if (currentMatch) return currentMatch;
+
+  // Jika tidak ada yang CURRENT, pilih versi dengan angka terbesar (semver-like)
+  const parseVersionArr = (version) => {
+    if (!version) return [0,0,0];
+    const v = String(version).replace(/^v/i, '').split(/[^0-9]+/).filter(Boolean);
+    return [parseInt(v[0]||0,10), parseInt(v[1]||0,10), parseInt(v[2]||0,10)];
+  };
+
+  matches.sort((a,b) => {
+    const av = parseVersionArr(a.version || a.versionHistory?.[0]?.version);
+    const bv = parseVersionArr(b.version || b.versionHistory?.[0]?.version);
+    for (let i=0;i<3;i++) {
+      if (av[i] !== bv[i]) return bv[i] - av[i];
+    }
+    return 0;
+  });
+
+  return matches[0] || null;
 }
 
 /**

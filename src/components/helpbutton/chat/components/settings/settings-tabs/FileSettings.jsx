@@ -1,5 +1,6 @@
 import { Upload, Trash2 } from "lucide-react";
 import { ToggleSwitch } from "../components/ToggleSwitch";
+import { FILE_SIZE_OPTIONS, FILE_TYPE_PRESETS } from '../settingsConfig';
 import { useRef, useEffect } from 'react';
 
 export function FileSettings({ 
@@ -69,24 +70,18 @@ export function FileSettings({
             onChange={(e) => handleSave("maxFileSize", parseInt(e.target.value))}
             className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
           >
-            <option value={5}>5 MB</option>
-            <option value={10}>10 MB</option>
-            <option value={25}>25 MB</option>
-            <option value={50}>50 MB</option>
+            {FILE_SIZE_OPTIONS.map(s => <option key={s} value={s}>{s} MB</option>)}
           </select>
         </div>
 
         <div>
           <label className="block text-gray-400 mb-2">File Types Allowed</label>
           <select 
-            value={settings.allowedFileTypes.join(',')}
+            value={Array.isArray(settings.allowedFileTypes) ? settings.allowedFileTypes.join(',') : settings.allowedFileTypes}
             onChange={(e) => handleSave("allowedFileTypes", e.target.value.split(','))}
             className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
           >
-            <option value="txt,pdf,doc,docx,xls,xlsx,jpg,jpeg,png,json,csv,md">All Supported</option>
-            <option value="txt,pdf,doc,docx">Documents Only</option>
-            <option value="jpg,jpeg,png">Images Only</option>
-            <option value="xls,xlsx,csv">Spreadsheets Only</option>
+            {FILE_TYPE_PRESETS.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
           </select>
         </div>
       </div>

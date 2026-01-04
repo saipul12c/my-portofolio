@@ -438,7 +438,7 @@ Vite sudah dikonfigurasi untuk mem-proxy request `/api`, `/socket.io`, dan `/ava
 
 ## ✅ Version History
 
-Latest version: **v1.18.1**
+Latest version: **v1.18.100**
 
 Lihat `CHANGELOG.md` untuk history lengkap perubahan.
 

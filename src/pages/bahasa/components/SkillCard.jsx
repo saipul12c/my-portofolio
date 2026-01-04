@@ -2,21 +2,31 @@ import React, { useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import { ProgressBar } from "./ProgressBar";
 import { SkillTags } from "./SkillTags";
+import { Link } from "react-router-dom";
 
-export const SkillCard = React.memo(({ 
+const SkillCardComponent = ({ 
   bahasa, 
   isProgramming = false, 
   delay = 0, 
   isList = false,
   setSelectedSkill,
-  expandedTags,
-  toggleExpandedTags 
+  isExpanded = false,
+  onToggle
 }) => {
   const skillId = useMemo(() => `${bahasa.nama}-${isProgramming ? 'prog' : 'lang'}`, [bahasa.nama, isProgramming]);
 
+  const slug = useMemo(() => {
+    return (bahasa.nama || "").toString().toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '')
+      .replace(/-+/g, '-');
+  }, [bahasa.nama]);
+
   const handleClick = useCallback(() => {
-    setSelectedSkill({...bahasa, isProgramming});
-  }, [bahasa, isProgramming, setSelectedSkill]);
+    if (typeof setSelectedSkill === 'function') {
+      setSelectedSkill({ ...bahasa, isProgramming });
+    }
+  }, [setSelectedSkill, bahasa, isProgramming]);
 
   const CardContent = () => (
     <>
@@ -52,18 +62,20 @@ export const SkillCard = React.memo(({
 
       <SkillTags 
         skills={bahasa.kemampuan} 
-        skillId={skillId} 
-        expandedTags={expandedTags}
-        toggleExpandedTags={toggleExpandedTags}
+        skillId={skillId}
+        isExpanded={isExpanded}
+        onToggle={onToggle}
       />
 
       <motion.div 
         className="absolute bottom-3 sm:bottom-4 right-3 sm:right-4 opacity-0 group-hover:opacity-100 transition-all duration-300"
         whileHover={{ scale: 1.05 }}
       >
-        <div className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs px-2 sm:px-3 py-1 rounded-full shadow-lg flex items-center space-x-1">
-          <span className="hidden sm:inline">Detail</span>
-          <span>→</span>
+        <div className="flex items-center space-x-2">
+          <Link to={`/bahasa/detail/${slug}`} onClick={(e) => e.stopPropagation()} className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs px-2 sm:px-3 py-1 rounded-full shadow-lg flex items-center space-x-1 hover:opacity-95">
+            <span className="hidden sm:inline">Detail</span>
+            <span>→</span>
+          </Link>
         </div>
       </motion.div>
     </>
@@ -101,9 +113,9 @@ export const SkillCard = React.memo(({
 
           <SkillTags 
             skills={bahasa.kemampuan} 
-            skillId={skillId} 
-            expandedTags={expandedTags}
-            toggleExpandedTags={toggleExpandedTags}
+            skillId={skillId}
+            isExpanded={isExpanded}
+            onToggle={onToggle}
           />
         </div>
       </div>
@@ -112,42 +124,21 @@ export const SkillCard = React.memo(({
         className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 ml-2 sm:ml-4 flex-shrink-0"
         whileHover={{ scale: 1.05 }}
       >
-        <div className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs px-2 sm:px-3 py-1 rounded-full">
+        <Link to={`/bahasa/detail/${slug}`} onClick={(e) => e.stopPropagation()} className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs px-2 sm:px-3 py-1 rounded-full inline-flex items-center justify-center">
           <span className="hidden sm:inline">Detail</span>
           <span className="sm:hidden">→</span>
-        </div>
+        </Link>
       </motion.div>
     </div>
   );
 
   return (
-    <motion.div
-      variants={{
-        hidden: { y: 20, opacity: 0 },
-        visible: {
-          y: 0,
-          opacity: 1,
-          transition: { 
-            type: "spring", 
-            stiffness: 80, 
-            damping: 15,
-            duration: 0.5
-          }
-        }
-      }}
-      initial="hidden"
-      animate="visible"
-      whileHover={{ 
-        y: isList ? 0 : -4,
-        scale: isList ? 1 : 1.01,
-        transition: { type: "spring", stiffness: 400, damping: 25 }
-      }}
-      whileTap={{ scale: 0.99 }}
+    <div
       className={`
-        group relative bg-gradient-to-br from-[#1e293b]/90 to-[#0f172a]/90 backdrop-blur-lg 
+        group relative bg-gradient-to-br from-[#1e293b]/90 to-[#0f172a]/90 
         rounded-2xl sm:rounded-3xl border border-cyan-500/20 cursor-pointer overflow-hidden
-        hover:border-cyan-500/40 hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300
-        ${isList ? "p-4 sm:p-6" : "p-4 sm:p-6 shadow-lg"}
+        hover:border-cyan-500/40 transition-all duration-300
+        ${isList ? "p-4 sm:p-6" : "p-4 sm:p-6"}
       `}
       onClick={handleClick}
       style={{ animationDelay: `${delay}ms`, willChange: "transform" }}
@@ -156,6 +147,18 @@ export const SkillCard = React.memo(({
       <div className="relative z-10">
         {isList ? <ListContent /> : <CardContent />}
       </div>
-    </motion.div>
+    </div>
   );
-});
+};
+
+const areEqual = (prev, next) => {
+  return (
+    prev.bahasa?.nama === next.bahasa?.nama &&
+    prev.bahasa?.level === next.bahasa?.level &&
+    prev.isList === next.isList &&
+    prev.isProgramming === next.isProgramming &&
+    prev.isExpanded === next.isExpanded
+  );
+};
+
+export const SkillCard = React.memo(SkillCardComponent, areEqual);

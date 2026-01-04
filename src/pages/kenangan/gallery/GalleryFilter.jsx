@@ -2,39 +2,75 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Search, Filter, X, Bookmark, Star } from "lucide-react";
+import { GALLERY_CONFIG } from "../utils/constants";
+import { sanitizeForStorage, sanitizeObjectForStorage } from "../utils/sanitizers";
 
-// LocalStorage keys
-const HISTORY_KEY = "gallery_search_history_v1";
-const BOOKMARK_KEY = "gallery_bookmarks_v1";
+// LocalStorage keys dari constants
+const HISTORY_KEY = GALLERY_CONFIG.STORAGE_KEYS.SEARCH_HISTORY;
+const BOOKMARK_KEY = GALLERY_CONFIG.STORAGE_KEYS.BOOKMARKS;
 
 function readHistory() {
   try {
     const raw = localStorage.getItem(HISTORY_KEY);
     return raw ? JSON.parse(raw) : [];
-  } catch {
+  } catch (err) {
+    console.warn('Failed to read search history:', err.message);
     return [];
   }
 }
 
 function writeHistory(arr) {
   try {
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(arr.slice(0, 30)));
-  } catch {}
+    // Sanitize array before storing
+    const sanitized = arr.map(item => sanitizeForStorage(item)).filter(Boolean);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(sanitized.slice(0, GALLERY_CONFIG.MAX_HISTORY_ITEMS)));
+  } catch (err) {
+    console.warn('Failed to save search history:', err.message);
+    
+    // Handle QuotaExceededError
+    if (err.name === 'QuotaExceededError') {
+      try {
+        // Try to clear old history and save again
+        const reduced = arr.slice(0, 10).map(item => sanitizeForStorage(item));
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(reduced));
+        console.log('Storage quota exceeded, history reduced to 10 items');
+      } catch (retryErr) {
+        console.error('Failed to save even after reducing history:', retryErr.message);
+      }
+    }
+  }
 }
 
 function readBookmarks() {
   try {
     const raw = localStorage.getItem(BOOKMARK_KEY);
     return raw ? JSON.parse(raw) : [];
-  } catch {
+  } catch (err) {
+    console.warn('Failed to read bookmarks:', err.message);
     return [];
   }
 }
 
 function writeBookmarks(arr) {
   try {
-    localStorage.setItem(BOOKMARK_KEY, JSON.stringify(arr));
-  } catch {}
+    // Sanitize bookmarks before storing
+    const sanitized = sanitizeObjectForStorage(arr);
+    localStorage.setItem(BOOKMARK_KEY, JSON.stringify(sanitized));
+  } catch (err) {
+    console.warn('Failed to save bookmarks:', err.message);
+    
+    // Handle QuotaExceededError
+    if (err.name === 'QuotaExceededError') {
+      try {
+        // Try to clear old bookmarks and save again
+        const reduced = sanitizeObjectForStorage(arr.slice(0, 20));
+        localStorage.setItem(BOOKMARK_KEY, JSON.stringify(reduced));
+        console.log('Storage quota exceeded, bookmarks reduced to 20 items');
+      } catch (retryErr) {
+        console.error('Failed to save even after reducing bookmarks:', retryErr.message);
+      }
+    }
+  }
 }
 
 export default function GalleryFilter({ onFilter, allTags = [], allMedia = [] }) {
@@ -46,7 +82,6 @@ export default function GalleryFilter({ onFilter, allTags = [], allMedia = [] })
   const [activeIndex, setActiveIndex] = useState(-1);
   const [history, setHistory] = useState(() => readHistory());
   const [bookmarks, setBookmarks] = useState(() => readBookmarks());
-  const debounced = useRef(null);
   const navigate = useNavigate();
 
   const uniqueTags = useMemo(() => {
@@ -57,7 +92,9 @@ export default function GalleryFilter({ onFilter, allTags = [], allMedia = [] })
   // Save search into history (most recent first)
   const saveHistoryTerm = (term) => {
     if (!term || !term.trim()) return;
-    const list = [term, ...history.filter((h) => h !== term)];
+    const sanitized = sanitizeForStorage(term);
+    if (!sanitized) return;
+    const list = [sanitized, ...history.filter((h) => h !== sanitized)];
     setHistory(list.slice(0, 30));
     writeHistory(list);
   };
@@ -83,8 +120,7 @@ export default function GalleryFilter({ onFilter, allTags = [], allMedia = [] })
 
   // Build suggestions based on input
   useEffect(() => {
-    if (debounced.current) clearTimeout(debounced.current);
-    debounced.current = setTimeout(() => {
+    const timer = setTimeout(() => {
       const term = (searchTerm || "").toLowerCase().trim();
       const results = [];
 
@@ -141,9 +177,8 @@ export default function GalleryFilter({ onFilter, allTags = [], allMedia = [] })
       setActiveIndex(-1);
     }, 120);
 
-    return () => {
-      if (debounced.current) clearTimeout(debounced.current);
-    };
+    // Always cleanup timer
+    return () => clearTimeout(timer);
   }, [searchTerm, allMedia, uniqueTags, history, bookmarks, isFocused]);
 
   // Handlers
@@ -185,14 +220,21 @@ export default function GalleryFilter({ onFilter, allTags = [], allMedia = [] })
       return;
     }
     if ((sugg.type === "bookmark" || sugg.type === "internal") && sugg.url) {
+      // Save history first
+      saveHistoryTerm(sugg.title);
+      // Reset suggestions before navigation to prevent stale state
+      setSuggestions([]);
+      setActiveIndex(-1);
       // If internal route (starts with /), navigate within the app
       if (sugg.url.startsWith("/")) {
-        navigate(sugg.url);
+        // Use setTimeout to ensure state updates are flushed before navigation
+        setTimeout(() => {
+          navigate(sugg.url);
+        }, 0);
       } else {
         // External bookmark: open in new tab
         window.open(sugg.url, "_blank");
       }
-      saveHistoryTerm(sugg.title);
       return;
     }
 

@@ -1,12 +1,14 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight, Heart, MessageCircle, Share2, Eye, Tag, UserCheck, Music } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import GalleryShareBar from "../GalleryShareBar";
+import { getMediaRoute } from "../../utils/routeHelpers";
+import { sanitizeUrl, sanitizeVideoUrl, generateAltText } from "../../utils/sanitizers";
 
 export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, currentIndex, setCurrentIndex }) {
   const navigate = useNavigate();
-
-  if (!selectedMedia || selectedMedia.type === "short") return null;
+  const [mediaError, setMediaError] = useState(false);
 
   const handlePrev = () => {
     if (!selectedMedia?.src?.length) return;
@@ -18,9 +20,35 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
     setCurrentIndex(prev => prev === selectedMedia.src.length - 1 ? 0 : prev + 1);
   };
 
+  // Keyboard navigation
+  useEffect(() => {
+    if (!selectedMedia || selectedMedia.type === "short") return;
+    
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setSelectedMedia(null);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        handlePrev();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        handleNext();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedMedia, handlePrev, handleNext, setSelectedMedia]);
+
+  // Early return AFTER all hooks
+  if (!selectedMedia || selectedMedia.type === "short") return null;
+
   return (
     <AnimatePresence>
       <motion.div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="media-modal-title"
         className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -37,6 +65,7 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
           {/* Close Button */}
           <button
             onClick={() => setSelectedMedia(null)}
+            aria-label="Tutup modal"
             className="absolute top-3 right-3 z-50 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition"
           >
             <X size={24} />
@@ -48,27 +77,30 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
             {(selectedMedia.type === "album" || (selectedMedia.type === "image" && Array.isArray(selectedMedia.src))) ? (
               <>
                 <img 
-                  src={selectedMedia.src[currentIndex]} 
-                  alt={`${selectedMedia.title} ${currentIndex + 1}`} 
+                  src={sanitizeUrl(selectedMedia.src[currentIndex])} 
+                  alt={`${selectedMedia.title} - Image ${currentIndex + 1} of ${selectedMedia.src.length}`} 
                   className="w-full h-full max-h-[70vh] object-contain rounded-lg"
+                  onError={() => setMediaError(true)}
                 />
                 {selectedMedia.src.length > 1 && (
                   <>
                     <button 
                       onClick={handlePrev}
                       className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full transition z-10"
+                      aria-label="Previous image"
                     >
                       <ChevronLeft size={24} />
                     </button>
                     <button 
                       onClick={handleNext}
                       className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full transition z-10"
+                      aria-label="Next image"
                     >
                       <ChevronRight size={24} />
                     </button>
                     
                     {/* Image Counter */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white px-3 py-1 rounded-full text-sm">
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white px-3 py-1 rounded-full text-sm" aria-live="polite">
                       {currentIndex + 1} / {selectedMedia.src.length}
                     </div>
                   </>
@@ -79,18 +111,22 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
               <>
                 {selectedMedia.type === "image" ? (
                   <img 
-                    src={selectedMedia.src} 
-                    alt={selectedMedia.title}
+                    src={sanitizeUrl(selectedMedia.src)} 
+                    alt={generateAltText(selectedMedia)}
                     className="w-full h-full max-h-[70vh] object-contain rounded-lg"
+                    onError={() => setMediaError(true)}
                   />
                 ) : (
                   <video 
-                    src={selectedMedia.src} 
+                    src={sanitizeVideoUrl(selectedMedia.src)} 
                     controls 
                     muted 
                     loop 
                     playsInline 
+                    preload="metadata"
                     className="w-full h-full max-h-[70vh] object-contain rounded-lg"
+                    onError={() => setMediaError(true)}
+                    aria-label={`Video: ${selectedMedia.title}`}
                   />
                 )}
               </>
@@ -105,8 +141,8 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
                 <div className="flex items-center gap-3 mb-4">
                   {selectedMedia.creator.avatar && (
                     <img 
-                      src={selectedMedia.creator.avatar} 
-                      alt={selectedMedia.creator.display_name} 
+                      src={sanitizeUrl(selectedMedia.creator.avatar, '/default-avatar.jpg')} 
+                      alt={`${selectedMedia.creator.display_name} avatar`} 
                       className="w-10 h-10 rounded-full border border-white/20" 
                     />
                   )}

@@ -27,7 +27,7 @@ export const useBlogFilters = (processedBlogs, searchTerm, selectedCategory, sor
         filtered.sort((a, b) => b.views - a.views);
         break;
       case "trending":
-        filtered.sort((a, b) => (b.likes + b.shares) - (a.likes + b.shares));
+        filtered.sort((a, b) => ((b.likes || 0) + (b.shares || 0)) - ((a.likes || 0) + (a.shares || 0)));
         break;
       case "rating":
         filtered.sort((a, b) => b.rating - a.rating);

@@ -91,6 +91,7 @@ export function StorageSettings({ settings, handleSave, exportKnowledgeBase, fil
                     alert('Import berhasil! Data telah diimpor.');
                     console.log('Imported data:', importedData);
                   } catch (error) {
+                    void error;
                     alert('Error mengimpor data: Format tidak valid.');
                   }
                 };

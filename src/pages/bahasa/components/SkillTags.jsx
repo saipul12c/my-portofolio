@@ -1,21 +1,19 @@
 import React, { useMemo, useCallback } from "react";
-import { motion } from "framer-motion";
 import { generateColor } from "../utils/colorGenerator";
 
-export const SkillTags = React.memo(({ skills, skillId, expandedTags, toggleExpandedTags }) => {
-  const isExpanded = expandedTags[skillId] || false;
-  
-  // Memoize display logic untuk menghindari unnecessary calculations
+const SkillTagsComponent = ({ skills, skillId, isExpanded = false, onToggle }) => {
+  const expanded = !!isExpanded;
+
   const { displaySkills, hiddenCount } = useMemo(() => {
-    const display = isExpanded ? skills : (skills || []).slice(0, 4);
-    const hidden = (skills || []).length - 4;
+    const display = expanded ? skills : (skills || []).slice(0, 4);
+    const hidden = Math.max(0, (skills || []).length - 4);
     return { displaySkills: display, hiddenCount: hidden };
-  }, [skills, isExpanded]);
+  }, [skills, expanded]);
 
   const handleToggle = useCallback((e) => {
     e.stopPropagation();
-    toggleExpandedTags(skillId);
-  }, [skillId, toggleExpandedTags]);
+    onToggle && onToggle();
+  }, [onToggle]);
 
   if (!skills || skills.length === 0) return null;
 
@@ -24,27 +22,25 @@ export const SkillTags = React.memo(({ skills, skillId, expandedTags, toggleExpa
       {displaySkills.map((skill, index) => {
         const color = generateColor(skill);
         return (
-          <motion.span 
+          <span 
             key={index}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: index * 0.05 }}
-            className={`${color.bg} ${color.text} ${color.border} text-xs px-2 py-1 rounded-lg border backdrop-blur-sm whitespace-nowrap`}
+            className={`${color.bg} ${color.text} ${color.border} text-xs px-2 py-1 rounded-lg border whitespace-nowrap`}
           >
             {skill}
-          </motion.span>
+          </span>
         );
       })}
-      {!isExpanded && hiddenCount > 0 && (
-        <motion.button
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
+      {!expanded && hiddenCount > 0 && (
+        <button
           onClick={handleToggle}
-          className="bg-gray-500/20 text-gray-300 text-xs px-2 py-1 rounded-lg border border-gray-500/30 hover:bg-gray-500/30 transition-all duration-200 backdrop-blur-sm"
+          className="bg-gray-500/20 text-gray-300 text-xs px-2 py-1 rounded-lg border border-gray-500/30 hover:bg-gray-500/30 transition-all duration-200"
         >
           +{hiddenCount}
-        </motion.button>
+        </button>
       )}
     </div>
   );
-});
+};
+
+export const SkillTags = React.memo(SkillTagsComponent);
+SkillTagsComponent.displayName = "SkillTags";
