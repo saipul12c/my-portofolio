@@ -1,7 +1,13 @@
 import { spamEmailDomains } from './emailDomains';
 import { verifyEmail, isValidEmailSyntax } from './emailValidator';
 
-export const filterSpamContacts = (contacts) => {
+/**
+ * Filter spam contacts with configurable strictness
+ * @param {Array} contacts - Array of contact objects
+ * @param {string} mode - 'strict' or 'lenient' (default: 'lenient' for portfolio site)
+ * @returns {Array} - Filtered array of non-spam contacts
+ */
+export const filterSpamContacts = (contacts, mode = 'lenient') => {
   if (!contacts || !Array.isArray(contacts)) return [];
 
   // Enhanced spam indicators
@@ -97,7 +103,64 @@ export const filterSpamContacts = (contacts) => {
     const messageLower = message.toLowerCase();
     const nameLower = name.toLowerCase();
 
-    // Comprehensive email validation using emailValidator
+    // In LENIENT mode, be much more permissive (only block obvious spam)
+    if (mode === 'lenient') {
+      // LENIENT MODE: Only reject VERY obvious spam
+      
+      // 1. Check essential fields
+      if (!contact.email || !contact.name || !contact.message) return false;
+      
+      // 2. Basic email validation
+      const emailVerification = verifyEmail(email);
+      if (!emailVerification.isValid) return false;
+      if (emailVerification.isSpam) return false;
+      
+      // 3. Disposable email domains
+      const domain = email.split('@')[1];
+      if (!domain || spamEmailDomains.includes(domain)) return false;
+      if (domain.includes('temp') || domain.includes('trash') || domain.includes('disposable')) {
+        return false;
+      }
+      
+      // 4. Only block EXTREME spam keywords
+      const extremeSpamKeywords = [
+        'casino', 'viagra', 'cialis', 'gambling', 'poker',
+        'porn', 'adult webcam', 'escort', 'nigerian prince',
+        'cryptocurrency', 'bitcoin', 'forex', 'crypto trading',
+      ];
+      if (extremeSpamKeywords.some(keyword => messageLower.includes(keyword))) {
+        return false;
+      }
+      
+      // 5. Suspicious test/spam names
+      const verySpamNames = [
+        /^test\d*$/i, /^spam/i, /^fake/i, /^dummy/i,
+        /^asdf+$/i, /^qwerty+$/i, /^xxx+$/i,
+        /^[a-z]{1}$/, // Single letter names
+      ];
+      if (verySpamNames.some(pattern => pattern.test(name))) {
+        return false;
+      }
+      
+      // 6. Message length check (basic sanity)
+      if (message.length < 5 || message.length > 10000) {
+        return false;
+      }
+      
+      // 7. URL shorteners (commonly malicious)
+      const urlShorteners = [
+        'bit.ly', 'goo.gl', 'tinyurl.com', 'ow.ly',
+        'adf.ly', 'shorte.st'
+      ];
+      if (urlShorteners.some(shortener => messageLower.includes(shortener))) {
+        return false;
+      }
+      
+      // LENIENT MODE: Allow everything else
+      return true;
+    }
+
+    // STRICT MODE: Original comprehensive filtering
     const emailVerification = verifyEmail(email);
     
     // Reject if email is invalid or spam
@@ -136,10 +199,34 @@ export const filterSpamContacts = (contacts) => {
       return false;
     }
 
-    // Check for spam keywords in message (more strict)
-    const spamKeywordCount = spamKeywords.filter(keyword => messageLower.includes(keyword)).length;
-    if (spamKeywordCount >= 2) { // If 2 or more spam keywords found
-      return false;
+    // Check for spam keywords in message (REFINED - less aggressive)
+    // Fokus pada HIGH-RISK keywords, not general business terms
+    const highRiskSpamKeywords = [
+      'casino', 'viagra', 'cialis', 'gambling', 'poker', 'lottery',
+      'porn', 'sex', 'adult', 'escort', 'webcam', 'xxx',
+      'nigerian prince', 'inheritance', 'beneficiary', 'transfer funds',
+      'wire transfer', 'bitcoin investment', 'crypto trading bot',
+      'forex', 'binary options', 'profit guarantee',
+      'hgh', 'steroids', 'anabolic',
+    ];
+    
+    // Only reject if HIGH-RISK keywords found (1+ is enough)
+    const highRiskFound = highRiskSpamKeywords.some(keyword => messageLower.includes(keyword));
+    if (highRiskFound) {
+      return false; // Clear spam pattern
+    }
+    
+    // Medium risk: Allow these even if multiple found (context matters)
+    // 'urgent', 'important', 'free', 'limited' are legitimate in business
+    // Only flag extreme combinations
+    const mediumRiskKeywords = [
+      'buy now', 'click here', 'act now', 'limited time',
+      'special offer', 'exclusive deal', 'limited spots'
+    ];
+    
+    const mediumRiskCount = mediumRiskKeywords.filter(keyword => messageLower.includes(keyword)).length;
+    if (mediumRiskCount >= 4) { // Only reject if 4+ medium-risk keywords
+      return false; // Likely aggressive marketing spam
     }
 
     // Check for spam keywords in name
@@ -162,9 +249,9 @@ export const filterSpamContacts = (contacts) => {
       return false;
     }
 
-    // Check for suspicious patterns in message
+    // Check for suspicious patterns in message (RELAXED for portfolio site)
     const urlCount = (message.match(/https?:\/\//gi) || []).length;
-    if (urlCount > 3) { // Too many URLs
+    if (urlCount > 8) { // Raised threshold from 3 to 8 for portfolio context
       return false;
     }
 
@@ -199,15 +286,15 @@ export const filterSpamContacts = (contacts) => {
       return false;
     }
 
-    // Check for suspicious email patterns
+    // Check for suspicious email patterns (RELAXED)
     const localPart = email.split('@')[0];
-    if (localPart.length < 3 || domain.length < 4) {
+    if (localPart.length < 1 || domain.length < 3) { // Reduced threshold
       return false;
     }
 
-    // Check for random-looking email (too many numbers)
+    // Check for random-looking email (RELAXED - tech users often use numbers)
     const numberCount = (localPart.match(/\d/g) || []).length;
-    if (numberCount > localPart.length * 0.7) { // More than 70% numbers
+    if (numberCount > localPart.length * 0.9) { // Raised from 70% to 90%
       return false;
     }
 

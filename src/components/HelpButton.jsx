@@ -33,7 +33,7 @@ export default function HelpButton() {
 
   // Kontrol untuk mengaktifkan/menonaktifkan chatbot
   // Ubah ke true untuk mengaktifkan, false untuk menonaktifkan
-  const isChatbotEnabled = true;
+  const isChatbotEnabled = false;
 
   // Kontrol untuk mengaktifkan/menonaktifkan tombol Room Diskusi
   // Ubah ke true ketika fitur sudah siap dirilis
@@ -92,7 +92,7 @@ export default function HelpButton() {
         <button
           onClick={handleClick}
           aria-label="Buka Menu Bantuan"
-          className={`relative flex items-center justify-center w-14 h-14 rounded-full
+          className={`relative flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full
             bg-gradient-to-br from-cyan-400/40 to-blue-600/50
             backdrop-blur-xl border border-white/20 text-white
             shadow-[0_0_25px_rgba(56,189,248,0.5)]
@@ -104,18 +104,18 @@ export default function HelpButton() {
         >
           {isMaintenance ? (
             <Wrench
-              size={24}
-              className="animate-spin-slow text-cyan-300 drop-shadow-[0_0_6px_#22d3ee]"
+              size={20}
+              className="md:w-6 md:h-6 animate-spin-slow text-cyan-300 drop-shadow-[0_0_6px_#22d3ee]"
             />
           ) : open ? (
             <X
-              size={26}
-              className="text-cyan-200 drop-shadow-[0_0_6px_#22d3ee]"
+              size={22}
+              className="md:w-7 md:h-7 text-cyan-200 drop-shadow-[0_0_6px_#22d3ee]"
             />
           ) : (
             <HelpCircle
-              size={26}
-              className="text-cyan-200 drop-shadow-[0_0_6px_#22d3ee]"
+              size={22}
+              className="md:w-7 md:h-7 text-cyan-200 drop-shadow-[0_0_6px_#22d3ee]"
             />
           )}
         </button>

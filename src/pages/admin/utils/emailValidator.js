@@ -135,7 +135,7 @@ export const isValidEmailSyntax = (email) => {
   
   // Length checks (RFC compliance)
   if (trimmedEmail.length > 254) return false;
-  if (trimmedEmail.length < 6) return false; // Minimum realistic email
+  if (trimmedEmail.length < 3) return false; // Minimum: a@b.co = 3 chars (RFC 5321 allows)
   
   const [localPart, domain] = trimmedEmail.split('@');
   
@@ -220,9 +220,15 @@ export const isSpamDomain = (email) => {
   const numCount = (domainWithoutTld.match(/\d/g) || []).length;
   if (numCount > domainWithoutTld.length * 0.5) return true;
   
-  // Check for very short domain names (often spam)
+  // Check for very short domain names (but trust known short domains)
+  // Examples: ai.com, me.com, it.com are legitimate but short
   const domainName = domain.split('.')[0];
-  if (domainName.length < 3 && !trustedEmailDomains.includes(domain)) {
+  if (domainName.length < 3) {
+    // If domain is in trusted list, it's legitimate (e.g., me.com)
+    if (trustedEmailDomains.includes(domain)) {
+      return false; // It's trusted, not spam
+    }
+    // If not trusted AND too short, suspect spam
     return true;
   }
   
@@ -439,14 +445,27 @@ export const isCorporateDomain = (email) => {
 
 /**
  * Check if email uses role-based address (not personal)
+ * IMPROVED: Only flag if from UNTRUSTED domain
  */
 export const isRoleBasedEmail = (email) => {
   if (!email) return false;
   
   const localPart = email.toLowerCase().split('@')[0];
-  return roleBasedAddresses.some(role => 
+  const isRoleBased = roleBasedAddresses.some(role => 
     localPart === role || localPart.startsWith(role + '.')
   );
+  
+  // If it's not role-based, return false
+  if (!isRoleBased) return false;
+  
+  // If it IS role-based, only flag if from untrusted domain
+  // Example: admin@microsoft.com is LEGITIMATE
+  // But: admin@unknown-domain.tk is SUSPICIOUS
+  if (isTrustedDomain(email)) {
+    return false; // Role-based email from trusted domain is OK
+  }
+  
+  return true; // Role-based from unknown domain is suspicious
 };
 
 /**

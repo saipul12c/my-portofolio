@@ -10,7 +10,6 @@ import {
   Send,
   Zap,
   Shield,
-  Star,
   MapPin,
   CheckCircle2,
   AlertCircle,
@@ -19,12 +18,13 @@ import {
 } from "lucide-react";
 import { verifyEmail } from "../utils/emailValidator";
 import { checkRateLimit, recordSubmission, getRateLimitStatus } from "../utils/rateLimit";
+import { formatDateForSheetDB } from "../utils/formatDate";
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({ 
     name: "", 
     email: "", 
-    message: "" 
+    message: ""
   });
   const [loading, setLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -36,6 +36,44 @@ const ContactForm = () => {
   const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
   const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
   const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+  const SHEETDB_URL = import.meta.env.VITE_SHEETDB_URL;
+
+  // Function to save contact to SheetDB
+  const saveToSheetDB = async (contactData) => {
+    try {
+      if (!SHEETDB_URL) {
+        console.warn("⚠️ SHEETDB_URL tidak dikonfigurasi");
+        return false;
+      }
+
+      const response = await fetch(SHEETDB_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data: {
+            name: contactData.name,
+            email: contactData.email,
+            message: contactData.message,
+            date: formatDateForSheetDB(),
+            timestamp: new Date().toISOString(),
+          }
+        })
+      });
+
+      if (!response.ok) {
+        console.error('❌ Gagal menyimpan ke SheetDB:', response.status);
+        return false;
+      }
+
+      console.log('✅ Data berhasil disimpan ke SheetDB');
+      return true;
+    } catch (error) {
+      console.error('❌ Error menyimpan ke SheetDB:', error);
+      return false;
+    }
+  };
 
   // Check rate limit status on mount and periodically
   useEffect(() => {
@@ -111,6 +149,9 @@ const ContactForm = () => {
         },
         PUBLIC_KEY
       );
+
+      // Save data to SheetDB after email is sent
+      await saveToSheetDB(formData);
 
       toast.success(
         <div className="flex items-center gap-2">
@@ -350,7 +391,7 @@ const ContactForm = () => {
             <span>Privasi aman</span>
           </div>
           <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-            <Star size={14} className="text-blue-500" />
+            <CheckCircle2 size={14} className="text-blue-500" />
             <span>Gratis konsultasi</span>
           </div>
           <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">

@@ -13,14 +13,16 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useContacts } from "../hooks/useContacts";
-import { formatDate } from "../utils/formatDate";
-import { Link } from "react-router-dom";
-import { verifyEmail, getEmailSecurityBadge } from "../utils/emailValidator";
+import { formatDate, formatSheetDBDateToHuman } from "../utils/formatDate";
+import { getEmailSecurityBadge } from "../utils/emailValidator";
+import { shouldMarkAsPriority, analyzePriority } from "../utils/analyzePriority";
 
 const ContactList = () => {
   const [activeTab, setActiveTab] = useState("recent"); // Default ke terbaru
   const [hoveredContact, setHoveredContact] = useState(null);
   const [emailWarningTooltip, setEmailWarningTooltip] = useState(null);
+  const [chatRoomHover, setChatRoomHover] = useState(false);
+  const [showSpamFilter, setShowSpamFilter] = useState(true); // Toggle spam filter
   
   const {
     contacts,
@@ -130,16 +132,24 @@ const ContactList = () => {
     
     switch (activeTab) {
       case "recent":
-        // Sort berdasarkan timestamp terbaru
+        // Ambil hanya 5 email terbaru, sort berdasarkan timestamp
         filtered = filtered.sort((a, b) => parseTimestamp(b) - parseTimestamp(a));
+        filtered = filtered.slice(0, 5);
         break;
       case "priority":
-        // Prioritas berdasarkan panjang pesan (asumsi pesan panjang = penting)
-        filtered = filtered.sort((a, b) => {
-          const msgA = a.message || '';
-          const msgB = b.message || '';
-          return msgB.length - msgA.length;
-        });
+        // Filter email yang teranalisa sebagai priority (automatic)
+        // Urutkan berdasarkan priority score (descending), kemudian timestamp
+        filtered = filtered
+          .filter(contact => shouldMarkAsPriority(contact.message, contact.email))
+          .sort((a, b) => {
+            // Sort by priority score (descending)
+            const scoreA = analyzePriority(a.message, a.email).score;
+            const scoreB = analyzePriority(b.message, b.email).score;
+            if (scoreB !== scoreA) return scoreB - scoreA;
+            // Jika score sama, sort by timestamp terbaru
+            return parseTimestamp(b) - parseTimestamp(a);
+          })
+          .slice(0, 5);
         break;
       case "all":
       default:
@@ -147,8 +157,11 @@ const ContactList = () => {
         break;
     }
     
-    // Limit to 5 contacts
-    return filtered.slice(0, 5);
+    // Limit to 5 contacts jika belum di-limit pada case-nya
+    if (activeTab !== "recent" && activeTab !== "priority") {
+      filtered = filtered.slice(0, 5);
+    }
+    return filtered;
   };
 
   const displayContacts = getFilteredContacts();
@@ -217,14 +230,32 @@ const ContactList = () => {
                 </button>
               ))}
               
-              {/* Tombol Room Chat */}
-              <Link
-                to="/room-chat"
-                className="ml-2 px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+              {/* Tombol Room Chat - Disabled */}
+              <div
+                className="relative ml-2"
+                onMouseEnter={() => setChatRoomHover(true)}
+                onMouseLeave={() => setChatRoomHover(false)}
               >
-                <MessageSquare size={16} />
-                Room Chat
-              </Link>
+                <button
+                  disabled
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed opacity-60 flex items-center gap-2"
+                >
+                  <MessageSquare size={16} />
+                  Room Chat
+                </button>
+                
+                {/* Hover Popup */}
+                {chatRoomHover && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute top-full mt-2 left-0 bg-gray-900 dark:bg-gray-800 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap shadow-lg border border-gray-700 z-50"
+                  >
+                    🔧 Fitur sedang dikembangkan
+                  </motion.div>
+                )}
+              </div>
             </div>
           </div>
           <div className="text-right">
@@ -295,9 +326,30 @@ const ContactList = () => {
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-2 text-xs text-gray-400 bg-gray-100 dark:bg-gray-600 px-3 py-1 rounded-full">
-                      <Calendar size={12} />
-                      <span>{contact.timestamp ? formatDate(contact.timestamp) : "Tanggal tidak tersedia"}</span>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 text-xs text-gray-400 bg-gray-100 dark:bg-gray-600 px-3 py-1 rounded-full">
+                        <Calendar size={12} />
+                        <span>{contact.date ? formatSheetDBDateToHuman(contact.date) : (contact.timestamp ? formatDate(contact.timestamp) : "Tanggal tidak tersedia")}</span>
+                      </div>
+                      
+                      {/* Priority Badge - Automatic Analysis */}
+                      {(() => {
+                        const analysis = analyzePriority(contact.message, contact.email);
+                        return (
+                          <div
+                            className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full font-semibold border transition-all ${
+                              analysis.level === 'high'
+                                ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800'
+                                : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800'
+                            }`}
+                            title={`Priority Score: ${analysis.score}/100\n${analysis.reasons.join('\n')}`}
+                          >
+                            <span className="text-lg">{analysis.level === 'high' ? '🔴' : '🔵'}</span>
+                            <span>{analysis.level === 'high' ? 'HIGH' : 'NORMAL'}</span>
+                            <span className="opacity-70">({analysis.score})</span>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                   

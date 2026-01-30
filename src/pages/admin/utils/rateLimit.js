@@ -51,7 +51,6 @@ const getSubmissionHistory = () => {
     
     return JSON.parse(data);
   } catch (error) {
-    console.error('Error reading rate limit data:', error);
     return { submissions: [], blocked: false, blockedUntil: null };
   }
 };
@@ -63,7 +62,7 @@ const saveSubmissionHistory = (history) => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
   } catch (error) {
-    console.error('Error saving rate limit data:', error);
+    // Silent fail - data will be lost but app continues
   }
 };
 

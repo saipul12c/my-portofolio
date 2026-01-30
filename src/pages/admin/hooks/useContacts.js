@@ -26,7 +26,6 @@ export const useContacts = () => {
       setError(null);
       
       if (!SHEETDB_URL) {
-        console.warn("⚠️ SHEETDB_URL tidak dikonfigurasi");
         setContacts([]);
         setTotalContacts(0);
         setLoadingContacts(false);
@@ -34,22 +33,29 @@ export const useContacts = () => {
       }
 
       const res = await fetch(SHEETDB_URL);
-      if (!res.ok) throw new Error(`Gagal fetch data: ${res.status}`);
+      
+      if (!res.ok) {
+        throw new Error(`Gagal fetch data: ${res.status}`);
+      }
+      
       const data = await res.json();
       
-      // Validasi data
-      if (!Array.isArray(data)) {
-        console.warn("⚠️ Data bukan array:", data);
+      // Handle SheetDB response format: { value: [...], Count: N }
+      let dataArray = data;
+      if (data && typeof data === 'object' && data.value && Array.isArray(data.value)) {
+        dataArray = data.value;
+      } else if (!Array.isArray(data)) {
         setContacts([]);
         setTotalContacts(0);
+        setLoadingContacts(false);
         return;
       }
 
       // Set total contacts (including spam)
-      setTotalContacts(data.length);
+      setTotalContacts(dataArray.length);
 
-      // Filter spam emails
-      const filteredData = filterSpamContacts(data);
+      // Filter spam emails (using 'lenient' mode untuk portfolio site)
+      const filteredData = filterSpamContacts(dataArray, 'lenient');
       
       // Sort berdasarkan timestamp terbaru
       const sortedData = filteredData.sort((a, b) => {
@@ -65,7 +71,6 @@ export const useContacts = () => {
         });
       }
     } catch (err) {
-      console.error("❌ Error fetch contacts:", err);
       setError(err.message);
       
       if (retryCount < 3) {
