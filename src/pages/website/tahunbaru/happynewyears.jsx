@@ -528,7 +528,7 @@ const HappyNewYears = () => {
           })}
         </div>
         
-        <style jsx>{`
+        <style>{`
           @keyframes shimmer {
             0% { background-position: -100% -100%; }
             100% { background-position: 100% 100%; }

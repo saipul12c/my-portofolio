@@ -53,6 +53,11 @@ import Education from "./pages/sekolah/education";
 import Visi from "./pages/visi/visi";
 import CVsaya from "./pages/cv/CVsaya";
 import Streming from "./pages/streming/Tubs";
+
+import Live from "./pages/live/Live";
+import LiveDaftar from "./pages/live/auth/Daftar";
+import LiveLogin from "./pages/live/auth/Login";
+
 import AI_Docs from "./pages/help/AI_Docs";
 import AI_DocDetail from "./pages/help/ai/AI_DocDetail";
 import Keamanan from "./pages/help/panduan/Keamanan";
@@ -158,10 +163,11 @@ function PageTracker() {
   const location = useLocation();
 
   useEffect(() => {
-    console.log("Current page:", location.pathname);
-    const pageContent = document.body.innerText;
-    localStorage.setItem("lastVisitedPage", location.pathname);
-    localStorage.setItem("pageContent", pageContent);
+    if (import.meta && import.meta.env && import.meta.env.DEV) {
+      try { console.log("Current page:", location.pathname); } catch { /* ignore */ }
+    }
+    // Store only the last visited path to avoid heavy storage and logs
+    try { localStorage.setItem("lastVisitedPage", location.pathname); } catch { /* ignore */ }
   }, [location]);
 
   return null;
@@ -251,6 +257,7 @@ export default function App() {
                         <Route path="/help/faq/riwayat/ai/:slug" element={<HelpFAQriwayat />} />
                         <Route path="/live-cs/security" element={<Keamanan />} />
                         <Route path="/live-cs/privacy" element={<Privasi />} />
+                        
                         <Route path="/help/chatbot/settings" element={<ChatbotSettingsRoute />} />
                         <Route path="/help/chatbot/settings/general" element={<ChatbotSettingsTabRoute tab="general" />} />
                         <Route path="/help/chatbot/settings/ai" element={<ChatbotSettingsTabRoute tab="ai" />} />
@@ -263,7 +270,7 @@ export default function App() {
                         <Route path="/year-end" element={<TahunBaru />} />
 
                         <Route path="/help/commitment" element={<Komit />} />
-                        <Route path="/commitment/:id" element={<DetailCommitment />} />
+                        <Route path="/help/commitment/:slug" element={<DetailCommitment />} />
                       
                         {/* 💼 Halaman proyek - DUAL ROUTE SUPPORT */}
                         <Route path="/projects" element={<Projects />} />
@@ -301,6 +308,12 @@ export default function App() {
                         <Route path="/zodiak" element={<Zodiak />} />
                         <Route path="/coming-soon" element={<Comingsoon />} />
                         <Route path="/streming" element={<RequireAuth><Streming /></RequireAuth>} />
+
+                        {/* Live rooms feature */}
+                        <Route path="/Live-Discussion" element={<Live />} />
+                        <Route path="/Live-Discussion/login" element={<LiveLogin />} />
+                        <Route path="/Live-Discussion/daftar" element={<LiveDaftar />} />
+
                         <Route path="/projects" element={<RequireAuth><Projects /></RequireAuth>} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />

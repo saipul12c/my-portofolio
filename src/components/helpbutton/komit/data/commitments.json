@@ -81,13 +81,406 @@
       "color_scheme": "info",
       "cta_text": "Kenali Nilai Kami",
       "cta_link": "/tentang/nilai"
+    },
+    {
+      "id": 6,
+      "icon": "Target",
+      "title": "Fokus pada Hasil Nyata",
+      "short_desc": "Mengutamakan pencapaian konkret yang terukur dan berdampak",
+      "desc": "Setiap usaha kami diarahkan pada pencapaian hasil yang nyata dan dapat diukur. Kami tidak puas hanya dengan proses; kami mengejar outcome yang membawa perubahan positif bagi klien dan pemangku kepentingan. Dengan pendekatan berbasis data dan metrik yang jelas, kami memastikan setiap sumber daya yang dialokasikan memberikan return on investment yang optimal dan dampak yang berkelanjutan.",
+      "key_points": [
+        "Berorientasi pada outcome yang terukur",
+        "Pendekatan berbasis data dan analitik",
+        "Optimalisasi ROI untuk setiap investasi",
+        "Akuntabilitas terhadap hasil"
+      ],
+      "color_scheme": "primary",
+      "cta_text": "Lihat Hasil Kami",
+      "cta_link": "/hasil"
+    },
+    {
+      "id": 7,
+      "icon": "Shield",
+      "title": "Keamanan & Privasi",
+      "short_desc": "Menjaga kepercayaan dengan proteksi data dan sistem terbaik",
+      "desc": "Kami memegang teguh prinsip keamanan dan privasi sebagai hak fundamental klien dan pengguna. Dengan menerapkan standar keamanan tingkat tinggi dan protokol perlindungan data terkini, kami memastikan bahwa setiap informasi yang dipercayakan kepada kami terlindungi dengan optimal. Komitmen ini adalah bagian integral dari etika profesional kami dalam era digital.",
+      "key_points": [
+        "Standar enkripsi dan keamanan tertinggi",
+        "Kepatuhan terhadap regulasi privasi global",
+        "Audit keamanan berkala",
+        "Transparansi dalam penanganan data"
+      ],
+      "color_scheme": "secondary",
+      "cta_text": "Kebijakan Keamanan",
+      "cta_link": "/keamanan"
+    },
+    {
+      "id": 8,
+      "icon": "Zap",
+      "title": "Ketangkasan & Adaptabilitas",
+      "short_desc": "Responsif terhadap perubahan dengan solusi cepat dan tepat",
+      "desc": "Dalam lingkungan yang dinamis, kemampuan beradaptasi adalah kunci survival dan keunggulan kompetitif. Kami membangun tim dan sistem yang agile, mampu merespons perubahan pasar, teknologi, dan kebutuhan klien dengan cepat tanpa mengorbankan kualitas. Fleksibilitas ini memungkinkan kami tetap relevan dan menjadi pionir dalam industri.",
+      "key_points": [
+        "Metodologi kerja agile dan fleksibel",
+        "Respon cepat terhadap perubahan pasar",
+        "Kemampuan pivot tanpa kehilangan momentum",
+        "Pembelajaran adaptif berkelanjutan"
+      ],
+      "color_scheme": "success",
+      "cta_text": "Metodologi Kami",
+      "cta_link": "/metodologi"
+    },
+    {
+      "id": 9,
+      "icon": "Heart",
+      "title": "Kesejahteraan & Keseimbangan",
+      "short_desc": "Memprioritaskan kesehatan dan kebahagiaan tim sebagai fondasi produktivitas",
+      "desc": "Kami percaya bahwa tim yang sejahtera secara fisik, mental, dan emosional adalah tim yang paling produktif dan kreatif. Oleh karena itu, kami menciptakan lingkungan kerja yang mendukung keseimbangan hidup, memberikan dukungan holistik, dan mempromosikan budaya saling peduli. Kebahagiaan tim bukan hanya tujuan sampingan, melainkan fondasi utama kesuksesan organisasi.",
+      "key_points": [
+        "Program kesejahteraan holistik",
+        "Fleksibilitas work-life balance",
+        "Dukungan kesehatan mental",
+        "Lingkungan kerja inklusif dan suportif"
+      ],
+      "color_scheme": "warning",
+      "cta_text": "Budaya Perusahaan",
+      "cta_link": "/budaya"
+    },
+    {
+      "id": 10,
+      "icon": "TrendingUp",
+      "title": "Pertumbuhan Berkelanjutan",
+      "short_desc": "Berinvestasi dalam pengembangan jangka panjang untuk semua pemangku kepentingan",
+      "desc": "Pertumbuhan kami dirancang untuk berkelanjutan dan inklusif—tidak hanya fokus pada ekspansi bisnis, tetapi juga pada pengembangan kapasitas tim, peningkatan nilai klien, dan kontribusi pada ekosistem yang lebih luas. Kami mengadopsi pendekatan holistik terhadap pertumbuhan yang mempertimbangkan dampak sosial, lingkungan, dan ekonomi secara seimbang.",
+      "key_points": [
+        "Investasi dalam pengembangan SDM",
+        "Ekspansi yang bertanggung jawab",
+        "Peningkatan nilai jangka panjang klien",
+        "Pertumbuhan yang seimbang dan berkelanjutan"
+      ],
+      "color_scheme": "info",
+      "cta_text": "Tren Pertumbuhan",
+      "cta_link": "/pertumbuhan"
+    },
+    {
+      "id": 11,
+      "icon": "Award",
+      "title": "Kualitas Premium",
+      "short_desc": "Tidak pernah berkompromi pada standar keunggulan tertinggi",
+      "desc": "Setiap produk, layanan, dan interaksi yang kami hasilkan harus memenuhi standar kualitas tertinggi yang kami tetapkan. Kami menerapkan sistem kontrol kualitas multi-tahap, benchmarking industri terbaik, dan budaya continuous improvement untuk memastikan keunggulan yang konsisten. Bagi kami, kualitas adalah identitas yang melekat pada setiap aspek bisnis.",
+      "key_points": [
+        "Standar kualitas internasional",
+        "Proses kontrol dan jaminan kualitas ketat",
+        "Benchmark terhadap industri terbaik",
+        "Perbaikan berkelanjutan tanpa henti"
+      ],
+      "color_scheme": "primary",
+      "cta_text": "Standar Kualitas",
+      "cta_link": "/kualitas"
+    },
+    {
+      "id": 12,
+      "icon": "Clock",
+      "title": "Ketepatan Waktu",
+      "short_desc": "Menghargai waktu klien dengan konsistensi dan disiplin tinggi",
+      "desc": "Waktu adalah aset berharga bagi klien dan mitra kami. Kami berkomitmen untuk menghormati setiap tenggat waktu dengan disiplin tinggi, perencanaan matang, dan eksekusi tepat waktu. Konsistensi dalam ketepatan waktu adalah cermin profesionalisme dan penghargaan kami terhadap komitmen yang dibuat.",
+      "key_points": [
+        "Penyerahan tepat waktu secara konsisten",
+        "Perencanaan proyek yang realistis",
+        "Monitoring timeline ketat",
+        "Komunikasi proaktif tentang progres"
+      ],
+      "color_scheme": "secondary",
+      "cta_text": "Proses Kami",
+      "cta_link": "/proses"
+    },
+    {
+      "id": 13,
+      "icon": "Globe2",
+      "title": "Perspektif Global",
+      "short_desc": "Berpikir internasional, bertindak lokal dengan relevansi kontekstual",
+      "desc": "Meski berpijak pada akar lokal, kami mengadopsi perspektif global dalam strategi, inovasi, dan layanan. Dengan memahami tren internasional dan best practices global, kami mampu memberikan solusi yang relevan secara lokal namun kompetitif secara global. Pendekatan glokalisasi ini memungkinkan kami melayani klien dengan standar dunia.",
+      "key_points": [
+        "Pemahaman mendalam tren global",
+        "Adaptasi solusi internasional ke konteks lokal",
+        "Jaringan dan kemitraan lintas negara",
+        "Standar layanan bertaraf internasional"
+      ],
+      "color_scheme": "success",
+      "cta_text": "Jangkauan Global",
+      "cta_link": "/global"
+    },
+    {
+      "id": 14,
+      "icon": "Puzzle",
+      "title": "Penyelesaian Holistik",
+      "short_desc": "Memberikan solusi lengkap yang mengatasi akar permasalahan",
+      "desc": "Kami tidak hanya mengobati gejala, tetapi mendiagnosis dan menyelesaikan akar masalah dengan pendekatan sistemik dan holistik. Setiap solusi yang kami berikan dirancang untuk mengintegrasikan berbagai aspek, memastikan keberlanjutan dan efektivitas jangka panjang. Kami melihat gambaran besar tanpa mengabaikan detail penting.",
+      "key_points": [
+        "Pendekatan sistemik dan holistik",
+        "Solusi end-to-end yang terintegrasi",
+        "Fokus pada akar masalah, bukan gejala",
+        "Keterhubungan antar komponen solusi"
+      ],
+      "color_scheme": "warning",
+      "cta_text": "Pendekatan Holistik",
+      "cta_link": "/holistik"
+    },
+    {
+      "id": 15,
+      "icon": "RefreshCw",
+      "title": "Evolusi Terus-menerus",
+      "short_desc": "Selalu berkembang dan meningkatkan diri menuju versi terbaik",
+      "desc": "Perjalanan kami adalah proses evolusi tanpa akhir. Kami secara aktif mencari umpan balik, menganalisis kinerja, dan berinovasi pada model bisnis, produk, dan layanan. Tidak ada titik final dalam perbaikan diri—setiap hari adalah kesempatan untuk menjadi versi lebih baik dari kemarin, baik sebagai organisasi maupun sebagai individu.",
+      "key_points": [
+        "Siklus umpan balik dan perbaikan konstan",
+        "Pembelajaran dari pengalaman",
+        "Adaptasi terhadap perubahan kebutuhan",
+        "Mindset perkembangan tanpa batas"
+      ],
+      "color_scheme": "info",
+      "cta_text": "Perjalanan Evolusi",
+      "cta_link": "/evolusi"
+    },
+    {
+      "id": 16,
+      "icon": "MessageSquare",
+      "title": "Komunikasi Efektif",
+      "short_desc": "Menjembatani ide dengan klarifikasi dan empati yang optimal",
+      "desc": "Kami memprioritaskan komunikasi yang jelas, empatik, dan tepat sasaran. Setiap informasi disampaikan dengan struktur yang mudah dipahami, memastikan semua pihak berada dalam pemahaman yang sama. Dengan mendengarkan aktif dan respons yang konstruktif, kami membangun dialog yang produktif dan bermakna.",
+      "key_points": [
+        "Klarifikasi maksimal dalam setiap pesan",
+        "Pendekatan empatik dalam komunikasi",
+        "Respons cepat dan solutif",
+        "Penyampaian terstruktur dan sistematis"
+      ],
+      "color_scheme": "primary",
+      "cta_text": "Standar Komunikasi",
+      "cta_link": "/komunikasi"
+    },
+    {
+      "id": 17,
+      "icon": "BarChart",
+      "title": "Analisis Data Mendalam",
+      "short_desc": "Mengubah data menjadi wawasan aksi yang bernilai",
+      "desc": "Data adalah bahan bakar pengambilan keputusan kami. Dengan alat analisis canggih dan metode statistik yang solid, kami mengekstrak pola, tren, dan insight yang mendorong strategi berbasis bukti. Setiap angka memiliki cerita, dan kami ahli dalam membacanya.",
+      "key_points": [
+        "Analisis prediktif dan preskriptif",
+        "Visualisasi data yang intuitif",
+        "Interpretasi berbasis konteks bisnis",
+        "Rekomendasi data-driven yang actionable"
+      ],
+      "color_scheme": "secondary",
+      "cta_text": "Metode Analisis",
+      "cta_link": "/analisis"
+    },
+    {
+      "id": 18,
+      "icon": "Users",
+      "title": "Pelayanan Pelanggan Unggul",
+      "short_desc": "Melayani dengan hati, memecahkan masalah dengan solusi",
+      "desc": "Kepuasan pelanggan adalah prioritas utama. Tim layanan kami siap 24/7 dengan respons personal, solusi cepat, dan pendekatan manusiawi. Setiap interaksi adalah kesempatan untuk membangun hubungan jangka panjang yang penuh kepercayaan.",
+      "key_points": [
+        "Dukungan multi-saluran (omnichannel)",
+        "Resolusi masalah dalam waktu singkat",
+        "Pelayanan proaktif dan antisipatif",
+        "Hubungan jangka panjang berbasis kepercayaan"
+      ],
+      "color_scheme": "success",
+      "cta_text": "Layanan Kami",
+      "cta_link": "/layanan"
+    },
+    {
+      "id": 19,
+      "icon": "GitBranch",
+      "title": "Keterbukaan Teknologi",
+      "short_desc": "Mengadopsi teknologi terkini untuk solusi yang lebih cerdas",
+      "desc": "Kami terus memantau perkembangan teknologi dan mengintegrasikan tool terbaru yang relevan. Dengan stack teknologi modern dan arsitektur scalable, kami memastikan solusi yang future-proof dan efisien.",
+      "key_points": [
+        "Adopsi teknologi emerging",
+        "Arsitektur scalable dan modular",
+        "Integrasi API yang fleksibel",
+        "Keamanan teknologi terdepan"
+      ],
+      "color_scheme": "warning",
+      "cta_text": "Teknologi Kami",
+      "cta_link": "/teknologi"
+    },
+    {
+      "id": 20,
+      "icon": "CheckCircle",
+      "title": "Akuntabilitas Penuh",
+      "short_desc": "Bertanggung jawab atas setiap proses dan hasil yang dihasilkan",
+      "desc": "Kami menjalankan prinsip akuntabilitas dalam setiap tahap kerja. Setiap keputusan, tindakan, dan hasil dapat ditelusuri dan dipertanggungjawabkan secara transparan kepada semua stakeholder.",
+      "key_points": [
+        "Pelacakan (tracking) menyeluruh",
+        "Laporan kinerja terperinci",
+        "Sistem feedback yang terstruktur",
+        "Koreksi cepat jika terjadi penyimpangan"
+      ],
+      "color_scheme": "info",
+      "cta_text": "Sistem Akuntabilitas",
+      "cta_link": "/akuntabilitas"
+    },
+    {
+      "id": 21,
+      "icon": "BookOpen",
+      "title": "Pembelajaran Kontinu",
+      "short_desc": "Investasi tanpa henti pada pengembangan pengetahuan tim",
+      "desc": "Kami mendorong budaya belajar sepanjang hayat. Melalui pelatihan berkala, knowledge sharing, dan akses ke sumber belajar premium, setiap anggota tim terus berkembang dan tetap relevan di industri yang cepat berubah.",
+      "key_points": [
+        "Program pelatihan rutin",
+        "Akses ke kursus dan sertifikasi",
+        "Sesi sharing internal (knowledge transfer)",
+        "Dukungan eksperimen dan riset mandiri"
+      ],
+      "color_scheme": "primary",
+      "cta_text": "Program Pembelajaran",
+      "cta_link": "/pembelajaran"
+    },
+    {
+      "id": 22,
+      "icon": "Shield",
+      "title": "Kepatuhan Regulasi",
+      "short_desc": "Selalu mengikuti dan mematuhi hukum dan regulasi yang berlaku",
+      "desc": "Kami beroperasi dengan mematuhi semua peraturan lokal dan internasional yang relevan. Tim legal dan compliance kami memastikan setiap aktivitas memenuhi standar hukum tertinggi.",
+      "key_points": [
+        "Pemantauan regulasi real-time",
+        "Audit kepatuhan berkala",
+        "Pelatihan compliance untuk tim",
+        "Dokumentasi hukum yang lengkap"
+      ],
+      "color_scheme": "secondary",
+      "cta_text": "Kebijakan Kepatuhan",
+      "cta_link": "/kepatuhan"
+    },
+    {
+      "id": 23,
+      "icon": "Coins",
+      "title": "Efisiensi Biaya",
+      "short_desc": "Mengoptimalkan sumber daya untuk nilai maksimal dengan biaya minimal",
+      "desc": "Kami merancang solusi yang tidak hanya efektif tetapi juga efisien dari segi biaya. Dengan manajemen anggaran yang ketat dan prioritisasi yang tepat, kami memastikan setiap rupiah memberikan dampak optimal.",
+      "key_points": [
+        "Optimisasi anggaran secara cermat",
+        "Penggunaan sumber daya yang minimal waste",
+        "Analisis cost-benefit yang mendalam",
+        "Solusi ramah anggaran tanpa kompromi kualitas"
+      ],
+      "color_scheme": "success",
+      "cta_text": "Strategi Efisiensi",
+      "cta_link": "/efisiensi"
+    },
+    {
+      "id": 24,
+      "icon": "GitMerge",
+      "title": "Integrasi Sistem",
+      "short_desc": "Menyatukan berbagai sistem menjadi satu ekosistem yang harmonis",
+      "desc": "Kami ahli dalam mengintegrasikan sistem yang berbeda-beda (legacy dan modern) menjadi satu platform yang kohesif. Integrasi yang mulus memungkinkan aliran data tanpa hambatan dan operasi yang lebih efisien.",
+      "key_points": [
+        "Integrasi API yang robust",
+        "Middleware custom jika diperlukan",
+        "Migrasi data yang aman dan akurat",
+        "Interoperabilitas antar-platform"
+      ],
+      "color_scheme": "warning",
+      "cta_text": "Layanan Integrasi",
+      "cta_link": "/integrasi"
+    },
+    {
+      "id": 25,
+      "icon": "Eye",
+      "title": "Transparansi Total",
+      "short_desc": "Tidak ada yang disembunyikan – semua proses terbuka untuk audit",
+      "desc": "Kami percaya transparansi membangun kepercayaan. Setiap proses, biaya, timeline, dan keputusan dapat diakses oleh klien melalui dashboard real-time. Tidak ada hidden agenda.",
+      "key_points": [
+        "Dashboard real-time untuk klien",
+        "Laporan progres otomatis",
+        "Open communication policy",
+        "Akses penuh ke dokumentasi proyek"
+      ],
+      "color_scheme": "info",
+      "cta_text": "Dashboard Transparansi",
+      "cta_link": "/transparansi"
+    },
+    {
+      "id": 26,
+      "icon": "Cpu",
+      "title": "Optimisasi Kinerja",
+      "short_desc": "Meningkatkan kecepatan, efisiensi, dan reliabilitas sistem secara konstan",
+      "desc": "Kami secara berkala melakukan tuning dan optimasi pada semua aspek teknis – dari kode, database, hingga infrastruktur – untuk memastikan kinerja puncak dan pengalaman pengguna yang mulus.",
+      "key_points": [
+        "Performance monitoring 24/7",
+        "Optimisasi database dan query",
+        "Caching strategy yang efektif",
+        "Load balancing dan auto-scaling"
+      ],
+      "color_scheme": "primary",
+      "cta_text": "Teknik Optimisasi",
+      "cta_link": "/optimisasi"
+    },
+    {
+      "id": 27,
+      "icon": "Map",
+      "title": "Navigasi Strategis",
+      "short_desc": "Merencanakan rute yang jelas menuju tujuan bisnis",
+      "desc": "Kami membantu klien merumuskan peta jalan (roadmap) strategis yang detail dan terukur. Setiap langkah direncanakan dengan matang, dengan milestone yang jelas dan metrik keberhasilan yang terdefinisi.",
+      "key_points": [
+        "Perencanaan roadmap jangka panjang",
+        "Analisis SWOT dan risiko",
+        "Penetapan KPI yang relevan",
+        "Penyesuaian strategi dinamis"
+      ],
+      "color_scheme": "secondary",
+      "cta_text": "Konsultasi Strategi",
+      "cta_link": "/strategi"
+    },
+    {
+      "id": 28,
+      "icon": "Feather",
+      "title": "Desain Berpengalaman",
+      "short_desc": "Menciptakan antarmuka yang intuitif dan pengalaman pengguna yang memukau",
+      "desc": "Tim desain kami berfokus pada human-centered design, menciptakan solusi yang tidak hanya indah secara visual tetapi juga mudah digunakan, aksesibel, dan memecahkan masalah pengguna secara elegan.",
+      "key_points": [
+        "User research dan testing",
+        "Prototyping dan iterasi cepat",
+        "Prinsip aksesibilitas (WCAG)",
+        "UI/UX yang konsisten dan menarik"
+      ],
+      "color_scheme": "success",
+      "cta_text": "Portofolio Desain",
+      "cta_link": "/desain"
+    },
+    {
+      "id": 29,
+      "icon": "Cloud",
+      "title": "Infrastruktur Cloud Tangguh",
+      "short_desc": "Membangun fondasi digital yang scalable, andal, dan aman",
+      "desc": "Kami memanfaatkan teknologi cloud terkemuka (AWS, GCP, Azure) untuk menyediakan infrastruktur yang elastis, dengan redundancy tinggi, backup otomatis, dan keamanan berlapis.",
+      "key_points": [
+        "Arsitektur multi-cloud/hybrid",
+        "Disaster recovery terotomatisasi",
+        "Skalasi otomatis (auto-scaling)",
+        "Monitoring infrastruktur real-time"
+      ],
+      "color_scheme": "warning",
+      "cta_text": "Infrastruktur Kami",
+      "cta_link": "/infrastruktur"
+    },
+    {
+      "id": 30,
+      "icon": "ThumbsUp",
+      "title": "Reputasi yang Terjaga",
+      "short_desc": "Membangun dan mempertahankan nama baik melalui konsistensi kualitas",
+      "desc": "Reputasi adalah aset tak berwujud yang paling berharga. Kami menjaganya dengan memberikan hasil terbaik setiap saat, menepati janji, dan selalu berperilaku etis dalam setiap interaksi.",
+      "key_points": [
+        "Testimoni dan referensi yang kuat",
+        "Retensi klien jangka panjang",
+        "Partisipasi dalam asosiasi terpercaya",
+        "Sertifikasi dan penghargaan industri"
+      ],
+      "color_scheme": "info",
+      "cta_text": "Reputasi Kami",
+      "cta_link": "/reputasi"
     }
-  ],
-  "meta": {
-    "version": "2.0",
-    "last_updated": "2024-12-19",
-    "total_commitments": 5,
-    "category": "company-values",
-    "language": "indonesian"
-  }
+  ]
 }

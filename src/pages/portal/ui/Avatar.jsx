@@ -21,6 +21,6 @@ const Avatar = memo(() => (
   </div>
 ));
 
-Avatar.displayName = 'Avatar';
+Avatar.displayName = 'Muhammad Syaiful Mukmin';
 
 export default Avatar;

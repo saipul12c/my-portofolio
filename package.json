@@ -1,7 +1,7 @@
 {
   "name": "my-porto",
   "private": true,
-  "version": "1.19.100",
+  "version": "1.18.100",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -16,6 +16,7 @@
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.4.0",
     "@react-three/rapier": "^2.2.0",
+    "@supabase/supabase-js": "^2.35.0",
     "@tailwindcss/vite": "^4.1.14",
     "@tanstack/react-virtual": "^3.13.12",
     "compromise": "^14.14.4",
@@ -24,6 +25,7 @@
     "lucide-react": "^0.545.0",
     "mathjs": "^15.1.0",
     "meshline": "^3.3.1",
+    "qrcode": "^1.5.4",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-error-boundary": "^6.0.0",

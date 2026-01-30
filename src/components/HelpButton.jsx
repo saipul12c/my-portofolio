@@ -35,6 +35,10 @@ export default function HelpButton() {
   // Ubah ke true untuk mengaktifkan, false untuk menonaktifkan
   const isChatbotEnabled = true;
 
+  // Kontrol untuk mengaktifkan/menonaktifkan tombol Room Diskusi
+  // Ubah ke true ketika fitur sudah siap dirilis
+  const isRoomDiscussionEnabled = false;
+
   const handleClick = () => {
     if (isMaintenance) {
       setShowNotice(true);
@@ -129,7 +133,12 @@ export default function HelpButton() {
           style={{ transformOrigin: "bottom right" }}
         >
           <ErrorBoundary FallbackComponent={ChatbotErrorFallback}>
-            <HelpMenu onOpenChat={openChat} chatbotEnabled={isChatbotEnabled} />
+            <HelpMenu
+              onOpenChat={openChat}
+              chatbotEnabled={isChatbotEnabled}
+              roomEnabled={isRoomDiscussionEnabled}
+              isMaintenance={isMaintenance}
+            />
           </ErrorBoundary>
         </div>
       )}

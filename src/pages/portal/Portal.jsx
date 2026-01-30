@@ -16,7 +16,7 @@ import { addStyles } from './modules/styles';
 // Komponen utama dengan desain berbeda untuk mobile/desktop
 const SocialPortal = () => {
   const navigate = useNavigate();
-  const [checkedItems, setCheckedItems] = useState(initialCheckedItems);
+  const [checkedItems] = useState(initialCheckedItems);
   const [copied, setCopied] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [activeTab, setActiveTab] = useState('social');

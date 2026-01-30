@@ -1,19 +1,46 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { 
-  Heart, Sparkles, HandHeart, Users, Globe, Lightbulb, Star, 
-  ArrowLeft, CheckCircle2, Calendar, MapPin, Target, 
-  Share2, Bookmark, TrendingUp, Award, Clock, BarChart3
-} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import commitmentsData from "../data/commitments.json";
+import {
+  Heart, Sparkles, HandHeart, Users, Globe, Lightbulb, Star, 
+  ArrowRight, CheckCircle2, ChevronLeft, ChevronRight,
+  ArrowLeft, Bookmark, Share2, Calendar, Target, Shield, Zap, 
+  TrendingUp, Award, Clock, Globe2, Puzzle, RefreshCw, 
+  MessageSquare, BarChart, GitBranch, CheckCircle, BookOpen, 
+  Coins, GitMerge, Eye, Cpu, Map, Feather, Cloud, ThumbsUp,
+  MapPin, BarChart3
+} from "lucide-react";
 
 const iconMap = {
   HandHeart: HandHeart,
   Users: Users,
   Globe: Globe,
   Lightbulb: Lightbulb,
-  Star: Star
+  Star: Star,
+  Target: Target,
+  Shield: Shield,
+  Zap: Zap,
+  Heart: Heart,
+  TrendingUp: TrendingUp,
+  Award: Award,
+  Clock: Clock,
+  Globe2: Globe2,
+  Puzzle: Puzzle,
+  RefreshCw: RefreshCw,
+  MessageSquare: MessageSquare,
+  BarChart: BarChart,
+  GitBranch: GitBranch,
+  CheckCircle: CheckCircle,
+  BookOpen: BookOpen,
+  Coins: Coins,
+  GitMerge: GitMerge,
+  Eye: Eye,
+  Cpu: Cpu,
+  Map: Map,
+  Feather: Feather,
+  Cloud: Cloud,
+  ThumbsUp: ThumbsUp
 };
 
 const colorMap = {
@@ -32,20 +59,64 @@ const glowMap = {
   info: "shadow-indigo-500/20"
 };
 
+// Fungsi untuk membuat slug (konsisten dengan halaman daftar)
+const createSlug = (text) => {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/--+/g, '-')
+    .trim();
+};
+
 export default function DetailCommitment() {
-  const { id } = useParams();
+  const { slug } = useParams(); // Ubah dari id ke slug
   const [commitment, setCommitment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [allCommitments, setAllCommitments] = useState([]);
 
+  // Load data dari JSON
   useEffect(() => {
-    setTimeout(() => {
-      const foundCommitment = commitmentsData.commitments?.find(item => item.id === parseInt(id));
-      setCommitment(foundCommitment);
-      setLoading(false);
-    }, 800);
-  }, [id]);
+    setAllCommitments(commitmentsData.commitments || []);
+  }, []);
+
+  // Cari komitmen berdasarkan slug
+  useEffect(() => {
+    const findCommitment = () => {
+      setLoading(true);
+      
+      // Simulasi delay loading
+      setTimeout(() => {
+        // Cari berdasarkan slug yang sudah ada di data
+        let foundCommitment = allCommitments.find(item => item.slug === slug);
+        
+        // Jika tidak ditemukan, coba cari berdasarkan id (untuk backward compatibility)
+        if (!foundCommitment) {
+          // Mungkin slug adalah angka (id lama)
+          const id = parseInt(slug);
+          if (!isNaN(id)) {
+            foundCommitment = allCommitments.find(item => item.id === id);
+          }
+        }
+        
+        // Jika masih tidak ditemukan, coba buat slug dari title dan cari
+        if (!foundCommitment) {
+          foundCommitment = allCommitments.find(item => 
+            createSlug(item.title) === slug
+          );
+        }
+        
+        setCommitment(foundCommitment || null);
+        setLoading(false);
+      }, 800);
+    };
+
+    if (allCommitments.length > 0) {
+      findCommitment();
+    }
+  }, [slug, allCommitments]);
 
   const handleBookmark = () => {
     setIsBookmarked(!isBookmarked);
@@ -91,11 +162,11 @@ export default function DetailCommitment() {
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Komitmen tidak ditemukan</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">Komitmen yang Anda cari tidak tersedia atau telah dipindahkan.</p>
           <Link 
-            to="/" 
+            to="/help/commitment" 
             className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all duration-300"
           >
             <ArrowLeft size={16} />
-            Kembali ke Beranda
+            Kembali ke Daftar Komitmen
           </Link>
         </motion.div>
       </div>
@@ -105,6 +176,9 @@ export default function DetailCommitment() {
   const IconComponent = iconMap[commitment.icon] || Sparkles;
   const gradient = colorMap[commitment.color_scheme] || "from-pink-500 to-purple-500";
   const glow = glowMap[commitment.color_scheme] || "shadow-pink-500/20";
+
+  // Fungsi untuk share URL
+  const shareUrl = `${window.location.origin}/help/commitment/${commitment.slug}`;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-950 dark:to-black py-8 px-4">
@@ -119,7 +193,7 @@ export default function DetailCommitment() {
             className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white transition-all duration-300 group"
           >
             <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-            Kembali ke Komitmen
+            Kembali ke Daftar Komitmen
           </Link>
         </motion.div>
       </div>
@@ -156,6 +230,16 @@ export default function DetailCommitment() {
                     >
                       #{String(commitment.id).padStart(2, '0')}
                     </motion.span>
+                    {commitment.category && (
+                      <motion.span 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.25 }}
+                        className="inline-block text-sm font-medium bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm mr-2 mb-2"
+                      >
+                        {commitment.category}
+                      </motion.span>
+                    )}
                     <motion.h1 
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -217,8 +301,16 @@ export default function DetailCommitment() {
                     <Calendar size={18} />
                   </div>
                   <div>
-                    <p className="text-sm text-white/80">Dimulai</p>
-                    <p className="font-semibold">2023</p>
+                    <p className="text-sm text-white/80">Tanggal Dibuat</p>
+                    <p className="font-semibold">
+                      {commitment.created_date ? 
+                        new Date(commitment.created_date).toLocaleDateString('id-ID', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric'
+                        }) : 
+                        "Tidak tersedia"}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -227,7 +319,9 @@ export default function DetailCommitment() {
                   </div>
                   <div>
                     <p className="text-sm text-white/80">Status</p>
-                    <p className="font-semibold">Aktif</p>
+                    <p className="font-semibold">
+                      {commitment.status || "Aktif"}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -235,8 +329,10 @@ export default function DetailCommitment() {
                     <TrendingUp size={18} />
                   </div>
                   <div>
-                    <p className="text-sm text-white/80">Progress</p>
-                    <p className="font-semibold">85%</p>
+                    <p className="text-sm text-white/80">Prioritas</p>
+                    <p className="font-semibold">
+                      {commitment.priority ? `Level ${commitment.priority}` : "Tinggi"}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -244,8 +340,10 @@ export default function DetailCommitment() {
                     <Users size={18} />
                   </div>
                   <div>
-                    <p className="text-sm text-white/80">Partisipan</p>
-                    <p className="font-semibold">1,200+</p>
+                    <p className="text-sm text-white/80">Tags</p>
+                    <p className="font-semibold">
+                      {commitment.tags ? commitment.tags.length : "0"}
+                    </p>
                   </div>
                 </div>
               </motion.div>
@@ -272,6 +370,30 @@ export default function DetailCommitment() {
                     {commitment.desc}
                   </p>
                 </motion.section>
+
+                {/* Tags */}
+                {commitment.tags && commitment.tags.length > 0 && (
+                  <motion.section
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.75 }}
+                    className="bg-white/50 dark:bg-gray-700/30 rounded-2xl p-6 backdrop-blur-sm border border-white/50 dark:border-gray-600/30"
+                  >
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">
+                      Tags Terkait
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {commitment.tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </motion.section>
+                )}
 
                 {/* Implementation Details */}
                 <motion.section
@@ -304,34 +426,6 @@ export default function DetailCommitment() {
                         dan evaluasi dampak terhadap komunitas target.
                       </p>
                     </div>
-                  </div>
-                </motion.section>
-
-                {/* Timeline */}
-                <motion.section
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.9 }}
-                  className="bg-white/50 dark:bg-gray-700/30 rounded-2xl p-6 backdrop-blur-sm border border-white/50 dark:border-gray-600/30"
-                >
-                  <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center gap-3">
-                    <Clock className="text-purple-500" size={24} />
-                    Timeline Pencapaian
-                  </h3>
-                  <div className="space-y-4">
-                    {[2023, 2024, 2025].map((year, index) => (
-                      <div key={year} className="flex items-center gap-4">
-                        <div className={`w-3 h-3 rounded-full ${index === 0 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                        <div className="flex-1">
-                          <p className="font-semibold text-gray-800 dark:text-white">Tahun {year}</p>
-                          <p className="text-gray-600 dark:text-gray-400 text-sm">
-                            {index === 0 ? 'Program diluncurkan dan mencapai target awal' : 
-                             index === 1 ? 'Ekspansi program ke wilayah tambahan' : 
-                             'Target penyelesaian dan evaluasi menyeluruh'}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
                   </div>
                 </motion.section>
               </div>
@@ -433,12 +527,14 @@ export default function DetailCommitment() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+            onClick={() => setShowShareModal(false)}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-sm w-full"
+              onClick={(e) => e.stopPropagation()}
             >
               <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-2">Bagikan Komitmen</h3>
               <p className="text-gray-600 dark:text-gray-400 mb-4">Tautan telah disalin ke clipboard!</p>
@@ -449,8 +545,14 @@ export default function DetailCommitment() {
                 >
                   Tutup
                 </button>
-                <button className="flex-1 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all">
-                  Bagikan
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(shareUrl);
+                    setShowShareModal(false);
+                  }}
+                  className="flex-1 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all"
+                >
+                  Salin Tautan
                 </button>
               </div>
             </motion.div>

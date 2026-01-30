@@ -15,11 +15,14 @@ import docsData from "./docs/data/docsSections.json";
 import { getLatestVersionInfo } from "./docs/lib/versionUtils";
 
 // Komponen kecil untuk item dalam menu bantuan yang dapat menjadi tautan internal atau eksternal
-function HelpMenuItem({ title, subtitle, icon: Icon, to, external = false }) {
+function HelpMenuItem({ title, subtitle, icon: Icon, to, external = false, disabled = false }) {
   // Handler klik untuk navigasi atau membuka tab baru saat eksternal
   const handleClick = (e) => {
     // Mencegah perilaku default tombol/anchor
     e.preventDefault();
+    // Jika disabled, jangan lakukan navigasi
+    if (disabled) return;
+
     // Jika tautan eksternal, buka di tab baru dengan atribut keamanan
     if (external) {
       window.open(to, "_blank", "noopener,noreferrer");
@@ -37,8 +40,11 @@ function HelpMenuItem({ title, subtitle, icon: Icon, to, external = false }) {
   return (
     <button
       onClick={handleClick}
-      className="flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors text-left w-full"
+      className={`flex items-start gap-3 px-3 py-2 rounded-lg transition-colors text-left w-full
+        ${disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-white/5"}`}
       aria-label={title}
+      aria-disabled={disabled}
+      disabled={disabled}
     >
       {/* Kontainer ikon */}
       <div className="w-9 h-9 flex items-center justify-center rounded-md bg-white/5 shrink-0">
@@ -61,7 +67,16 @@ function HelpMenuItem({ title, subtitle, icon: Icon, to, external = false }) {
         )}
       </div>
       {/* Ikon eksternal bila benar */}
-      {external && <ExternalLink size={14} className="text-gray-400 mt-1" />}
+      {external && !disabled && (
+        <ExternalLink size={14} className="text-gray-400 mt-1" />
+      )}
+
+      {/* Label OFF bila dinonaktifkan */}
+      {disabled && (
+        <div className="text-[10px] text-gray-400 mt-1 px-2 py-1 bg-gray-800/40 rounded">
+          OFF
+        </div>
+      )}
     </button>
   );
 }
@@ -155,7 +170,7 @@ function HelpChatbotButton({ onOpenChat, enabled = true }) {
 }
 
 // Komponen utama menu bantuan yang merangkum item, tombol chatbot, dan badge versi
-export default function HelpMenu({ onOpenChat, chatbotEnabled = true }) {
+export default function HelpMenu({ onOpenChat, chatbotEnabled = true, roomEnabled = true }) {
   // Render kontainer dialog menu bantuan dengan styling dan aksesibilitas
   return (
     <div
@@ -183,6 +198,13 @@ export default function HelpMenu({ onOpenChat, chatbotEnabled = true }) {
           subtitle="Halaman dokumentasi lengkap"
           icon={FileText}
           to="/help/docs"
+        />
+        <HelpMenuItem
+          title="Room Diskusi"
+          subtitle="Masuk ke ruang diskusi langsung"
+          icon={MessageCircle}
+          to="/Live-Discussion"
+          disabled={!roomEnabled}
         />
         <HelpMenuItem
           title="Komitmen / Kebijakan"
