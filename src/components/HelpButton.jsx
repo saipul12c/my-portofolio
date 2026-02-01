@@ -4,6 +4,7 @@ import HelpMenu from "./helpbutton/HelpMenu";
 import { ErrorBoundary } from "react-error-boundary";
 import { ChatbotWindow } from "./helpbutton/chat/components/ChatbotWindow";
 import { ChatbotSettings } from "./helpbutton/chat/components/ChatbotSettings";
+import { useRecaptcha } from "../context/useRecaptcha";
 
 function ChatbotErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -27,6 +28,7 @@ export default function HelpButton() {
   const [showNotice, setShowNotice] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { isRecaptchaVisible } = useRecaptcha();
 
   // Ubah ke false jika fitur maintenance sudah selesai
   const isMaintenance = false;
@@ -83,7 +85,10 @@ export default function HelpButton() {
   }, [isChatOpen]);
 
   return (
-    <div className="fixed bottom-6 right-6 z-[9999]">
+    <div 
+      className="fixed right-6 z-[9999] transition-all duration-300"
+      style={{ bottom: isRecaptchaVisible ? '110px' : '20px' }}
+    >
       <div className="relative group">
         {/* Efek cahaya di sekitar tombol */}
         <div className="absolute inset-0 rounded-full bg-cyan-500/30 blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-700" />

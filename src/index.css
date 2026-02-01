@@ -98,6 +98,23 @@ input::placeholder {
 .saipul-help-item { color: var(--saipul-text); }
 .saipul-help-item:hover { background: color-mix(in srgb, var(--saipul-surface) 88%, var(--saipul-accent) 12%); }
 .saipul-help-badge { box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+
+/* ===== reCAPTCHA Badge Styling ===== */
+/* Hide reCAPTCHA badge by default (hanya tampil di halaman Contact) */
+.grecaptcha-badge {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Tampilkan reCAPTCHA badge HANYA di halaman /contact */
+.recaptcha-visible .grecaptcha-badge {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
 .saipul-help-icon { color: var(--saipul-surface) !important; }
 .saipul-presence-badge { background: var(--saipul-accent); border: 2px solid var(--saipul-border); }
 .saipul-online-dot { background: var(--saipul-accent); border: 1px solid var(--saipul-border); width: .5rem; height: .5rem; }

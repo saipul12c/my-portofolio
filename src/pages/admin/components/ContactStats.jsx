@@ -12,7 +12,7 @@ const ContactStats = ({ statsAnim }) => {
   return (
     <motion.div
       {...statsAnim}
-      className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto"
+      className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 max-w-2xl mx-auto w-full"
     >
       {stats.map((stat, index) => (
         <motion.div
@@ -20,10 +20,10 @@ const ContactStats = ({ statsAnim }) => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 + index * 0.1 }}
-          className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl p-4 text-center border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300"
+          className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-lg sm:rounded-xl md:rounded-2xl p-3 sm:p-4 text-center border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300"
         >
-          <stat.icon className="mx-auto mb-2 text-purple-600 dark:text-purple-400" size={24} />
-          <div className="text-2xl font-bold text-gray-800 dark:text-white">{stat.value}</div>
+          <stat.icon className="mx-auto mb-2 text-purple-600 dark:text-purple-400" size={20} />
+          <div className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 dark:text-white">{stat.value}</div>
           <div className="text-xs text-gray-500 dark:text-gray-400">{stat.label}</div>
         </motion.div>
       ))}

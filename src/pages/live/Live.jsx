@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { supabase, subscribeToMessages, getCurrentUser, fetchMessages, sendMessage as sendMessageAPI } from './supabaseClient';
 import { useNavigate } from 'react-router-dom';
+
+// SheetDB URL dari environment variables
+const SHEETDB_AKUN_URL = import.meta.env.VITE_SHEETDB_URL_AKUN;
+const SHEETDB_MESSAGE_URL = import.meta.env.VITE_SHEETDB_URL_MASSAGE;
 
 function Live() {
   const [messages, setMessages] = useState([]);
@@ -13,106 +16,153 @@ function Live() {
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const messageInputRef = useRef(null);
-  const subscriptionRef = useRef(null);
+  const lastSentRef = useRef(0);
+  const fetchControllerRef = useRef(null);
   const navigate = useNavigate();
+  const pollingIntervalRef = useRef(null);
 
-  // Check if user is authenticated
-  const checkUser = useCallback(async () => {
-    const currentUser = await getCurrentUser();
-    if (!currentUser) {
-      navigate('/Live-Discussion/login');
-    } else {
-      setUser(currentUser);
-    }
-  }, [navigate]);
-
-  // Fetch initial messages
-  const loadMessages = useCallback(async () => {
-    setLoading(true);
-    setError('');
+  // Check user status in SheetDB
+  const checkUserStatus = useCallback(async () => {
     try {
-      const { data, error: fetchError } = await fetchMessages(100, 0);
-
-      if (fetchError) {
-        console.error('Error fetching messages:', fetchError);
-        setError('Gagal memuat pesan. Silakan refresh halaman.');
+      // Ambil user dari localStorage (mendukung key lama 'userSession')
+      const savedRaw = localStorage.getItem('sheetdb_user') || localStorage.getItem('userSession');
+      if (!savedRaw) {
+        navigate('/Live-Discussion/login');
         return;
       }
 
-      setMessages(data || []);
+      let savedParsed;
+      try {
+        savedParsed = JSON.parse(savedRaw);
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+        localStorage.removeItem('sheetdb_user');
+        navigate('/Live-Discussion/login');
+        return;
+      }
+
+      // Normalisasi nama properti ke `username` untuk konsistensi
+      const userData = {
+        id: savedParsed.id || savedParsed.email,
+        username: savedParsed.username || savedParsed.nama || savedParsed.name || 'User',
+        email: savedParsed.email
+      };
+      
+      // Verifikasi user di database SheetDB
+      // Gunakan AbortController untuk menghindari request tertinggal
+      const controller = new AbortController();
+      const signal = controller.signal;
+      try {
+        const response = await fetch(`${SHEETDB_AKUN_URL}/search?email=${encodeURIComponent(userData.email)}`, { signal });
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+          const userRecord = data[0];
+          const userStatus = userRecord.status?.toLowerCase();
+          // Check status akun
+          if (userStatus === 'active' || userStatus === 'aktif') {
+            setUser({
+              ...userData,
+              id: userRecord.id || userData.id,
+              username: userRecord.nama || userRecord.username || userData.username,
+              email: userRecord.email
+            });
+          } else {
+            setError('Akun Anda dinonaktifkan. Silakan hubungi administrator.');
+            setTimeout(() => {
+              localStorage.removeItem('sheetdb_user');
+              navigate('/Live-Discussion/login');
+            }, 3000);
+          }
+        } else {
+          // User data valid dari localStorage, lanjutkan
+          setUser(userData);
+        }
+      } catch (fetchErr) {
+        if (fetchErr.name !== 'AbortError') {
+          console.warn('Could not verify user status, using cached data:', fetchErr);
+          // Lanjutkan dengan data yang disimpan jika verifikasi gagal
+          setUser(userData);
+        }
+      }
     } catch (err) {
-      console.error('Error loading messages:', err);
-      setError('Terjadi kesalahan saat memuat pesan.');
-    } finally {
-      setLoading(false);
+      console.error('Error checking user status:', err);
+      setError('Gagal memverifikasi akun. Silakan login kembali.');
+      setTimeout(() => {
+        localStorage.removeItem('sheetdb_user');
+        navigate('/Live-Discussion/login');
+      }, 3000);
+    }
+  }, [navigate]);
+
+  // Fetch messages from SheetDB
+  const fetchMessagesFromSheetDB = useCallback(async () => {
+    try {
+      // Abort previous fetch if any
+      if (fetchControllerRef.current) {
+        try { fetchControllerRef.current.abort(); } catch (e) {}
+      }
+      const controller = new AbortController();
+      fetchControllerRef.current = controller;
+      const response = await fetch(SHEETDB_MESSAGE_URL, { signal: controller.signal });
+      const data = await response.json();
+      
+      if (data && data.length > 0) {
+        // Sort messages by created_at descending (newest first)
+        const sortedMessages = data.sort((a, b) => 
+          new Date(b.created_at || b.timestamp) - new Date(a.created_at || a.timestamp)
+        );
+        setMessages(sortedMessages.slice(0, 100)); // Limit to 100 messages
+      } else {
+        setMessages([]);
+      }
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+      console.error('Error fetching messages:', err);
+      setError('Gagal memuat pesan. Silakan refresh halaman.');
     }
   }, []);
 
-  // Setup realtime subscription
-  const setupRealtimeSubscription = useCallback(() => {
-    if (subscriptionRef.current) {
-      subscriptionRef.current.unsubscribe();
+  // Setup polling for new messages
+  const setupPolling = useCallback(() => {
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
     }
 
-    const subscription = subscribeToMessages(async (payload) => {
-      console.log('Realtime event received:', payload.eventType);
-
-      if (payload.eventType === 'INSERT' && payload.new) {
-        // Fetch user data for the new message
-        const { data: userData } = await supabase
-          .from('users')
-          .select('username, email')
-          .eq('id', payload.new.user_id)
-          .single();
-
-        setMessages(prev => {
-          // Prevent duplicate messages
-          const exists = prev.some(msg => msg.id === payload.new.id);
-          if (exists) return prev;
-          
-          return [...prev, {
-            ...payload.new,
-            user: userData || { username: 'Unknown', email: '' }
-          }];
-        });
-      }
-      
-      // Handle message deletion
-      if (payload.eventType === 'DELETE' && payload.old) {
-        setMessages(prev => prev.filter(msg => msg.id !== payload.old.id));
-      }
-
-      // Handle message updates
-      if (payload.eventType === 'UPDATE' && payload.new) {
-        setMessages(prev => prev.map(msg => 
-          msg.id === payload.new.id ? { ...msg, ...payload.new } : msg
-        ));
-      }
-    });
-
-    subscriptionRef.current = subscription;
+    pollingIntervalRef.current = setInterval(() => {
+      fetchMessagesFromSheetDB();
+    }, 3000); // Poll every 3 seconds
 
     return () => {
-      if (subscriptionRef.current) {
-        subscriptionRef.current.unsubscribe();
-        subscriptionRef.current = null;
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+      if (fetchControllerRef.current) {
+        try { fetchControllerRef.current.abort(); } catch (e) {}
       }
     };
-  }, []);
+  }, [fetchMessagesFromSheetDB]);
 
-  // Check user authentication
-  useEffect(() => {
-    checkUser();
-  }, [checkUser]);
+  // Load initial data
+  const loadInitialData = useCallback(async () => {
+    setLoading(true);
+    await checkUserStatus();
+    await fetchMessagesFromSheetDB();
+    setLoading(false);
+  }, [checkUserStatus, fetchMessagesFromSheetDB]);
 
-  // Load messages and setup realtime when user is authenticated
+  // Check user and load messages on mount
   useEffect(() => {
-    if (user) {
-      loadMessages();
-      const cleanup = setupRealtimeSubscription();
-      return cleanup;
-    }
-  }, [user, loadMessages, setupRealtimeSubscription]);
+    loadInitialData();
+    const cleanup = setupPolling();
+    
+    return () => {
+      cleanup();
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+    };
+  }, [loadInitialData, setupPolling]);
 
   // Auto scroll to latest message
   useEffect(() => {
@@ -132,10 +182,38 @@ function Live() {
     }
   }, [isTyping]);
 
-  // Send message
+  // Send message to SheetDB
+  const sendMessageToSheetDB = async (messageData) => {
+    try {
+      const response = await fetch(SHEETDB_MESSAGE_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ data: [messageData] }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const result = await response.json();
+      return { data: result, error: null };
+    } catch (err) {
+      return { data: null, error: err };
+    }
+  };
+
+  // Handle send message
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !user || sending) return;
+    // rate limit: 1.5s
+    if (Date.now() - lastSentRef.current < 1500) {
+      setError('Tunggu sebentar sebelum mengirim pesan lagi.');
+      return;
+    }
+    lastSentRef.current = Date.now();
 
     const messageContent = newMessage.trim();
     setNewMessage('');
@@ -143,16 +221,27 @@ function Live() {
     setError('');
 
     try {
-      const { data, error: sendError } = await sendMessageAPI(messageContent, user.id);
+      const messageData = {
+        user_id: user.id,
+        username: user.username,
+        email: user.email,
+        content: messageContent,
+        created_at: new Date().toISOString(),
+        timestamp: new Date().getTime()
+      };
+
+      const { error: sendError } = await sendMessageToSheetDB(messageData);
 
       if (sendError) {
         console.error('Error sending message:', sendError);
         setError('Gagal mengirim pesan. Silakan coba lagi.');
-        setNewMessage(messageContent); // Restore message on error
+        setNewMessage(messageContent);
         return;
       }
 
-      // Message will be added via realtime subscription
+      // Add message to local state immediately for better UX
+      setMessages(prev => [messageData, ...prev.slice(0, 99)]);
+      
       // Focus back to input
       messageInputRef.current?.focus();
     } catch (err) {
@@ -165,18 +254,14 @@ function Live() {
   };
 
   // Handle logout
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      navigate('/Live-Discussion/login');
-    } catch (err) {
-      console.error('Error logging out:', err);
-    }
+  const handleLogout = () => {
+    localStorage.removeItem('sheetdb_user');
+    navigate('/Live-Discussion/login');
   };
 
   // Format timestamp to readable time
   const formatTime = (timestamp) => {
-    const date = new Date(timestamp);
+    const date = timestamp ? new Date(timestamp) : new Date();
     const now = new Date();
     const diff = now - date;
     const seconds = Math.floor(diff / 1000);
@@ -301,12 +386,12 @@ function Live() {
             ) : (
               <div className="space-y-4">
                 {messages.map((message, index) => {
-                  const isOwnMessage = message.user_id === user?.id;
-                  const showAvatar = index === 0 || messages[index - 1].user_id !== message.user_id;
+                  const isOwnMessage = message.email === user?.email;
+                  const showAvatar = index === 0 || messages[index - 1].email !== message.email;
 
                   return (
                     <div
-                      key={message.id}
+                      key={message.timestamp || index}
                       className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} animate-fade-in`}
                     >
                       <div className={`flex items-end gap-2 max-w-[85%] sm:max-w-md lg:max-w-lg ${isOwnMessage ? 'flex-row-reverse' : 'flex-row'}`}>
@@ -314,7 +399,7 @@ function Live() {
                         {showAvatar && !isOwnMessage && (
                           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center flex-shrink-0 shadow-lg">
                             <span className="text-white text-sm font-bold">
-                              {message.user?.username?.[0]?.toUpperCase() || 'U'}
+                              {message.username?.[0]?.toUpperCase() || 'U'}
                             </span>
                           </div>
                         )}
@@ -330,10 +415,10 @@ function Live() {
                           {/* Username and Time */}
                           <div className="flex items-center gap-2 mb-1">
                             <span className={`text-xs font-semibold ${isOwnMessage ? 'text-cyan-100' : 'text-cyan-300'}`}>
-                              {isOwnMessage ? 'Anda' : (message.user?.username || 'User')}
+                              {isOwnMessage ? 'Anda' : (message.username || 'User')}
                             </span>
                             <span className={`text-xs ${isOwnMessage ? 'text-cyan-200/70' : 'text-gray-400'}`}>
-                              {formatTime(message.created_at)}
+                              {formatTime(message.created_at || message.timestamp)}
                             </span>
                           </div>
                           
@@ -359,10 +444,23 @@ function Live() {
                   ref={messageInputRef}
                   value={newMessage}
                   onChange={(e) => {
-                    setNewMessage(e.target.value);
-                    handleTyping();
-                  }}
-                  onKeyPress={handleKeyPress}
+                      const v = e.target.value.slice(0, 500);
+                      setNewMessage(v);
+                      handleTyping();
+                    }}
+                    onInput={(e) => {
+                      // autosize textarea, limit to 120px
+                      try {
+                        e.target.style.height = 'auto';
+                        e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+                      } catch (err) {}
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendMessage(e);
+                      }
+                    }}
                   placeholder="Ketik pesan... (Enter untuk kirim)"
                   className="w-full px-4 py-3 pr-12 bg-white/5 border border-white/10 rounded-xl text-white placeholder-cyan-300/50 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent resize-none custom-scrollbar"
                   disabled={sending}
@@ -408,42 +506,11 @@ function Live() {
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-lg rounded-full border border-white/10">
             <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
             <span className="text-sm text-cyan-300/80">
-              {messages.length} pesan • Realtime dengan Supabase
+              {messages.length} pesan • Live dengan SheetDB
             </span>
           </div>
         </div>
       </main>
-
-      {/* Custom Scrollbar Styles */}
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.05);
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(34, 211, 238, 0.3);
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(34, 211, 238, 0.5);
-        }
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.3s ease-out;
-        }
-      `}</style>
     </div>
   );
 }

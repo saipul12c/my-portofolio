@@ -100,6 +100,12 @@ import Timeout from "./pages/errors/Timeout";
 import BadGateway from "./pages/errors/BadGateway";
 import Maintenance from "./pages/errors/Maintenance";
 
+// ✅ Import hook untuk manage recaptcha visibility
+import { useRecaptchaVisibility } from './hooks/useRecaptchaVisibility';
+
+// ✅ NEW: Import RecaptchaProvider
+import { RecaptchaProvider } from './context/RecaptchaContext';
+
 // ✅ NEW: Komponen wrapper untuk Komoniti
 const KomonitiWrapper = () => (
   <AuthProvider>
@@ -158,9 +164,12 @@ const PlainLayout = ({ children }) => (
   </main>
 );
 
-// ✅ Komponen untuk melacak lokasi halaman
+// ✅ Komponen untuk melacak lokasi halaman dan reCAPTCHA visibility
 function PageTracker() {
   const location = useLocation();
+  
+  // Gunakan hook untuk manage reCAPTCHA visibility berdasarkan lokasi
+  useRecaptchaVisibility();
 
   useEffect(() => {
     if (import.meta && import.meta.env && import.meta.env.DEV) {
@@ -191,8 +200,9 @@ export default function App() {
     <Router>
       <ErrorProvider>
         <AppAuthProvider>
-          <CommunityProvider>
-          <div className="flex flex-col min-h-screen bg-[var(--color-gray-900)] text-white selection:bg-cyan-400/30 selection:text-cyan-200">
+          <RecaptchaProvider>
+            <CommunityProvider>
+              <div className="flex flex-col min-h-screen bg-[var(--color-gray-900)] text-white selection:bg-cyan-400/30 selection:text-cyan-200">
             {/* Animasi Loader */}
             <AnimatePresence mode="wait">
               {isLoading && <Loader key="loader" />}
@@ -385,8 +395,9 @@ export default function App() {
             </Routes>
               </motion.div>
             )}
-          </div>
-        </CommunityProvider>
+              </div>
+            </CommunityProvider>
+          </RecaptchaProvider>
         </AppAuthProvider>
       </ErrorProvider>
     </Router>
