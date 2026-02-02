@@ -28,6 +28,7 @@ export default function HelpButton() {
   const [showNotice, setShowNotice] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [showMainTooltip, setShowMainTooltip] = useState(false);
   const { isRecaptchaVisible } = useRecaptcha();
 
   // Ubah ke false jika fitur maintenance sudah selesai
@@ -96,6 +97,8 @@ export default function HelpButton() {
         {/* Tombol utama */}
         <button
           onClick={handleClick}
+          onMouseEnter={() => setShowMainTooltip(true)}
+          onMouseLeave={() => setShowMainTooltip(false)}
           aria-label="Buka Menu Bantuan"
           className={`relative flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full
             bg-gradient-to-br from-cyan-400/40 to-blue-600/50
@@ -124,6 +127,22 @@ export default function HelpButton() {
             />
           )}
         </button>
+
+        {/* Tooltip untuk tombol utama */}
+        {showMainTooltip && !open && !isMaintenance && (
+          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 w-max bg-gray-900 border border-cyan-400/30 rounded-lg px-3 py-2 text-xs text-gray-200 z-50 whitespace-nowrap shadow-lg">
+            📚 Menu Bantuan & Support - Akses FAQ, Docs, dan AI Chatbot
+            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gray-900 border-r border-b border-cyan-400/30 rotate-45"></div>
+          </div>
+        )}
+        
+        {/* Tooltip untuk maintenance */}
+        {showMainTooltip && !open && isMaintenance && (
+          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 w-max bg-yellow-900/80 border border-yellow-400/50 rounded-lg px-3 py-2 text-xs text-yellow-100 z-50 whitespace-nowrap shadow-lg">
+            🔧 Sistem sedang perbaikan - Kembali lagi sebentar
+            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-2 h-2 bg-yellow-900/80 border-r border-b border-yellow-400/50 rotate-45"></div>
+          </div>
+        )}
 
         {/* Notifikasi maintenance */}
         {isMaintenance && (

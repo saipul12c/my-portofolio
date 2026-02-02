@@ -57,6 +57,8 @@ import Streming from "./pages/streming/Tubs";
 import Live from "./pages/live/Live";
 import LiveDaftar from "./pages/live/auth/Daftar";
 import LiveLogin from "./pages/live/auth/Login";
+import DashboardLive from "./pages/live/dash/dashboard";
+import ProfileLive from "./pages/live/users/Profile";
 
 import AI_Docs from "./pages/help/AI_Docs";
 import AI_DocDetail from "./pages/help/ai/AI_DocDetail";
@@ -191,7 +193,7 @@ export default function App() {
     // Simulasi loading time (bisa disesuaikan)
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 3000); // 3 detik (memberikan waktu untuk animasi loader berjalan sempurna)
+    }, 6000); // 6 detik (memberikan waktu untuk animasi loader berjalan sempurna)
 
     return () => clearTimeout(timer);
   }, []);
@@ -323,6 +325,8 @@ export default function App() {
                         <Route path="/Live-Discussion" element={<Live />} />
                         <Route path="/Live-Discussion/login" element={<LiveLogin />} />
                         <Route path="/Live-Discussion/daftar" element={<LiveDaftar />} />
+                        <Route path="/Live-Discussion/Profile" element={<ProfileLive />} />
+                        <Route path="/Live-Discussion/dashboard" element={<DashboardLive />} />
 
                         <Route path="/projects" element={<RequireAuth><Projects /></RequireAuth>} />
                         <Route path="/login" element={<Login />} />

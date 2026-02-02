@@ -16,11 +16,7 @@ const Daftar = () => {
   const [message, setMessage] = useState({ type: '', text: '' });
   const [errors, setErrors] = useState({});
 
-  const SHEETDB_URL = import.meta.env.VITE_SHEETDB_URL_AKUN;
-
-  if (!SHEETDB_URL) {
-    console.error('URL SheetDB tidak ditemukan di environment variables');
-  }
+  const DATABASE_URL = import.meta.env.VITE_DATABASE_URL;
 
   const validateForm = () => {
     const newErrors = {};
@@ -60,7 +56,6 @@ const Daftar = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -77,25 +72,36 @@ const Daftar = () => {
     setMessage({ type: '', text: '' });
 
     try {
-      // Hash password menggunakan SHA-256 sebelum dikirim
+      // Hash password menggunakan SHA-256
       const encoder = new TextEncoder();
       const data = encoder.encode(formData.password);
       const hashBuffer = await crypto.subtle.digest('SHA-256', data);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       const passwordHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-      // Siapkan data untuk dikirim ke SheetDB
+      // Cek apakah email sudah terdaftar
+      const checkResponse = await fetch(`${DATABASE_URL}/api/users?email=${encodeURIComponent(formData.email.toLowerCase())}`);
+      const existingUsers = await checkResponse.json();
+      
+      if (existingUsers && existingUsers.length > 0) {
+        throw new Error('Email sudah terdaftar');
+      }
+
+      // Siapkan data untuk dikirim
+      const today = new Date();
       const dataToSend = {
-        data: [{
-          nama: formData.nama,
-          email: formData.email.toLowerCase(),
-          password: passwordHash,
-          tanggal_daftar: new Date().toISOString().split('T')[0],
-          status: 'aktif'
-        }]
+        nama: formData.nama,
+        email: formData.email.toLowerCase(),
+        password: passwordHash,
+        role: 'USER', // Default role untuk user baru
+        tanggal_daftar: today.toISOString().split('T')[0],
+        status: 'aktif',
+        message_count: 0,
+        last_reset: today.toISOString().split('T')[0],
+        bio: `Halo! Saya ${formData.nama}, pengguna baru di Live Discussion.`
       };
 
-      const response = await fetch(SHEETDB_URL, {
+      const response = await fetch(`${DATABASE_URL}/api/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -109,8 +115,7 @@ const Daftar = () => {
 
       const result = await response.json();
       
-      // SheetDB returns either created count or success response
-      if (result.created === 1 || result.success) {
+      if (result.id) {
         setMessage({
           type: 'success',
           text: 'Pendaftaran berhasil! Mengarahkan ke login.'
@@ -121,10 +126,9 @@ const Daftar = () => {
           password: '',
           konfirmasiPassword: ''
         });
-        // Simpan email yang baru terdaftar agar mudah login (opsional)
+        
         localStorage.setItem('rememberedEmail', formData.email);
 
-        // Redirect ke login setelah 2 detik menggunakan navigate
         setTimeout(() => {
           navigate('/Live-Discussion/login');
         }, 2000);
@@ -137,7 +141,7 @@ const Daftar = () => {
         type: 'error',
         text: error.message === 'Failed to fetch' 
           ? 'Koneksi gagal. Periksa koneksi internet Anda.' 
-          : 'Email sudah terdaftar atau terjadi kesalahan.'
+          : error.message
       });
     } finally {
       setLoading(false);
@@ -288,13 +292,20 @@ const Daftar = () => {
               )}
             </div>
 
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <p className="text-sm text-blue-800">
+                <strong>Info:</strong> Setelah mendaftar, Anda akan mendapatkan role <strong>User</strong> secara otomatis. 
+                Role dapat ditingkatkan oleh Admin sesuai kontribusi Anda.
+              </p>
+            </div>
+
             <button
               type="submit"
               disabled={loading}
               className={`w-full py-3 px-4 rounded-xl font-semibold text-white transition-all ${
                 loading
                   ? 'bg-blue-400 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg'
+                  : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:bg-blue-700 hover:shadow-lg'
               }`}
             >
               {loading ? (

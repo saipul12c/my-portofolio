@@ -14,11 +14,7 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [rememberMe, setRememberMe] = useState(false);
 
-  const SHEETDB_URL = import.meta.env.VITE_SHEETDB_URL_AKUN;
-
-  if (!SHEETDB_URL) {
-    console.error('URL SheetDB tidak ditemukan di environment variables');
-  }
+  const DATABASE_URL = import.meta.env.VITE_DATABASE_URL;
 
   // Cek jika ada data login yang diingat
   useEffect(() => {
@@ -77,8 +73,8 @@ const Login = () => {
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       const inputPasswordHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-      // Ambil user berdasarkan email dari SheetDB
-      const response = await fetch(`${SHEETDB_URL}/search?email=${encodeURIComponent(formData.email.toLowerCase())}`);
+      // Ambil user berdasarkan email dari backend
+      const response = await fetch(`${DATABASE_URL}/users?email=${encodeURIComponent(formData.email.toLowerCase())}`);
       
       if (!response.ok) {
         throw new Error('Gagal mengambil data dari server');
@@ -95,22 +91,42 @@ const Login = () => {
           throw new Error('Akun Anda tidak aktif. Hubungi administrator.');
         }
 
+        // Deteksi role otomatis dari database
+        const userRole = user.role?.toUpperCase() || 'USER';
+        const roleConfig = {
+          'SUPER_ADMIN': { level: 6, name: 'Super Admin', badge: '👑', color: 'from-purple-600 to-pink-600' },
+          'ADMIN': { level: 5, name: 'Admin', badge: '🛡️', color: 'from-red-500 to-orange-500' },
+          'MODERATOR': { level: 4, name: 'Moderator', badge: '⭐', color: 'from-blue-500 to-cyan-500' },
+          'PREMIUM': { level: 3, name: 'Premium', badge: '💎', color: 'from-green-500 to-emerald-500' },
+          'VERIFIED': { level: 2, name: 'Verified', badge: '✅', color: 'from-yellow-500 to-amber-500' },
+          'USER': { level: 1, name: 'User', badge: '👤', color: 'from-gray-500 to-gray-700' }
+        };
+        
+        const config = roleConfig[userRole] || roleConfig.USER;
+
         setMessage({
           type: 'success',
-          text: 'Login berhasil! Mengarahkan ke dashboard...'
+          text: `Login berhasil! Selamat datang ${config.name}. Mengarahkan...`
         });
 
-        // Simpan session yang digunakan oleh Live chat (sheetdb_user)
-        const sheetdbUser = {
+        // Simpan session dengan informasi role lengkap
+        const localUser = {
           id: user.id || user.email,
-          username: user.nama || user.username || formData.email.split('@')[0],
+          username: user.nama || formData.email.split('@')[0],
           email: user.email,
-          tanggal_daftar: user.tanggal_daftar || new Date().toISOString(),
+          role: userRole,
+          roleName: config.name,
+          roleLevel: config.level,
+          roleBadge: config.badge,
+          roleColor: config.color,
+          messageCount: parseInt(user.message_count) || 0,
+          lastReset: user.last_reset || new Date().toISOString().split('T')[0],
+          joinDate: user.tanggal_daftar || new Date().toISOString(),
           loginTime: new Date().toISOString()
         };
 
-        // Simpan ke localStorage dengan key yang dipakai oleh Live.jsx
-        localStorage.setItem('sheetdb_user', JSON.stringify(sheetdbUser));
+        // Simpan ke localStorage
+        localStorage.setItem('local_user', JSON.stringify(localUser));
 
         // Jika remember me dicentang, simpan email
         if (rememberMe) {
@@ -119,9 +135,13 @@ const Login = () => {
           localStorage.removeItem('rememberedEmail');
         }
 
-        // Redirect ke dashboard setelah 1.5 detik
+        // Redirect berdasarkan role
         setTimeout(() => {
-          navigate('/Live-Discussion');
+          if (userRole === 'SUPER_ADMIN' || userRole === 'ADMIN') {
+            navigate('/Live-Discussion/dashboard');
+          } else {
+            navigate('/Live-Discussion');
+          }
         }, 1500);
 
       } else {
@@ -141,20 +161,12 @@ const Login = () => {
     }
   };
 
-  const handleForgotPassword = () => {
-    setMessage({
-      type: 'info',
-      text: 'Fitur reset password akan dikirim ke email Anda (jika terdaftar).'
-    });
-    // Implementasi reset password bisa ditambahkan di sini
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
           <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-4">
               <LogIn className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">Selamat Datang</h1>
@@ -169,11 +181,7 @@ const Login = () => {
                 ? 'bg-red-500/20 text-red-200 border border-red-500/30'
                 : 'bg-blue-500/20 text-blue-200 border border-blue-500/30'
             }`}>
-              {message.type === 'success' ? (
-                <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              ) : (
-                <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              )}
+              <AlertCircle className="w-5 h-5 flex-shrink-0" />
               <span className="text-sm">{message.text}</span>
             </div>
           )}
@@ -206,13 +214,6 @@ const Login = () => {
                 <label className="block text-sm font-medium text-white">
                   Password
                 </label>
-                <button
-                  type="button"
-                  onClick={handleForgotPassword}
-                  className="text-sm text-blue-300 hover:text-white transition-colors"
-                >
-                  Lupa password?
-                </button>
               </div>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-blue-300" />
@@ -252,6 +253,13 @@ const Login = () => {
               </label>
             </div>
 
+            <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+              <p className="text-sm text-blue-200">
+                <strong>Sistem Role Otomatis:</strong> Role akan terdeteksi otomatis dari database. 
+                Super Admin dan Admin akan langsung diarahkan ke dashboard.
+              </p>
+            </div>
+
             <button
               type="submit"
               disabled={loading}
@@ -288,8 +296,8 @@ const Login = () => {
           </form>
 
           <div className="mt-8 text-xs text-blue-300 text-center">
-            <p>© {new Date().getFullYear()} Aplikasi Anda. Semua hak dilindungi.</p>
-            <p className="mt-2">Login Anda aman dengan enkripsi SHA-256.</p>
+            <p>© {new Date().getFullYear()} Live Discussion System. All rights reserved.</p>
+            <p className="mt-2">Sistem dengan 6 level role otomatis dan limit pesan.</p>
           </div>
         </div>
       </div>

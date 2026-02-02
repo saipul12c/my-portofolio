@@ -43,7 +43,7 @@ function HelpMenuItem({ title, subtitle, icon: Icon, to, external = false, disab
     <div className="relative">
       <button
         onClick={handleClick}
-        onMouseEnter={() => disabled && disabledMessage && setShowTooltip(true)}
+        onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
         className={`flex items-start gap-3 px-3 py-2 rounded-lg transition-colors text-left w-full
           ${disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-white/5"}`}
@@ -90,11 +90,19 @@ function HelpMenuItem({ title, subtitle, icon: Icon, to, external = false, disab
         )}
       </button>
 
-      {/* Tooltip untuk pesan disabled */}
-      {showTooltip && disabledMessage && (
-        <div className="absolute bottom-full left-0 mb-2 w-48 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-200 z-50">
-          {disabledMessage}
-          <div className="absolute top-full left-3 w-2 h-2 bg-gray-900 border-r border-b border-gray-700 transform rotate-45"></div>
+      {/* Tooltip untuk pesan penjelasan */}
+      {showTooltip && (
+        <div className={`absolute bottom-full left-0 mb-2 w-48 rounded-lg px-3 py-2 text-xs z-50 shadow-lg ${
+          disabled 
+            ? "bg-blue-900/80 border border-blue-400/50 text-blue-100" 
+            : "bg-gray-900 border border-cyan-400/30 text-gray-200"
+        }`}>
+          {disabled ? (disabledMessage || `${label || "Fitur"} tidak tersedia saat ini`) : subtitle}
+          <div className={`absolute top-full left-3 w-2 h-2 transform rotate-45 ${
+            disabled 
+              ? "bg-blue-900/80 border-r border-b border-blue-400/50" 
+              : "bg-gray-900 border-r border-b border-cyan-400/30"
+          }`}></div>
         </div>
       )}
     </div>
@@ -107,6 +115,7 @@ function VersionBadge() {
   const latest = getLatestVersionInfo(docsData);
   // Pilih properti versi yang tersedia
   const version = latest?.version || latest?.versiWebsite;
+  const [showTooltip, setShowTooltip] = React.useState(false);
 
   // Handler untuk membuka halaman detail versi
   const handleOpenVersionPage = (e) => {
@@ -116,23 +125,37 @@ function VersionBadge() {
 
   // Render badge versi dengan tombol untuk melihat detail
   return (
-    <div className="flex items-center justify-between gap-3">
-      <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-md bg-white/5 flex items-center justify-center">
-          <Info size={16} className="text-cyan-300" />
-        </div>
-        <div>
-          <div className="text-xs text-gray-300">Versi Aplikasi</div>
-          <div className="text-sm text-white/90 font-medium">{version}</div>
-        </div>
-      </div>
-      <button
-        onClick={handleOpenVersionPage}
-        className="text-xs bg-white/6 px-2 py-1 rounded-md hover:bg-white/10 transition-colors"
-        aria-label="Lihat detail versi"
+    <div className="relative">
+      <div 
+        className="flex items-center justify-between gap-3"
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
       >
-        Detail
-      </button>
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-md bg-white/5 flex items-center justify-center">
+            <Info size={16} className="text-cyan-300" />
+          </div>
+          <div>
+            <div className="text-xs text-gray-300">Versi Aplikasi</div>
+            <div className="text-sm text-white/90 font-medium">{version}</div>
+          </div>
+        </div>
+        <button
+          onClick={handleOpenVersionPage}
+          className="text-xs bg-white/6 px-2 py-1 rounded-md hover:bg-white/10 transition-colors"
+          aria-label="Lihat detail versi"
+        >
+          Detail
+        </button>
+      </div>
+      
+      {/* Tooltip untuk versi badge */}
+      {showTooltip && (
+        <div className="absolute bottom-full left-0 mb-2 w-48 bg-gray-900 border border-cyan-400/30 rounded-lg px-3 py-2 text-xs text-gray-200 z-50 shadow-lg">
+          Klik Detail untuk melihat changelog dan informasi versi lengkap
+          <div className="absolute top-full left-3 w-2 h-2 bg-gray-900 border-r border-b border-cyan-400/30 transform rotate-45"></div>
+        </div>
+      )}
     </div>
   );
 }
@@ -156,7 +179,7 @@ function HelpChatbotButton({ onOpenChat, enabled = true }) {
     <div className="relative">
       <button
         onClick={handleClick}
-        onMouseEnter={() => !enabled && setShowTooltip(true)}
+        onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
         className={`flex items-start gap-3 px-3 py-2 rounded-lg transition-colors text-left w-full
           ${enabled 
@@ -192,11 +215,19 @@ function HelpChatbotButton({ onOpenChat, enabled = true }) {
         )}
       </button>
 
-      {/* Tooltip untuk pesan disabled */}
-      {showTooltip && !enabled && (
-        <div className="absolute bottom-full right-0 mb-2 w-48 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-200 z-50">
-          Chatbot sedang dalam perbaikan
-          <div className="absolute top-full right-3 w-2 h-2 bg-gray-900 border-r border-b border-gray-700 transform rotate-45"></div>
+      {/* Tooltip untuk pesan penjelasan/disabled */}
+      {showTooltip && (
+        <div className={`absolute bottom-full right-0 mb-2 w-48 rounded-lg px-3 py-2 text-xs z-50 shadow-lg ${
+          enabled 
+            ? "bg-gray-900 border border-cyan-400/30 text-gray-200" 
+            : "bg-blue-900/80 border border-blue-400/50 text-blue-100"
+        }`}>
+          {enabled ? "🤖 Tanya AI tentang apapun yang ingin diketahui" : "⚙️ Chatbot sedang dalam perbaikan, akan segera aktif"}
+          <div className={`absolute top-full right-3 w-2 h-2 transform rotate-45 ${
+            enabled 
+              ? "bg-gray-900 border-r border-b border-cyan-400/30" 
+              : "bg-blue-900/80 border-r border-b border-blue-400/50"
+          }`}></div>
         </div>
       )}
     </div>
