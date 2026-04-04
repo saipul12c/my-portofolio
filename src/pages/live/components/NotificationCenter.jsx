@@ -74,7 +74,7 @@ export const PersonalTagsManager = ({ tags = [], onAddTag, onRemoveTag }) => {
   return (
     <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
       <h4 className="font-bold text-purple-900 mb-3">Personal Tags</h4>
-      
+
       <div className="space-y-2 mb-4">
         {tags.map((tag, idx) => (
           <div key={idx} className="flex items-center justify-between bg-white p-2 rounded border border-purple-200">

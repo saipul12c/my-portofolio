@@ -12,9 +12,9 @@ import {
 
 const Sidebar = ({ isCollapsed, toggleSidebar, user }) => {
   return (
-    <aside className={`bg-black h-screen sticky top-0 flex flex-col border-r border-gray-800 transition-all duration-300 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 ${
-      isCollapsed ? 'w-20' : 'w-64'
-    }`}>
+    <aside className={`bg-black h-screen sticky top-0 flex flex-col border-r border-gray-800 transition-all duration-300 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 z-50
+      ${isCollapsed ? 'w-0 -translate-x-full lg:w-20 lg:translate-x-0' : 'fixed w-64 translate-x-0 lg:sticky'} 
+    `}>
       {/* Logo Section */}
       <div className="p-4 flex items-center gap-4">
         <button 

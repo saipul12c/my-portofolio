@@ -1,0 +1,7 @@
+-- Daftar Akun untuk login:
+-- 1. superadmin@test.com | Pw: Password123
+-- 2. admin@test.com      | Pw: Password123
+-- 3. moderator@test.com  | Pw: Password123
+-- 4. premium@test.com    | Pw: Password123
+-- 5. verified@test.com   | Pw: Password123
+-- 6. user@test.com       | Pw: Password123

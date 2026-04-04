@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { HelpCircle, X, Wrench, Info } from "lucide-react";
 import HelpMenu from "./helpbutton/HelpMenu";
 import { ErrorBoundary } from "react-error-boundary";
@@ -36,11 +37,11 @@ export default function HelpButton() {
 
   // Kontrol untuk mengaktifkan/menonaktifkan chatbot
   // Ubah ke true untuk mengaktifkan, false untuk menonaktifkan
-  const isChatbotEnabled = false;
+  const isChatbotEnabled = true;
 
   // Kontrol untuk mengaktifkan/menonaktifkan tombol Room Diskusi
   // Ubah ke true ketika fitur sudah siap dirilis
-  const isRoomDiscussionEnabled = false;
+  const isRoomDiscussionEnabled = true;
 
   const handleClick = () => {
     if (isMaintenance) {
@@ -54,7 +55,7 @@ export default function HelpButton() {
   const openChat = () => {
     // Hanya buka chatbot jika diaktifkan
     if (!isChatbotEnabled) return;
-    
+
     setOpen(false); // Tutup menu bantuan utama
     setIsChatOpen(true);
   };
@@ -86,7 +87,7 @@ export default function HelpButton() {
   }, [isChatOpen]);
 
   return (
-    <div 
+    <div
       className="fixed right-6 z-[9999] transition-all duration-300"
       style={{ bottom: isRecaptchaVisible ? '110px' : '20px' }}
     >
@@ -135,7 +136,7 @@ export default function HelpButton() {
             <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gray-900 border-r border-b border-cyan-400/30 rotate-45"></div>
           </div>
         )}
-        
+
         {/* Tooltip untuk maintenance */}
         {showMainTooltip && !open && isMaintenance && (
           <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 w-max bg-yellow-900/80 border border-yellow-400/50 rounded-lg px-3 py-2 text-xs text-yellow-100 z-50 whitespace-nowrap shadow-lg">
@@ -151,10 +152,14 @@ export default function HelpButton() {
       </div>
 
       {/* Popup Menu Bantuan */}
-      {!isMaintenance && open && (
+      {!isMaintenance && open && createPortal(
         <div
-          className="absolute bottom-16 right-6 animate-fade-up-slow"
-          style={{ transformOrigin: "bottom right" }}
+          className="fixed z-[10000] animate-fade-up-slow"
+          style={{ 
+            bottom: `calc(${isRecaptchaVisible ? '110px' : '20px'} + 5rem)`,
+            right: '3rem',
+            transformOrigin: "bottom right" 
+          }}
         >
           <ErrorBoundary FallbackComponent={ChatbotErrorFallback}>
             <HelpMenu
@@ -164,7 +169,8 @@ export default function HelpButton() {
               isMaintenance={isMaintenance}
             />
           </ErrorBoundary>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Popup Chatbot - TERPISAH dari menu bantuan */}

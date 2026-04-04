@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { checkHealth } from '../../lib/backend';
+import { supabase } from '../../lib/supabaseClient';
 import { motion } from "framer-motion";
 import { 
   Users, 
   ArrowRight,
   Sparkles
 } from 'lucide-react';
-// Supabase removed: use backend `/api/*` endpoints instead
 
 // Import komponen modular
 import CommunityStatistics from './components/CommunityStatistics';
@@ -15,8 +14,8 @@ import CommunityGrid from './components/CommunityGrid';
 import CommunityModal from './components/CommunityModal';
 import CommunityForm from './components/CommunityForm';
 import { useCommunity } from '../../context/CommunityContext';
-
-// Frontend always uses the backend JSON server endpoints under `/api/*`.
+import communityApi from './lib/communityApi';
+import { uploadMedia } from '../../utils/storageHelper';
 
 const Komunitas = () => {
   const { setSelectedCommunity: setSelectedCommunityGlobal } = useCommunity();
@@ -24,7 +23,6 @@ const Komunitas = () => {
   const [filteredCommunities, setFilteredCommunities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [serverDown, setServerDown] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [showActiveOnly, setShowActiveOnly] = useState(true);
@@ -49,103 +47,41 @@ const Komunitas = () => {
     social_media_instagram: '',
     social_media_linkedin: '',
     tags: [],
-    is_active: true
+    is_active: true,
+    image_url: '',
+    image_file: null
   });
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
 
-  // Fetch data komunitas dari backend JSON server
+  // Fetch data komunitas dari Supabase
   const fetchCommunities = async () => {
     try {
       setLoading(true);
-
-      // Fetch always from local JSON backend
-      const res = await fetch('/api/communities');
-      if (!res.ok) {
-        // treat 5xx as server problems
-        if (res.status >= 500) {
-          setServerDown(true);
-          setError('Server sedang dalam perbaikan. Mohon coba lagi nanti.');
-        }
-        throw new Error('Failed to fetch from backend');
-      }
-      const data = await res.json();
-      const transformedData = (data || []).map(community => ({
-        ...community,
-        // ensure consistent / safe defaults so UI doesn't show `undefined`
-        members: typeof community.members === 'number' ? community.members : (Number(community.members) || 0),
-        category: community.category || '',
-        location: community.location || '',
-        tags: Array.isArray(community.tags) ? community.tags : (typeof community.tags === 'string' && community.tags ? community.tags.split(',').map(t => t.trim()).filter(Boolean) : []),
-        is_active: community.is_active !== false,
-        contact: {
-          email: community.contact_email || '',
-          phone: community.contact_phone || '',
-          website: community.contact_website || ''
-        },
-        social_media: {
-          facebook: community.social_media_facebook || '',
-          twitter: community.social_media_twitter || '',
-          instagram: community.social_media_instagram || '',
-          linkedin: community.social_media_linkedin || ''
-        }
-      }));
-      setCommunities(transformedData);
-      setFilteredCommunities(transformedData);
+      const data = await communityApi.communities.list();
+      setCommunities(data);
+      setFilteredCommunities(data);
     } catch (err) {
-      // network errors (e.g. server not reachable) typically surface as TypeError
-      const isNetworkError = err instanceof TypeError || (err && /failed to fetch/i.test(err.message || ''));
-      if (isNetworkError) {
-        setServerDown(true);
-        setError('Server sedang dalam perbaikan. Mohon coba lagi nanti.');
-      } else {
-        setError('Gagal memuat data komunitas');
-      }
+      setError('Gagal memuat data komunitas');
       console.error('Error fetching communities:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch statistics dari backend JSON server
+  // Fetch statistics dari Supabase
   const fetchStatistics = async () => {
     try {
-      // Statistics derived from the same `/api/communities` endpoint
-      const res = await fetch('/api/communities');
-      if (!res.ok) {
-        if (res.status >= 500) setServerDown(true);
-        throw new Error('Failed to fetch communities for statistics');
-      }
-      const data = await res.json();
-      const totalCommunities = data.length;
-      const activeCommunities = data.filter(c => c.is_active !== false).length;
-      const totalMembers = data.reduce((sum, c) => sum + (c.members || 0), 0);
-      const uniqueCategories = [...new Set(data.map(c => c.category).filter(Boolean))];
-      setStatistics({ totalCommunities, activeCommunities, totalMembers, categories: uniqueCategories });
+      const stats = await communityApi.communities.getStats();
+      setStatistics(stats);
     } catch (err) {
-      const isNetworkError = err instanceof TypeError || (err && /failed to fetch/i.test(err.message || ''));
-      if (isNetworkError) setServerDown(true);
       console.error('Error fetching statistics:', err);
     }
   };
 
   useEffect(() => {
-    let mounted = true;
-    const init = async () => {
-      // quick health-check before attempting the heavier fetches
-      const healthy = await checkHealth();
-      if (!mounted) return;
-      if (!healthy) {
-        setServerDown(true);
-        setError('Server sedang dalam perbaikan. Mohon coba lagi nanti.');
-        setLoading(false);
-        return;
-      }
-      await fetchCommunities();
-      await fetchStatistics();
-    };
-    init();
-    return () => { mounted = false; };
+    fetchCommunities();
+    fetchStatistics();
   }, []);
 
   // Filter dan search
@@ -224,7 +160,9 @@ const Komunitas = () => {
       social_media_instagram: community.social_media?.instagram || '',
       social_media_linkedin: community.social_media?.linkedin || '',
       tags: community.tags || [],
-      is_active: community.is_active !== false
+      is_active: community.is_active !== false,
+      image_url: community.image_url || '',
+      image_file: null
     });
     setEditingId(community.id);
     setShowForm(true);
@@ -234,9 +172,7 @@ const Komunitas = () => {
   const handleDelete = async (id) => {
     if (confirm('Apakah Anda yakin ingin menghapus komunitas ini?')) {
       try {
-        const res = await fetch(`/api/communities/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Failed to delete via backend');
-
+        await communityApi.communities.delete(id);
         await fetchCommunities();
         await fetchStatistics();
       } catch (err) {
@@ -250,40 +186,34 @@ const Komunitas = () => {
     e.preventDefault();
     
     try {
+      let currentImageUrl = formData.image_url;
+
+      // Handle image upload if a new file is selected
+      if (formData.image_file) {
+        try {
+          currentImageUrl = await uploadMedia(formData.image_file, 'media', 'communities');
+        } catch (err) {
+          console.error('Failed to upload image:', err);
+          // Continue without updating image if upload fails
+        }
+      }
+
+      // Destructure image_file out of formData for database submission
+      const { image_file, ...submissionData } = formData;
+      
       const communityData = {
-        name: formData.name,
-        description: formData.description,
-        category: formData.category,
-        members: formData.members,
-        location: formData.location,
-        contact_email: formData.contact_email,
-        contact_phone: formData.contact_phone,
-        contact_website: formData.contact_website,
-        social_media_facebook: formData.social_media_facebook,
-        social_media_twitter: formData.social_media_twitter,
-        social_media_instagram: formData.social_media_instagram,
-        social_media_linkedin: formData.social_media_linkedin,
-        tags: formData.tags,
-        is_active: formData.is_active,
+        ...submissionData,
+        image_url: currentImageUrl,
+        members: parseInt(formData.members) || 0,
+        tags: Array.isArray(formData.tags) ? formData.tags : [],
         updated_at: new Date().toISOString()
       };
 
-        if (editingId) {
-          const res = await fetch(`/api/communities/${editingId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(communityData)
-          });
-          if (!res.ok) throw new Error('Failed to update via backend');
-        } else {
-          const payload = { ...communityData, created_at: new Date().toISOString() };
-          const res = await fetch('/api/communities', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          if (!res.ok) throw new Error('Failed to insert via backend');
-        }
+      if (editingId) {
+        await communityApi.communities.update(editingId, communityData);
+      } else {
+        await communityApi.communities.create(communityData);
+      }
 
       fetchCommunities();
       fetchStatistics();
@@ -303,7 +233,9 @@ const Komunitas = () => {
         social_media_instagram: '',
         social_media_linkedin: '',
         tags: [],
-        is_active: true
+        is_active: true,
+        image_url: '',
+        image_file: null
       });
     } catch (err) {
       alert('Error menyimpan komunitas');
@@ -318,23 +250,6 @@ const Komunitas = () => {
       ...prev,
       [name]: newVal
     }));
-  };
-
-  // Retry flow: re-check health then fetch
-  const handleRetry = async () => {
-    setError('');
-    setServerDown(false);
-    setLoading(true);
-    const healthy = await checkHealth();
-    if (!healthy) {
-      setServerDown(true);
-      setError('Server sedang dalam perbaikan. Mohon coba lagi nanti.');
-      setLoading(false);
-      return;
-    }
-    await fetchCommunities();
-    await fetchStatistics();
-    setLoading(false);
   };
 
   // Pagination
@@ -392,23 +307,6 @@ const Komunitas = () => {
       {/* Statistics Section */}
       <CommunityStatistics statistics={statistics} />
 
-      {/* Server down banner */}
-      {serverDown && (
-        <div className="max-w-6xl mx-auto w-full py-4">
-          <div className="bg-yellow-600/10 border border-yellow-600/20 backdrop-blur-xl rounded-2xl p-4 flex items-center justify-between">
-            <div className="text-sm text-yellow-300">Server sedang dalam perbaikan. Beberapa fitur mungkin tidak tersedia.</div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleRetry}
-                className="px-4 py-2 bg-yellow-500 text-black rounded-xl hover:brightness-95"
-              >
-                Coba Lagi
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Filters Section */}
       <CommunityFilters
         searchTerm={searchTerm}
@@ -438,7 +336,9 @@ const Komunitas = () => {
             social_media_instagram: '',
             social_media_linkedin: '',
             tags: [],
-            is_active: true
+            is_active: true,
+            image_url: '',
+            image_file: null
           });
           setShowForm(true);
         }}
@@ -448,7 +348,7 @@ const Komunitas = () => {
       <CommunityGrid
         communities={currentItems}
         error={error}
-        onRetry={handleRetry}
+        onRetry={() => { fetchCommunities(); fetchStatistics(); }}
         onAddCommunity={() => {
           setEditingId(null);
           setFormData({

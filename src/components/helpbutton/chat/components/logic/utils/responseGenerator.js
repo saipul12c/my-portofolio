@@ -676,10 +676,10 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
   } catch { /* ignore */ }
 
   const fallbacks = [
-    `Bisa jelaskan lebih detail? Aku bisa bantu dengan:\n• Analisis data spesifik\n• Perhitungan matematika kompleks\n• Prediksi berdasarkan parameter\n• Penjelasan konsep dari knowledge base\n• Processing file yang diupload`,
-    `Menarik! Dengan mode ${settings.creativeMode ? 'kreatif' : 'analitis'} yang aktif, aku bisa bantu eksplorasi topik ini lebih dalam. Ada data atau parameter spesifik yang ingin dianalisis?`,
-    `Aku detect ini mungkin terkait ${commonThemes.length > 0 ? commonThemes.join(' atau ') : 'beberapa topik'}. Bisa diperjelas agar aku bisa bantu lebih optimal?`,
-    `Topik yang menarik! Aku punya knowledge base yang luas dan kemampuan pemrosesan data. Mau dalam bentuk perhitungan, prediksi, penjelasan konsep, atau processing file?`
+    `Saya belum memiliki informasi spesifik tentang "${text}" di database saya. Apakah Anda ingin mencoba mengupload file terkait atau bertanya tentang hal lain (seperti Matematika, AI, atau profil saya)?`,
+    `Maaf, saya tidak menemukan jawaban yang tepat untuk "${text}". Namun, saya bisa membantu Anda menganalisis data jika Anda memberikan angka atau mengupload dokumen di sini.`,
+    `Terdengar menarik! Sayangnya pengetahuan saya tentang "${text}" masih terbatas. Mau bantu saya belajar dengan mengupload referensi lewat tombol 📎?`,
+    `Sepertinya "${text}" bukan sesuatu yang ada di knowledge base saya saat ini. Apa kita mau coba hitung sesuatu atau bicara soal masa depan AI?`
   ];
   
   const pick = getRandomItem(fallbacks);
@@ -700,7 +700,8 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
     source: { type: 'fallback' },
     confidence: 0.45,
     emotion: emotionData.primary,
-    character: characterData.character
+    character: characterData.character,
+    suggestedTopics: ['Matematika', 'AI Concepts', 'Upload File', 'Profil Pemilik']
   };
 
   // ===== EVALUATE RESPONSE QUALITY =====

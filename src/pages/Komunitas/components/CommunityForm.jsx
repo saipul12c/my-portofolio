@@ -4,6 +4,18 @@ import { X } from 'lucide-react';
 const CommunityForm = ({ showForm, editingId, formData, onInputChange, onSubmit, onClose }) => {
   if (!showForm) return null;
 
+  const categories = [
+    'Programming',
+    'Design',
+    'Business',
+    'Education',
+    'Art',
+    'Music',
+    'Health',
+    'Sport',
+    'Social'
+  ];
+
   const modalVariants = {
     hidden: { opacity: 0, scale: 0.8 },
     visible: { 
@@ -61,13 +73,52 @@ const CommunityForm = ({ showForm, editingId, formData, onInputChange, onSubmit,
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Kategori *
                 </label>
-                <input
-                  type="text"
+                <select
                   name="category"
                   value={formData.category}
                   onChange={onInputChange}
                   required
-                  className="w-full bg-white/5 border border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white placeholder-gray-400"
+                  className="w-full bg-[#0f172a] border border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white appearance-none"
+                >
+                  <option value="" disabled>Pilih Kategori</option>
+                  {categories.map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                  {!categories.includes(formData.category) && formData.category && (
+                    <option value={formData.category}>{formData.category}</option>
+                  )}
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Banner / Logo Komunitas
+              </label>
+              <div className="flex items-center gap-4">
+                {formData.image_url && (
+                  <img 
+                    src={formData.image_url} 
+                    alt="Preview" 
+                    className="w-20 h-20 object-cover rounded-xl border border-white/10"
+                  />
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      // We'll pass the file object to a handler in Komo.jsx
+                      onInputChange({ target: { name: 'image_file', value: file } });
+                    }
+                  }}
+                  className="block w-full text-sm text-gray-400
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-full file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-cyan-500/10 file:text-cyan-400
+                    hover:file:bg-cyan-500/20"
                 />
               </div>
             </div>

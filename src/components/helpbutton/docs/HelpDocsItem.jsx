@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, memo } from "react";
 import { Link } from 'react-router-dom';
+import { supabase } from '../../../lib/supabaseClient';
 import * as Icons from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import docsData from "./data/docsSections.json";
@@ -255,7 +256,7 @@ const SectionContent = memo(({ section, getStatusColor, getVersionTypeColor }) =
       {section.saipulaiUpgrade && (
         <div className="space-y-4">
           <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-            <Icons.Robot size={18} />
+            <Icons.Bot size={18} />
             Saipulai AI Upgrade
           </h3>
           <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border border-purple-200 dark:border-purple-700">

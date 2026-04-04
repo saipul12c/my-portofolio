@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { 
-  User, 
-  Mail, 
-  Calendar, 
-  Award, 
-  MessageSquare, 
+import {
+  User,
+  Mail,
+  Calendar,
+  Award,
+  MessageSquare,
   Shield,
   Star,
   Trophy,
@@ -19,8 +19,7 @@ import {
 } from 'lucide-react';
 import { AchievementsSection } from '../components/AchievementBadge';
 import { PersonalTagsManager } from '../components/NotificationCenter';
-
-const DATABASE_URL = import.meta.env.VITE_DATABASE_URL;
+import { supabase } from '../../../lib/supabaseClient';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -42,27 +41,29 @@ const Profile = () => {
   useEffect(() => {
     const loadUserData = async () => {
       setLoading(true);
-      
+
       try {
         // Get current user from localStorage
+        let currentEmail = null;
+        let currentUserData = null;
         const savedRaw = localStorage.getItem('local_user');
         if (savedRaw) {
-          const currentUserData = JSON.parse(savedRaw);
+          currentUserData = JSON.parse(savedRaw);
           setCurrentUser(currentUserData);
+          currentEmail = currentUserData.email;
         }
 
         // Determine which user profile to show
-        const targetEmail = email || (currentUser ? currentUser.email : null);
-        
+        const targetEmail = email || currentEmail;
+
         if (targetEmail) {
           // Load profile user data
-          const response = await fetch(`${DATABASE_URL}/users?email=${encodeURIComponent(targetEmail)}`);
-          const data = await response.json();
-          
-          if (data && data.length > 0) {
+          const { data, error } = await supabase.from('users').select('*').eq('email', targetEmail);
+
+          if (!error && data && data.length > 0) {
             const userData = data[0];
             const userRole = userData.role?.toUpperCase() || 'USER';
-            
+
             const profileData = {
               id: userData.id || userData.email,
               nama: userData.nama,
@@ -74,17 +75,17 @@ const Profile = () => {
               status: userData.status || 'aktif',
               bio: userData.bio || 'Belum ada bio...'
             };
-            
+
             setProfileUser(profileData);
             setEditForm({
               nama: profileData.nama,
               bio: profileData.bio
             });
-            
+
             // Load achievements dan tags
             await loadAchievements(targetEmail);
-            if (currentUser?.email) {
-              await loadPersonalTags(currentUser?.email);
+            if (currentEmail) {
+              await loadPersonalTags(currentEmail);
             }
           }
         }
@@ -96,7 +97,7 @@ const Profile = () => {
     };
 
     loadUserData();
-  }, [email, currentUser]);
+  }, [email]);
 
   // Get role name
   const getRoleName = (role) => {
@@ -127,19 +128,20 @@ const Profile = () => {
   // Check if current user can edit this profile
   const canEdit = () => {
     if (!currentUser || !profileUser) return false;
-    return currentUser.email === profileUser.email || 
-           currentUser.role === 'SUPER_ADMIN' || 
-           currentUser.role === 'ADMIN';
+    return currentUser.email === profileUser.email ||
+      currentUser.role === 'SUPER_ADMIN' ||
+      currentUser.role === 'ADMIN';
   };
 
   // Load achievements
   const loadAchievements = async (email) => {
     try {
-      const response = await fetch(`${DATABASE_URL}/achievements?email=${encodeURIComponent(email)}`);
-      const data = await response.json();
-      setAchievements(data);
+      const { data, error } = await supabase.from('achievements').select('*').eq('email', email);
+      if (!error && data) {
+        setAchievements(data);
+      }
     } catch (error) {
-      console.error('Error loading achievements:', error);
+      console.error('Error loading achievements/Tabel missing:', error);
     }
   };
 
@@ -159,16 +161,12 @@ const Profile = () => {
         return;
       }
 
-      const response = await fetch(`${DATABASE_URL}/users/${profileUser.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nama: editForm.nama,
-          bio: editForm.bio
-        })
-      });
-      
-      if (response.ok) {
+      const { error } = await supabase.from('users').update({
+        nama: editForm.nama,
+        bio: editForm.bio
+      }).eq('id', profileUser.id);
+
+      if (!error) {
         setProfileUser(prev => ({
           ...prev,
           nama: editForm.nama,
@@ -188,7 +186,7 @@ const Profile = () => {
   // Grant achievement
   const grantAchievement = async (achievement) => {
     if (!currentUser || (currentUser.role !== 'SUPER_ADMIN' && currentUser.role !== 'ADMIN')) return;
-    
+
     try {
       const newAchievement = {
         email: profileUser.email,
@@ -197,13 +195,9 @@ const Profile = () => {
         date_earned: new Date().toISOString()
       };
 
-      const response = await fetch(`${DATABASE_URL}/achievements`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newAchievement)
-      });
-      
-      if (response.ok) {
+      const { error } = await supabase.from('achievements').insert([newAchievement]);
+
+      if (!error) {
         await loadAchievements(profileUser.email);
         setSaveSuccess('Achievement berhasil diberikan!');
         setTimeout(() => setSaveSuccess(''), 3000);
@@ -217,12 +211,9 @@ const Profile = () => {
   // Load personal tags
   const loadPersonalTags = async (userEmail) => {
     try {
-      const response = await fetch(
-        `${DATABASE_URL}/tags?email=${encodeURIComponent(userEmail)}`
-      );
-      const data = await response.json();
-      
-      if (data && data.length > 0) {
+      const { data, error } = await supabase.from('tags').select('*').eq('email', userEmail);
+
+      if (!error && data && data.length > 0) {
         setPersonalTags(data.filter(t => t.tag));
       }
     } catch (error) {
@@ -233,18 +224,14 @@ const Profile = () => {
   // Add personal tag
   const addPersonalTag = async (tag) => {
     try {
-      const response = await fetch(`${DATABASE_URL}/tags`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: currentUser?.email,
-          user_id: profileUser.id,
-          tag: tag,
-          created_at: new Date().toISOString()
-        })
-      });
+      const { error } = await supabase.from('tags').insert([{
+        email: currentUser?.email,
+        user_id: profileUser.id,
+        tag: tag,
+        created_at: new Date().toISOString()
+      }]);
 
-      if (response.ok) {
+      if (!error) {
         await loadPersonalTags(currentUser?.email);
       }
     } catch (error) {
@@ -256,11 +243,9 @@ const Profile = () => {
   const removePersonalTag = async (index) => {
     try {
       const tagToRemove = personalTags[index];
-      const response = await fetch(`${DATABASE_URL}/tags/${tagToRemove.id}`, {
-        method: 'DELETE'
-      });
+      const { error } = await supabase.from('tags').delete().eq('id', tagToRemove.id);
 
-      if (response.ok) {
+      if (!error) {
         setPersonalTags(prev => prev.filter((_, i) => i !== index));
       }
     } catch (error) {
@@ -308,9 +293,14 @@ const Profile = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#07102a] via-[#0a1a3a] to-[#0c234a]">
+    <div className="min-h-screen bg-gradient-to-br from-[#07102a] via-[#0a1a3a] to-[#0c234a] relative overflow-hidden flex flex-col">
+      {/* Animated Glowing Orbs */}
+      <div className="absolute top-[-10%] left-[-10%] w-72 md:w-96 h-72 md:h-96 bg-cyan-500/10 rounded-full mix-blend-screen filter blur-[80px] animate-pulse pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-72 md:w-96 h-72 md:h-96 bg-purple-600/10 rounded-full mix-blend-screen filter blur-[80px] animate-pulse pointer-events-none" style={{ animationDelay: '2s' }}></div>
+      <div className="absolute top-[40%] right-[30%] w-72 md:w-96 h-72 md:h-96 bg-blue-600/10 rounded-full mix-blend-screen filter blur-[80px] animate-pulse pointer-events-none" style={{ animationDelay: '4s' }}></div>
+
       {/* Header */}
-      <header className="bg-gradient-to-r from-[#0f172a]/95 to-[#1e293b]/95 backdrop-blur-lg text-white shadow-lg border-b border-cyan-500/20">
+      <header className="bg-gradient-to-r from-[#0f172a]/90 to-[#1e293b]/90 backdrop-blur-xl text-white shadow-lg border-b border-cyan-500/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <button
@@ -320,22 +310,22 @@ const Profile = () => {
               <ArrowLeft className="w-5 h-5" />
               Back to Chat
             </button>
-            
+
             <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-400">
               User Profile
             </h1>
-            
+
             <div className="w-20"></div> {/* Spacer for alignment */}
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10 flex flex-col">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Profile Info */}
           <div className="lg:col-span-2 space-y-8">
             {/* Profile Card */}
-            <div className="bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-white/10 p-6">
+            <div className="bg-white/[0.03] backdrop-blur-2xl rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] overflow-hidden border border-white/10 p-6 sm:p-8">
               <div className="flex flex-col md:flex-row gap-6">
                 {/* Avatar */}
                 <div className="flex-shrink-0">
@@ -343,7 +333,7 @@ const Profile = () => {
                     {profileUser.nama?.[0]?.toUpperCase() || 'U'}
                   </div>
                 </div>
-                
+
                 {/* Profile Info */}
                 <div className="flex-1">
                   <div className="flex justify-between items-start mb-4">
@@ -352,28 +342,27 @@ const Profile = () => {
                         <input
                           type="text"
                           value={editForm.nama}
-                          onChange={(e) => setEditForm({...editForm, nama: e.target.value})}
+                          onChange={(e) => setEditForm({ ...editForm, nama: e.target.value })}
                           className="text-3xl font-bold bg-transparent border-b border-cyan-500 text-white"
                         />
                       ) : (
                         <h2 className="text-3xl font-bold text-white">{profileUser.nama}</h2>
                       )}
-                      
+
                       <div className="flex items-center gap-2 mt-2">
                         <span className={`px-3 py-1 rounded-full text-sm font-bold bg-gradient-to-r ${getRoleColor(profileUser.role)} text-white`}>
                           {profileUser.roleName}
                         </span>
-                        
-                        <span className={`px-3 py-1 rounded-full text-sm font-bold ${
-                          profileUser.status === 'aktif' 
-                            ? 'bg-green-500/20 text-green-300 border border-green-500/30' 
-                            : 'bg-red-500/20 text-red-300 border border-red-500/30'
-                        }`}>
+
+                        <span className={`px-3 py-1 rounded-full text-sm font-bold ${profileUser.status === 'aktif'
+                          ? 'bg-green-500/20 text-green-300 border border-green-500/30'
+                          : 'bg-red-500/20 text-red-300 border border-red-500/30'
+                          }`}>
                           {profileUser.status === 'aktif' ? 'Active' : 'Inactive'}
                         </span>
                       </div>
                     </div>
-                    
+
                     {/* Edit Button */}
                     {canEdit() && !isEditing && (
                       <button
@@ -385,14 +374,14 @@ const Profile = () => {
                       </button>
                     )}
                   </div>
-                  
+
                   {/* Bio */}
                   <div className="mt-6">
                     <h3 className="text-lg font-semibold text-cyan-300 mb-2">About</h3>
                     {isEditing ? (
                       <textarea
                         value={editForm.bio}
-                        onChange={(e) => setEditForm({...editForm, bio: e.target.value})}
+                        onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
                         className="w-full h-32 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-cyan-300/50 resize-none"
                         placeholder="Tell us about yourself..."
                       />
@@ -400,26 +389,26 @@ const Profile = () => {
                       <p className="text-gray-300 whitespace-pre-wrap">{profileUser.bio}</p>
                     )}
                   </div>
-                  
+
                   {/* Stats */}
                   <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="bg-white/5 rounded-xl p-4 text-center">
                       <div className="text-2xl font-bold text-cyan-300">{profileUser.messageCount}</div>
                       <div className="text-sm text-gray-400">Messages</div>
                     </div>
-                    
+
                     <div className="bg-white/5 rounded-xl p-4 text-center">
                       <div className="text-2xl font-bold text-green-300">{achievements.length}</div>
                       <div className="text-sm text-gray-400">Achievements</div>
                     </div>
-                    
+
                     <div className="bg-white/5 rounded-xl p-4 text-center">
                       <div className="text-2xl font-bold text-purple-300">
                         {Math.floor((profileUser.messageCount || 0) / 10) || 0}
                       </div>
                       <div className="text-sm text-gray-400">Level</div>
                     </div>
-                    
+
                     <div className="bg-white/5 rounded-xl p-4 text-center">
                       <div className="text-2xl font-bold text-yellow-300">
                         {new Date(profileUser.joinDate).getFullYear()}
@@ -427,7 +416,7 @@ const Profile = () => {
                       <div className="text-sm text-gray-400">Joined</div>
                     </div>
                   </div>
-                  
+
                   {/* Edit Actions */}
                   {isEditing && (
                     <div className="mt-6 flex gap-3">
@@ -453,7 +442,7 @@ const Profile = () => {
                   )}
                 </div>
               </div>
-              
+
               {/* Contact Info */}
               <div className="mt-6 pt-6 border-t border-white/10">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -464,7 +453,7 @@ const Profile = () => {
                       <p className="text-white">{profileUser.email}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-3">
                     <Calendar className="w-5 h-5 text-cyan-400" />
                     <div>
@@ -477,20 +466,20 @@ const Profile = () => {
             </div>
 
             {/* Achievements */}
-            <div className="bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-white/10 p-6">
+            <div className="bg-white/[0.03] backdrop-blur-2xl rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] overflow-hidden border border-white/10 p-6 sm:p-8">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
                   <Trophy className="w-6 h-6 text-yellow-400" />
                   Achievements
                 </h3>
-                
+
                 {currentUser?.role === 'SUPER_ADMIN' && (
                   <div className="text-sm text-cyan-300">
                     Admin: Can grant achievements
                   </div>
                 )}
               </div>
-              
+
               {achievements.length === 0 ? (
                 <div className="text-center py-8">
                   <Award className="w-16 h-16 text-gray-500 mx-auto mb-4" />
@@ -518,7 +507,7 @@ const Profile = () => {
 
             {/* Personal Tags (Only for current user viewing another user) */}
             {currentUser && currentUser.email !== profileUser.email && (
-              <div className="bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-white/10 p-6">
+              <div className="bg-white/[0.03] backdrop-blur-2xl rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] overflow-hidden border border-white/10 p-6 sm:p-8">
                 <PersonalTagsManager
                   tags={personalTags.map(tag => ({ name: tag.tag, userName: profileUser.nama }))}
                   onAddTag={addPersonalTag}
@@ -532,12 +521,12 @@ const Profile = () => {
           <div className="space-y-8">
             {/* Admin Tools (Only for Super Admin) */}
             {currentUser?.role === 'SUPER_ADMIN' && (
-              <div className="bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-white/10 p-6">
+              <div className="bg-white/[0.03] backdrop-blur-2xl rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] overflow-hidden border border-white/10 p-6 sm:p-8">
                 <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                   <Shield className="w-6 h-6 text-purple-400" />
                   Admin Tools
                 </h3>
-                
+
                 <div className="space-y-3">
                   <button
                     onClick={() => navigate(`/Live-Discussion/dashboard`)}
@@ -545,18 +534,16 @@ const Profile = () => {
                   >
                     Go to Dashboard
                   </button>
-                  
+
                   <button
                     onClick={() => {
                       // Toggle user status
                       const newStatus = profileUser.status === 'aktif' ? 'nonaktif' : 'aktif';
-                      fetch(`${DATABASE_URL}/users/${profileUser.id}`, {
-                        method: 'PATCH',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                          status: newStatus
-                        })
-                      }).then(() => {
+                      supabase.from('users').update({ status: newStatus }).eq('id', profileUser.id).then(({ error }) => {
+                        if (error) {
+                          alert('Gagal memperbarui status');
+                          return;
+                        }
                         setProfileUser(prev => ({
                           ...prev,
                           status: newStatus
@@ -569,7 +556,7 @@ const Profile = () => {
                     {profileUser.status === 'aktif' ? 'Deactivate User' : 'Activate User'}
                   </button>
                 </div>
-                
+
                 {/* Grant Achievements */}
                 <div className="mt-6">
                   <h4 className="font-semibold text-white mb-3">Grant Achievement</h4>
@@ -597,9 +584,9 @@ const Profile = () => {
             )}
 
             {/* Role Information */}
-            <div className="bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-white/10 p-6">
+            <div className="bg-white/[0.03] backdrop-blur-2xl rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] overflow-hidden border border-white/10 p-6 sm:p-8">
               <h3 className="text-xl font-bold text-white mb-4">Role Information</h3>
-              
+
               <div className="space-y-4">
                 <div className={`p-4 rounded-xl bg-gradient-to-r ${getRoleColor(profileUser.role)}`}>
                   <div className="flex justify-between items-center">
@@ -617,7 +604,7 @@ const Profile = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-400">Message Limit:</span>
@@ -630,14 +617,14 @@ const Profile = () => {
                       {profileUser.role === 'USER' && '5/month'}
                     </span>
                   </div>
-                  
+
                   <div className="flex justify-between items-center">
                     <span className="text-gray-400">Admin Access:</span>
                     <span className="text-white font-semibold">
                       {['SUPER_ADMIN', 'ADMIN', 'MODERATOR'].includes(profileUser.role) ? 'Yes' : 'No'}
                     </span>
                   </div>
-                  
+
                   <div className="flex justify-between items-center">
                     <span className="text-gray-400">Priority Support:</span>
                     <span className="text-white font-semibold">
@@ -649,9 +636,9 @@ const Profile = () => {
             </div>
 
             {/* Quick Actions */}
-            <div className="bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-white/10 p-6">
+            <div className="bg-white/[0.03] backdrop-blur-2xl rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] overflow-hidden border border-white/10 p-6 sm:p-8">
               <h3 className="text-xl font-bold text-white mb-4">Quick Actions</h3>
-              
+
               <div className="space-y-3">
                 <button
                   onClick={() => navigate('/Live-Discussion')}
@@ -660,7 +647,7 @@ const Profile = () => {
                   <MessageSquare className="w-5 h-5" />
                   Back to Chat
                 </button>
-                
+
                 {currentUser?.email === profileUser.email && (
                   <>
                     <button

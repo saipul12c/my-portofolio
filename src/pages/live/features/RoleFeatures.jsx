@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { 
-  Shield, 
-  AlertCircle, 
-  Users, 
+import {
+  Shield,
+  AlertCircle,
+  Users,
   TrendingUp,
   BarChart3,
   CheckCircle,
@@ -62,7 +62,7 @@ export const SuperAdminFeatures = ({ onActionComplete }) => {
 
       <div className="grid grid-cols-2 gap-4">
         {features.map(feature => (
-          <div 
+          <div
             key={feature.id}
             className={`bg-gradient-to-br ${feature.color} rounded-lg p-4 text-white cursor-pointer hover:shadow-lg transition-shadow`}
             onClick={() => onActionComplete?.(feature.id)}
@@ -131,7 +131,7 @@ export const AdminFeatures = ({ onActionComplete }) => {
 
       <div className="grid grid-cols-2 gap-4">
         {features.map(feature => (
-          <div 
+          <div
             key={feature.id}
             className={`bg-gradient-to-br ${feature.color} rounded-lg p-4 text-white cursor-pointer hover:shadow-lg transition-shadow`}
             onClick={() => onActionComplete?.(feature.id)}
@@ -184,7 +184,7 @@ export const ModeratorFeatures = ({ onActionComplete }) => {
 
       <div className="grid grid-cols-2 gap-4">
         {features.map(feature => (
-          <div 
+          <div
             key={feature.id}
             className={`bg-gradient-to-br ${feature.color} rounded-lg p-4 text-white cursor-pointer hover:shadow-lg transition-shadow`}
             onClick={() => onActionComplete?.(feature.id)}
@@ -231,7 +231,7 @@ export const PremiumFeatures = ({ onActionComplete }) => {
 
       <div className="grid grid-cols-2 gap-4">
         {features.map(feature => (
-          <div 
+          <div
             key={feature.id}
             className={`bg-gradient-to-br ${feature.color} rounded-lg p-4 text-white cursor-pointer hover:shadow-lg transition-shadow`}
             onClick={() => onActionComplete?.(feature.id)}

@@ -6,11 +6,11 @@ import { SettingsContent } from "./settings/conten/SettingsContent";
 import { useSettings } from "./settings/hooks/useSettings";
 import { useFileManagement } from "./settings/hooks/useFileManagement";
 
-export function ChatbotSettings({ 
-  onClose, 
-  knowledgeBase = {}, 
-  updateKnowledgeBase, 
-  knowledgeStats = {} 
+export function ChatbotSettings({
+  onClose,
+  knowledgeBase = {},
+  updateKnowledgeBase,
+  knowledgeStats = {}
 }) {
   const {
     settings,
@@ -73,7 +73,7 @@ export function ChatbotSettings({
     // Validate settings saat komponen dimuat — only save if different
     // BUT dengan debounce untuk prevent multiple rapid saves
     const validatedSettings = validateSettings({ ...settings, ...performanceSettings });
-    
+
     // Clear previous debounce timer
     if (saveDebounceRef.current) {
       clearTimeout(saveDebounceRef.current);
@@ -84,9 +84,9 @@ export function ChatbotSettings({
       try {
         const current = JSON.stringify(lastSaveRef.current || {});
         const validated = JSON.stringify(validatedSettings || {});
-        
+
         if (current !== validated) {
-          handleSave("settings", validatedSettings);
+          handleSave(validatedSettings);
           lastSaveRef.current = validatedSettings;
         }
       } catch (err) {
@@ -139,7 +139,7 @@ export function ChatbotSettings({
   // Enhanced close handler dengan validation
   const handleClose = useCallback(() => {
     const validatedSettings = validateSettings({ ...settings, ...performanceSettings });
-    handleSave("settings", validatedSettings);
+    handleSave(validatedSettings);
     onClose();
   }, [settings, performanceSettings, handleSave, onClose]);
 
@@ -272,16 +272,16 @@ export function ChatbotSettings({
     try {
       const el = modalRef.current;
       if (!el) return;  // Guard: element not yet mounted
-      
+
       // Only apply styles if they've actually changed (check via dataset)
       const currentTheme = el.dataset.saipulTheme;
       const currentAccent = el.dataset.saipulAccent;
-      
+
       if (currentTheme === theme && currentAccent === accent) {
         // No change needed
         return;
       }
-      
+
       el.style.setProperty('--saipul-accent-1', c1);
       el.style.setProperty('--saipul-accent-2', c2);
       el.style.setProperty('--saipul-accent-gradient', `linear-gradient(90deg, ${c1}, ${c2})`);
@@ -317,13 +317,13 @@ export function ChatbotSettings({
       } catch (_e) { void _e; }
 
       // If light-like theme, adjust common dark utility classes inside modal to readable light equivalents
-      const isLightLike = ['light','sepia','solar','soft'].includes(theme) || (theme === 'system' && !window.matchMedia('(prefers-color-scheme: dark)').matches);
+      const isLightLike = ['light', 'sepia', 'solar', 'soft'].includes(theme) || (theme === 'system' && !window.matchMedia('(prefers-color-scheme: dark)').matches);
       if (isLightLike) {
         const all = el.querySelectorAll('*');
         const modified = [];
         all.forEach((node) => {
           const cls = node.className || '';
-          if (typeof cls === 'string' && (cls.includes('bg-gray-800') || cls.includes('bg-gray-900') || cls.includes('bg-gray-800/50') )) {
+          if (typeof cls === 'string' && (cls.includes('bg-gray-800') || cls.includes('bg-gray-900') || cls.includes('bg-gray-800/50'))) {
             node.style.backgroundColor = 'var(--saipul-surface, #f3f4f6)';
             node.style.color = 'var(--saipul-text, #0b1220)';
             modified.push(node);
@@ -358,12 +358,12 @@ export function ChatbotSettings({
       >
         <div ref={modalRef} className="saipul-settings-root bg-gray-900 text-gray-200 w-full max-w-[700px] max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden border border-gray-700" style={{ background: 'var(--saipul-modal-bg)' }}>
           <div className="flex flex-row h-[550px]">
-            <SettingsSidebar 
-              activeTab={settings.activeTab} 
-              setActiveTab={(tab) => handleSave("activeTab", tab)} 
+            <SettingsSidebar
+              activeTab={settings.activeTab}
+              setActiveTab={(tab) => handleSave("activeTab", tab)}
             />
-            
-            <SettingsContent 
+
+            <SettingsContent
               activeTab={settings.activeTab}
               settings={{
                 ...settings,

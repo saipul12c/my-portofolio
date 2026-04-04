@@ -285,7 +285,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     pendingSaveRef.current = setTimeout(() => {
       try {
         // Only persist the last N messages to keep storage small
-        const toPersist = messages.slice(-200);
+        const toPersist = messages.slice(-50);
         const sanitized = toPersist.map(sanitizeMessageForPersist);
         try {
           if (!settings.privacyMode) {

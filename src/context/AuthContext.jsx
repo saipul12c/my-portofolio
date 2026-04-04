@@ -1,85 +1,101 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import auth from '../lib/auth';
-import { checkHealth } from '../lib/backend';
+import { supabase } from '../lib/supabaseClient';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const loadUser = async () => {
-    try {
-      // avoid calling backend if dev proxy/backend is down
-      const healthy = await checkHealth(2000).catch(() => false);
-      if (!healthy) {
+  useEffect(() => {
+    // Get initial session
+    const initSession = async () => {
+      const { data: { session: initialSession } } = await supabase.auth.getSession();
+      setSession(initialSession);
+      if (initialSession) {
+        await fetchUserProfile(initialSession.user.id);
+      } else {
+        setLoading(false);
+      }
+    };
+
+    initSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      setSession(session);
+      if (session) {
+        await fetchUserProfile(session.user.id);
+      } else {
         setUser(null);
         setLoading(false);
-        return;
       }
+    });
 
-      let token = null;
-      try {
-        token = localStorage.getItem('token');
-      } catch (e) {
-        token = null;
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const fetchUserProfile = async (userId) => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (error) {
+        console.warn('Profile not found in public.users, using auth metadata');
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        setUser({
+          id: userId,
+          email: authUser.email,
+          username: authUser.user_metadata?.nama || authUser.email.split('@')[0],
+          role: 'USER'
+        });
+      } else {
+        setUser({
+          ...data,
+          username: data.nama || data.username // mapping for consistency
+        });
       }
-
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
-      const u = await auth.me();
-      setUser(u || null);
     } catch (err) {
-      // silent fallback when backend is unavailable or request fails
-      console.debug && console.debug('Auth load user skipped or failed:', err?.message || err);
-      setUser(null);
+      console.error('Error fetching user profile:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    loadUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const login = async ({ email, password }) => {
-    const res = await auth.signin({ email, password });
-    if (res && res.token) {
-      try {
-        localStorage.setItem('token', res.token);
-      } catch (e) {}
-      // immediately load user
-      const u = await auth.me();
-      setUser(u || null);
-    }
-    return res;
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    return { data, error };
   };
 
   const register = async ({ email, password, username }) => {
-    const res = await auth.signup({ email, password, username });
-    if (res && res.token) {
-      try {
-        localStorage.setItem('token', res.token);
-      } catch (e) {}
-      const u = await auth.me();
-      setUser(u || null);
-    }
-    return res;
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          nama: username
+        }
+      }
+    });
+    return { data, error };
   };
 
-  const logout = () => {
-    try {
-      localStorage.removeItem('token');
-    } catch (e) {}
-    setUser(null);
+  const logout = async () => {
+    const { error } = await supabase.auth.signOut();
+    return { error };
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, register }}>
+    <AuthContext.Provider value={{ user, session, loading, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );

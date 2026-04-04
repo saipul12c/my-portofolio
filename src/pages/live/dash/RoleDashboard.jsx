@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Users, 
-  Shield, 
-  BarChart3, 
+import {
+  Users,
+  Shield,
+  BarChart3,
   AlertCircle,
   ArrowLeft,
   Search,
@@ -81,12 +81,12 @@ const RoleDashboard = ({ user, onNavigate }) => {
               <ArrowLeft className="w-5 h-5" />
               Kembali
             </button>
-            
+
             <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-400 flex items-center gap-2">
               <Shield className="w-6 h-6" />
               {user?.role} Dashboard
             </h1>
-            
+
             <div className="w-24"></div>
           </div>
         </div>
@@ -205,7 +205,7 @@ const UserManagementRow = ({ user, currentUserRole }) => {
         <span className="px-3 py-1 rounded-full text-sm bg-white/10 text-white">
           {user.role}
         </span>
-        
+
         <button
           onClick={() => setAction('view')}
           className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"

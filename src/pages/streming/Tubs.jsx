@@ -46,20 +46,25 @@ const Tubs = () => {
 
     // Fetch streaming data from backend APIs
     let mounted = true;
-    const load = async () => {
+    const load = async (q = searchQuery, cat = activeFilter) => {
       try {
         setLoadingData(true);
-        // Use centralized API client (handles parsing and errors)
+        // Use centralized API client
         const [videosJson, shortsJson, usersJson] = await Promise.all([
-          api.videos.list().catch(() => []),
+          api.videos.list(q, cat).catch(() => []),
           api.shorts.list().catch(() => []),
           api.streamingUsers.list().catch(() => null)
         ]);
         if (!mounted) return;
-        setAllVideos(Array.isArray(videosJson) ? videosJson : []);
-        setVideos(Array.isArray(videosJson) ? videosJson : []);
+        
+        if (q || (cat && cat !== 'All')) {
+          setVideos(Array.isArray(videosJson) ? videosJson : []);
+        } else {
+          setAllVideos(Array.isArray(videosJson) ? videosJson : []);
+          setVideos(Array.isArray(videosJson) ? videosJson : []);
+        }
+        
         setShorts(Array.isArray(shortsJson) ? shortsJson : []);
-        // usersJson may be an object or array; use first user object as `fetchedUser` prop for components
         if (Array.isArray(usersJson)) setFetchedUser(usersJson[0] || null);
         else setFetchedUser(usersJson || null);
       } catch (err) {
@@ -70,7 +75,7 @@ const Tubs = () => {
     };
     load();
     return () => { mounted = false; };
-  }, []);
+  }, [searchQuery, activeFilter]);
 
   // Toggle theme
   const toggleTheme = () => {
@@ -81,19 +86,9 @@ const Tubs = () => {
   };
 
   const handleSearch = useCallback((query = searchQuery) => {
-    const q = (query || '').trim().toLowerCase();
-    if (q) {
-      const filtered = allVideos.filter(video =>
-        (video.title || '').toLowerCase().includes(q) ||
-        (video.channel || '').toLowerCase().includes(q) ||
-        (video.description || '').toLowerCase().includes(q) ||
-        (video.tags || []).some(tag => String(tag).toLowerCase().includes(q))
-      );
-      setVideos(filtered);
-    } else {
-      setVideos(allVideos);
-    }
-  }, [allVideos, searchQuery]);
+    setSearchQuery(query);
+    // The useEffect will trigger data fetch when searchQuery changes
+  }, [searchQuery]);
 
   const handleVoiceSearch = () => {
     // Check if browser supports Web Speech API
@@ -129,21 +124,7 @@ const Tubs = () => {
 
   const handleFilterChange = (filter) => {
     setActiveFilter(filter);
-    
-    if (filter === 'Shorts') {
-      // handled by UI which switches to shorts view
-    } else if (filter === 'Live') {
-      const liveVideos = (allVideos || []).filter(video => video.isLive);
-      setVideos(liveVideos);
-    } else if (filter !== 'All') {
-      const filtered = (allVideos || []).filter(video => 
-        (video.category || '').includes(filter) || 
-        (video.tags || []).includes(filter.toLowerCase())
-      );
-      setVideos(filtered);
-    } else {
-      setVideos(allVideos);
-    }
+    // The useEffect will trigger data fetch when activeFilter changes
   };
 
   const handleMenuAction = (action, video, meta) => {
@@ -242,8 +223,15 @@ const Tubs = () => {
           user={user}
         />
         
-        {/* main no longer uses fixed left margin - flex layout + sidebar widths handle spacing */}
-        <main className={`flex-1 transition-all duration-300 overflow-x-hidden`}>
+        {/* Mobile Sidebar Overlay */}
+        {!isSidebarCollapsed && (
+          <div 
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            onClick={() => setIsSidebarCollapsed(true)}
+          />
+        )}
+        
+        <main className="flex-1 transition-all duration-300 overflow-x-hidden min-w-0">
           <Header 
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
@@ -437,7 +425,7 @@ const Tubs = () => {
                   onClick={() => {
                     setSearchQuery('');
                     setActiveFilter('All');
-                    setVideos(videosData);
+                    setVideos(allVideos);
                   }}
                   className="px-6 py-3 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-full transition-colors font-medium"
                 >

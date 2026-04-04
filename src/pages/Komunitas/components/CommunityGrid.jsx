@@ -69,10 +69,26 @@ const CommunityGrid = ({
           <motion.div
             key={community.id}
             variants={itemVariants}
-            whileHover={{ scale: 1.05 }}
-            className="bg-white/5 hover:bg-white/10 border border-white/20 hover:border-cyan-500/50 backdrop-blur-xl rounded-2xl overflow-hidden transition-all group"
+            whileHover={{ y: -5 }}
+            className="bg-[#1e293b] hover:bg-[#243146] border border-white/10 hover:border-cyan-500/50 backdrop-blur-xl rounded-2xl overflow-hidden transition-all group relative"
           >
-            <div className="p-6">
+            {/* Community Banner/Image Overlay */}
+            <div className="h-24 w-full bg-gradient-to-r from-cyan-900 to-blue-900 relative overflow-hidden">
+               {community.image_url ? (
+                 <img 
+                   src={community.image_url} 
+                   className="w-full h-full object-cover opacity-50 group-hover:opacity-70 transition-opacity" 
+                   loading="lazy"
+                    alt="" 
+                 />
+               ) : (
+                 <div className="absolute inset-0 flex items-center justify-center opacity-20">
+                    <Users className="w-12 h-12 text-white" />
+                 </div>
+               )}
+            </div>
+
+            <div className="p-6 pt-4">
               <div className="flex items-start justify-between mb-3">
                 <h3 className="font-semibold text-lg text-white line-clamp-2 group-hover:text-cyan-300 transition-colors">
                   {community.name}

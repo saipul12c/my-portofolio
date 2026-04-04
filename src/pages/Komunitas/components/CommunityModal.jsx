@@ -41,6 +41,17 @@ const CommunityModal = ({ showModal, selectedCommunity, onClose }) => {
             </motion.button>
           </div>
 
+          {selectedCommunity.image_url && (
+            <div className="w-full h-48 mb-6 rounded-xl overflow-hidden border border-white/10">
+              <img 
+                src={selectedCommunity.image_url} 
+                alt={selectedCommunity.name}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+          )}
+
           <div className="space-y-6">
             <div>
               <h3 className="font-semibold text-white mb-3">Deskripsi</h3>

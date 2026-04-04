@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../lib/api';
+import { supabase } from '../../../../lib/supabaseClient';
 import { debounce } from '../../utils/helpers';
 import { 
   Send, ThumbsUp, MoreVertical, ChevronDown, 
@@ -53,7 +54,30 @@ const CommentSection = ({ videoId }) => {
     setPage(1);
     loadPage(1);
 
-    return () => { mounted = false; };
+    // Real-time subscription
+    const channel = supabase
+      .channel(`video-comments-${videoId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'video_comments',
+          filter: `video_id=eq.${videoId}`
+        },
+        (payload) => {
+          if (mounted) {
+            setComments(prev => [payload.new, ...prev]);
+            setTotal(t => t + 1);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      mounted = false;
+      supabase.removeChannel(channel);
+    };
   }, [videoId, per]);
 
   useEffect(() => {

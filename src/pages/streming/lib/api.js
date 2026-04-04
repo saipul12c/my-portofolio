@@ -1,50 +1,109 @@
-// Lightweight API client for streming pages
-const defaultHeaders = (json = true) => {
-  const h = {};
-  if (json) h['Content-Type'] = 'application/json';
-  const token = localStorage.getItem('token');
-  if (token) h['Authorization'] = `Bearer ${token}`;
-  return h;
-};
+// Supabase API client for streaming pages
+import { supabase } from '../../../lib/supabaseClient';
 
-async function request(path, opts = {}) {
-  // Prefer cookie-based auth: include credentials so httpOnly cookies are sent.
-  const headers = { ...(opts.headers || {}), ...(defaultHeaders(opts.json !== false)) };
-  try {
-    const res = await fetch(path, { ...opts, headers, credentials: 'include' });
-    const text = await res.text();
-    let data = null;
-    try { data = text ? JSON.parse(text) : null; } catch { data = text; }
-    if (!res.ok) throw { status: res.status, error: data?.error || (typeof data === 'string' ? data : 'Request failed') };
-    return data;
-  } catch (err) {
-    // normalize error
-    if (err && err.error) throw err;
-    throw { error: err?.message || String(err) };
-  }
-}
+const mapVideo = (v) => ({
+  ...v,
+  views: v.views_text,
+  uploadTime: v.upload_time,
+  verified: v.is_verified,
+  channelLogo: v.channel_logo, // Map snake_case to camelCase
+  likes: v.likes_count,
+  comments: v.comments_count,
+  isNew: v.is_new,
+  isLive: v.is_live,
+  liveViewers: v.live_viewers
+});
 
 export const videos = {
-  // Use authoritative youtube_videos list (reflects server-side updates)
-  list: (q) => request(`/api/youtube/videos${q ? `?q=${encodeURIComponent(q)}` : ''}`),
-  get: (id) => request(`/api/youtube/videos/${id}`),
-  comments: (id, page, per) => request(`/api/youtube/videos/${id}/comments${page ? `?page=${page}&per=${per||20}` : ''}`),
-  postComment: (id, author, message) => request(`/api/youtube/videos/${id}/comments`, { method: 'POST', body: JSON.stringify({ author, message }) })
-  ,
-  like: (id, liked) => request(`/api/videos/${id}/like`, { method: 'POST', body: JSON.stringify({ liked }) })
+  list: async (q, category) => {
+    let query = supabase.from('videos').select('*');
+    if (q) {
+      query = query.ilike('title', `%${q}%`);
+    }
+    if (category && category !== 'All') {
+      query = query.contains('category', [category]);
+    }
+    const { data, error } = await query;
+    if (error) throw error;
+    return (data || []).map(mapVideo);
+  },
+  getRelated: async (videoId, categories = []) => {
+    let query = supabase.from('videos').select('*').neq('id', videoId).limit(10);
+    if (categories && categories.length > 0) {
+      // Find videos with overlapping categories
+      query = query.overlaps('category', categories);
+    }
+    const { data, error } = await query;
+    if (error) throw error;
+    return (data || []).map(mapVideo);
+  },
+  get: async (id) => {
+    const { data, error } = await supabase.from('videos').select('*').eq('id', id).single();
+    if (error) throw error;
+    return data ? mapVideo(data) : null;
+  },
+  comments: async (id, page = 1, per = 20) => {
+    const from = (page - 1) * per;
+    const to = from + per - 1;
+    const { data, error } = await supabase
+      .from('video_comments')
+      .select('*')
+      .eq('video_id', id)
+      .order('created_at', { ascending: false })
+      .range(from, to);
+    if (error) throw error;
+    return data;
+  },
+  postComment: async (id, author, message) => {
+    const { data, error } = await supabase
+      .from('video_comments')
+      .insert([{ video_id: id, author_name: author, content: message }])
+      .select();
+    if (error) throw error;
+    return data ? data[0] : null;
+  },
+  like: async (id, liked) => {
+    const { data: video } = await supabase.from('videos').select('likes_count').eq('id', id).single();
+    const newLikes = liked ? ((video?.likes_count || 0) + 1) : Math.max(0, (video?.likes_count || 0) - 1);
+    const { error } = await supabase.from('videos').update({ likes_count: newLikes }).eq('id', id);
+    if (error) throw error;
+    return { likes: newLikes };
+  }
 };
 
 export const shorts = {
-  list: () => request('/api/shorts')
+  list: async () => {
+    const { data, error } = await supabase.from('video_shorts').select('*');
+    if (error) throw error;
+    return (data || []).map(s => ({
+      ...s,
+      channelLogo: s.channel_logo,
+      likes: s.likes_count,
+      comments: s.comments_count,
+      musicInfo: s.music_info
+    }));
+  }
 };
 
 export const streamingUsers = {
-  list: () => request('/api/streaming-users')
+  list: async () => {
+    const { data, error } = await supabase.from('users').select('*').limit(10);
+    if (error) throw error;
+    return data;
+  }
 };
 
 export const streams = {
-  listLive: () => request('/api/youtube/live'),
-  start: (payload) => request('/api/streams/start', { method: 'POST', body: JSON.stringify(payload) })
+  listLive: async () => {
+    const { data, error } = await supabase.from('videos').select('*').eq('is_live', true);
+    if (error) throw error;
+    return (data || []).map(mapVideo);
+  },
+  start: async (payload) => {
+    const { data, error } = await supabase.from('videos').insert([{ ...payload, is_live: true }]).select();
+    if (error) throw error;
+    return data ? mapVideo(data[0]) : null;
+  }
 };
 
-export default { request, videos, shorts, streamingUsers, streams };
+export default { videos, shorts, streamingUsers, streams };

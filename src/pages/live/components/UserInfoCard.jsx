@@ -18,7 +18,7 @@ export const UserInfoCard = ({ user, onMention, isSelf = false }) => {
   const roleColor = roleColors[user.role] || roleColors.USER;
 
   return (
-    <div 
+    <div
       className="bg-gradient-to-br from-white/5 to-white/[0.02] rounded-lg p-3 border border-white/10 hover:border-white/20 transition-all"
       onMouseEnter={() => setShowMentionBtn(true)}
       onMouseLeave={() => setShowMentionBtn(false)}
@@ -46,7 +46,7 @@ export const UserInfoCard = ({ user, onMention, isSelf = false }) => {
                 </span>
               )}
             </div>
-            
+
             {/* Message count atau status */}
             <p className="text-xs text-gray-400">
               {user.messageCount} pesan
@@ -76,7 +76,7 @@ export const ActiveUsersList = ({ users, currentUser, onMention }) => {
     const roleOrder = { SUPER_ADMIN: 0, ADMIN: 1, MODERATOR: 2, PREMIUM: 3, VERIFIED: 4, USER: 5 };
     const aOrder = roleOrder[a.role] || 6;
     const bOrder = roleOrder[b.role] || 6;
-    
+
     if (aOrder !== bOrder) return aOrder - bOrder;
     return (a.username || '').localeCompare(b.username || '');
   });
@@ -116,16 +116,16 @@ export const UserProfile Preview = ({ user }) => {
           <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${roleColor} flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4`}>
             {user.username?.[0]?.toUpperCase() || 'U'}
           </div>
-          
+
           <h3 className="text-xl font-bold text-white">{user.username}</h3>
           <p className="text-sm text-gray-400">{user.email}</p>
-          
+
           <div className="mt-4 flex justify-center gap-2">
             <span className={`px-3 py-1 rounded-full text-sm font-bold bg-gradient-to-r ${roleColor} text-white`}>
               {user.role}
             </span>
           </div>
-          
+
           <div className="mt-4 grid grid-cols-2 gap-4">
             <div>
               <p className="text-gray-400 text-xs">Pesan</p>

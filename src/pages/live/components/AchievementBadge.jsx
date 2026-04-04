@@ -5,7 +5,7 @@ export const AchievementBadge = ({ achievement, locked = false }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
-    <div 
+    <div
       className="relative group"
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
@@ -16,7 +16,7 @@ export const AchievementBadge = ({ achievement, locked = false }) => {
       `}>
         {achievement.icon}
       </div>
-      
+
       {showTooltip && (
         <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-50">
           <div className="bg-gray-900 text-white px-3 py-2 rounded-lg text-xs whitespace-nowrap">

@@ -74,8 +74,8 @@ export function useSettings(knowledgeBase = {}) {
 
   const totalKBCategories = Object.keys(safeKnowledgeBase).filter(key => {
     const value = safeKnowledgeBase[key];
-    return Array.isArray(value) ? value.length > 0 : 
-           typeof value === 'object' && value !== null ? Object.keys(value).length > 0 : false;
+    return Array.isArray(value) ? value.length > 0 :
+      typeof value === 'object' && value !== null ? Object.keys(value).length > 0 : false;
   }).length;
 
   useEffect(() => {
@@ -90,15 +90,26 @@ export function useSettings(knowledgeBase = {}) {
   }, []);
 
   const handleSave = (key, value) => {
-    const newSettings = { ...settings, [key]: value };
+    let newSettings;
+    if (typeof key === 'object' && key !== null) {
+      newSettings = { ...settings, ...key };
+    } else {
+      newSettings = { ...settings, [key]: value };
+    }
     setSettings(newSettings);
     try {
       storageService.set(SETTINGS_KEY, newSettings);
       window.dispatchEvent(new Event("storage"));
-      
-      window.dispatchEvent(new CustomEvent('saipul_settings_updated', {
-        detail: { key, value }
-      }));
+
+      if (typeof key === 'string') {
+        window.dispatchEvent(new CustomEvent('saipul_settings_updated', {
+          detail: { key, value }
+        }));
+      } else {
+        window.dispatchEvent(new CustomEvent('saipul_settings_updated', {
+          detail: { settings: newSettings }
+        }));
+      }
     } catch (e) {
       console.error("Error saving settings:", e);
     }

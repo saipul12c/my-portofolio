@@ -1,7 +1,5 @@
-// Hook untuk mengelola Achievement System
 import { useState, useCallback } from 'react';
-
-const DATABASE_URL = import.meta.env.VITE_DATABASE_URL;
+import { supabase } from '../../../lib/supabaseClient';
 
 export const ACHIEVEMENTS = {
   // Global Achievements
@@ -108,12 +106,9 @@ export const useAchievements = () => {
   // Muat achievements dari database
   const loadAchievements = useCallback(async (email) => {
     try {
-      const response = await fetch(
-        `${DATABASE_URL}/achievements?email=${encodeURIComponent(email)}`
-      );
-      const data = await response.json();
-      
-      if (data && data.length > 0) {
+      const { data, error } = await supabase.from('achievements').select('*').eq('email', email);
+
+      if (!error && data && data.length > 0) {
         setUserAchievements(data);
         const total = data.reduce((sum, ach) => sum + (parseInt(ach.points) || 0), 0);
         setTotalPoints(total);
@@ -130,31 +125,24 @@ export const useAchievements = () => {
 
     try {
       // Check jika sudah unlock
-      const existingResponse = await fetch(
-        `${DATABASE_URL}/achievements?email=${encodeURIComponent(email)}&achievement_id=${achievementId}`
-      );
-      const existing = await existingResponse.json();
-      
-      if (existing && existing.length > 0) {
+      const { data: existing, error: existingError } = await supabase.from('achievements').select('*').eq('email', email).eq('achievement_id', achievementId);
+
+      if (!existingError && existing && existing.length > 0) {
         return false; // Sudah unlock
       }
 
       // Add achievement baru
-      const response = await fetch(`${DATABASE_URL}/achievements`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          achievement_id: achievementId,
-          name: achievement.name,
-          icon: achievement.icon,
-          points: achievement.points,
-          date_unlocked: new Date().toISOString(),
-          category: achievement.category
-        })
-      });
+      const { error } = await supabase.from('achievements').insert([{
+        email,
+        achievement_id: achievementId,
+        name: achievement.name,
+        icon: achievement.icon,
+        points: achievement.points,
+        date_unlocked: new Date().toISOString(),
+        category: achievement.category
+      }]);
 
-      if (response.ok) {
+      if (!error) {
         await loadAchievements(email);
         return true;
       }

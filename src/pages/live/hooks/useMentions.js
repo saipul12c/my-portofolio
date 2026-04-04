@@ -1,7 +1,5 @@
-// Hook untuk mengelola mention & tag system
 import { useState, useCallback } from 'react';
-
-const DATABASE_URL = import.meta.env.VITE_DATABASE_URL;
+import { supabase } from '../../../lib/supabaseClient';
 
 export const useMentions = () => {
   const [mentionedUsers, setMentionedUsers] = useState([]);
@@ -15,14 +13,11 @@ export const useMentions = () => {
     }
 
     try {
-      const response = await fetch(
-        `${DATABASE_URL}/users?nama_like=${encodeURIComponent(query)}`
-      );
-      const data = await response.json();
-      
-      if (data && data.length > 0) {
-        setMentionedUsers(data.slice(0, 5)); // Limit 5 hasil
-        return data.slice(0, 5);
+      const { data, error } = await supabase.from('users').select('*').ilike('nama', `%${query}%`).limit(5);
+
+      if (!error && data && data.length > 0) {
+        setMentionedUsers(data);
+        return data;
       }
     } catch (error) {
       console.error('Error searching users:', error);
@@ -40,29 +35,25 @@ export const useMentions = () => {
     const mentionRegex = /@(\w+)/g;
     const mentions = [];
     let match;
-    
+
     while ((match = mentionRegex.exec(message)) !== null) {
       mentions.push(match[1]);
     }
-    
+
     return mentions;
   };
 
   // Tambah tag personal untuk user
   const addPersonalTag = useCallback(async (email, userId, tag) => {
     try {
-      const response = await fetch(`${DATABASE_URL}/tags`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          user_id: userId,
-          tag: tag,
-          created_at: new Date().toISOString()
-        })
-      });
+      const { error } = await supabase.from('tags').insert([{
+        email,
+        user_id: userId,
+        tag: tag,
+        created_at: new Date().toISOString()
+      }]);
 
-      if (response.ok) {
+      if (!error) {
         setPersonalTags(prev => [...prev, { email, user_id: userId, tag }]);
         return true;
       }
@@ -75,12 +66,9 @@ export const useMentions = () => {
   // Load personal tags
   const loadPersonalTags = useCallback(async (email) => {
     try {
-      const response = await fetch(
-        `${DATABASE_URL}/tags?email=${encodeURIComponent(email)}`
-      );
-      const data = await response.json();
-      
-      if (data && data.length > 0) {
+      const { data, error } = await supabase.from('tags').select('*').eq('email', email);
+
+      if (!error && data && data.length > 0) {
         setPersonalTags(data);
       }
     } catch (error) {
