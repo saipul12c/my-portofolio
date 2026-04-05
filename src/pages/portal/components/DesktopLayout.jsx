@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import hobbiesData from '../../../data/hub/hobbiesData.json';
 import { iconMap } from '../../owner/utils/iconMap';
 import { generateSlug } from '../../hub/utils/hobbyUtils';
+import { supabase } from '../../../lib/supabaseClient';
 
 const usesData = [
   {
@@ -101,26 +102,54 @@ const DesktopLayout = memo(({
   const [qrCopied, setQrCopied] = useState(false);
   const [recentChats, setRecentChats] = useState([]);
 
-  // Fetch recent Live Discussion messages
+  // Fetch recent Live Discussion messages & Realtime Setup
   useEffect(() => {
     const fetchRecentChats = async () => {
       try {
-        const { createClient } = await import('@supabase/supabase-js');
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-        const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-        if (!supabaseUrl || !supabaseKey) return;
-        const supabase = createClient(supabaseUrl, supabaseKey);
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('messages')
           .select('username, content, role, timestamp')
           .order('timestamp', { ascending: false })
           .limit(10);
+        
+        if (error) throw error;
         if (data) setRecentChats(data);
       } catch (err) {
         console.warn('Could not fetch chats:', err);
       }
     };
+
     fetchRecentChats();
+
+    // Realtime Subscription for Desktop Preview
+    const channel = supabase
+      .channel('portal-desktop-chat-preview')
+      .on('postgres_changes', { 
+        event: 'INSERT', 
+        schema: 'public', 
+        table: 'messages' 
+      }, (payload) => {
+        setRecentChats(prev => [payload.new, ...prev].slice(0, 10));
+      })
+      .on('postgres_changes', { 
+        event: 'UPDATE', 
+        schema: 'public', 
+        table: 'messages' 
+      }, (payload) => {
+        setRecentChats(prev => prev.map(msg => msg.id === payload.new.id ? payload.new : msg));
+      })
+      .on('postgres_changes', { 
+        event: 'DELETE', 
+        schema: 'public', 
+        table: 'messages' 
+      }, (payload) => {
+        setRecentChats(prev => prev.filter(msg => msg.id !== payload.old.id));
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   // Pre-process hobbies to include slugs once

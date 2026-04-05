@@ -5,9 +5,9 @@
 CREATE TABLE IF NOT EXISTS public.users (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
-  nama TEXT NOT NULL,
+  nama TEXT UNIQUE NOT NULL,
   role TEXT DEFAULT 'USER' NOT NULL,
-  status TEXT DEFAULT 'aktif' NOT NULL,
+  status TEXT DEFAULT 'aktif' NOT NULL, -- Standardized: 'aktif'
   message_count INTEGER DEFAULT 0 NOT NULL,
   last_reset DATE DEFAULT CURRENT_DATE NOT NULL,
   tanggal_daftar TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
@@ -15,8 +15,11 @@ CREATE TABLE IF NOT EXISTS public.users (
   bio TEXT DEFAULT 'Halo! Saya pengguna baru di Live Discussion.',
   custom_status TEXT DEFAULT '',
   is_shadowbanned BOOLEAN DEFAULT false NOT NULL,
-  ban_reason TEXT DEFAULT NULL,
-  mute_reason TEXT DEFAULT NULL
+  mute_until TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  mute_reason TEXT DEFAULT NULL,
+  CONSTRAINT nama_length_check CHECK (char_length(nama) <= 50),
+  CONSTRAINT bio_length_check CHECK (char_length(bio) <= 500),
+  CONSTRAINT status_length_check CHECK (char_length(custom_status) <= 100)
 );
 
 -- 2. Buat Tabel Messages
@@ -33,7 +36,8 @@ CREATE TABLE IF NOT EXISTS public.messages (
   media_url TEXT,
   correlation_id TEXT, -- New: For optimistic UI matching
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
-  timestamp BIGINT NOT NULL
+  timestamp BIGINT NOT NULL,
+  CONSTRAINT content_length_check CHECK (char_length(content) <= 3000)
 );
 
 -- 3. Tabel Achievements
@@ -54,8 +58,8 @@ CREATE TABLE IF NOT EXISTS public.achievements (
 CREATE TABLE IF NOT EXISTS public.tags (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
-    email TEXT,
-    tag TEXT NOT NULL,
+    tag_name TEXT NOT NULL,
+    color TEXT DEFAULT 'cyan',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
@@ -71,6 +75,10 @@ CREATE TABLE IF NOT EXISTS public.reactions (
 
 -- 6. Tabel Reports
 CREATE TABLE IF NOT EXISTS public.reports (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    message_id UUID REFERENCES public.messages(id) ON DELETE CASCADE,
+    reporter_id UUID CONSTRAINT reports_reporter_id_fkey REFERENCES public.users(id) ON DELETE CASCADE,
+    reason TEXT NOT NULL,
     status TEXT DEFAULT 'pending' NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
@@ -78,8 +86,8 @@ CREATE TABLE IF NOT EXISTS public.reports (
 -- 6.1 Tabel Audit Logs (Security Tracking)
 CREATE TABLE IF NOT EXISTS public.audit_logs (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    admin_id UUID REFERENCES public.users(id) ON DELETE SET NULL,
-    target_id UUID REFERENCES public.users(id) ON DELETE SET NULL,
+    admin_id UUID CONSTRAINT audit_logs_admin_id_fkey REFERENCES public.users(id) ON DELETE SET NULL,
+    target_id UUID CONSTRAINT audit_logs_target_id_fkey REFERENCES public.users(id) ON DELETE SET NULL,
     action TEXT NOT NULL, -- 'BAN', 'MUTE', 'SHADOWBAN', 'DELETE_MESSAGE'
     reason TEXT,
     metadata JSONB,
@@ -107,6 +115,25 @@ CREATE TABLE IF NOT EXISTS public.mentions (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
+-- 6.6 Tabel System Config (Pusat Pengaturan Dinamis)
+CREATE TABLE IF NOT EXISTS public.system_config (
+    key TEXT PRIMARY KEY,
+    value JSONB NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+);
+
+-- Seed initial config
+INSERT INTO public.system_config (key, value) VALUES 
+('message_limits', '{
+    "SUPER_ADMIN": 999999,
+    "ADMIN": 500,
+    "MODERATOR": 100,
+    "PREMIUM": 50,
+    "VERIFIED": 25,
+    "USER": 5
+}'::jsonb),
+('maintenance_mode', 'false'::jsonb)
+ON CONFLICT (key) DO NOTHING;
 
 -- 7. Aktifkan RLS
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
@@ -118,8 +145,17 @@ ALTER TABLE public.reports ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.mentions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.appeals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.system_config ENABLE ROW LEVEL SECURITY;
 
 -- 6. Kebijakan Keamanan (Policies)
+
+-- System Config Policies
+DROP POLICY IF EXISTS "Anyone can view config" ON public.system_config;
+CREATE POLICY "Anyone can view config" ON public.system_config FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Admins can manage config" ON public.system_config;
+CREATE POLICY "Admins can manage config" ON public.system_config FOR ALL USING (
+  EXISTS (SELECT 1 FROM public.users me WHERE me.id = auth.uid() AND me.role IN ('ADMIN', 'SUPER_ADMIN'))
+);
 
 -- Helper: Get Role Level (untuk hierarki akses)
 CREATE OR REPLACE FUNCTION public.get_role_level(role_name TEXT)
@@ -154,9 +190,9 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- Profiles: Mask email for regular users
-DROP POLICY IF EXISTS "Users are viewable by everyone" ON public.users;
-DROP POLICY IF EXISTS "Profiles are viewable by authenticated users" ON public.users;
-CREATE POLICY "Public profile view" ON public.users FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public profile view" ON public.users;
+CREATE POLICY "Users can view own full profile" ON public.users FOR SELECT USING (auth.uid() = id);
+-- Note: All public lookups should use the 'profiles' VIEW below which handles email privacy.
 -- Note: Email masking is implemented via column-level security (Grants) or Views.
 -- For RLS row-level, we combine it with data masking logic in the Select policy if possible, 
 -- but since Supabase doesn't support column RLS natively in Select Using, we use a VIEW later.
@@ -180,7 +216,20 @@ USING (auth.uid() = id OR EXISTS (
 ));
 
 DROP POLICY IF EXISTS "Messages are viewable by everyone" ON public.messages;
-CREATE POLICY "Messages are viewable by everyone" ON public.messages FOR SELECT USING (true);
+CREATE POLICY "Messages are viewable by everyone" ON public.messages FOR SELECT USING (
+  -- Logic: Hide messages from shadowbanned users unless the VIEWER is the author or an Admin/Mod
+  NOT EXISTS (
+    SELECT 1 FROM public.users u 
+    WHERE u.id = public.messages.user_id 
+    AND u.is_shadowbanned = true
+  ) 
+  OR auth.uid() = user_id 
+  OR EXISTS (
+    SELECT 1 FROM public.users me 
+    WHERE me.id = auth.uid() 
+    AND (me.role IN ('ADMIN', 'SUPER_ADMIN', 'MODERATOR'))
+  )
+);
 DROP POLICY IF EXISTS "Authenticated users can insert messages" ON public.messages;
 CREATE POLICY "Authenticated users can insert messages" ON public.messages FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 DROP POLICY IF EXISTS "Users can manage own messages" ON public.messages;
@@ -200,6 +249,13 @@ CREATE POLICY "View tags" ON public.tags FOR SELECT USING (true);
 DROP POLICY IF EXISTS "Post tags" ON public.tags;
 CREATE POLICY "Post tags" ON public.tags FOR INSERT WITH CHECK (auth.role() = 'authenticated' AND user_id = auth.uid()); -- Paksa cek user_id
 
+-- Audit Logs Policies (Secure)
+ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Admins can view audit logs" ON public.audit_logs;
+CREATE POLICY "Admins can view audit logs" ON public.audit_logs FOR SELECT USING (
+  EXISTS (SELECT 1 FROM public.users me WHERE me.id = auth.uid() AND get_role_level(me.role) >= 5)
+);
+
 -- New Policies for Reactions & Reports
 DROP POLICY IF EXISTS "View reactions" ON public.reactions;
 CREATE POLICY "View reactions" ON public.reactions FOR SELECT USING (true);
@@ -213,21 +269,33 @@ CREATE POLICY "View reports" ON public.reports FOR SELECT USING (EXISTS (
   SELECT 1 FROM public.users me 
   WHERE me.id = auth.uid() AND me.role IN ('ADMIN', 'SUPER_ADMIN', 'MODERATOR')
 ));
+DROP POLICY IF EXISTS "Submit reports" ON public.reports;
 CREATE POLICY "Submit reports" ON public.reports FOR INSERT WITH CHECK (auth.role() = 'authenticated' AND reporter_id = auth.uid());
 
 -- Mentions Policies
+DROP POLICY IF EXISTS "Users can view own mentions" ON public.mentions;
 CREATE POLICY "Users can view own mentions" ON public.mentions FOR SELECT USING (auth.uid() = target_id);
+
+DROP POLICY IF EXISTS "System/Users can insert mentions" ON public.mentions;
 CREATE POLICY "System/Users can insert mentions" ON public.mentions FOR INSERT WITH CHECK (auth.role() = 'authenticated' AND sender_id = auth.uid());
+
+DROP POLICY IF EXISTS "Users can mark own mentions as read" ON public.mentions;
 CREATE POLICY "Users can mark own mentions as read" ON public.mentions FOR UPDATE USING (auth.uid() = target_id);
 
 -- Audit Logs Policies (Admin Only)
+DROP POLICY IF EXISTS "View audit logs" ON public.audit_logs;
 CREATE POLICY "View audit logs" ON public.audit_logs FOR SELECT USING (
   EXISTS (SELECT 1 FROM public.users me WHERE me.id = auth.uid() AND get_role_level(me.role) >= 4)
 );
 
 -- Appeals Policies
+DROP POLICY IF EXISTS "Users can view own appeals" ON public.appeals;
 CREATE POLICY "Users can view own appeals" ON public.appeals FOR SELECT USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can submit appeals" ON public.appeals;
 CREATE POLICY "Users can submit appeals" ON public.appeals FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Admins can manage appeals" ON public.appeals;
 CREATE POLICY "Admins can manage appeals" ON public.appeals FOR ALL USING (
   EXISTS (SELECT 1 FROM public.users me WHERE me.id = auth.uid() AND get_role_level(me.role) >= 4)
 );
@@ -274,16 +342,30 @@ DECLARE
     user_mute_until TIMESTAMP WITH TIME ZONE;
     user_limit INTEGER;
     current_count INTEGER;
+    last_msg TIMESTAMP WITH TIME ZONE;
+    is_maintenance BOOLEAN;
+    role_limits JSONB;
 BEGIN
-    -- 1. Paksa User ID asli dari Auth
+    -- 0. Cek Sesi (Bypass untuk skrip manual)
+    IF auth.uid() IS NULL THEN
+        RETURN new;
+    END IF;
+
+    -- 1. Ambil data asli dari tabel users
+    SELECT role, nama, message_count, status, mute_until, last_message_at 
+    INTO user_role, new.username, current_count, user_status, user_mute_until, last_msg
+    FROM public.users WHERE id = auth.uid();
+
+    -- 2. Cek Maintenance Mode
+    SELECT (value::BOOLEAN) INTO is_maintenance FROM public.system_config WHERE key = 'maintenance_mode';
+    IF is_maintenance = true AND user_role NOT IN ('SUPER_ADMIN', 'ADMIN') THEN
+        RAISE EXCEPTION 'Sistem sedang dalam pemeliharaan (Maintenance Mode). Silakan coba lagi nanti.';
+    END IF;
+
+    -- 3. Paksa User ID asli dari Auth (Anti-Spoofing)
     new.user_id := auth.uid();
     
-    -- 2. Ambil data asli dari tabel users (Anti-Spoofing & Moderation Check)
-    SELECT role, nama, message_count, status, mute_until 
-    INTO user_role, new.username, current_count, user_status, user_mute_until
-    FROM public.users WHERE id = auth.uid();
-    
-    -- 3. Verifikasi Profil & Moderasi
+    -- 4. Verifikasi Profil & Moderasi
     IF user_role IS NULL THEN
         RAISE EXCEPTION 'Profil belum siap. Silakan tunggu 1 detik atau login kembali.';
     END IF;
@@ -293,32 +375,33 @@ BEGIN
     END IF;
 
     IF user_mute_until IS NOT NULL AND user_mute_until > now() THEN
-        RAISE EXCEPTION 'Muted: %. Alasan: %', user_mute_until, (SELECT mute_reason FROM public.users WHERE id = auth.uid());
+        RAISE EXCEPTION 'Muted: Anda sedang di-mute sampai %. Alasan: %', user_mute_until, (SELECT COALESCE(mute_reason, 'Pelanggaran Aturan') FROM public.users WHERE id = auth.uid());
     END IF;
 
-    IF user_status = 'banned' THEN
-        RAISE EXCEPTION 'Banned: %. Mohon ajukan banding jika Anda merasa ini adalah kesalahan.', (SELECT ban_reason FROM public.users WHERE id = auth.uid());
+    -- 5. Anti-Spam Cooldown (2 Detik, Bebas untuk Admin)
+    IF user_role NOT IN ('SUPER_ADMIN', 'ADMIN', 'MODERATOR') THEN
+        IF last_msg IS NOT NULL AND now() - last_msg < interval '2 seconds' THEN
+            RAISE EXCEPTION 'Tenang! Anda mengirim pesan terlalu cepat. Mohon tunggu 2 detik antar pesan.';
+        END IF;
     END IF;
 
-    -- 4. Tetapkan Role asli (Mencegah user ngaku-ngaku Admin)
+    -- 6. Tetapkan Role asli
     new.role := user_role;
 
-    -- 5. Cek Rate Limit (Backend Enforcement)
-    user_limit := CASE 
-        WHEN user_role = 'SUPER_ADMIN' THEN 999999
-        WHEN user_role = 'ADMIN' THEN 500
-        WHEN user_role = 'MODERATOR' THEN 100
-        WHEN user_role = 'PREMIUM' THEN 50
-        WHEN user_role = 'VERIFIED' THEN 10
-        ELSE 5 
-    END;
+    -- 7. Cek Rate Limit (Dynamic)
+    SELECT value INTO role_limits FROM public.system_config WHERE key = 'message_limits';
+    user_limit := (role_limits->>user_role)::INTEGER;
+    IF user_limit IS NULL THEN user_limit := 5; END IF;
 
     IF current_count >= user_limit THEN
-        RAISE EXCEPTION 'Limit pesan tercapai. Silakan coba lagi bulan depan atau upgrade akun Anda.';
+        RAISE EXCEPTION 'Limit tercapai (%/%). Upgrade akun untuk mengirim lebih banyak pesan.', current_count, user_limit;
     END IF;
 
-    -- 6. Set timestamp otomatis & Metadata
+    -- 8. Finalisasi
     new.timestamp := EXTRACT(EPOCH FROM now()) * 1000;
+    
+    -- Update last_message_at
+    UPDATE public.users SET last_message_at = now() WHERE id = auth.uid();
 
     RETURN new;
 END;
@@ -358,6 +441,19 @@ BEGIN
     VALUES (new.user_id, 'tenth_message', 'Pengamat Handal', '🧐', 25, 'global')
     ON CONFLICT (user_id, achievement_id) DO NOTHING;
   END IF;
+
+  -- 3. Parse Mentions (@username)
+  -- Autodetect @mentions and insert into mentions table
+  INSERT INTO public.mentions (message_id, sender_id, target_id)
+  SELECT 
+    new.id, 
+    new.user_id, 
+    u.id
+  FROM (
+    SELECT DISTINCT (regexp_matches(new.content, '@(\w+)', 'g'))[1] as mentioned_name
+  ) m
+  JOIN public.users u ON LOWER(u.nama) = LOWER(m.mentioned_name)
+  ON CONFLICT DO NOTHING;
 
   RETURN new;
 END;
@@ -403,6 +499,75 @@ BEGIN
 END;
 $$;
 
+-- E. Otomasi Audit Moderasi (DB Level)
+CREATE OR REPLACE FUNCTION public.handle_user_moderation_audit()
+RETURNS trigger 
+LANGUAGE plpgsql 
+SECURITY DEFINER
+AS $$
+DECLARE
+    admin_id UUID;
+BEGIN
+    -- Ambil ID admin dari session auth (jika ada)
+    admin_id := auth.uid();
+
+    -- Hanya log jika ada perubahan pada kolom sensitif
+    IF (OLD.role IS DISTINCT FROM NEW.role) OR 
+       (OLD.status IS DISTINCT FROM NEW.status) OR 
+       (OLD.mute_until IS DISTINCT FROM NEW.mute_until) OR
+       (OLD.is_shadowbanned IS DISTINCT FROM NEW.is_shadowbanned) THEN
+       
+       INSERT INTO public.audit_logs (admin_id, target_id, action, reason, metadata)
+       VALUES (
+           admin_id,
+           NEW.id,
+           CASE 
+               WHEN OLD.role IS DISTINCT FROM NEW.role THEN 'ROLE_CHANGE'
+               WHEN OLD.status IS DISTINCT FROM NEW.status THEN 
+                   CASE WHEN NEW.status IN ('banned', 'nonaktif') THEN 'BAN' ELSE 'UNBAN' END
+               WHEN OLD.mute_until IS DISTINCT FROM NEW.mute_until THEN 'MUTE_UPDATE'
+               WHEN OLD.is_shadowbanned IS DISTINCT FROM NEW.is_shadowbanned THEN 'SHADOWBAN_TOGGLE'
+               ELSE 'UPDATE_PROFILE'
+           END,
+           COALESCE(NEW.ban_reason, NEW.mute_reason, 'System automated audit'),
+           jsonb_build_object(
+               'old_data', jsonb_build_object('role', OLD.role, 'status', OLD.status, 'mute_until', OLD.mute_until, 'shadowbanned', OLD.is_shadowbanned),
+               'new_data', jsonb_build_object('role', NEW.role, 'status', NEW.status, 'mute_until', NEW.mute_until, 'shadowbanned', NEW.is_shadowbanned)
+           )
+       );
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_user_moderation_audit ON public.users;
+CREATE TRIGGER on_user_moderation_audit
+  AFTER UPDATE ON public.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_user_moderation_audit();
+
+-- G. Audit Penghapusan User (Full Security Logging)
+CREATE OR REPLACE FUNCTION public.handle_user_deletion_audit()
+RETURNS trigger 
+LANGUAGE plpgsql 
+SECURITY DEFINER
+AS $$
+BEGIN
+    INSERT INTO public.audit_logs (admin_id, target_id, action, reason)
+    VALUES (
+        auth.uid(),
+        OLD.id,
+        'DELETE_USER',
+        'User record manually deleted from the database/interface'
+    );
+    RETURN OLD;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_user_deletion_audit ON public.users;
+CREATE TRIGGER on_user_deletion_audit
+  BEFORE DELETE ON public.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_user_deletion_audit();
+
 -- F. Statistik Dashboard Server-Side (High Performance & Secure)
 CREATE OR REPLACE FUNCTION public.get_dashboard_stats()
 RETURNS json
@@ -424,7 +589,7 @@ BEGIN
     END IF;
 
     SELECT count(*) INTO total_users FROM public.users;
-    SELECT count(*) INTO active_users FROM public.users WHERE status = 'aktif' OR status = 'active';
+    SELECT count(*) INTO active_users FROM public.users WHERE status = 'aktif';
     SELECT count(*) INTO total_messages FROM public.messages;
     SELECT count(*) INTO today_messages FROM public.messages WHERE created_at >= CURRENT_DATE;
     
@@ -453,7 +618,8 @@ GRANT SELECT ON public.tags TO authenticated, anon;
 GRANT INSERT ON public.tags TO authenticated;
 
 -- Functions
-GRANT EXECUTE ON FUNCTION public.get_dashboard_stats TO authenticated;
+GRANT EXECUTE ON FUNCTION public.get_dashboard_stats TO authenticated, anon; -- RPC can be called but interior logic checks Role Level
+GRANT EXECUTE ON FUNCTION public.get_role_level TO authenticated, anon;
 
 -- 9. View Khusus untuk Email Privacy
 CREATE OR REPLACE VIEW public.profiles AS
@@ -478,7 +644,8 @@ SELECT
     END as email
 FROM public.users;
 
-GRANT SELECT ON public.profiles TO authenticated;
+GRANT SELECT ON public.profiles TO authenticated, anon;
+GRANT SELECT ON public.audit_logs TO authenticated;
 
 -- 9. Indeks Performa
 CREATE INDEX IF NOT EXISTS idx_users_email ON public.users(email);
@@ -488,6 +655,8 @@ CREATE INDEX IF NOT EXISTS idx_messages_pinned ON public.messages(is_pinned) WHE
 CREATE INDEX IF NOT EXISTS idx_reactions_message_id ON public.reactions(message_id);
 CREATE INDEX IF NOT EXISTS idx_reports_status ON public.reports(status);
 CREATE INDEX IF NOT EXISTS idx_achievements_user_id ON public.achievements(user_id);
+CREATE INDEX IF NOT EXISTS idx_reports_message_id ON public.reports(message_id);
+CREATE INDEX IF NOT EXISTS idx_reports_reporter_id ON public.reports(reporter_id);
 
 -- BRIN Index untuk Skala Masif (Milyaran Data)
 -- BRIN sangat efisien untuk data yang diinsert berurutan berdasarkan waktu
@@ -538,9 +707,40 @@ VALUES
 INSERT INTO public.achievements (user_id, achievement_id, name, icon, points, category)
 VALUES 
   ('00000000-0000-0000-0000-000000000006', 'first_message', 'Peserta Baru', '🚀', 10, 'global'),
-  ('00000000-0000-0000-0000-000000000001', 'admin_community_builder', 'Pembangun Komunitas', '🏢', 100, 'admin');
+  ('00000000-0000-0000-0000-000000000001', 'admin_community_builder', 'Pembangun Komunitas', '🏢', 100, 'admin')
+ON CONFLICT DO NOTHING;
 
--- -- upgraget akun email
--- UPDATE public.users 
--- SET role = 'SUPER_ADMIN' 
--- WHERE email = 'ucup7@gmail.com';
+-- 5. Tambahkan Laporan (Reports) untuk Testing Dashboard
+INSERT INTO public.reports (message_id, reporter_id, reason, status)
+SELECT 
+  id as message_id,
+  '00000000-0000-0000-0000-000000000005'::uuid as reporter_id,
+  'Pengguna ini menggunakan kata-kata yang kurang sopan.' as reason,
+  'pending' as status
+FROM public.messages 
+WHERE username = 'Sultan Diskusi'
+LIMIT 1
+ON CONFLICT DO NOTHING;
+
+-- 6. Tambahkan Banding (Appeals) untuk Testing
+INSERT INTO public.appeals (user_id, reason, status)
+VALUES 
+  ('00000000-0000-0000-0000-000000000006', 'Mohon maaf, saya khilaf. Tolong buka banned saya.', 'pending')
+ON CONFLICT DO NOTHING;
+
+-- 7. Tambahkan Log Audit (Audit Logs) Awal
+INSERT INTO public.audit_logs (admin_id, target_id, action, reason)
+VALUES 
+  ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000006', 'BAN', 'Pelanggaran berulang aturan diskusi'),
+  ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000004', 'MUTE', 'Spamming di kanal utama')
+ON CONFLICT DO NOTHING;
+
+-- 8. Tambahkan Tag Contoh
+INSERT INTO public.tags (user_id, tag_name, color)
+VALUES 
+  ('00000000-0000-0000-0000-000000000001', 'Developer', 'cyan'),
+  ('00000000-0000-0000-0000-000000000002', 'Staff', 'red'),
+  ('00000000-0000-0000-0000-000000000004', 'VIP', 'gold')
+ON CONFLICT DO NOTHING;
+
+-- SELESAI --

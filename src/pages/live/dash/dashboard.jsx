@@ -87,6 +87,20 @@ const Dashboard = () => {
   const [loadingAppeals, setLoadingAppeals] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem('saipul_theme') || 'default');
 
+  // System Config State (New Phase 2)
+  const [systemConfigs, setSystemConfigs] = useState({
+    message_limits: {
+      SUPER_ADMIN: 999999,
+      ADMIN: 500,
+      MODERATOR: 100,
+      PREMIUM: 50,
+      VERIFIED: 25,
+      USER: 5
+    },
+    maintenance_mode: false
+  });
+  const [isUpdatingConfig, setIsUpdatingConfig] = useState(false);
+
   useEffect(() => {
     localStorage.setItem('saipul_theme', theme);
   }, [theme]);
@@ -148,21 +162,19 @@ const Dashboard = () => {
     try {
       setLoading(true);
 
-      // 1. Get Stats via RPC (Very Fast)
+      // 1. Get Stats via RPC
       const { data: statsData, error: statsError } = await supabase.rpc('get_dashboard_stats');
       if (statsError) throw statsError;
-      setStats(statsData);
+      setStats(statsData || stats);
+      
+      // 2. Fetch System Configs
+      fetchSystemConfigs();
 
-      // 2. Load Paginated Users
-      await loadUsersPage(0);
-
-      // 3. Load Paginated Messages
-      await loadMessagesPage(0);
-
-      // 4. Load Reports & Appeals
-      await fetchReports();
-      await fetchAppeals();
-      await fetchAuditLogs();
+      // 3. Load initial lists
+      loadUsersPage(0);
+      fetchReports();
+      fetchAppeals();
+      fetchAuditLogs();
 
       setLoading(false);
     } catch (err) {
@@ -219,10 +231,10 @@ const Dashboard = () => {
   useEffect(() => {
     if (!user) return;
     let lastRefresh = 0;
-    const REFRESH_THRESHOLD = 5000; // Minimum 5 seconds between full refreshes
+    const REFRESH_THRESHOLD = 2000; // 2 seconds throttle
 
     const dashboardChannel = supabase
-      .channel('dashboard-updates')
+      .channel('dashboard-precision-updates')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, () => {
         const now = Date.now();
         if (now - lastRefresh > REFRESH_THRESHOLD) {
@@ -240,6 +252,9 @@ const Dashboard = () => {
           loadDashboardData();
           lastRefresh = now;
         }
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'reports' }, () => {
+        fetchReports();
       })
       .subscribe();
 
@@ -345,7 +360,6 @@ const Dashboard = () => {
         .eq('id', targetUser.id);
 
       if (!error) {
-        await createAuditLog(targetUser.id, actionLabel, reason);
         alert(`User ${targetUser.nama} set to ${newStatus}!`);
         loadDashboardData();
       } else {
@@ -395,7 +409,6 @@ const Dashboard = () => {
         
       if (error) throw error;
       
-      await createAuditLog(targetUser.id, 'MUTE', reason, { days });
       alert(`User muted for ${days} days!`);
       loadDashboardData();
     } catch (err) {
@@ -1165,19 +1178,24 @@ const Dashboard = () => {
               <div className="bg-white/[0.02] backdrop-blur-2xl border border-white/5 p-10 rounded-[3rem]">
                 <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter mb-8">Node Constraints</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {['USER', 'VERIFIED', 'PREMIUM'].map((type) => (
+                  {Object.keys(systemConfigs.message_limits).filter(role => role !== 'SUPER_ADMIN').map((type) => (
                     <div key={type} className="space-y-3">
                       <label className="text-[10px] font-black text-white/30 uppercase tracking-widest pl-2">{type} Limit</label>
                       <input 
                         type="number" 
-                        defaultValue={type === 'USER' ? 5 : type === 'VERIFIED' ? 10 : 50}
+                        value={systemConfigs.message_limits[type]}
+                        onChange={(e) => handleLimitChange(type, e.target.value)}
                         className="w-full px-6 py-4 bg-black/20 border border-white/5 rounded-2xl text-white font-bold focus:outline-none focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500/30 transition-all"
                       />
                     </div>
                   ))}
                 </div>
-                <button className="mt-8 px-8 py-4 bg-cyan-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-cyan-400 transition-all shadow-lg shadow-cyan-500/20 active:scale-95">
-                  Update Protocols
+                <button 
+                  onClick={() => updateSystemConfigs('message_limits', systemConfigs.message_limits)}
+                  disabled={isUpdatingConfig}
+                  className="mt-8 px-8 py-4 bg-cyan-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-cyan-400 transition-all shadow-lg shadow-cyan-500/20 active:scale-95 disabled:opacity-50"
+                >
+                  {isUpdatingConfig ? 'Syncing...' : 'Update Protocols'}
                 </button>
               </div>
 
@@ -1186,7 +1204,12 @@ const Dashboard = () => {
                   { label: 'Flush Cache', desc: 'Clear all signal buffers', color: 'yellow', action: null },
                   { label: 'System Archive', desc: 'Move 30d+ signals to cold storage', color: 'blue', action: handleArchiveMessages },
                   { label: 'Reset Pulse', desc: 'Zero all message counters', color: 'green', action: handleResetMessageCounts },
-                  { label: 'Lockdown', desc: 'Emergency signal termination', color: 'red', action: null },
+                  { 
+                    label: systemConfigs.maintenance_mode ? 'System Online' : 'Lockdown', 
+                    desc: systemConfigs.maintenance_mode ? 'End maintenance period' : 'Emergency signal termination', 
+                    color: 'red', 
+                    action: () => updateSystemConfigs('maintenance_mode', !systemConfigs.maintenance_mode) 
+                  },
                 ].map((item) => (
                   <div key={item.label} className="bg-white/[0.02] backdrop-blur-2xl border border-white/5 p-8 rounded-[2.5rem] flex justify-between items-center group hover:bg-white/[0.04] transition-all">
                     <div>
@@ -1564,23 +1587,19 @@ const Dashboard = () => {
               </div>
 
               <div className="p-8 space-y-3 max-h-[50vh] overflow-y-auto custom-scrollbar">
-                {[
-                  { id: 'early_bird', name: 'Early Bird', icon: Trophy, color: 'yellow', points: 10, category: 'global' },
-                  { id: 'chatty', name: 'Chatty', icon: Trophy, color: 'blue', points: 25, category: 'global' },
-                  { id: 'helper', name: 'Helper', icon: Trophy, color: 'purple', points: 40, category: 'global' },
-                  { id: 'moderator_pro', name: 'Moderator Pro', icon: Trophy, color: 'green', points: 50, category: 'moderator' },
-                  { id: 'premium_member', name: 'Premium Member', icon: Trophy, color: 'red', points: 75, category: 'premium' },
-                  { id: 'legendary', name: 'Legendary', icon: Trophy, color: 'indigo', points: 100, category: 'global' },
-                ].map((ach) => (
+                {Object.values(ACHIEVEMENTS).map((ach) => (
                   <button
                     key={ach.id}
                     onClick={() => addAchievement(selectedUserForAchievement.id, ach)}
                     className="w-full p-6 bg-white/[0.03] border border-white/5 rounded-2xl hover:bg-white/10 transition-all flex items-center gap-4 group"
                   >
-                    <div className={`p-3 rounded-xl bg-${ach.color}-500/10 border border-${ach.color}-500/20 group-hover:scale-110 transition-all`}>
-                      <ach.icon className={`w-5 h-5 text-${ach.color}-400`} />
+                    <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 group-hover:scale-110 transition-all">
+                      <span className="text-xl group-hover:rotate-12 transition-transform duration-500 inline-block">{ach.icon}</span>
                     </div>
-                    <span className="text-[10px] font-black text-white uppercase tracking-widest">{ach.id}</span>
+                    <div className="text-left">
+                      <span className="text-[10px] font-black text-white uppercase tracking-widest block">{ach.name}</span>
+                      <span className="text-[8px] font-bold text-white/20 uppercase tracking-widest block mt-0.5">{ach.id}</span>
+                    </div>
                   </button>
                 ))}
               </div>

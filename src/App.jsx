@@ -65,7 +65,6 @@ const AI_DocDetail = lazy(() => import("./pages/help/ai/AI_DocDetail"));
 const Keamanan = lazy(() => import("./pages/help/panduan/Keamanan"));
 const Privasi = lazy(() => import("./pages/help/panduan/Privasi"));
 const ChatbotSettingsRoute = lazy(() => import("./pages/help/ChatbotSettingsRoute"));
-const ChatbotSettingsTabRoute = lazy(() => import("./pages/help/ChatbotSettingsTabRoute"));
 const Owner = lazy(() => import("./pages/owner/Profile_admin"));
 const HelpFAQriwayat = lazy(() => import("./components/helpbutton/faq/riwayat/HelpFAQriwayat"));
 const Portal = lazy(() => import("./pages/portal/Portal"));
@@ -286,15 +285,7 @@ export default function App() {
                                   <Route path="/live-cs/security" element={<Keamanan />} />
                                   <Route path="/live-cs/privacy" element={<Privasi />} />
 
-                                  <Route path="/help/chatbot/settings" element={<ChatbotSettingsRoute />} />
-                                  <Route path="/help/chatbot/settings/general" element={<ChatbotSettingsTabRoute tab="general" />} />
-                                  <Route path="/help/chatbot/settings/ai" element={<ChatbotSettingsTabRoute tab="ai" />} />
-                                  <Route path="/help/chatbot/settings/data" element={<ChatbotSettingsTabRoute tab="data" />} />
-                                  <Route path="/help/chatbot/settings/file" element={<ChatbotSettingsTabRoute tab="file" />} />
-                                  <Route path="/help/chatbot/settings/performance" element={<ChatbotSettingsTabRoute tab="performance" />} />
-                                  <Route path="/help/chatbot/settings/privacy" element={<ChatbotSettingsTabRoute tab="privacy" />} />
-                                  <Route path="/help/chatbot/settings/storage" element={<ChatbotSettingsTabRoute tab="storage" />} />
-                                  <Route path="/help/chatbot/settings/advanced" element={<ChatbotSettingsTabRoute tab="advanced" />} />
+                                  <Route path="/help/chatbot/settings/:tabId?" element={<ChatbotSettingsRoute />} />
                                   <Route path="/year-end" element={<TahunBaru />} />
 
                                   <Route path="/help/commitment" element={<Komit />} />

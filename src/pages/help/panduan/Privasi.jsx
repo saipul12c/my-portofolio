@@ -1,148 +1,186 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, Clock, Database, EyeOff, FileText, UserCheck, MessageCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { 
+	ShieldCheck, Clock, Database, EyeOff, FileText, 
+	UserCheck, MessageCircle, ChevronRight, Zap, Fingerprint 
+} from 'lucide-react';
 
 const ACCENTS = {
-	cyan: ['text-cyan-400', 'bg-cyan-900/10'],
-	blue: ['text-blue-400', 'bg-blue-900/10'],
-	violet: ['text-purple-400', 'bg-purple-900/10'],
-	amber: ['text-amber-400', 'bg-amber-900/10']
+	cyan: {
+		text: 'text-cyan-400',
+		bg: 'bg-cyan-500/10',
+		border: 'border-cyan-500/20',
+		glow: 'shadow-[0_0_15px_rgba(6,182,212,0.1)]'
+	},
+	blue: {
+		text: 'text-blue-400',
+		bg: 'bg-blue-500/10',
+		border: 'border-blue-500/20',
+		glow: 'shadow-[0_0_15px_rgba(59,130,246,0.1)]'
+	},
+	violet: {
+		text: 'text-violet-400',
+		bg: 'bg-violet-500/10',
+		border: 'border-violet-500/20',
+		glow: 'shadow-[0_0_15px_rgba(139,92,246,0.1)]'
+	},
+	amber: {
+		text: 'text-amber-400',
+		bg: 'bg-amber-500/10',
+		border: 'border-amber-500/20',
+		glow: 'shadow-[0_0_15px_rgba(245,158,11,0.1)]'
+	}
+};
+
+const containerVariants = {
+	hidden: { opacity: 0 },
+	visible: {
+		opacity: 1,
+		transition: { staggerChildren: 0.1 }
+	}
+};
+
+const itemVariants = {
+	hidden: { opacity: 0, y: 15 },
+	visible: { opacity: 1, y: 0 }
 };
 
 function InfoCard({ icon, title, children, accent = 'cyan' }) {
-	const [txt, bg] = ACCENTS[accent] || ACCENTS.cyan;
+	const styles = ACCENTS[accent] || ACCENTS.cyan;
 	return (
-		<div className="bg-white/5 border border-white/6 rounded-lg p-4 shadow-sm">
-			<div className="flex items-start gap-3">
-				<div className={`${txt} p-2 ${bg} rounded-md`}>{icon}</div>
-				<div>
-					<h3 className="font-semibold text-lg">{title}</h3>
-					<div className="mt-2 text-sm text-gray-300">{children}</div>
+		<motion.div 
+			variants={itemVariants}
+			whileHover={{ scale: 1.01 }}
+			className={`bg-white/[0.03] backdrop-blur-md border ${styles.border} ${styles.glow} rounded-2xl p-6 transition-all duration-300`}
+		>
+			<div className="flex items-start gap-4">
+				<div className={`${styles.text} p-3 ${styles.bg} rounded-xl`}>{icon}</div>
+				<div className="flex-1">
+					<h3 className="font-semibold text-white/90 text-lg tracking-tight">{title}</h3>
+					<div className="mt-2 text-sm text-gray-400 leading-relaxed font-light">{children}</div>
 				</div>
 			</div>
-		</div>
+		</motion.div>
+	);
+}
+
+function SettingsChip({ to, icon, label }) {
+	return (
+		<Link 
+			to={to} 
+			className="group flex items-center gap-3 p-3 px-4 rounded-xl bg-white/[0.02] border border-white/[0.05] hover:bg-cyan-500/10 hover:border-cyan-500/30 transition-all"
+		>
+			<div className="text-gray-500 group-hover:text-cyan-400 transition-colors">{icon}</div>
+			<span className="text-xs font-medium text-gray-400 group-hover:text-white transition-colors">{label}</span>
+		</Link>
 	);
 }
 
 export default function Privasi() {
 	return (
-		<div className="p-6 max-w-4xl mx-auto">
-			<header className="mb-6 flex items-start gap-4">
-				<div className="flex-shrink-0 bg-gradient-to-br from-cyan-600 to-blue-500 p-3 rounded-lg shadow-md">
-					<ShieldCheck color="white" size={28} />
+		<motion.div 
+			initial="hidden"
+			animate="visible"
+			variants={containerVariants}
+			className="p-6 md:p-12 max-w-5xl mx-auto min-h-screen"
+		>
+			<motion.header variants={itemVariants} className="mb-12 flex flex-col md:flex-row items-center md:items-start gap-6">
+				<div className="relative group">
+					<div className="absolute inset-0 bg-cyan-500/30 blur-3xl rounded-full opacity-50 group-hover:opacity-80 transition-opacity"></div>
+					<div className="relative bg-gradient-to-br from-cyan-600 to-blue-500 p-4 rounded-2xl shadow-2xl border border-white/10">
+						<Fingerprint color="white" size={32} />
+					</div>
 				</div>
-				<div>
-					<h1 className="text-2xl font-bold">Kebijakan Privasi — Live CS SaipulAI</h1>
-					<p className="mt-1 text-sm text-gray-400">Ringkasan bagaimana data Anda diproses, opsi kontrol privasi, dan integrasi dengan Live CS SaipulAI.</p>
+				<div className="text-center md:text-left">
+					<h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-2">
+						Privacy <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">Policy</span>
+					</h1>
+					<p className="text-gray-400 max-w-xl text-sm md:text-base font-light">
+						Komitmen kami untuk melindungi identitas digital dan setiap kata yang Anda percayakan kepada sistem kami.
+					</p>
 				</div>
-			</header>
+			</motion.header>
 
-			<div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-				<div className="lg:col-span-2 space-y-4">
-					<InfoCard icon={<FileText size={22} />} title="Data yang Dikumpulkan">
-						<ul className="list-disc list-inside">
-							<li>Pesan percakapan (user & bot) dan metadata waktu.</li>
-							<li>File yang Anda unggah (metadata & konten jika diproses).</li>
-							<li>Preferensi pengguna seperti tema, bahasa, dan gaya respons.</li>
-						</ul>
+			<div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+				<div className="lg:col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					<InfoCard icon={<FileText size={22} />} title="Pengumpulan Data" accent="cyan">
+						Kami hanya menyimpan metadata esensial: kapan Anda chat, preferensi bahasa, dan transkrip sesi untuk menjaga kontinuitas layanan.
 					</InfoCard>
 
-					<InfoCard icon={<Database size={22} />} title="Tujuan Penggunaan" accent="violet">
-						Pengolahan data bertujuan meningkatkan kualitas jawaban, menyimpan sesi bila diminta, dan mendukung fitur seperti TTS, analitik, serta pelaporan insiden.
+					<InfoCard icon={<Database size={22} />} title="Tujuan & Manfaat" accent="violet">
+						Data digunakan untuk melatih kecerdasan bot lokal, optimasi kecepatan respons, dan penyediaan fitur kustomisasi antarmuka.
 					</InfoCard>
 
-					<InfoCard icon={<EyeOff size={22} />} title="Opsi Privasi Anda" accent="amber">
-						<ul className="list-disc list-inside">
-							<li><strong>Privacy Mode</strong> — non-persisten; percakapan tidak disimpan.</li>
-							<li>Hapus riwayat atau hapus sesi tertentu dari menu Riwayat.</li>
-							<li>Kontrol unggah file melalui pengaturan File.</li>
-						</ul>
+					<InfoCard icon={<EyeOff size={22} />} title="Kedaulatan Kontrol" accent="amber">
+						Kendali penuh ada di tangan Anda. Hapus riwayat secara instan, nonaktifkan pelacakan, atau gunakan Mode Incognito kapan saja.
 					</InfoCard>
 				</div>
+			</div>
 
-				<aside className="space-y-4">
-					<div className="bg-gradient-to-r from-slate-900/50 to-slate-800/40 border border-white/6 p-4 rounded-lg">
+			<div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+				<div className="lg:col-span-8 space-y-8">
+					<motion.section variants={itemVariants} className="space-y-6">
 						<div className="flex items-center gap-3">
-							<Clock className="text-cyan-300" />
-							<div>
-								<div className="text-xs text-gray-300">Penyimpanan Lokal</div>
-								<div className="text-sm text-gray-200">Sesi, laporan, dan metadata disimpan pada browser kecuali Anda mengekspor atau meng-uploadnya ke layanan backend.</div>
+							<div className="h-px flex-1 bg-white/10"></div>
+							<h2 className="text-xs uppercase tracking-[0.2em] font-bold text-gray-500">Prinsip Privasi</h2>
+							<div className="h-px flex-1 bg-white/10"></div>
+						</div>
+						
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+							<div className="bg-white/[0.01] p-5 rounded-2xl border border-white/[0.03]">
+								<h3 className="text-white/80 font-semibold mb-2 flex items-center gap-2">
+									<Clock size={16} className="text-cyan-400" />
+									Retensi Data
+								</h3>
+								<p className="text-xs text-gray-500 leading-relaxed">
+									Data bersifat sementara. Sesi lama akan diarsipkan secara otomatis dan akan dihapus permanen dalam siklus tertentu kecuali Anda memilih untuk mengekspornya.
+								</p>
 							</div>
+							<div className="bg-white/[0.01] p-5 rounded-2xl border border-white/[0.03]">
+								<h3 className="text-white/80 font-semibold mb-2 flex items-center gap-2">
+									<MessageCircle size={16} className="text-blue-400" />
+									Live Support
+								</h3>
+								<p className="text-xs text-gray-500 leading-relaxed">
+									Saat meminta bantuan Live CS, transkrip percakapan akan dibagikan hanya kepada agen yang bertugas sesuai jadwal operasional.
+								</p>
+							</div>
+						</div>
+					</motion.section>
+				</div>
+
+				<motion.aside variants={itemVariants} className="lg:col-span-4 space-y-6">
+					<div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/5 border border-cyan-500/20 p-6 rounded-2xl">
+						<div className="flex items-center gap-2 mb-4">
+							<Zap size={18} className="text-cyan-400 fill-cyan-400/20" />
+							<h3 className="text-sm font-bold text-white uppercase tracking-wider">Akses Cepat</h3>
+						</div>
+						<div className="grid grid-cols-1 gap-2">
+							<SettingsChip to="/help/chatbot/settings/privacy" icon={<EyeOff size={14}/>} label="Privacy Controls" />
+							<SettingsChip to="/help/chatbot/settings/data" icon={<Database size={14}/>} label="Data Management" />
+							<SettingsChip to="/live-cs/security" icon={<ShieldCheck size={14}/>} label="Security Guide" />
 						</div>
 					</div>
 
-					<div className="bg-white/3 border border-white/6 p-4 rounded-lg">
-						<div className="flex items-start gap-2">
-							<UserCheck size={20} className="text-green-300" />
-							<div>
-								<div className="text-sm font-medium">Kontrol Cepat</div>
-								<div className="text-xs text-gray-300">Aktifkan Privacy Mode di Pengaturan untuk mencegah penyimpanan otomatis.</div>
-							</div>
-						</div>
+					<div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05] text-center">
+						<UserCheck size={28} className="mx-auto text-emerald-400 mb-3 opacity-60" />
+						<h4 className="text-xs font-bold text-white/80 mb-1">Status Kepercayaan</h4>
+						<p className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">Verified Security v2</p>
 					</div>
-
-					<div className="bg-white/3 border border-white/6 p-3 rounded-lg text-sm text-gray-300">
-						<div className="font-semibold">Butuh Bantuan?</div>
-						<div className="mt-2">Laporkan masalah privasi melalui tombol Report pada pesan atau hubungi admin.</div>
-						<div className="mt-3"><Link to="/live-cs/security" className="text-cyan-400 underline">Lihat Panduan Keamanan</Link></div>
-					</div>
-
-					<div className="bg-gradient-to-r from-cyan-900/10 to-cyan-800/10 border border-white/6 p-3 rounded-lg">
-						<div className="flex items-start gap-3">
-							<div className="text-cyan-400 p-2 bg-cyan-900/10 rounded-md"><MessageCircle size={20} /></div>
-							<div>
-								<div className="text-sm font-semibold">Live CS SaipulAI</div>
-								<div className="text-xs text-gray-300 mt-1">Butuh bantuan langsung? Gunakan fitur "Minta Bantuan" di chat untuk menyerahkan percakapan ke tim Live CS SaipulAI.</div>
-								<div className="text-xs text-gray-300 mt-2">Ketersediaan: Senin–Jumat 09:00–17:00. Transkrip percakapan dapat dibagikan ke Live CS jika Anda memilih bantuan.</div>
-							</div>
-						</div>
-					</div>
-				</aside>
+				</motion.aside>
 			</div>
 
-			<div className="mt-4 flex gap-2">
-				<Link to="/help/chatbot/settings" className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium" style={{ background: 'linear-gradient(90deg,#06b6d4,#0ea5e9)', color: 'white' }}>
-					<ShieldCheck size={16} /> Buka Pengaturan Live CS
-				</Link>
-				<Link to="/help/chatbot/settings/privacy" className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium border border-white/10" style={{ background: 'transparent', color: 'white' }}>
-					Lihat Kebijakan Privasi
-				</Link>
-			</div>
-
-			<section className="text-sm text-gray-300 space-y-3">
-				<div>
-					<h3 className="font-semibold">Penyimpanan & Penghapusan</h3>
-					<p className="mt-1">Gunakan tombol <em>Hapus Riwayat</em> di chat untuk menghapus percakapan. Untuk penghapusan menyeluruh, hapus data aplikasi melalui pengaturan browser.</p>
+			<motion.div variants={itemVariants} className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 opacity-40 hover:opacity-100 transition-opacity">
+				<div className="flex items-center gap-6">
+					<Link to="/help/docs" className="text-[11px] font-bold text-gray-400 hover:text-cyan-400 transition-colors uppercase tracking-widest">Documentation</Link>
+					<Link to="/contact" className="text-[11px] font-bold text-gray-400 hover:text-cyan-400 transition-colors uppercase tracking-widest">Contact Admin</Link>
 				</div>
-
-				<div>
-					<h3 className="font-semibold">Laporan & Kontrol</h3>
-					<p className="mt-1">Laporan disimpan lokal dan dapat disinkronkan jika backend diaktifkan oleh administrator.</p>
-				</div>
-
-				<div>
-					<h3 className="font-semibold">Kontak</h3>
-					<p className="mt-1">Untuk pertanyaan privasi lebih lanjut, hubungi administrator situs atau lihat dokumentasi proyek.</p>
-				</div>
-			</section>
-
-			<section className="mt-6">
-				<h3 className="font-semibold text-white">Buka Pengaturan Live CS</h3>
-				<div className="mt-2 text-sm text-gray-300 space-y-2">
-					<p>Gunakan tautan berikut untuk membuka pengaturan Live CS secara langsung. Setiap tautan membuka popup dan langsung berpindah ke tab terkait.</p>
-					<ul className="list-disc list-inside">
-						<li><Link to="/help/chatbot/settings/general" className="text-cyan-400 underline">General</Link></li>
-						<li><Link to="/help/chatbot/settings/ai" className="text-cyan-400 underline">AI</Link></li>
-						<li><Link to="/help/chatbot/settings/data" className="text-cyan-400 underline">Data</Link></li>
-						<li><Link to="/help/chatbot/settings/file" className="text-cyan-400 underline">File</Link></li>
-						<li><Link to="/help/chatbot/settings/performance" className="text-cyan-400 underline">Performance</Link></li>
-						<li><Link to="/help/chatbot/settings/privacy" className="text-cyan-400 underline">Privacy</Link></li>
-						<li><Link to="/help/chatbot/settings/storage" className="text-cyan-400 underline">Storage</Link></li>
-						<li><Link to="/help/chatbot/settings/advanced" className="text-cyan-400 underline">Advanced</Link></li>
-					</ul>
-				</div>
-			</section>
-		</div>
+				<p className="text-[10px] text-gray-600 font-medium">
+					Terakhir diperbarui: April 2024
+				</p>
+			</motion.div>
+		</motion.div>
 	);
 }
 

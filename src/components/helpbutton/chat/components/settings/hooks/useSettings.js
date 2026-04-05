@@ -4,8 +4,11 @@ import { SETTINGS_KEY } from '../../logic/utils/fileProcessor';
 import { storageService } from '../../logic/utils/storageService';
 import { PALETTES, ACCENT_COLORS } from '../settingsConfig.js';
 
-export function useSettings(knowledgeBase = {}) {
-  const [settings, setSettings] = useState({ ...DEFAULT_SETTINGS });
+export function useSettings(knowledgeBase = {}, initialTab = null) {
+  const [settings, setSettings] = useState({ 
+    ...DEFAULT_SETTINGS,
+    activeTab: initialTab || DEFAULT_SETTINGS.activeTab
+  });
 
   // Apply theme/accent to :root so entire app (chat window, buttons, etc.) inherits colors
   useEffect(() => {

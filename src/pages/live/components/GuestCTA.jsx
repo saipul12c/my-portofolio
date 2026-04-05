@@ -7,10 +7,8 @@ const GuestCTA = () => {
   const navigate = useNavigate();
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="max-w-4xl mx-auto w-full p-6 bg-[var(--theme-surface)]/50 backdrop-blur-3xl border border-[var(--theme-border)] rounded-[2.5rem] shadow-2xl overflow-hidden relative group transition-all hover:bg-[var(--theme-surface)]/80"
+    <div 
+      className="max-w-4xl mx-auto w-full p-4 sm:p-6 bg-[var(--theme-surface)]/50 backdrop-blur-3xl border border-[var(--theme-border)] rounded-[2.5rem] shadow-2xl overflow-hidden relative group transition-all hover:bg-[var(--theme-surface)]/80"
     >
       {/* Background Decor */}
       <div className="absolute inset-0 pointer-events-none opacity-20">
@@ -18,10 +16,10 @@ const GuestCTA = () => {
         <div className="absolute bottom-[-50%] right-[-20%] w-full h-full bg-blue-600/10 rounded-full blur-[80px]" />
       </div>
 
-      <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6">
-        <div className="flex flex-col items-center sm:items-start space-y-1">
-          <p className="text-[var(--theme-text)] font-black text-xl italic uppercase tracking-tighter">Bergabung dalam diskusi</p>
-          <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[var(--theme-text-muted)]">Ayo mulai percakapan hari ini!</p>
+      <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
+        <div className="flex flex-col items-center sm:items-start space-y-0.5">
+          <p className="text-[var(--theme-text)] font-black text-lg sm:text-xl italic uppercase tracking-tighter">Bergabung dalam diskusi</p>
+          <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-[var(--theme-text-muted)]">Ayo mulai percakapan hari ini!</p>
         </div>
 
         <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -49,7 +47,7 @@ const GuestCTA = () => {
           <span className="text-[7px] font-black uppercase tracking-widest">Secured Node</span>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

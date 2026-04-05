@@ -12,25 +12,29 @@ import { NotificationCenter, MentionNotifications } from './components/Notificat
 import { useMentions } from './hooks/useMentions';
 import { ReactionPicker, MessageReactions } from './components/ReactionPicker';
 import { MemberSidebar } from './components/MemberSidebar';
-import { Paperclip, Image as ImageIcon, Users as UsersIcon, AlertTriangle, Bell, Sun, Moon, Monitor } from 'lucide-react';
+import { Paperclip, Image as ImageIcon, Users as UsersIcon, AlertTriangle, Bell, Sun, Moon, Monitor, ShieldAlert } from 'lucide-react';
+import { containsProfanity } from './utils/profanityFilter';
 
 const USER_ROLES = {
-  SUPER_ADMIN: { level: 6, name: 'Super Admin', badge: '👑', color: 'from-purple-600 to-pink-600', canManage: true },
-  ADMIN: { level: 5, name: 'Admin', badge: '🛡️', color: 'from-red-500 to-orange-500', canManage: true },
-  MODERATOR: { level: 4, name: 'Moderator', badge: '⭐', color: 'from-blue-500 to-cyan-500', canManage: true },
+  SUPER_ADMIN: { level: 10, name: 'Super Admin', badge: '👑', color: 'from-purple-600 to-pink-600', canManage: true },
+  ADMIN: { level: 8, name: 'Admin', badge: '🛡️', color: 'from-red-500 to-orange-500', canManage: true },
+  MODERATOR: { level: 5, name: 'Moderator', badge: '⭐', color: 'from-blue-500 to-cyan-500', canManage: true },
   PREMIUM: { level: 3, name: 'Premium', badge: '💎', color: 'from-green-500 to-emerald-500', canManage: false },
   VERIFIED: { level: 2, name: 'Verified', badge: '✅', color: 'from-yellow-500 to-amber-500', canManage: false },
   USER: { level: 1, name: 'User', badge: '👤', color: 'from-gray-500 to-gray-700', canManage: false }
 };
 
-// Limit pengiriman pesan - HARUS SAMA DENGAN BACKEND
-const MESSAGE_LIMITS = {
-  USER: 5,        // 5 pesan/bulan
-  VERIFIED: 10,   // 10 pesan/bulan
-  PREMIUM: 50,    // 50 pesan/bulan
-  MODERATOR: 100, // 100 pesan/bulan
-  ADMIN: 500,     // 500 pesan/bulan
-  SUPER_ADMIN: 9999 // Unlimited
+// System Config State (Fase Sinkronisasi & Security)
+const INITIAL_CONFIG = {
+  message_limits: {
+    SUPER_ADMIN: 999999,
+    ADMIN: 500,
+    MODERATOR: 100,
+    PREMIUM: 50,
+    VERIFIED: 25,
+    USER: 5
+  },
+  maintenance_mode: false
 };
 
 function Live() {
@@ -41,6 +45,7 @@ function Live() {
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState('');
+  const [showBadWordAlert, setShowBadWordAlert] = useState(false);
   const [success, setSuccess] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [replyTo, setReplyTo] = useState(null);
@@ -66,6 +71,7 @@ function Live() {
   const [mentions, setMentions] = useState([]);
   const [unreadMentions, setUnreadMentions] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [systemConfig, setSystemConfig] = useState(INITIAL_CONFIG);
 
   // Reaction & Media States
   const [reactions, setReactions] = useState({}); // { messageId: [ {emoji, user_id} ] }
@@ -125,46 +131,45 @@ function Live() {
         .eq('id', authUser.id)
         .single();
 
-      if (error) {
-        console.warn('Could not verify profile:', error);
-        setUser(null);
-        return;
+      // Check for ban or deactivated status (ONLY if profile data is available)
+      if (data) {
+        const userStatus = data.status?.toLowerCase();
+        if (userStatus === 'nonaktif' || userStatus === 'banned') {
+          setError('Akun Anda dinonaktifkan atau diblokir.');
+          setTimeout(() => setUser(null), 3000);
+          return;
+        }
       }
 
-      // Check for ban or deactivated status
-      const userStatus = data.status?.toLowerCase();
-      if (userStatus === 'nonaktif' || userStatus === 'banned') {
-        setError('Akun Anda dinonaktifkan atau diblokir.');
-        setTimeout(() => setUser(null), 3000);
-        return;
-      }
-
-      const userRole = data.role?.toUpperCase() || 'USER';
+      const userRole = (data?.role || 'USER').toUpperCase();
       const roleConfig = USER_ROLES[userRole] || USER_ROLES.USER;
 
+      // Use Database Data IF available, else fallback to Auth User Metadata
       const userData = {
          id: authUser.id,
-         username: data.nama || authUser.email.split('@')[0],
-         email: data.email, 
+         username: data?.nama || authUser.user_metadata?.nama || authUser.email.split('@')[0],
+         email: authUser.email, 
          role: userRole,
          roleName: roleConfig.name,
          roleLevel: roleConfig.level,
          roleBadge: roleConfig.badge,
          roleColor: roleConfig.color,
-         messageCount: parseInt(data.message_count) || 0,
-         lastReset: data.last_reset || new Date().toISOString().split('T')[0],
-         joinDate: data.tanggal_daftar,
-         muteUntil: data.mute_until,
-         isShadowbanned: data.is_shadowbanned,
-         banReason: data.ban_reason,
-         muteReason: data.mute_reason
+         messageCount: parseInt(data?.message_count) || 0,
+         lastReset: data?.last_reset || new Date().toISOString().split('T')[0],
+         joinDate: data?.tanggal_daftar || authUser.created_at,
+         muteUntil: data?.mute_until,
+         isShadowbanned: data?.is_shadowbanned || false,
+         banReason: data?.ban_reason,
+         muteReason: data?.mute_reason
       };
 
       setUser(userData);
       localStorage.setItem('local_user', JSON.stringify(userData));
       
-      await loadAchievements(data.id);
-      await fetchMentions(data.id);
+      if (data?.id) {
+        await loadAchievements(data.id);
+        await fetchMentions(data.id);
+      }
     } catch (err) {
       console.error('Error checking user status:', err);
       setUser(null);
@@ -399,10 +404,28 @@ function Live() {
       }
     }, 30000);
 
+    fetchSystemConfig();
+
     return () => {
       if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
     };
   }, [checkUserStatus, fetchMessagesFromDatabase]);
+
+  // Fetch Dynamic System Config
+  const fetchSystemConfig = async () => {
+    try {
+      const { data, error } = await supabase.from('system_config').select('*');
+      if (error) throw error;
+      
+      const configObj = { ...INITIAL_CONFIG };
+      data.forEach(item => {
+        configObj[item.key] = item.value;
+      });
+      setSystemConfig(configObj);
+    } catch (err) {
+      console.warn('System config fetch failed, using defaults');
+    }
+  };
 
   // Setup Realtime Subscription
   useEffect(() => {
@@ -525,30 +548,29 @@ function Live() {
     if (e) e.preventDefault();
     if ((!newMessage.trim() && !mediaUrl) || !user || sending) return;
 
-    // Rate limit
-    if (Date.now() - lastSentRef.current < 1500) {
-      setError('Tunggu sebentar sebelum mengirim pesan lagi.');
+    // Maintenance Check (Admin Bypass level Logic)
+    if (systemConfig.maintenance_mode && !['SUPER_ADMIN', 'ADMIN'].includes(user.role)) {
+      setError('Sistem sedang dalam pemeliharaan (Maintenance Mode). Chat dinonaktifkan sementara.');
       return;
     }
 
-    // Check message limit
-    const limit = MESSAGE_LIMITS[user.role] || 5;
+    // Rate limit (Frontend Cooldown - Sycned with DB 2s)
+    if (Date.now() - lastSentRef.current < 2000) {
+      setError('Tenang! Mohon tunggu 2 detik antar pesan.');
+      return;
+    }
+
+    // Check message limit (Dynamic)
+    const limit = systemConfig.message_limits[user.role] || 5;
     if (user.messageCount >= limit) {
-      setError(`Anda telah mencapai limit ${limit} pesan/bulan.`);
+      setError(`Limit tercapai (${user.messageCount}/${limit}). Upgrade akun untuk mengirim lebih banyak pesan.`);
       return;
     }
 
     // Moderation Checks
     if (user.muteUntil && new Date(user.muteUntil) > new Date()) {
-      setError(`Anda sedang di-mute sampai ${new Date(user.muteUntil).toLocaleString()}.`);
+      setError(`Muted: Anda sedang di-mute sampai ${new Date(user.muteUntil).toLocaleString()}.`);
       return;
-    }
-
-    if (user.isShadowbanned) {
-      // In shadowban mode, we might "pretend" to send or just block. 
-      // For this implementation, we'll allow the UI to look normal but the DB might handle it or we silent block.
-      // Let's just show a generic error if they are hard-shadowbanned, or let it pass if it's "silent".
-      // Usually shadowban is silent. Let's just proceed.
     }
 
     lastSentRef.current = Date.now();
@@ -559,6 +581,13 @@ function Live() {
     setSending(true);
     setError('');
     setSuccess('');
+
+    // 1. Profanity Filter (Premium Auto-Mod)
+    if (containsProfanity(messageContent)) {
+      setError('Pesan Anda mengandung kata-kata yang tidak diperbolehkan. Mohon jaga kesopanan.');
+      setSending(false);
+      return;
+    }
 
     const correlationId = `${user.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
@@ -588,14 +617,15 @@ function Live() {
       // 2. Send to DB
       const { data: savedData, error: sendError } = await sendMessageToDatabase({
         ...messageData,
-        status: 'sent' // Payload untuk DB
+        status: 'sent' 
       });
 
       if (sendError) {
-        // Rollback on error
+        // Rollback & Show Exact DB Error (Anti-Spam, Cooldown, etc)
         setMessages(prev => prev.filter(m => m.correlation_id !== correlationId));
         setNewMessage(messageContent);
-        throw new Error('Gagal mengirim pesan');
+        setError(sendError.message || 'Gagal mengirim pesan');
+        throw sendError;
       }
 
       // 3. Update local state with real data
@@ -616,26 +646,8 @@ function Live() {
       setSuccess('Pesan terkirim!');
       setTimeout(() => setSuccess(''), 3000);
 
-      // 6. Handle secure mentions in database
-      if (messageContent.includes('@') && savedData) {
-        const mentionedUsernames = messageContent.match(/@(\w+)/g);
-        if (mentionedUsernames) {
-           // We'll let the backend trigger handle this eventually or do a client lookup for now
-           // For hardening, we'll implement a secure lookup if possible
-           for (const mention of mentionedUsernames) {
-             const targetName = mention.slice(1);
-             const targetProfile = allProfiles.find(p => p.nama.toLowerCase() === targetName.toLowerCase());
-             
-             if (targetProfile) {
-               await supabase.from('mentions').insert({
-                 message_id: savedData.id,
-                 sender_id: user.id,
-                 target_id: targetProfile.id
-               });
-             }
-           }
-        }
-      }
+      // 6. Mentions are now handled automatically by the Database Trigger
+      // (Simplified frontend logic for better security and performance)
 
       messageInputRef.current?.focus();
     } catch (err) {
@@ -718,13 +730,22 @@ function Live() {
         })
         .eq('id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        if (error.code === '23505') {
+          alert('Nama ini sudah digunakan oleh pengguna lain. Silakan pilih nama lain.');
+        } else {
+          throw error;
+        }
+        return false;
+      }
       
       // Update local state
       setUser(prev => ({ ...prev, username: formData.nama, bio: formData.bio }));
+      alert('Profil berhasil diperbarui!');
       return true;
     } catch (err) {
       console.error('Error updating profile:', err);
+      alert('Gagal memperbarui profil: ' + err.message);
       return false;
     }
   };
@@ -1262,15 +1283,15 @@ function Live() {
         </motion.header>
       </div>
 
-      <main className="flex-1 w-full max-w-6xl mx-auto flex flex-col pt-20 sm:pt-24 pb-20 sm:pb-4 px-2 sm:px-6 relative z-10 overflow-hidden">
+      <main className="flex-1 w-full max-w-6xl mx-auto flex flex-col pt-24 sm:pt-32 pb-20 sm:pb-4 px-2 sm:px-6 relative z-10 overflow-hidden">
         {/* Alerts Container */}
         <div className="fixed top-20 sm:top-24 right-4 z-[60] flex flex-col gap-2 max-w-xs pointer-events-none">
           <AnimatePresence>
             {success && (
               <motion.div 
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 className="pointer-events-auto p-4 bg-green-500/10 backdrop-blur-md border border-green-500/20 rounded-2xl flex items-center gap-3"
               >
                 <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
@@ -1279,9 +1300,9 @@ function Live() {
             )}
             {error && (
               <motion.div 
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 className="pointer-events-auto p-4 bg-red-500/10 backdrop-blur-md border border-red-500/20 rounded-2xl flex items-center justify-between gap-3"
               >
                 <div className="flex items-center gap-3">
@@ -1296,6 +1317,8 @@ function Live() {
           </AnimatePresence>
         </div>
 
+
+
         {/* Chat Section */}
         <div className="flex-1 flex flex-col bg-white/[0.01] backdrop-blur-[30px] rounded-[3rem] border border-white/5 overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.5)]">
           {/* Scrollable Message List */}
@@ -1303,6 +1326,7 @@ function Live() {
             ref={messagesContainerRef}
             onScroll={handleScroll}
             className="flex-1 overflow-y-auto px-6 py-8 space-y-6 custom-scrollbar scroll-smooth"
+            style={{ overflowAnchor: 'auto' }}
           >
             {messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center opacity-30">
@@ -1311,8 +1335,7 @@ function Live() {
                 <p className="text-sm">Jadilah yang pertama untuk memulai!</p>
               </div>
             ) : (
-              <div className="flex flex-col-reverse justify-end gap-6 min-h-full">
-                <div ref={messagesEndRef} />
+              <div className="flex flex-col justify-start gap-6 min-h-full">
                 <AnimatePresence initial={false}>
                   {/* Typing Indicator Bubble */}
                   {Object.values(typingUsers).length > 0 && (
@@ -1320,7 +1343,7 @@ function Live() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
-                      className="flex justify-start mb-4"
+                      className="flex justify-start mb-4 h-10 items-center overflow-hidden"
                     >
                       <div className="bg-white/5 backdrop-blur-xl border border-white/5 rounded-2xl px-4 py-2 flex items-center gap-3">
                         <div className="flex gap-1">
@@ -1337,21 +1360,25 @@ function Live() {
                     </motion.div>
                   )}
                   
-                  {messages.map((message, index) => {
-                    const isOwnMessage = message.email === user?.email;
+                  {[...messages].reverse().map((message, index) => {
+                    // Logic Kanan-Kiri Dinamis
+                    const isOwnMessage = message.user_id === user?.id;
+                    const isStaff = ['SUPER_ADMIN', 'ADMIN', 'MODERATOR'].includes(message.role);
+                    
+                    // Ketentuan User: Jika Guests, Admin di Kanan. Jika Login, Me di Kanan.
+                    const alignRight = user ? isOwnMessage : isStaff;
                     const replyData = message.reply_to || null;
                     
                     return (
                       <motion.div
                         key={message.id || message.timestamp}
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        layout
-                        className={`flex w-full ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`flex w-full ${alignRight ? 'justify-end' : 'justify-start'}`}
                       >
-                        <div className={`group flex flex-col max-w-[85%] sm:max-w-md ${isOwnMessage ? 'items-end' : 'items-start'}`}>
-                          {/* Sender Info (Only for others) */}
-                          {!isOwnMessage && (
+                        <div className={`group flex flex-col max-w-[85%] sm:max-w-md ${alignRight ? 'items-end' : 'items-start'}`}>
+                          {/* Sender Info (Only for others OR if alignLeft) */}
+                          {!alignRight && (
                             <div className="flex items-center gap-2 mb-2 ml-2">
                               <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-[10px] font-black text-white">
                                 {message.username?.[0]?.toUpperCase()}
@@ -1359,6 +1386,18 @@ function Live() {
                               <span className="text-[11px] font-bold text-white/40 tracking-wider uppercase">
                                 {message.username} • {message.role}
                               </span>
+                            </div>
+                          )}
+
+                          {/* Sender Info for Admin on the Right (Optional/Guest mode) */}
+                          {alignRight && !isOwnMessage && (
+                            <div className="flex items-center gap-2 mb-2 mr-2">
+                               <span className="text-[11px] font-bold text-white/40 tracking-wider uppercase">
+                                {message.username} • {message.role}
+                              </span>
+                              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-[10px] font-black text-white">
+                                {message.username?.[0]?.toUpperCase()}
+                              </div>
                             </div>
                           )}
 
@@ -1376,10 +1415,18 @@ function Live() {
                             {/* Actual Bubble */}
                             <div className="relative group/bubble-content">
                               <div className={`px-6 py-4 rounded-[2.5rem] shadow-2xl transition-all duration-300 ${
-                                isOwnMessage 
-                                  ? 'bg-gradient-to-br from-cyan-600 via-blue-600 to-indigo-700 text-white rounded-tr-none border border-white/10' 
-                                  : 'bg-white/[0.03] backdrop-blur-3xl border border-white/5 text-white/90 rounded-tl-none'
-                              }`}>
+                                alignRight 
+                                  ? 'bg-gradient-to-br from-cyan-600 via-blue-600 to-indigo-700 text-white rounded-tr-none border border-white/10 shadow-[0_0_20_rgba(6,182,212,0.15)]' 
+                                  : `bg-gradient-to-br ${USER_ROLES[message.role || 'USER']?.color || 'from-slate-800 to-slate-900'} backdrop-blur-3xl border border-white/10 text-white shadow-lg rounded-tl-none`
+                                }`}>
+                                  {/* Role Indicator for Others (even if alignRight for guests) */}
+                                  {!isOwnMessage && (
+                                    <div className="flex items-center gap-1.5 mb-2 pb-2 border-b border-white/10">
+                                      <span className="text-[9px] font-black uppercase tracking-widest text-white/90">
+                                        {USER_ROLES[message.role || 'USER']?.badge} {USER_ROLES[message.role || 'USER']?.name}
+                                      </span>
+                                    </div>
+                                  )}
                                 {/* Media Display */}
                                 {message.media_url && (
                                   <div className="mb-4 rounded-2xl overflow-hidden border border-white/10 bg-black/20">
@@ -1394,7 +1441,7 @@ function Live() {
                                 {/* Reply Context */}
                               {replyData && (
                                 <div className={`mb-3 p-3 rounded-2xl border-l-4 text-xs ${
-                                  isOwnMessage ? 'bg-black/20 border-white/30 text-white/70' : 'bg-white/5 border-cyan-500/50 text-white/50'
+                                  alignRight ? 'bg-black/20 border-white/30 text-white/70' : 'bg-white/5 border-cyan-500/50 text-white/50'
                                 }`}>
                                   <div className="flex items-center gap-2 mb-1">
                                     <Reply className="w-3 h-3" />
@@ -1409,7 +1456,7 @@ function Live() {
                                 {message.is_edited && <span className="text-[10px] italic opacity-40 ml-2">(edited)</span>}
                               </div>
                               
-                              <div className={`mt-2 flex items-center gap-2 text-[10px] font-bold tracking-tighter uppercase ${isOwnMessage ? 'text-white/40' : 'text-white/20'}`}>
+                              <div className={`mt-2 flex items-center gap-2 text-[10px] font-bold tracking-tighter uppercase ${alignRight ? 'text-white/40' : 'text-white/20'}`}>
                                 {formatTime(message.timestamp || message.created_at)}
                                 {message.status === 'sending' && <div className="w-2 h-2 border border-white/40 border-t-white rounded-full animate-spin" />}
                               </div>
@@ -1457,13 +1504,15 @@ function Live() {
                     );
                   })}
                 </AnimatePresence>
+                <div ref={messagesEndRef} />
               </div>
             )}
           </div>
 
-          {/* Interaction Bar Container or Guest CTA */}
-          <div className="p-6 bg-black/20 border-t border-white/5 backdrop-blur-xl relative">
-            {/* Scroll to Bottom FAB */}
+          {/* Interaction Bar Container or Guest CTA (Stabilized Height) */}
+          {user && (
+            <div className="p-6 bg-black/20 border-t border-white/5 backdrop-blur-xl relative min-h-[140px] sm:min-h-[120px] flex items-center justify-center">
+              {/* Scroll to Bottom FAB */}
             <AnimatePresence>
               {showScrollToBottom && (
                 <motion.button
@@ -1479,156 +1528,191 @@ function Live() {
               )}
             </AnimatePresence>
 
-            {!user ? (
-              <GuestCTA />
-            ) : (user.muteUntil && new Date(user.muteUntil) > new Date()) ? (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-8 bg-orange-500/10 border border-orange-500/20 rounded-[2rem] text-center"
-              >
-                <div className="w-12 h-12 bg-orange-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <AlertTriangle className="w-6 h-6 text-orange-500" />
-                </div>
-                <h3 className="text-lg font-black text-white italic uppercase tracking-tighter mb-2">Sesi Terbatas</h3>
-                <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-4">
-                  Sinyal Anda dihentikan sementara hingga {new Date(user.muteUntil).toLocaleString()}
-                </p>
-                <div className="bg-black/20 p-4 rounded-xl border border-white/5 inline-block text-left max-w-md mx-auto">
-                   <span className="text-[9px] font-black uppercase text-white/20 italic block mb-1">Alasan Moderator:</span>
-                   <p className="text-xs text-orange-200/70 italic">"{user.muteReason || 'Peringatan standar komunitas.'}"</p>
-                </div>
-              </motion.div>
-            ) : (
-              <>
-                {/* Reply / Edit Context Bar */}
-            <AnimatePresence>
-              {(replyTo || editingMessage) && (
+            {user ? (
+              (user.muteUntil && new Date(user.muteUntil) > new Date()) ? (
                 <motion.div 
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="mb-4 overflow-hidden"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-8 bg-orange-500/10 border border-orange-500/20 rounded-[2rem] text-center"
                 >
-                  <div className="flex items-center justify-between p-4 bg-white/5 rounded-3xl border border-white/10">
-                    <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-xl ${editingMessage ? 'bg-blue-500/20 text-blue-400' : 'bg-cyan-500/20 text-cyan-400'}`}>
-                        {editingMessage ? <Edit2 className="w-4 h-4" /> : <Reply className="w-4 h-4" />}
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40">
-                          {editingMessage ? 'Mengubah Pesan' : `Membalas ${replyTo.username}`}
-                        </p>
-                        <p className="text-sm text-white/70 line-clamp-1 italic">
-                          {editingMessage ? editingMessage.content : replyTo.content}
-                        </p>
-                      </div>
-                    </div>
-                    <button onClick={editingMessage ? cancelEdit : cancelReply} className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/40">
-                      <Plus className="w-5 h-5 rotate-45" />
-                    </button>
+                  <div className="w-12 h-12 bg-orange-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <AlertTriangle className="w-6 h-6 text-orange-500" />
+                  </div>
+                  <h3 className="text-lg font-black text-white italic uppercase tracking-tighter mb-2">Sesi Terbatas</h3>
+                  <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-4">
+                    Sinyal Anda dihentikan sementara hingga {new Date(user.muteUntil).toLocaleString()}
+                  </p>
+                  <div className="bg-black/20 p-4 rounded-xl border border-white/5 inline-block text-left max-w-md mx-auto">
+                     <span className="text-[9px] font-black uppercase text-white/20 italic block mb-1">Alasan Moderator:</span>
+                     <p className="text-xs text-orange-200/70 italic">"{user.muteReason || 'Peringatan standar komunitas.'}"</p>
                   </div>
                 </motion.div>
-              )}
-            </AnimatePresence>
-
-             {/* Input Form */}
-             <form onSubmit={editingMessage ? (e) => { e.preventDefault(); handleSaveEdit(); } : handleSendMessage} className="flex items-end gap-3 max-w-4xl mx-auto w-full">
-               <div className="flex flex-col gap-2 relative">
-                  <button 
-                    type="button" 
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploadingMedia}
-                    className="p-3 bg-white/5 hover:bg-white/10 rounded-2xl transition-colors text-white/30 hover:text-white flex items-center justify-center"
-                  >
-                    {uploadingMedia ? <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <Paperclip className="w-5 h-5" />}
-                  </button>
-                  <input 
-                    type="file" 
-                    ref={fileInputRef} 
-                    className="hidden" 
-                    accept="image/*" 
-                    onChange={handleFileSelect}
-                  />
-               </div>
-
-               <div className="relative group/input flex-1">
-                <div className="absolute left-4 bottom-3 z-10" ref={emojiPickerRef}>
-                  <button 
-                    type="button" 
-                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                    className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/30 hover:text-white"
-                  >
-                    <Smile className="w-6 h-6" />
-                  </button>
-                  {showEmojiPicker && (
-                    <div className="absolute bottom-16 left-0 z-50">
-                      <EmojiPicker onEmojiClick={handleEmojiClick} theme="dark" width={300} height={400} />
-                    </div>
-                  )}
-                </div>
-
-                <MentionInput
-                  value={newMessage}
-                  onChange={(v) => {
-                    setNewMessage(v);
-                    handleTyping();
-                  }}
-                  onMention={(u) => {
-                    // Logic for when a user is selected from mention dropdown
-                    console.log('Mentioned user:', u);
-                  }}
-                />
-
-                <div className="absolute right-6 bottom-4 text-[10px] font-black tracking-tighter text-white/20">
-                  {newMessage.length}/500
-                </div>
-              </div>
-
-              <motion.button
-                whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(6, 182, 212, 0.4)' }}
-                whileTap={{ scale: 0.95 }}
-                type="submit"
-                disabled={sending || !newMessage.trim() || (!editingMessage && user && user.messageCount >= (MESSAGE_LIMITS[user.role] || 5))}
-                className={`flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all ${
-                  sending || !newMessage.trim() ? 'bg-white/[0.05] text-white/20' : 'bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600 text-white shadow-cyan-500/30'
-                }`}
-              >
-                {sending ? (
-                  <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                ) : editingMessage ? (
-                  <CheckCircle className="w-6 h-6" />
-                ) : (
-                  <Send className="w-6 h-6 translate-x-0.5 -translate-y-0.5" />
-                )}
-              </motion.button>
-            </form>
-
-            <div className="mt-4 flex justify-between items-center px-6">
-              <div className="flex items-center gap-4">
-                <div className="flex flex-col">
-                  <span className="text-[10px] uppercase font-black tracking-widest text-white/30">Limit Pesan</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-20 h-1.5 bg-white/5 rounded-full overflow-hidden">
+              ) : (
+                <>
+                  {/* Reply / Edit Context Bar */}
+                  <AnimatePresence>
+                    {(replyTo || editingMessage) && (
                       <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${(user?.messageCount / (MESSAGE_LIMITS[user?.role] || 5)) * 100}%` }}
-                        className="h-full bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.5)]" 
-                      />
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className="mb-4"
+                      >
+                        <div className="flex items-center justify-between p-4 bg-white/5 rounded-3xl border border-white/10">
+                          <div className="flex items-center gap-3">
+                            <div className={`p-2 rounded-xl ${editingMessage ? 'bg-blue-500/20 text-blue-400' : 'bg-cyan-500/20 text-cyan-400'}`}>
+                              {editingMessage ? <Edit2 className="w-4 h-4" /> : <Reply className="w-4 h-4" />}
+                            </div>
+                            <div>
+                              <p className="text-[10px] font-black uppercase tracking-widest text-white/40">
+                                {editingMessage ? 'Mengubah Pesan' : `Membalas ${replyTo.username}`}
+                              </p>
+                              <p className="text-sm text-white/70 line-clamp-1 italic">
+                                {editingMessage ? editingMessage.content : replyTo.content}
+                              </p>
+                            </div>
+                          </div>
+                          <button onClick={editingMessage ? cancelEdit : cancelReply} className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/40">
+                            <Plus className="w-5 h-5 rotate-45" />
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                   {/* Input Form */}
+                   <form onSubmit={editingMessage ? (e) => { e.preventDefault(); handleSaveEdit(); } : handleSendMessage} className="flex items-end gap-3 max-w-4xl mx-auto w-full">
+                     <div className="flex flex-col gap-2 relative">
+                        <button 
+                          type="button" 
+                          onClick={() => fileInputRef.current?.click()}
+                          disabled={uploadingMedia}
+                          className="p-3 bg-white/5 hover:bg-white/10 rounded-2xl transition-colors text-white/30 hover:text-white flex items-center justify-center"
+                        >
+                          {uploadingMedia ? <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <Paperclip className="w-5 h-5" />}
+                        </button>
+                        <input 
+                          type="file" 
+                          ref={fileInputRef} 
+                          className="hidden" 
+                          accept="image/*" 
+                          onChange={handleFileSelect}
+                        />
+                     </div>
+
+                                <div className="relative group/input flex-1">
+                      {systemConfig.maintenance_mode && !['SUPER_ADMIN', 'ADMIN'].includes(user.role) ? (
+                        <div className="w-full bg-white/[0.05] border border-white/10 rounded-3xl px-8 py-5 flex items-center justify-center gap-3 backdrop-blur-xl">
+                          <Lock className="w-4 h-4 text-white/30" />
+                          <span className="text-[10px] font-black uppercase tracking-widest text-white/30 italic">Papan Sinyal Dikunci Sementara</span>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="absolute left-4 bottom-3 z-10" ref={emojiPickerRef}>
+                            <button 
+                              type="button" 
+                              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                              className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/30 hover:text-white"
+                            >
+                              <Smile className="w-6 h-6" />
+                            </button>
+                            {showEmojiPicker && (
+                              <div className="absolute bottom-16 left-0 z-50">
+                                <EmojiPicker onEmojiClick={handleEmojiClick} theme="dark" width={300} height={400} />
+                              </div>
+                            )}
+                          </div>
+
+                          <MentionInput
+                            value={newMessage}
+                            onChange={(v) => {
+                              setNewMessage(v);
+                              handleTyping();
+                            }}
+                            onMention={(u) => {
+                              console.log('Mentioned user:', u);
+                            }}
+                          />
+                        </>
+                      )}
+
+                      <div className={`absolute right-6 bottom-4 text-[10px] font-black tracking-tighter ${newMessage.length > 500 ? 'text-red-500' : 'text-white/20'}`}>
+                        {newMessage.length}/500
+                      </div>
                     </div>
-                    <span className="text-[10px] font-black text-cyan-400">{user?.messageCount}/{MESSAGE_LIMITS[user?.role] || 5}</span>
+
+                    <motion.button
+                      whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(6, 182, 212, 0.4)' }}
+                      whileTap={{ scale: 0.95 }}
+                      type="submit"
+                      disabled={sending || (!newMessage.trim() && !systemConfig.maintenance_mode) || 
+                                (!editingMessage && user && user.messageCount >= (systemConfig.message_limits[user.role] || 5)) ||
+                                (systemConfig.maintenance_mode && !['SUPER_ADMIN', 'ADMIN'].includes(user.role))}
+                      className={`flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all ${
+                        sending || !newMessage.trim() || (systemConfig.maintenance_mode && !['SUPER_ADMIN', 'ADMIN'].includes(user.role))
+                          ? 'bg-white/[0.05] text-white/20' 
+                          : 'bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600 text-white shadow-cyan-500/30'
+                      }`}
+                    >
+                      {sending ? (
+                        <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                      ) : systemConfig.maintenance_mode && !['SUPER_ADMIN', 'ADMIN'].includes(user.role) ? (
+                        <Lock className="w-5 h-5" />
+                      ) : (
+                        <Send className="w-6 h-6" />
+                      )}
+                    </motion.button>
+                  </form>
+
+                  <AnimatePresence>
+                    {error && (
+                      <motion.div 
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="mb-4 bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-center gap-3"
+                      >
+                        <ShieldAlert className="w-5 h-5 text-red-500" />
+                        <span className="text-[10px] font-black uppercase text-red-200/70 tracking-widest">{error}</span>
+                        <button onClick={() => setError('')} className="ml-auto text-white/20 hover:text-white"><X className="w-4 h-4" /></button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  <div className="mt-4 flex justify-between items-center px-6">
+                    <div className="flex items-center gap-4">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] uppercase font-black tracking-widest text-white/30">Limit Pesan</span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-20 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                            <motion.div 
+                              initial={{ width: 0 }}
+                              animate={{ width: `${(user?.messageCount / (MESSAGE_LIMITS[user?.role] || 5)) * 100}%` }}
+                              className="h-full bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.5)]" 
+                            />
+                          </div>
+                          <span className="text-[10px] font-black text-cyan-400">{user?.messageCount}/{MESSAGE_LIMITS[user?.role] || 5}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-[10px] font-black uppercase tracking-tighter text-white/20">
+                      Pencet Shift + Enter untuk ganti baris
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="text-[10px] font-black uppercase tracking-tighter text-white/20">
-                Pencet Shift + Enter untuk ganti baris
-              </div>
+                </>
+              )
+            ) : null}
             </div>
-          </>
+          )}
+        </div>
+
+        {/* Guest CTA moved outside the chat container */}
+        {!user && (
+          <div className="mt-6 mb-10">
+            <GuestCTA />
+          </div>
         )}
-      </div>
-    </div>
-  </main>
+      </main>
 
   {/* Mobile Bottom Navigation */}
   <div className="sm:hidden fixed bottom-0 left-0 right-0 z-[60] bg-[var(--theme-surface)] backdrop-blur-3xl border-t border-[var(--theme-border)] px-6 py-3 flex justify-between items-center pb-[max(0.75rem,env(safe-area-inset-bottom))]">

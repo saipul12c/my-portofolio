@@ -1,159 +1,177 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Lock, ShieldCheck, UploadCloud, AlertCircle, FileLock2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Lock, ShieldCheck, UploadCloud, AlertCircle, FileLock2, ChevronRight, Settings } from 'lucide-react';
 
 const ACCENTS = {
-	indigo: ['text-indigo-400', 'bg-indigo-900/10'],
-	green: ['text-green-400', 'bg-green-900/10'],
-	red: ['text-rose-400', 'bg-rose-900/10'],
-	purple: ['text-purple-400', 'bg-purple-900/10']
+	indigo: { 
+		text: 'text-indigo-400', 
+		bg: 'bg-indigo-500/10', 
+		border: 'border-indigo-500/20',
+		glow: 'shadow-[0_0_15px_rgba(99,102,241,0.1)]'
+	},
+	green: { 
+		text: 'text-emerald-400', 
+		bg: 'bg-emerald-500/10', 
+		border: 'border-emerald-500/20',
+		glow: 'shadow-[0_0_15px_rgba(16,185,129,0.1)]'
+	},
+	red: { 
+		text: 'text-rose-400', 
+		bg: 'bg-rose-500/10', 
+		border: 'border-rose-500/20',
+		glow: 'shadow-[0_0_15px_rgba(244,63,94,0.1)]'
+	},
+	purple: { 
+		text: 'text-fuchsia-400', 
+		bg: 'bg-fuchsia-500/10', 
+		border: 'border-fuchsia-500/20',
+		glow: 'shadow-[0_0_15px_rgba(192,38,211,0.1)]'
+	}
+};
+
+const containerVariants = {
+	hidden: { opacity: 0 },
+	visible: {
+		opacity: 1,
+		transition: { staggerChildren: 0.1 }
+	}
+};
+
+const itemVariants = {
+	hidden: { opacity: 0, y: 10 },
+	visible: { opacity: 1, y: 0 }
 };
 
 function SectionCard({ icon, title, children, accent = 'indigo' }) {
-	const [txt, bg] = ACCENTS[accent] || ACCENTS.indigo;
+	const styles = ACCENTS[accent] || ACCENTS.indigo;
 	return (
-		<div className="bg-white/5 border border-white/6 rounded-lg p-4">
-			<div className="flex items-start gap-3">
-				<div className={`${txt} p-2 ${bg} rounded-md`}>{icon}</div>
-				<div>
-					<h3 className="font-semibold">{title}</h3>
-					<div className="mt-2 text-sm text-gray-300">{children}</div>
+		<motion.div 
+			variants={itemVariants}
+			whileHover={{ y: -2 }}
+			className={`bg-white/[0.03] backdrop-blur-sm border ${styles.border} ${styles.glow} rounded-2xl p-5 transition-all duration-300`}
+		>
+			<div className="flex items-start gap-4">
+				<div className={`${styles.text} p-2.5 ${styles.bg} rounded-xl`}>{icon}</div>
+				<div className="flex-1">
+					<h3 className="font-semibold text-white/90 tracking-tight">{title}</h3>
+					<div className="mt-2 text-sm text-gray-400 leading-relaxed font-light">{children}</div>
 				</div>
 			</div>
-		</div>
+		</motion.div>
+	);
+}
+
+function SettingsLink({ to, label, accent = 'indigo' }) {
+	return (
+		<Link 
+			to={to} 
+			className="group flex items-center justify-between p-2.5 px-4 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-white/[0.12] transition-all"
+		>
+			<span className="text-xs font-medium text-gray-400 group-hover:text-indigo-300 transition-colors">{label}</span>
+			<ChevronRight size={14} className="text-gray-600 group-hover:text-indigo-400 transition-colors" />
+		</Link>
 	);
 }
 
 export default function Keamanan() {
 	return (
-		<div className="p-6 max-w-4xl mx-auto">
-			<header className="mb-6 flex items-center gap-4">
-				<div className="bg-gradient-to-br from-indigo-600 to-purple-500 p-3 rounded-lg shadow-md">
-					<ShieldCheck color="white" size={28} />
+		<motion.div 
+			initial="hidden"
+			animate="visible"
+			variants={containerVariants}
+			className="p-6 md:p-12 max-w-5xl mx-auto min-h-screen"
+		>
+			<motion.header variants={itemVariants} className="mb-12 flex flex-col md:flex-row items-center md:items-start gap-6 text-center md:text-left">
+				<div className="relative">
+					<div className="absolute inset-0 bg-indigo-500/20 blur-2xl rounded-full"></div>
+					<div className="relative bg-gradient-to-br from-indigo-600 to-fuchsia-500 p-4 rounded-2xl shadow-xl shadow-indigo-500/10 border border-white/10">
+						<ShieldCheck color="white" size={32} strokeWidth={2.5} />
+					</div>
 				</div>
-				<div>
-					<h1 className="text-2xl font-bold">Panduan Keamanan — SaipulAI</h1>
-					<p className="mt-1 text-sm text-gray-400">Langkah keamanan dan praktik terbaik untuk penggunaan Live Chat yang aman.</p>
+				<div className="flex-1">
+					<h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-2">
+						Security <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-fuchsia-400">Framework</span>
+					</h1>
+					<p className="text-gray-400 max-w-2xl text-sm md:text-base font-light italic">
+						"Keamanan bukanlah tujuan akhir, melainkan fondasi dari setiap percakapan."
+					</p>
 				</div>
-			</header>
+			</motion.header>
 
-			<div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-				<div className="lg:col-span-2 space-y-4">
-					<SectionCard icon={<Lock size={20} />} title="Ringkasan Keamanan" accent="red">
-						Kami menjaga percakapan Anda dengan prinsip sederhana: simpan sesedikit mungkin, lindungi saat bergerak, dan beri kontrol penuh kepada Anda. Jika ada istilah teknis nanti, cukup tahu: tujuan kami adalah menjaga data Anda tetap aman.
+			<div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
+				<div className="lg:col-span-8 space-y-6">
+					<SectionCard icon={<Lock size={22} />} title="Enkripsi & Sanitasi" accent="red">
+						Setiap pesan yang Anda kirim disanitasi dari input berbahaya dan terlindungi oleh protokol HTTPS standar industri. Kami memastikan data Anda tidak pernah terlihat oleh pihak yang tidak berkepentingan.
 					</SectionCard>
 
-					<SectionCard icon={<ShieldCheck size={20} />} title="Yang Penting untuk Anda" accent="green">
-						Kami menolak otomatis permintaan yang berisi data sensitif (mis. nomor kartu, password), membatasi jenis/ukuran file yang boleh diunggah, dan menyediakan Mode Privasi agar riwayat tidak tersimpan.
+					<SectionCard icon={<ShieldCheck size={22} />} title="Kontrol Sensitifitas" accent="green">
+						Sistem secara otomatis mendeteksi dan mencegah pengiriman data sensitif seperti NIK, nomor kartu, atau password. Mode Privasi tersedia untuk memastikan tidak ada riwayat yang tertinggal.
 					</SectionCard>
 
-					<SectionCard icon={<FileLock2 size={20} />} title="Apa yang Sistem Lakukan (Singkat)" accent="purple">
-						Chat akan disanitasi dari input berbahaya, file diproses lalu disimpan ringkasannya, dan bila Anda melapor, laporan dicatat lokal dulu sebelum tim menindaklanjuti.
+					<SectionCard icon={<FileLock2 size={22} />} title="Manajemen Berkas" accent="purple">
+						File yang diunggah diproses dalam lingkungan terisolasi. Hanya metadata dan ringkasan konten yang dipertahankan untuk kebutuhan pencarian, dengan batas ukuran dan jenis yang ketat.
 					</SectionCard>
 				</div>
 
-				<aside className="space-y-4">
-					<div className="bg-white/3 border border-white/6 p-4 rounded-lg">
-						<div className="flex items-start gap-3">
-							<AlertCircle className="text-yellow-300" />
+				<motion.aside variants={itemVariants} className="lg:col-span-4 space-y-6">
+					<div className="bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/20 p-5 rounded-2xl relative overflow-hidden group">
+						<div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+							<AlertCircle size={64} className="text-amber-500" />
+						</div>
+						<div className="relative flex items-start gap-3">
+							<AlertCircle className="text-amber-400 shrink-0" size={20} />
 							<div>
-								<div className="text-sm font-medium">Perhatian</div>
-								<div className="text-xs text-gray-300 mt-1">Jangan mengirim data pribadi sensitif (KTP/NIK, nomor kartu, password, CVV, nomor rekening) melalui chat.</div>
+								<div className="text-sm font-bold text-amber-200 uppercase tracking-wider mb-1">Peringatan</div>
+								<div className="text-xs text-amber-100/70 leading-relaxed font-light">
+									Hindari berbagi data pribadi seperti KTP, nomor rekening, atau kredensial login. Tim kami tidak akan pernah meminta informasi ini melalui chat.
+								</div>
 							</div>
 						</div>
 					</div>
 
-					<div className="bg-white/3 border border-white/6 p-4 rounded-lg text-sm text-gray-300">
-						<div className="font-semibold">Mode Privasi</div>
-						<div className="mt-2">Jika aktif: riwayat obrolan dan snapshot berkurang atau tidak dipersisten; laporan disimpan dengan redaksi; unggahan tidak disinkronkan otomatis ke backend.</div>
-						<div className="mt-3 flex gap-2">
-							<Link to="/help/chatbot/settings/privacy" className="px-3 py-1 rounded-md text-sm font-medium" style={{ background: 'linear-gradient(90deg,#fb7185,#f43f5e)', color: 'white' }}>Atur Privacy</Link>
-							<Link to="/help/chatbot/settings" className="px-3 py-1 rounded-md text-sm font-medium border border-white/10" style={{ color: 'white' }}>Buka Pengaturan Live CS</Link>
+					<div className="bg-white/[0.02] border border-white/[0.05] p-5 rounded-2xl">
+						<h3 className="text-sm font-semibold text-white/90 mb-4 flex items-center gap-2">
+							<Settings size={16} className="text-indigo-400" />
+							Konfigurasi Cepat
+						</h3>
+						<div className="space-y-2">
+							<SettingsLink to="/help/chatbot/settings/privacy" label="Privasi & Mode Samaran" />
+							<SettingsLink to="/help/chatbot/settings" label="Global Settings" />
+						</div>
+						<div className="mt-4 pt-4 border-t border-white/[0.04]">
+							<p className="text-[10px] text-gray-500 leading-tight">
+								Gunakan Mode Privasi jika Anda ingin percakapan tidak disimpan sama sekali di perangkat lokal.
+							</p>
 						</div>
 					</div>
-				</aside>
+				</motion.aside>
 			</div>
 
-			<section className="space-y-4 text-sm text-gray-300">
-				<div>
-					<h3 className="font-semibold">Koneksi Aman (HTTPS)</h3>
-					<p className="mt-1">Semua komunikasi menggunakan koneksi aman (lihat ikon gembok di browser). Anda tidak perlu mengubah apa pun — cukup jangan gunakan alamat yang dimulai dengan "http://" pada halaman layanan.</p>
-				</div>
+			<motion.section variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 border-t border-white/[0.06] pt-12">
+				{[
+					{ title: "Koneksi Aman", desc: "Komunikasi dua arah selalu menggunakan enkripsi SSL/TLS tingkat tinggi." },
+					{ title: "Penyimpanan Lokal", desc: "Data riwayat disimpan di sandbox browser Anda dan dapat dihapus kapan saja." },
+					{ title: "Penanganan Data", desc: "Data hanya diproses untuk memberikan respons yang relevan bagi Anda." },
+					{ title: "Audit & Transparansi", desc: "Semua interaksi dicatat secara anonim untuk peningkatan kualitas sistem." }
+				].map((item, idx) => (
+					<div key={idx} className="group">
+						<h4 className="text-sm font-bold text-white/80 group-hover:text-indigo-400 transition-colors mb-2 uppercase tracking-widest text-[11px]">{item.title}</h4>
+						<p className="text-sm text-gray-400 font-light leading-relaxed">{item.desc}</p>
+					</div>
+				))}
+			</motion.section>
 
-				<div>
-					<h3 className="font-semibold">Simpan di Perangkat Anda (Local)</h3>
-					<p className="mt-1">Obrolan disimpan di browser Anda supaya bisa dilanjutkan nanti. Jika Anda aktifkan <em>Privacy Mode</em>, hanya ringkasan kecil yang disimpan (mis. id & waktu). Untuk menghapus, buka Riwayat dan hapus sesi yang tidak Anda inginkan.</p>
+			<motion.div variants={itemVariants} className="mt-16 pt-8 border-t border-white/[0.06] flex flex-col md:flex-row items-center justify-between gap-6">
+				<div className="flex gap-4">
+					<Link to="/live-cs/privacy" className="text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors border-b border-transparent hover:border-indigo-500/50 pb-0.5">Kebijakan Privasi</Link>
+					<span className="text-gray-700">|</span>
+					<Link to="/help/docs" className="text-xs font-medium text-gray-500 hover:text-gray-300 transition-colors border-b border-transparent hover:border-gray-500/50 pb-0.5">Dokumentasi</Link>
 				</div>
-
-				<div>
-					<h3 className="font-semibold">Jika Anda Mengetik Data Sensitif</h3>
-					<p className="mt-1">Jangan masukkan informasi seperti nomor kartu, password, KTP/NIK, atau rekening. Sistem akan menolak pesan yang terdeteksi mengandung data sensitif dan memberi tahu Anda untuk menghapus informasi tersebut.</p>
-				</div>
-
-				<div>
-					<h3 className="font-semibold">Unggah File dengan Aman</h3>
-					<p className="mt-1">Anda bisa mengunggah dokumen dan gambar untuk dianalisis. Periksa ukuran dan jenis file (lihat Pengaturan). Hindari mengunggah dokumen yang berisi data sensitif. Di sisi server, file hanya diproses lalu ringkasannya yang disimpan untuk mencari konten.</p>
-				</div>
-
-				<div>
-					<h3 className="font-semibold">Aman di Belakang Layar</h3>
-					<p className="mt-1">Server dan API dilindungi dengan kunci dan batas akses. Ini hal teknis—yang penting bagi Anda: hanya orang/layanan yang berizin yang bisa melihat data tersimpan.</p>
-				</div>
-
-				<div>
-					<h3 className="font-semibold">Catatan & Audit</h3>
-					<p className="mt-1">Sistem mencatat kejadian penting untuk membantu perbaikan dan investigasi. Data sensitif disunting sebelum tercatat, dan log disimpan hanya selama yang dibutuhkan.</p>
-				</div>
-
-				<div>
-					<h3 className="font-semibold">Melaporkan Masalah</h3>
-					<p className="mt-1">Jika ada jawaban yang salah, berbahaya, atau tidak pantas, tekan tombol <em>Report</em>. Laporan akan direkam dan tim akan meninjau. Anda bisa memilih untuk memberikan kontak jika ingin dihubungi.</p>
-				</div>
-
-				<div>
-					<h3 className="font-semibold">Layanan Eksternal</h3>
-					<p className="mt-1">Beberapa fitur mungkin menggunakan layanan pihak ketiga (mis. model bahasa atau penyimpanan). Kami akan mencoba untuk merahasiakan data sensitif, dan akan memberi tahu bila data perlu dikirim ke layanan eksternal.</p>
-				</div>
-
-				<div>
-					<h3 className="font-semibold">Tips Cepat untuk Pengguna</h3>
-					<ul className="list-disc list-inside mt-1">
-						<li>Hindari mengirim data sensitif (nomor kartu, password, NIK, rekening).</li>
-						<li>Gunakan <em>Privacy Mode</em> untuk percakapan pribadi.</li>
-						<li>Ingin menghapus? Buka Riwayat dan hapus sesi yang tidak perlu.</li>
-						<li>Periksa link sebelum mengklik dan jangan bagikan informasi pribadi di publik.</li>
-					</ul>
-				</div>
-
-				<div>
-					<h3 className="font-semibold">Untuk Tim Produk (Singkat)</h3>
-					<ul className="list-disc list-inside mt-1">
-						<li>Pastikan file diproses di lingkungan terisolasi dan dipindai dari malware.</li>
-						<li>Gunakan header keamanan (CSP, HSTS) dan batasi akses API.</li>
-						<li>Enkripsi backup dan tetapkan kebijakan penghapusan data.</li>
-						<li>Uji skenario input berbahaya secara berkala.</li>
-					</ul>
-				</div>
-			</section>
-
-			<section className="mt-6">
-				<h3 className="font-semibold text-white">Buka Pengaturan Live CS</h3>
-				<div className="mt-2 text-sm text-gray-300 space-y-2">
-					<p>Langsung buka popup pengaturan Live CS untuk menyesuaikan perilaku chat dan privasi:</p>
-					<ul className="list-disc list-inside">
-						<li><Link to="/help/chatbot/settings/general" className="text-indigo-300 underline">General</Link></li>
-						<li><Link to="/help/chatbot/settings/ai" className="text-indigo-300 underline">AI</Link></li>
-						<li><Link to="/help/chatbot/settings/data" className="text-indigo-300 underline">Data</Link></li>
-						<li><Link to="/help/chatbot/settings/file" className="text-indigo-300 underline">File</Link></li>
-						<li><Link to="/help/chatbot/settings/performance" className="text-indigo-300 underline">Performance</Link></li>
-						<li><Link to="/help/chatbot/settings/privacy" className="text-indigo-300 underline">Privacy</Link></li>
-						<li><Link to="/help/chatbot/settings/storage" className="text-indigo-300 underline">Storage</Link></li>
-						<li><Link to="/help/chatbot/settings/advanced" className="text-indigo-300 underline">Advanced</Link></li>
-					</ul>
-				</div>
-			</section>
-
-			<div className="mt-6 text-sm text-gray-400">Kembali ke <Link to="/live-cs/privacy" className="text-indigo-300 underline">Privasi</Link>.</div>
-		</div>
+				<p className="text-[10px] text-gray-600 font-mono tracking-tighter">
+					VER 2.4.0 — SECURITY_GUIDELINE
+				</p>
+			</motion.div>
+		</motion.div>
 	);
 }

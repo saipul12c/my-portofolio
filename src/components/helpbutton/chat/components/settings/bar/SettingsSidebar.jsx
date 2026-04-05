@@ -91,7 +91,7 @@ export function SettingsSidebar({ activeTab, setActiveTab }) {
             // Navigate to route AFTER state is queued
             // Use proper path mapping
             const p = tabToPath[tab.id] || 'general';
-            navigate(`/help/chatbot/settings/${p}`);
+            navigate(`/help/chatbot/settings/${p}`, { replace: true });
           }}
           aria-label={tab.label}
           style={activeTab === tab.id ? { background: 'var(--saipul-accent-gradient)', color: '#fff', border: '1px solid rgba(255,255,255,0.06)' } : { color: 'var(--saipul-muted-text)' }}

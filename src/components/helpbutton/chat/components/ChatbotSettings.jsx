@@ -10,7 +10,8 @@ export function ChatbotSettings({
   onClose,
   knowledgeBase = {},
   updateKnowledgeBase,
-  knowledgeStats = {}
+  knowledgeStats = {},
+  initialTab = null
 }) {
   const {
     settings,
@@ -18,7 +19,7 @@ export function ChatbotSettings({
     handleReset,
     safeKnowledgeBase,
     totalKBCategories
-  } = useSettings(knowledgeBase);
+  } = useSettings(knowledgeBase, initialTab);
 
   const {
     uploadedFiles,
