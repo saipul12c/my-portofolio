@@ -34,7 +34,7 @@ const MobilePlatformCard = memo(({
           </div>
           <div className="text-left">
             <p className="font-semibold text-white">{platform}</p>
-            <p className="text-xs text-gray-400 truncate max-w-[120px]">{username}</p>
+            <p className={`text-xs ${isConnected ? 'text-white/60' : 'text-gray-400'} truncate max-w-[120px]`}>{username}</p>
             {!url && (
               <p className="text-xs text-yellow-400 mt-1">Akan segera hadir</p>
             )}

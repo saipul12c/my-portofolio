@@ -36,8 +36,8 @@ const DesktopPlatformCard = memo(({
             <Icon className={`w-4 h-4 ${isConnected ? 'text-white' : 'text-gray-300 group-hover:text-white'}`} />
           </div>
           <div className="flex-1">
-            <p className="font-medium text-white">{platform}</p>
-            <p className="text-xs text-gray-400">{description}</p>
+            <p className="font-semibold text-white">{platform}</p>
+            <p className={`text-xs ${isConnected ? 'text-white/70' : 'text-gray-400'}`}>{description}</p>
             {!url && (
               <p className="text-xs text-yellow-400 mt-1">Coming Soon</p>
             )}

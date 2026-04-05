@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, AlertCircle, LogIn } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../../lib/supabaseClient';
 const Login = () => {
   const navigate = useNavigate();
@@ -138,13 +139,11 @@ const Login = () => {
         }
 
         // Redirect berdasarkan role
-        setTimeout(() => {
-          if (userRole === 'SUPER_ADMIN' || userRole === 'ADMIN') {
-            navigate('/Live-Discussion/dashboard');
-          } else {
-            navigate('/Live-Discussion');
-          }
-        }, 1500);
+        if (['SUPER_ADMIN', 'ADMIN', 'MODERATOR'].includes(userRole)) {
+          navigate('/Live-Discussion/dashboard');
+        } else {
+          navigate('/Live-Discussion');
+        }
 
       } else {
         throw new Error('Profil pengguna tidak ditemukan');
@@ -162,137 +161,159 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#07102a] via-[#0a1a3a] to-[#0c234a] flex items-center justify-center p-4 sm:p-8 relative overflow-hidden">
-      {/* Animated Glowing Orbs */}
-      <div className="absolute top-[-10%] left-[-10%] w-72 md:w-96 h-72 md:h-96 bg-cyan-500/20 rounded-full mix-blend-screen filter blur-[80px] animate-pulse"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-72 md:w-96 h-72 md:h-96 bg-blue-600/20 rounded-full mix-blend-screen filter blur-[80px] animate-pulse" style={{ animationDelay: '2s' }}></div>
+    <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4 sm:p-8 relative overflow-hidden">
+      {/* Immersive Background Orbs */}
+      <motion.div 
+        animate={{ 
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3],
+          x: [0, 50, 0],
+          y: [0, 30, 0]
+        }}
+        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+        className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-500/10 rounded-full mix-blend-screen filter blur-[120px] pointer-events-none"
+      />
+      <motion.div 
+        animate={{ 
+          scale: [1, 1.3, 1],
+          opacity: [0.2, 0.4, 0.2],
+          x: [0, -40, 0],
+          y: [0, -60, 0]
+        }}
+        transition={{ duration: 20, repeat: Infinity, ease: "linear", delay: 2 }}
+        className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-blue-600/10 rounded-full mix-blend-screen filter blur-[120px] pointer-events-none"
+      />
 
-      <div className="w-full max-w-md relative z-10">
-        <div className="bg-white/5 backdrop-blur-2xl rounded-[2rem] shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] p-6 sm:p-8 border border-white/10 transition-all duration-300 hover:shadow-cyan-500/10 hover:border-white/20">
-          <div className="text-center mb-8 sm:mb-10">
-            <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-4">
-              <LogIn className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Selamat Datang</h1>
-            <p className="text-sm sm:text-base text-blue-200">Silakan masuk ke akun Anda</p>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="w-full max-w-md relative z-10"
+      >
+        <div className="group bg-white/[0.01] backdrop-blur-3xl rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.6)] p-6 sm:p-8 border border-white/5 transition-all duration-500 hover:border-cyan-500/20">
+          <div className="text-center mb-8">
+            <motion.div 
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 rounded-2xl mb-4 border border-white/5 shadow-inner group-hover:scale-105 transition-transform duration-500"
+            >
+              <LogIn className="w-8 h-8 text-cyan-400" />
+            </motion.div>
+            <h1 className="text-2xl sm:text-3xl font-black text-white mb-2 tracking-tight italic uppercase">DENTITAS LIVE</h1>
+            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-white/30">Sinkronisasi Sesi Diskusi</p>
           </div>
 
-          {message.text && (
-            <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 backdrop-blur-sm ${message.type === 'success'
-              ? 'bg-green-500/20 text-green-200 border border-green-500/30'
-              : message.type === 'error'
-                ? 'bg-red-500/20 text-red-200 border border-red-500/30'
-                : 'bg-blue-500/20 text-blue-200 border border-blue-500/30'
-              }`}>
-              <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <span className="text-sm">{message.text}</span>
-            </div>
-          )}
+          <AnimatePresence mode="wait">
+            {message.text && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className={`mb-4 p-3 rounded-xl flex items-center gap-2 backdrop-blur-md ${message.type === 'success'
+                  ? 'bg-green-500/10 text-green-300 border border-green-500/20'
+                  : 'bg-red-500/20 text-red-200 border border-red-500/20'
+                }`}
+              >
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <span className="text-[11px] font-bold tracking-tight">{message.text}</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-white mb-2">
-                Email
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-blue-300" />
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-1">
+              <label className="text-[9px] font-black tracking-widest text-white/30 uppercase ml-1">Secure Email</label>
+              <div className="relative group/input">
+                <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within/input:text-cyan-400 transition-colors" />
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full pl-10 pr-4 py-3.5 bg-white/5 border rounded-xl focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 outline-none text-white placeholder-blue-300/50 transition-all backdrop-blur-sm ${errors.email ? 'border-red-400' : 'border-white/10 hover:border-white/20'
-                    }`}
-                  placeholder="contoh@email.com"
+                  className={`w-full pl-12 pr-4 py-3 bg-white/[0.03] border rounded-2xl focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500/40 outline-none text-white text-sm placeholder-white/10 transition-all duration-300 backdrop-blur-md ${errors.email ? 'border-red-400/50 bg-red-400/5' : 'border-white/5 hover:border-white/10'}`}
+                  placeholder="name@example.com"
                 />
               </div>
-              {errors.email && (
-                <p className="mt-2 text-sm text-red-300">{errors.email}</p>
-              )}
             </div>
 
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-medium text-white">
-                  Password
-                </label>
-              </div>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-blue-300" />
+            <div className="space-y-1">
+              <label className="text-[9px] font-black tracking-widest text-white/30 uppercase ml-1">Access Protocol</label>
+              <div className="relative group/input">
+                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within/input:text-cyan-400 transition-colors" />
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full pl-10 pr-12 py-3.5 bg-white/5 border rounded-xl focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 outline-none text-white placeholder-blue-300/50 transition-all backdrop-blur-sm ${errors.password ? 'border-red-400' : 'border-white/10 hover:border-white/20'
-                    }`}
-                  placeholder="Masukkan password"
+                  className={`w-full pl-12 pr-12 py-3 bg-white/[0.03] border rounded-2xl focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500/40 outline-none text-white text-sm placeholder-white/10 transition-all duration-300 backdrop-blur-md ${errors.password ? 'border-red-400/50 bg-red-400/5' : 'border-white/5 hover:border-white/10'}`}
+                  placeholder="Password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-300 hover:text-white"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/20 hover:text-cyan-400 transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              {errors.password && (
-                <p className="mt-2 text-sm text-red-300">{errors.password}</p>
-              )}
             </div>
 
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="rememberMe"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 rounded bg-white/10 border-white/30 text-blue-500 focus:ring-blue-400"
-              />
-              <label htmlFor="rememberMe" className="ml-2 text-sm text-white">
-                Ingat email saya
-              </label>
+            <div className="flex items-center justify-between pb-2">
+              <div className="flex items-center ml-1">
+                <input
+                  type="checkbox"
+                  id="rememberMe"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded-lg bg-white/5 border-white/10 text-cyan-500 focus:ring-cyan-500/30 transition-all cursor-pointer"
+                />
+                <label htmlFor="rememberMe" className="ml-2 text-[10px] font-bold text-white/30 uppercase tracking-widest cursor-pointer hover:text-white/50 transition-colors">
+                  Remember Node
+                </label>
+              </div>
+              <a href="#" className="text-[10px] font-bold text-cyan-400/50 hover:text-cyan-400 uppercase tracking-widest transition-colors">Forgot Hash?</a>
             </div>
 
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02, boxShadow: '0 0 20px rgba(6, 182, 212, 0.3)' }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className={`w-full py-3.5 px-4 rounded-xl font-semibold text-white transition-all transform active:scale-[0.98] ${loading
-                ? 'bg-cyan-600/50 cursor-not-allowed'
-                : 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/25 border border-cyan-400/30'
-                }`}
+              className={`w-full py-4 px-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] text-white transition-all border border-cyan-400/20 overflow-hidden relative group ${loading ? 'bg-cyan-600/50 cursor-not-allowed' : 'bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-700 shadow-xl shadow-cyan-500/10'}`}
             >
+              <div className="absolute inset-0 bg-white/10 transform -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
               {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Memproses...
+                <span className="flex items-center justify-center gap-3">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  Syncing...
                 </span>
               ) : (
-                <span className="flex items-center justify-center gap-2">
-                  <LogIn className="w-5 h-5" />
-                  Masuk
+                <span className="flex items-center justify-center gap-3 relative z-10 italic">
+                  Initiate Connection
+                  <LogIn className="w-4 h-4" />
                 </span>
               )}
-            </button>
+            </motion.button>
 
-            <div className="text-center pt-6 border-t border-white/20">
-              <p className="text-blue-200">
-                Belum punya akun?{' '}
+            <div className="text-center pt-6 border-t border-white/5 mt-2">
+              <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">
+                New Signal?{' '}
                 <a
                   href="/Live-Discussion/daftar"
-                  className="text-cyan-400 hover:text-cyan-300 font-bold transition-all hover:underline"
+                  className="text-cyan-400 hover:text-white font-black transition-colors ml-1"
                 >
-                  Daftar di sini
+                  Create Identity
                 </a>
               </p>
             </div>
           </form>
 
-          <div className="mt-8 text-xs text-blue-300 text-center">
-            <p>© {new Date().getFullYear()} Live Discussion System. All rights reserved.</p>
-          </div>
+          <footer className="mt-8 text-[8px] font-black text-white/10 text-center uppercase tracking-[0.3em]">
+            <p>© {new Date().getFullYear()} Live Discussion • End-to-End Encrypted Tunnel</p>
+          </footer>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

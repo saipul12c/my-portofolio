@@ -1,7 +1,7 @@
-import React, { memo, useState, useEffect, useCallback } from 'react';
+import React, { memo, useState, useEffect, useCallback, useMemo } from 'react';
 import { 
   MdEmail, MdShare, MdHome, MdInfo, MdFolderOpen, MdMailOutline, 
-  MdStar, MdQrCode, MdContentCopy, MdDownload, MdClose 
+  MdStar, MdQrCode, MdContentCopy, MdDownload, MdClose, MdForum, MdChat, MdOpenInNew, MdVerified 
 } from 'react-icons/md';
 import { HiClipboardCheck, HiOutlineClipboardCopy } from 'react-icons/hi';
 import { FaLanguage } from 'react-icons/fa';
@@ -12,6 +12,75 @@ import {
 import QRCode from 'qrcode';
 import Avatar from '../ui/Avatar';
 import DesktopPlatformCard from '../ui/DesktopPlatformCard';
+import { useNavigate } from 'react-router-dom';
+
+// Import Hobbies data and icons
+import hobbiesData from '../../../data/hub/hobbiesData.json';
+import { iconMap } from '../../owner/utils/iconMap';
+import { generateSlug } from '../../hub/utils/hobbyUtils';
+
+const usesData = [
+  {
+    category: 'Hardware',
+    icon: '🖥️',
+    color: 'cyan',
+    items: [
+      { name: 'MacBook Pro M2', description: 'Primary machine for development and long-term projects.', url: 'https://www.apple.com/macbook-pro/' },
+      { name: 'ASUS VivoBook 14', description: 'Daily driver for quick tasks and Windows-specific development.', url: 'https://www.asus.com/laptops/for-home/vivobook/' },
+      { name: 'iPhone 13', description: 'Testing mobile responsiveness and iOS specific features.', url: 'https://www.apple.com/iphone-13/' }
+    ]
+  },
+  {
+    category: 'Editor',
+    icon: '✏️',
+    color: 'blue',
+    items: [
+      { name: 'Visual Studio Code', description: 'My primary editor for web and full-stack development.', url: 'https://code.visualstudio.com/' },
+      { name: 'Cursor AI', description: 'AI-powered code editor that supercharges productivity.', url: 'https://cursor.sh/' },
+      { name: 'One Dark Pro', description: 'My go-to VS Code color theme — easy on the eyes.', url: 'https://marketplace.visualstudio.com/items?itemName=zhuangtongfa.Material-theme' }
+    ]
+  },
+  {
+    category: 'Terminal',
+    icon: '💻',
+    color: 'green',
+    items: [
+      { name: 'Windows Terminal', description: 'Modern terminal application for command-line users.', url: 'https://apps.microsoft.com/store/detail/windows-terminal/9N0DX20HK701' },
+      { name: 'Warp', description: 'The terminal for the 21st century, with built-in AI.', url: 'https://www.warp.dev/' },
+      { name: 'Oh My Posh', description: 'Prompt theme engine for any shell.', url: 'https://ohmyposh.dev/' }
+    ]
+  },
+  {
+    category: 'Apps',
+    icon: '📱',
+    color: 'purple',
+    items: [
+      { name: 'Figma', description: 'Collaborative interface design tool for all my UI/UX needs.', url: 'https://www.figma.com/' },
+      { name: 'Notion', description: 'All-in-one workspace for notes, tasks, and project management.', url: 'https://www.notion.so/' },
+      { name: 'Postman', description: 'API platform for developers to design, build, and test APIs.', url: 'https://www.postman.com/' }
+    ]
+  },
+  {
+    category: 'Browser',
+    icon: '🌐',
+    color: 'yellow',
+    items: [
+      { name: 'Arc Browser', description: 'A more personal and organized way to browse the web.', url: 'https://arc.net/' },
+      { name: 'Google Chrome', description: 'Essential for testing and using developer tools.', url: 'https://www.google.com/chrome/' },
+      { name: 'React DevTools', description: 'Inspect the React component hierarchy and state.', url: 'https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbhfkeoomakeohkd' }
+    ]
+  },
+  {
+    category: 'Tech Stack',
+    icon: '🚀',
+    color: 'pink',
+    items: [
+      { name: 'React.js + Vite', description: 'The core technologies I use to build modern web apps.', url: 'https://react.dev/' },
+      { name: 'Tailwind CSS', description: 'A utility-first CSS framework for rapid UI development.', url: 'https://tailwindcss.com/' },
+      { name: 'Supabase', description: 'The open-source Firebase alternative for my backends.', url: 'https://supabase.com/' }
+    ]
+  }
+];
 
 const DesktopLayout = memo(({
   platformData,
@@ -21,6 +90,8 @@ const DesktopLayout = memo(({
   copied,
   navigate,
   stats,
+  certificates = [],
+  openCertModal
 }) => {
   const [hoveredWebNav, setHoveredWebNav] = useState(null);
   const [showQRModal, setShowQRModal] = useState(false);
@@ -28,6 +99,95 @@ const DesktopLayout = memo(({
   const [isGeneratingQR, setIsGeneratingQR] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
   const [qrCopied, setQrCopied] = useState(false);
+  const [recentChats, setRecentChats] = useState([]);
+
+  // Fetch recent Live Discussion messages
+  useEffect(() => {
+    const fetchRecentChats = async () => {
+      try {
+        const { createClient } = await import('@supabase/supabase-js');
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+        if (!supabaseUrl || !supabaseKey) return;
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        const { data } = await supabase
+          .from('messages')
+          .select('username, content, role, timestamp')
+          .order('timestamp', { ascending: false })
+          .limit(10);
+        if (data) setRecentChats(data);
+      } catch (err) {
+        console.warn('Could not fetch chats:', err);
+      }
+    };
+    fetchRecentChats();
+  }, []);
+
+  // Pre-process hobbies to include slugs once
+  const hobbiesWithSlugs = useMemo(() => {
+    return hobbiesData.map(h => ({
+      ...h,
+      slug: generateSlug(h.title)
+    }));
+  }, []);
+
+  const [displayedHobbies, setDisplayedHobbies] = useState(hobbiesWithSlugs.slice(0, 6));
+
+  // Rotate hobbies one-by-one every 3 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const indexToReplace = Math.floor(Math.random() * 6);
+      
+      const availableHobbies = hobbiesWithSlugs.filter(h => 
+        !displayedHobbies.some(dh => dh.id === h.id)
+      );
+      
+      if (availableHobbies.length > 0) {
+        const newHobby = availableHobbies[Math.floor(Math.random() * availableHobbies.length)];
+        
+        setDisplayedHobbies(prev => {
+          const next = [...prev];
+          next[indexToReplace] = newHobby;
+          return next;
+        });
+      }
+    }, 3000);
+    
+    return () => clearInterval(interval);
+  }, [displayedHobbies, hobbiesWithSlugs]);
+
+  // Logic for rotating certificates (Max 6 displayed)
+  const [displayedCerts, setDisplayedCerts] = useState([]);
+
+  useEffect(() => {
+    if (certificates.length > 0) {
+      setDisplayedCerts(certificates.slice(0, 6));
+    }
+  }, [certificates]);
+
+  useEffect(() => {
+    if (certificates.length <= 6) return;
+
+    const interval = setInterval(() => {
+      setDisplayedCerts(prev => {
+        const newCerts = [...prev];
+        const indexToReplace = Math.floor(Math.random() * Math.min(prev.length, 6));
+        
+        // Find a certificate that is not currently displayed
+        const displayedIds = new Set(prev.map(c => c.id));
+        const availableCerts = certificates.filter(c => !displayedIds.has(c.id));
+        
+        if (availableCerts.length > 0) {
+          const randomNewCert = availableCerts[Math.floor(Math.random() * availableCerts.length)];
+          newCerts[indexToReplace] = randomNewCert;
+        }
+        
+        return newCerts;
+      });
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [certificates]);
 
   // Generate QR Code ketika modal dibuka
   useEffect(() => {
@@ -131,8 +291,15 @@ const DesktopLayout = memo(({
             <div className="flex items-center gap-6">
               <Avatar />
               <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-2">
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-2 flex items-center gap-2">
                   Muhammad Syaiful Mukmin
+                  <span className="relative group/verified inline-flex group-hover:scale-110 transition-transform">
+                    <MdVerified className="w-6 h-6 text-blue-500 fill-blue-500 cursor-help" />
+                    {/* Tooltip info */}
+                    <span className="absolute left-1/2 -top-10 -translate-x-1/2 px-3 py-1.5 bg-gray-900/95 backdrop-blur-md border border-gray-800 rounded-lg text-xs text-white opacity-0 group-hover/verified:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl z-50">
+                      Terverifikasi Official
+                    </span>
+                  </span>
                 </h1>
                 <p className="text-gray-400 mb-1">Digital Creator & Developer</p>
                 <p className="text-gray-500 text-sm">Manage all your social connections in one place</p>
@@ -356,18 +523,23 @@ const DesktopLayout = memo(({
                   Certificates
                 </h3>
                 <div className="space-y-2">
-                  <div className="text-xs flex items-center justify-between hover:bg-gray-800/30 p-2 rounded transition-colors cursor-pointer">
-                    <span className="text-gray-300">Front-End Web Development</span>
-                    <span className="text-blue-400 text-xs bg-blue-500/20 px-2 py-1 rounded">2024</span>
-                  </div>
-                  <div className="text-xs flex items-center justify-between hover:bg-gray-800/30 p-2 rounded transition-colors cursor-pointer">
-                    <span className="text-gray-300">UI/UX Design Fundamentals</span>
-                    <span className="text-pink-400 text-xs bg-pink-500/20 px-2 py-1 rounded">2023</span>
-                  </div>
-                  <div className="text-xs flex items-center justify-between hover:bg-gray-800/30 p-2 rounded transition-colors cursor-pointer">
-                    <span className="text-gray-300">AI for Everyone</span>
-                    <span className="text-purple-400 text-xs bg-purple-500/20 px-2 py-1 rounded">2024</span>
-                  </div>
+                  {displayedCerts.map((cert) => (
+                    <div 
+                      key={cert.id}
+                      onClick={() => openCertModal(cert)}
+                      className="text-xs flex items-center justify-between hover:bg-gray-800/50 p-2.5 rounded-xl transition-all cursor-pointer border border-transparent hover:border-gray-700 active:scale-95 group"
+                    >
+                      <div className="flex flex-col">
+                        <span className="text-gray-300 font-medium group-hover:text-white transition-colors">{cert.title}</span>
+                        <span className="text-[10px] text-gray-500">{cert.issuer}</span>
+                      </div>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full ${
+                        cert.themeColor ? '' : 'bg-blue-500/10 text-blue-400'
+                      }`} style={cert.themeColor ? { backgroundColor: `${cert.themeColor}20`, color: cert.themeColor } : {}}>
+                        {cert.year}
+                      </span>
+                    </div>
+                  ))}
                 </div>
                 <button
                   onClick={() => navigate("/sertifikat")}
@@ -383,40 +555,79 @@ const DesktopLayout = memo(({
                   <span className="text-lg">🎨</span>
                   Hobbies
                 </h3>
-                <div className="space-y-2">
-                  <div className="text-xs hover:bg-gray-800/30 p-2 rounded transition-colors cursor-pointer">
-                    <span className="text-gray-300">📷 Fotografi</span>
-                    <div className="flex items-center gap-2 mt-1">
-                      <div className="w-full bg-gray-800 rounded-full h-1.5">
-                        <div className="bg-gradient-to-r from-blue-500 to-cyan-400 h-1.5 rounded-full w-3/4" />
+                <div className="space-y-3">
+                  {displayedHobbies.map((hobby) => {
+                    const IconComponent = iconMap[hobby.icon];
+                    return (
+                      <div 
+                        key={hobby.id} 
+                        onClick={() => navigate(`/hobbies/${hobby.slug}`)}
+                        className="group text-xs hover:bg-gray-800/50 p-2.5 rounded-xl transition-all cursor-pointer border border-transparent hover:border-gray-700 active:scale-95"
+                      >
+                        <div className="flex items-center justify-between mb-1.5">
+                          <div className="flex items-center gap-2">
+                            <span className="p-1.5 rounded-lg bg-gray-800 group-hover:bg-gray-700 transition-colors">
+                              {IconComponent && <IconComponent className={`w-3.5 h-3.5 ${hobby.iconColor || 'text-gray-400'}`} />}
+                            </span>
+                            <span className="text-gray-300 font-medium group-hover:text-white transition-colors">{hobby.title}</span>
+                          </div>
+                          <MdOpenInNew className="w-3 h-3 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
+                            <div 
+                              className={`h-1.5 rounded-full bg-gradient-to-r ${hobby.color || 'from-blue-500 to-cyan-400'} transition-all duration-1000 ease-in-out`} 
+                              style={{ width: `${hobby.stats?.completion || 0}%` }}
+                            />
+                          </div>
+                          <span className="text-gray-500 text-[10px] w-8 text-right font-mono">{hobby.stats?.completion || 0}%</span>
+                        </div>
                       </div>
-                      <span className="text-gray-400 text-xs">75%</span>
-                    </div>
-                  </div>
-                  <div className="text-xs hover:bg-gray-800/30 p-2 rounded transition-colors cursor-pointer">
-                    <span className="text-gray-300">🎬 Editing Video Dokumenter</span>
-                    <div className="flex items-center gap-2 mt-1">
-                      <div className="w-full bg-gray-800 rounded-full h-1.5">
-                        <div className="bg-gradient-to-r from-purple-500 to-pink-400 h-1.5 rounded-full w-2/5" />
-                      </div>
-                      <span className="text-gray-400 text-xs">40%</span>
-                    </div>
-                  </div>
-                  <div className="text-xs hover:bg-gray-800/30 p-2 rounded transition-colors cursor-pointer">
-                    <span className="text-gray-300">✏️ Menulis Blog Edukasi</span>
-                    <div className="flex items-center gap-2 mt-1">
-                      <div className="w-full bg-gray-800 rounded-full h-1.5">
-                        <div className="bg-gradient-to-r from-green-500 to-emerald-400 h-1.5 rounded-full w-3/5" />
-                      </div>
-                      <span className="text-gray-400 text-xs">60%</span>
-                    </div>
-                  </div>
+                    );
+                  })}
                 </div>
                 <button
                   onClick={() => navigate("/hobbies")}
-                  className="w-full mt-4 py-2 text-xs text-gray-300 hover:text-white transition-colors hover:underline"
+                  className="w-full mt-4 py-2.5 bg-gray-800/30 hover:bg-gray-800/50 rounded-xl text-xs text-gray-400 hover:text-white transition-all border border-gray-700/50 hover:border-gray-600 font-medium"
                 >
                   Lihat semua →
+                </button>
+              </div>
+
+              {/* Live Discussion Preview */}
+              <div className="bg-gray-900/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <MdChat className="w-5 h-5 text-cyan-400" />
+                  Live Discussion
+                </h3>
+                <div className="space-y-3">
+                  {recentChats.length > 0 ? recentChats.map((chat, i) => (
+                    <div key={i} className="flex items-start gap-2 p-2 rounded-lg hover:bg-gray-800/30 transition-colors">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex-shrink-0 flex items-center justify-center text-[9px] font-bold text-white mt-0.5">
+                        {chat.username?.[0]?.toUpperCase() || '?'}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-semibold text-white truncate">{chat.username || 'Anonim'}</span>
+                          <span className="text-[9px] text-gray-500">{chat.role || 'USER'}</span>
+                        </div>
+                        <p className="text-xs text-gray-400 line-clamp-1">{chat.content || '...'}</p>
+                      </div>
+                    </div>
+                  )) : (
+                    <div className="text-center py-6 space-y-2">
+                      <MdForum className="w-8 h-8 text-cyan-500/30 mx-auto" />
+                      <p className="text-sm text-gray-400 font-medium">Belum ada percakapan</p>
+                      <p className="text-[11px] text-gray-500 leading-relaxed">Jadilah yang pertama memulai diskusi!<br/>Bergabung dan bagikan pemikiranmu bersama komunitas.</p>
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={() => navigate("/Live-Discussion")}
+                  className="w-full mt-4 py-2.5 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 border border-cyan-500/30 rounded-lg text-cyan-400 text-xs font-semibold hover:border-cyan-500/60 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+                >
+                  <MdForum className="w-4 h-4" />
+                  Gabung Diskusi →
                 </button>
               </div>
             </div>
@@ -439,6 +650,13 @@ const DesktopLayout = memo(({
                       className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-opacity hover:scale-105 active:scale-95"
                     >
                       Hubungi Admin Sekarang
+                    </button>
+                    <button
+                      onClick={() => navigate("/Live-Discussion")}
+                      className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-opacity hover:scale-105 active:scale-95 flex items-center gap-2"
+                    >
+                      <MdForum className="w-4 h-4" />
+                      Diskusi Bersama
                     </button>
                   </div>
                 </div>
@@ -501,6 +719,50 @@ const DesktopLayout = memo(({
                   </div>
                 </div>
                 
+                {/* Uses & Setup Section */}
+                <div className="mt-6 pt-6 border-t border-gray-800">
+                  <div className="mb-6">
+                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                      <span className="text-lg">⚙️</span> Uses & Setup
+                    </h3>
+                    <p className="text-gray-400 text-xs mt-1">Sistem, perangkat, dan software yang saya gunakan sehari-hari.</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {usesData.map((category, idx) => (
+                      <div key={idx} className={`bg-gray-900/50 backdrop-blur-sm rounded-2xl p-5 border border-gray-800 hover:border-${category.color}-500/30 transition-all group`}>
+                        <div className="flex items-center gap-3 mb-5 border-b border-gray-800 pb-3">
+                          <div className={`p-2 rounded-lg bg-${category.color}-500/10 text-${category.color}-400 group-hover:scale-110 transition-transform`}>
+                            <span className="text-base">{category.icon}</span>
+                          </div>
+                          <h4 className="font-bold text-white text-sm uppercase tracking-wider">{category.category}</h4>
+                        </div>
+                        
+                        <div className="space-y-4">
+                          {category.items.map((item, iIdx) => (
+                            <a 
+                              key={iIdx}
+                              href={item.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block group/item"
+                            >
+                              <div className="flex justify-between items-start mb-1">
+                                <span className="text-white text-sm font-semibold group-hover/item:text-cyan-400 transition-colors">
+                                  {item.name}
+                                </span>
+                                <MdOpenInNew className="w-3.5 h-3.5 text-gray-600 group-hover/item:text-cyan-400 transition-colors opacity-0 group-hover/item:opacity-100" />
+                              </div>
+                              <p className="text-[11px] text-gray-500 leading-relaxed line-clamp-2">
+                                {item.description}
+                              </p>
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
                 {/* Stats overview */}
                 <div className="mt-6 pt-6 border-t border-gray-800">
                   <h3 className="text-lg font-bold text-white mb-6">📊 Statistics Overview</h3>
@@ -814,7 +1076,7 @@ const DesktopLayout = memo(({
       {/* QR Code Modal for Desktop - LANDSCAPE LAYOUT */}
       {showQRModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-lg flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-gray-900 to-gray-950 rounded-2xl border border-gray-800 max-w-3xl w-full overflow-hidden">
+          <div className="bg-gradient-to-br from-gray-900 to-gray-950 rounded-2xl border border-gray-800 max-w-5xl w-full overflow-hidden shadow-2xl">
             {/* Header */}
             <div className="flex justify-between items-center p-6 border-b border-gray-800">
               <div>

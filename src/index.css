@@ -1,14 +1,50 @@
 @import "tailwindcss";
 
-/* Theme tokens: centralized color variables (no logic changes) */
+@theme {
+  --color-theme-bg: var(--theme-bg);
+  --color-theme-surface: var(--theme-surface);
+  --color-theme-surface-hover: var(--theme-surface-hover);
+  --color-theme-border: var(--theme-border);
+  --color-theme-text: var(--theme-text);
+  --color-theme-text-muted: var(--theme-text-muted);
+  --color-theme-accent: var(--theme-accent);
+}
+
 :root {
-  /* Prefer Tailwind v4 tokens if present, otherwise fallback to hex */
+  /* Default Theme (Cyberpunk/Elite Dark) */
+  --theme-bg: #020617; 
+  --theme-surface: rgba(255, 255, 255, 0.03); 
+  --theme-surface-hover: rgba(255, 255, 255, 0.08);
+  --theme-border: rgba(255, 255, 255, 0.1); 
+  --theme-text: #ffffff; 
+  --theme-text-muted: rgba(255, 255, 255, 0.4); 
+  --theme-accent: #06b6d4; 
+  
   --accent: var(--color-yellow-400, #facc15);
   --accent-hover: var(--color-yellow-500, #eab308);
-  --surface-track: var(--color-slate-800, #1f2937);
-  /* Harmonize gray/slate families if both are used */
+  --surface-track: var(--theme-bg);
   --color-gray-800: var(--color-slate-800, #1f2937);
   --color-gray-900: var(--color-slate-900, #0f172a);
+}
+
+.theme-dark {
+  --theme-bg: #0f172a; 
+  --theme-surface: rgba(255, 255, 255, 0.05); 
+  --theme-surface-hover: rgba(255, 255, 255, 0.1);
+  --theme-border: rgba(255, 255, 255, 0.15); 
+  --theme-text: #f1f5f9; 
+  --theme-text-muted: #94a3b8; 
+  --theme-accent: #3b82f6; 
+}
+
+.theme-light {
+  --theme-bg: #f1f5f9; 
+  --theme-surface: #ffffff; 
+  --theme-surface-hover: #f8fafc;
+  --theme-border: #cbd5e1; 
+  --theme-text: #0f172a; 
+  --theme-text-muted: #64748b; 
+  --theme-accent: #0ea5e9; 
 }
 
 /* Untuk semua elemen */

@@ -104,9 +104,12 @@ export const useAchievements = () => {
   const [totalPoints, setTotalPoints] = useState(0);
 
   // Muat achievements dari database
-  const loadAchievements = useCallback(async (email) => {
+  const loadAchievements = useCallback(async (userId) => {
     try {
-      const { data, error } = await supabase.from('achievements').select('*').eq('email', email);
+      const { data, error } = await supabase
+        .from('achievements')
+        .select('*')
+        .eq('user_id', userId);
 
       if (!error && data && data.length > 0) {
         setUserAchievements(data);
@@ -119,21 +122,14 @@ export const useAchievements = () => {
   }, []);
 
   // Unlock achievement
-  const unlockAchievement = useCallback(async (email, achievementId) => {
+  const unlockAchievement = useCallback(async (userId, achievementId) => {
     const achievement = Object.values(ACHIEVEMENTS).find(a => a.id === achievementId);
     if (!achievement) return false;
 
     try {
-      // Check jika sudah unlock
-      const { data: existing, error: existingError } = await supabase.from('achievements').select('*').eq('email', email).eq('achievement_id', achievementId);
-
-      if (!existingError && existing && existing.length > 0) {
-        return false; // Sudah unlock
-      }
-
-      // Add achievement baru
+      // Add achievement baru (UNIQUE constraint in DB handles duplicates)
       const { error } = await supabase.from('achievements').insert([{
-        email,
+        user_id: userId,
         achievement_id: achievementId,
         name: achievement.name,
         icon: achievement.icon,
@@ -143,7 +139,7 @@ export const useAchievements = () => {
       }]);
 
       if (!error) {
-        await loadAchievements(email);
+        await loadAchievements(userId);
         return true;
       }
     } catch (error) {
