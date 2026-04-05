@@ -1,6 +1,12 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { getSmartReply } from '../utils/responseGenerator';
 import { sanitizeInput, classifyInput, addTrainingExample, containsPII, extractThemes } from '../utils/helpers';
+import { 
+  detectClarificationNeeded, 
+  generateClarificationPrompt 
+} from '../utils/clarificationSystem';
+import { classifyIntent, INTENT_TYPES } from '../utils/advancedIntentClassifier';
+import { ConversationContextManager, isFollowUp, extractTopics } from '../utils/conversationContext';
 import { DEFAULT_SETTINGS, CHATBOT_VERSION } from '../../../config.js';
 import { storageService } from '../utils/storageService';
 
@@ -104,6 +110,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
   const [conversationContext, setConversationContext] = useState([]);
   const [activeQuickActions, setActiveQuickActions] = useState([]);
   const [userActivity, setUserActivity] = useState([]);
+  const contextManagerRef = useRef(new ConversationContextManager());
   const [feedbackStore, setFeedbackStore] = useState(() => {
     try { return storageService.get('saipul_feedback_store', {}); } catch (e) { void e; return {}; }
   });
@@ -233,7 +240,11 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
       actions.push({ icon: 'Upload', label: "Upload File", action: "upload_file" });
     }
 
-    setActiveQuickActions(actions.slice(0, 3));
+    // Only update if actions strictly different
+    setActiveQuickActions(prev => {
+      if (JSON.stringify(prev) === JSON.stringify(actions.slice(0, 3))) return prev;
+      return actions.slice(0, 3);
+    });
   }, [kbState, messages]);
 
   // Debounced / throttled persistence to avoid UI freeze when messages array grows large
@@ -257,21 +268,36 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     }
     return copy;
   };
+  // Separate context update to avoid unnecessary re-renders in main effect
+  const recentMessages = useMemo(() => {
+    if (!settings.memoryContext) return [];
+    return messages.slice(-8).map(msg => ({
+      role: msg.from,
+      content: msg.text,
+      timestamp: msg.timestamp,
+      type: msg.type
+    }));
+  }, [messages, settings.memoryContext]);
+
   useEffect(() => {
-    // Update conversation context cheaply
-    if (settings.memoryContext) {
-      const recentMessages = messages.slice(-8).map(msg => ({
-        role: msg.from,
-        content: msg.text,
-        timestamp: msg.timestamp,
-        type: msg.type
-      }));
-      setConversationContext(recentMessages);
+    if (settings.memoryContext && recentMessages.length > 0) {
+      setConversationContext(prev => {
+        // Deep compare context to avoid update loop
+        if (JSON.stringify(prev) === JSON.stringify(recentMessages)) {
+          return prev;
+        }
+        return recentMessages;
+      });
     }
+  }, [recentMessages, settings.memoryContext]);
 
-    // Update quick actions (cheap operation)
+  // Separate quick actions update to prevent loop with persistence effect
+  useEffect(() => {
     try { updateQuickActions(); } catch (e) { void e; }
+  }, [updateQuickActions]);
 
+  // Main persistence effect (cleared of frequent state-changing triggers)
+  useEffect(() => {
     // Avoid saving when privacyMode or hidden
     if (settings.privacyMode || isHidden || !settings.autoSave) return;
 
@@ -292,8 +318,6 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
             storageService.set("saipul_chat_history", sanitized);
             storageService.set("saipul_chat_version", CHATBOT_VERSION);
           } else {
-            // in privacy mode, avoid persisting chat history
-            // keep only a minimal last-message summary
             const minimal = sanitized.slice(-1).map(m => ({ id: m.id, from: m.from, timestamp: m.timestamp, type: m.type }));
             storageService.set("saipul_chat_history", minimal);
             storageService.set("saipul_chat_version", CHATBOT_VERSION);
@@ -310,22 +334,18 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
           storageService.set('saipul_chat_backup', backupData);
         }
 
-        // Archive snapshot only as summary (avoid storing entire huge arrays)
         try {
           if (!settings.privacyMode && settings.storeAllConversations) {
             const archiveKey = 'saipul_chat_archive';
             const existing = storageService.get(archiveKey, []);
             existing.push({ timestamp: new Date().toISOString(), messageCount: messages.length, sample: sanitized.slice(-50) });
-            // cap archive to last 20 entries
             while (existing.length > 20) existing.shift();
             storageService.set(archiveKey, existing);
           }
         } catch (e) { console.warn('archive save failed', e); }
-      } catch (e) {
-        console.error("Error saving chat history:", e);
-      }
+      } catch (e) { console.error("Error saving chat history:", e); }
       pendingSaveRef.current = null;
-    }, 350);
+    }, 800); // slightly longer debounce for stability
 
     return () => {
       if (pendingSaveRef.current) {
@@ -333,7 +353,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
         pendingSaveRef.current = null;
       }
     };
-  }, [messages, settings.privacyMode, settings.memoryContext, isHidden, updateQuickActions, settings.storeAllConversations, settings.autoSave]);
+  }, [messages, settings.privacyMode, isHidden, settings.storeAllConversations, settings.autoSave]);
 
   // Persist feedbackStore, question stats and anomalies whenever they change
   useEffect(() => {
@@ -604,7 +624,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     };
   }, [messages, settings.autoSuggestions, kbState, generateSuggestions]);
 
-  const generateBotReply = useCallback((userText, opts = {}) => {
+  const generateBotReply = useCallback((userText, opts = {}, intent = null) => {
     setIsTyping(true);
 
     const baseTime = settings.responseSpeed === 'fast' ? 600 :
@@ -616,7 +636,8 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
 
     try {
       // generate reply early so we can create a typing placeholder that reveals progressively
-      const replyObj = getSmartReply(userText, settings, conversationContext, kbState, knowledgeStats);
+      // Meneruskan intent yang sudah diklasifikasi untuk efisiensi
+      const replyObj = getSmartReply(userText, settings, conversationContext, kbState, knowledgeStats, intent);
       let replyText = typeof replyObj === 'string' ? replyObj : (replyObj && replyObj.text) || FRIENDLY_MESSAGES.responseError;
 
       // post-process reply text to improve presentation (clean up formatting, truncate preview)
@@ -928,12 +949,20 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
       }
     } catch (e) { void e; }
 
-    // classify input type (question/information/statement) without changing existing behavior
-    let classification = { type: 'statement', confidence: 0.6 };
+    // classify input type (advanced classification)
+    let classification = { intent: INTENT_TYPES.UNKNOWN, confidence: 0 };
     try {
-      classification = classifyInput(clean || '');
+      // Menggunakan advancedIntentClassifier yang lebih akurat
+      classification = classifyIntent(clean || '', {
+        messages: messages.slice(-5), // Mengirimkan sedikit konteks percakapan
+        turnCount: messages.length
+      });
       setLastInputType(classification);
-    } catch (e) { void e; }
+    } catch (e) { 
+      console.warn('Advanced classification failed, falling back:', e);
+      // Fallback ke logika sederhana jika terjadi error di modul baru
+      try { classification = classifyInput(clean || ''); } catch (err) { void err; }
+    }
 
     const userMsg = {
       id: `msg_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
@@ -945,6 +974,19 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     };
 
     setMessages((prev) => [...prev, userMsg]);
+    
+    // Update Advanced Context Manager
+    try {
+      const topics = extractTopics(clean, classification.entities || []);
+      contextManagerRef.current.addMessage(clean, {
+        sender: 'user',
+        intent: classification.intent,
+        entities: classification.entities || [],
+        topics: topics,
+        confidence: classification.confidence
+      });
+    } catch (e) { console.warn('Failed to update context manager:', e); }
+
     // do not show suggestions while awaiting bot reply; they will be updated after bot responds
     setSuggestionsVisible(false);
     const userInput = clean;
@@ -983,7 +1025,28 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
         }
       }
     } catch (err) { void err; }
-    generateBotReply(userInput);
+    // 5. Intelligent Clarification Check
+    try {
+      const clarificationSituation = detectClarificationNeeded(userInput, contextManagerRef.current.getContext(), kbState);
+      if (clarificationSituation && clarificationSituation.confidence >= 0.7) {
+        const prompt = generateClarificationPrompt(clarificationSituation, contextManagerRef.current.getContext());
+        setMessages(prev => [...prev, {
+          id: `msg_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
+          from: 'bot',
+          text: prompt.text,
+          timestamp: new Date().toISOString(),
+          type: 'clarification',
+          _meta: { clarification: prompt }
+        }]);
+        setSuggestions(prompt.options || prompt.specs || []);
+        setSuggestionsVisible(true);
+        return; // Hentikan normal reply jika butuh klarifikasi
+      }
+    } catch (e) {
+      console.warn('Clarification detection failed:', e);
+    }
+
+    generateBotReply(userInput, {}, classification);
   }, [input, generateBotReply, settings]);
 
   const handleKeyDown = (e) => {
@@ -1223,7 +1286,12 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
               // match by approximate last timestamp order: take last pending
               const candidate = pending.pop();
               pendingTrainingRef.current = pending;
-              try { addTrainingExample(candidate.text, candidate.label); saved = true; } catch (_e) { void _e; }
+              try { 
+                addTrainingExample(candidate.text, candidate.label); 
+                saved = true; 
+              } catch (err) { 
+                console.warn('Failed to add training example from feedback:', err); 
+              }
             }
 
             if (!saved) {
@@ -1253,7 +1321,9 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
       setSuggestionsVisible(false);
       // remember that user closed suggestions for this bot message id
       if (lastBotMessageIdRef.current) closedForBotIdRef.current = lastBotMessageIdRef.current;
-    } catch (e) { void e; }
+    } catch (e) { 
+      console.debug('Failed to close suggestions for current:', e);
+    }
   }, []);
 
   const choosePreferredResponse = useCallback((messageId) => {
@@ -1271,8 +1341,8 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
           const current = storageService.get('saipul_settings', {});
           current.preferredResponseExample = chosen.text;
           storageService.set('saipul_settings', current);
-        } catch (_e) { void _e; }
-      } catch (_e) { void _e; }
+        } catch (err) { console.warn('Failed to save preferred response to storage:', err); }
+      } catch (err) { console.warn('Failed to set preferred response setting:', err); }
 
       // remove other alternatives from UI and keep chosen
       setMessages(prev => prev.filter(m => !(m._meta && m._meta.altGroup === group && m.id !== messageId)));
@@ -1384,7 +1454,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
         if (match(e, shortcuts.openUpload || 'Ctrl+Shift+U')) { e.preventDefault(); try { window.dispatchEvent(new Event('saipul_open_upload')); } catch (err) { void err; } return; }
         if (match(e, shortcuts.toggleSpeech || 'Ctrl+Shift+M')) { e.preventDefault(); try { window.dispatchEvent(new Event('saipul_toggle_speech')); } catch (err) { void err; } return; }
       } catch (err) {
-        void err;
+        console.error('Keyboard shortcut handler error:', err);
       }
     };
 
@@ -1457,8 +1527,9 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
   }, []);
 
   useEffect(() => {
-    if (userActivity.length > 0) {
-      console.log("User activity updated:", userActivity);
+    // Hidden internal tracking for future analytics
+    if (userActivity.length > 50) {
+      // Clear or process large activity logs
     }
   }, [userActivity]);
 

@@ -109,7 +109,7 @@ export default function HelpVersionDetail() {
           if (s.subtitle) return `${s.subtitle}${s.details ? ` — ${s.details}` : ''}`;
           if (s.tips) return s.tips;
           if (s.details) return s.details;
-          return JSON.stringify(s);
+          return "Informasi tambahan tersedia";
         }) : []);
 
         setVersion({
@@ -301,6 +301,89 @@ export default function HelpVersionDetail() {
     "bg-teal-500/30 text-teal-400",
     "bg-indigo-500/30 text-indigo-400"
   ];
+
+  // Helper untuk merender data teknis agar tidak terlihat seperti JSON (robot)
+  const renderValue = (val) => {
+    if (val === null || val === undefined) return "N/A";
+    
+    // Jika input adalah string yang terlihat seperti JSON, coba parse
+    if (typeof val === "string" && (val.startsWith("{") || val.startsWith("["))) {
+      try {
+        const parsed = JSON.parse(val);
+        return renderValue(parsed);
+      } catch (e) {
+        // Fallback ke string asli jika gagal parse
+      }
+    }
+
+    if (typeof val !== "object") return String(val);
+    
+    if (Array.isArray(val)) {
+      if (val.length === 0) return "None";
+      return (
+        <ul className="list-disc list-inside ml-2 space-y-1 mt-1">
+          {val.map((item, i) => (
+            <li key={i} className="text-gray-300">
+              {typeof item === 'object' ? renderValue(item) : String(item)}
+            </li>
+          ))}
+        </ul>
+      );
+    }
+    
+    // Handle Object
+    const entries = Object.entries(val);
+    if (entries.length === 0) return "{}";
+    
+    // Spesifik untuk data SaipulAI (punya name dan features)
+    if (val.name && val.features) {
+      return (
+        <div className="mb-2">
+          <span className="font-bold text-gray-200">{val.name}</span>
+          {renderValue(val.features)}
+        </div>
+      );
+    }
+
+    return (
+      <div className="ml-2 mt-1 border-l border-gray-700/50 pl-3 py-1 space-y-2">
+        {entries.map(([k, v]) => (
+          <div key={k} className="text-sm">
+            <span className="font-semibold text-gray-400 capitalize">{k.replace(/_/g, ' ')}: </span>
+            <div className="inline">
+              {typeof v === 'object' ? (
+                <div className="block">{renderValue(v)}</div>
+              ) : (
+                <span className="text-gray-300">{String(v)}</span>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  // Helper untuk merender isi changelog agar menjadi daftar poin-poin
+  const renderChangelogList = (text) => {
+    if (!text) return null;
+    
+    // List separator yang mungkin digunakan (koma, titik koma, titik baru jika diawali huruf besar)
+    // Tapi yang paling aman adalah koma atau semicolon untuk data terstruktur.
+    const parts = text.split(/[,;]|\.\s(?=[A-Z])/).map(p => p.trim()).filter(p => p.length > 0);
+    
+    if (parts.length <= 1) return <p className="text-gray-300">{text}</p>;
+    
+    return (
+      <ul className="space-y-2 mt-2">
+        {parts.map((p, i) => (
+          <li key={i} className="flex items-start gap-3 text-gray-300">
+            <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-indigo-500 flex-shrink-0" />
+            <span>{p}</span>
+          </li>
+        ))}
+      </ul>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-950 via-purple-900 to-black">
@@ -751,7 +834,9 @@ export default function HelpVersionDetail() {
                             {change.type?.toUpperCase()}
                           </span>
                         </div>
-                        <p className="text-gray-300">{change.changes}</p>
+                        <div className="text-gray-300">
+                          {renderChangelogList(change.changes)}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1088,11 +1173,19 @@ export default function HelpVersionDetail() {
                   {version.saipulaiUpgrade.keyFeatures && (
                     <div className="mt-6">
                       <h3 className="text-lg font-semibold text-white mb-2">Key Features</h3>
-                      <ul className="list-disc list-inside text-gray-300 space-y-1">
+                      <div className="space-y-4">
                         {Object.entries(version.saipulaiUpgrade.keyFeatures).map(([k, v]) => (
-                          <li key={k}><strong>{k}:</strong> {v && typeof v === 'object' ? JSON.stringify(v) : String(v)}</li>
+                          <div key={k} className="p-4 bg-gray-800/40 rounded-xl border border-gray-700/50 shadow-inner">
+                            <h4 className="text-indigo-400 font-bold uppercase text-xs tracking-wider mb-2 flex items-center gap-2">
+                              <Zap size={14} />
+                              {k.replace(/_/g, ' ')}
+                            </h4>
+                            <div className="text-gray-300">
+                              {renderValue(v)}
+                            </div>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -1127,13 +1220,13 @@ export default function HelpVersionDetail() {
                     {version.securityEnhancements.website && (
                       <div>
                         <h4 className="font-semibold text-white">Website</h4>
-                        <p className="text-gray-300">{typeof version.securityEnhancements.website === 'string' ? version.securityEnhancements.website : JSON.stringify(version.securityEnhancements.website)}</p>
+                        <div className="text-gray-300">{renderValue(version.securityEnhancements.website)}</div>
                       </div>
                     )}
                     {version.securityEnhancements.aiSystem && (
                       <div>
                         <h4 className="font-semibold text-white">AI System</h4>
-                        <p className="text-gray-300">{typeof version.securityEnhancements.aiSystem === 'string' ? version.securityEnhancements.aiSystem : JSON.stringify(version.securityEnhancements.aiSystem)}</p>
+                        <div className="text-gray-300">{renderValue(version.securityEnhancements.aiSystem)}</div>
                       </div>
                     )}
                   </div>

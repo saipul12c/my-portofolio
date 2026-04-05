@@ -5,11 +5,11 @@ export function DataSettings({ settings, handleSave, fileStats, formatFileSize, 
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-gray-400 mb-2">Presisi Perhitungan</label>
+          <label className="block text-[var(--saipul-text-secondary)] mb-2">Presisi Perhitungan</label>
           <select 
             value={settings.calculationPrecision}
             onChange={(e) => handleSave("calculationPrecision", e.target.value)}
-            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+            className="w-full bg-[var(--saipul-bg-input)] border border-[var(--saipul-border)] rounded-lg px-3 py-2 text-[var(--saipul-text-primary)] focus:ring-2 focus:ring-[var(--saipul-accent)] outline-none"
           >
             <option value="low">Cepat (2 desimal)</option>
             <option value="medium">Seimbang (4 desimal)</option>
@@ -19,11 +19,11 @@ export function DataSettings({ settings, handleSave, fileStats, formatFileSize, 
         </div>
 
         <div>
-          <label className="block text-gray-400 mb-2">Kecepatan Respons</label>
+          <label className="block text-[var(--saipul-text-secondary)] mb-2">Kecepatan Respons</label>
           <select 
             value={settings.responseSpeed}
             onChange={(e) => handleSave("responseSpeed", e.target.value)}
-            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+            className="w-full bg-[var(--saipul-bg-input)] border border-[var(--saipul-border)] rounded-lg px-3 py-2 text-[var(--saipul-text-primary)] focus:ring-2 focus:ring-[var(--saipul-accent)] outline-none"
           >
             <option value="fast">Cepat</option>
             <option value="balanced">Seimbang</option>
@@ -58,28 +58,28 @@ export function DataSettings({ settings, handleSave, fileStats, formatFileSize, 
         </div>
       </div>
 
-      <div className="p-3 bg-gray-800/50 rounded-lg">
-        <h4 className="font-medium text-cyan-400 mb-2">Status Sistem Data</h4>
-        <div className="text-xs space-y-2">
+      <div className="p-3 bg-[var(--saipul-bg-card)] border border-[var(--saipul-border)] rounded-lg">
+        <h4 className="font-medium text-[var(--saipul-accent-1)] mb-2">Status Sistem Data</h4>
+        <div className="text-xs space-y-2 text-[var(--saipul-text-secondary)]">
           <div className="flex justify-between">
             <span>Memori Konteks:</span>
-            <span className="text-green-400">{settings.memoryContext ? 'Aktif' : 'Nonaktif'}</span>
+            <span className="text-[var(--saipul-accent-1)]">{settings.memoryContext ? 'Aktif' : 'Nonaktif'}</span>
           </div>
           <div className="flex justify-between">
             <span>Engine Matematika:</span>
-            <span className="text-green-400">v4.0 {settings.advancedMath ? '(Advanced)' : '(Basic)'}</span>
+            <span className="text-[var(--saipul-accent-1)]">v4.0 {settings.advancedMath ? '(Advanced)' : '(Basic)'}</span>
           </div>
           <div className="flex justify-between">
             <span>Modul Prediksi:</span>
-            <span className="text-green-400">{settings.enablePredictions ? 'Aktif' : 'Nonaktif'}</span>
+            <span className="text-[var(--saipul-accent-1)]">{settings.enablePredictions ? 'Aktif' : 'Nonaktif'}</span>
           </div>
           <div className="flex justify-between">
             <span>Database AI:</span>
-            <span className="text-green-400">{totalKBCategories} kategori tersedia</span>
+            <span className="text-[var(--saipul-accent-2)]">{totalKBCategories} kategori tersedia</span>
           </div>
           <div className="flex justify-between">
             <span>Data Uploaded:</span>
-            <span className="text-green-400">{fileStats.totalFiles} files ({formatFileSize(fileStats.totalSize)})</span>
+            <span className="text-[var(--saipul-accent-2)]">{fileStats.totalFiles} files ({formatFileSize(fileStats.totalSize)})</span>
           </div>
         </div>
       </div>

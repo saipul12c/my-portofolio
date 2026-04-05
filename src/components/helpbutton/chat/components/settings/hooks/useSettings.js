@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { DEFAULT_SETTINGS } from '../../../config.js';
 import { SETTINGS_KEY } from '../../logic/utils/fileProcessor';
 import { storageService } from '../../logic/utils/storageService';
+import { PALETTES, ACCENT_COLORS } from '../settingsConfig.js';
 
 export function useSettings(knowledgeBase = {}) {
   const [settings, setSettings] = useState({ ...DEFAULT_SETTINGS });
@@ -10,28 +11,8 @@ export function useSettings(knowledgeBase = {}) {
   useEffect(() => {
     try {
       const applyPalette = (theme = settings.theme, accent = settings.accent) => {
-        const accents = {
-          cyan: { accent: '#06b6d4', accent2: '#0891b2' },
-          amber: { accent: '#f59e0b', accent2: '#d97706' },
-          blue: { accent: '#2563eb', accent2: '#1e40af' },
-          teal: { accent: '#0ea5a4', accent2: '#0f766e' },
-          rose: { accent: '#fb7185', accent2: '#be185d' },
-          lime: { accent: '#84cc16', accent2: '#65a30d' }
-        };
-
-        const themes = {
-          system: { surface: '#0f172a', text: '#e6eef8', muted: '#94a3b8', border: '#1f2a44' },
-          dark: { surface: '#0b1220', text: '#e6eef8', muted: '#98a2b3', border: '#162232' },
-          light: { surface: '#ffffff', text: '#0b1220', muted: '#6b7280', border: '#e6eef8' },
-          sepia: { surface: '#fbf1e6', text: '#2b2b2b', muted: '#7b6f63', border: '#f0e6da' },
-          solar: { surface: '#fff7ed', text: '#2a2a2a', muted: '#7a5a3c', border: '#f5e6d8' },
-          midnight: { surface: '#071133', text: '#dbeafe', muted: '#93c5fd', border: '#0b2646' },
-          soft: { surface: '#f7fafc', text: '#0b1220', muted: '#94a3b8', border: '#eef2f7' },
-          contrast: { surface: '#000000', text: '#ffffff', muted: '#b3b3b3', border: '#222222' }
-        };
-
-        const acc = accents[accent] || accents['cyan'];
-        const th = themes[theme] || themes['dark'];
+        const acc = ACCENT_COLORS[accent] || ACCENT_COLORS['cyan'];
+        const th = PALETTES[theme] || PALETTES['dark'];
 
         const root = document?.documentElement?.style;
         if (!root) return;
@@ -44,7 +25,12 @@ export function useSettings(knowledgeBase = {}) {
         root.setProperty('--saipul-accent-contrast', acc.accent2);
         root.setProperty('--saipul-modal-bg', th.surface);
         root.setProperty('--saipul-surface', th.surface);
+        root.setProperty('--saipul-bg-card', (theme === 'dark' || theme === 'midnight') ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)');
+        root.setProperty('--saipul-bg-input', (theme === 'dark' || theme === 'midnight') ? 'rgba(255,255,255,0.05)' : '#ffffff');
         root.setProperty('--saipul-text', th.text);
+        root.setProperty('--saipul-text-primary', th.text);
+        root.setProperty('--saipul-text-secondary', (theme === 'dark' || theme === 'midnight') ? '#94a3b8' : '#475569');
+        root.setProperty('--saipul-text-muted', th.muted);
         root.setProperty('--saipul-muted', th.muted);
         root.setProperty('--saipul-border', th.border);
         // helper colors

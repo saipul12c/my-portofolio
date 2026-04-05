@@ -1,3 +1,5 @@
+import { smartKBQuery } from './smartKBQuery';
+
 /**
  * Query knowledge base dengan improved error handling dan data validation
  * @param {string} userInput - User input
@@ -9,75 +11,49 @@ export function getKnowledgeResponse(userInput, safeKnowledgeBase, settings) {
   const input = userInput.toLowerCase();
   
   try {
-    // Query 1: AI Knowledge Base
-    if (safeKnowledgeBase?.AI && typeof safeKnowledgeBase.AI === 'object' && Object.keys(safeKnowledgeBase.AI).length > 0) {
-      for (const [question, answer] of Object.entries(safeKnowledgeBase.AI)) {
-        try {
-          const cleanQuestion = question.toLowerCase().replace(/[?]/g, '').replace("apa itu", "").trim();
-          const questionWords = cleanQuestion.split(/\s+/).filter(w => w.length > 3);
-          
-          const matchScore = questionWords.filter(word => 
-            input.includes(word) || input.split(/\s+/).some(inputWord => 
-              word.includes(inputWord) || inputWord.includes(word)
-            )
-          ).length;
+    // Gunakan Smart KB Query (Advanced Fuzzy Search) sebagai prioritas utama
+    const smartResults = smartKBQuery(userInput, safeKnowledgeBase, {
+      searchDepth: settings?.creativeMode ? 'comprehensive' : 'standard',
+      threshold: 0.4, // Threshold lebih rendah untuk fuzzy matching
+      maxResults: 1
+    });
 
-          if (matchScore >= Math.max(1, questionWords.length * 0.6)) {
-            let responseText = String(answer);
-            if (settings?.creativeMode) {
-              const insights = [
-                "Konsep ini terus berkembang dengan penelitian terbaru.",
-                "Teknologi ini sangat relevan dalam pengembangan AI modern.",
-                "Pemahaman mendalam tentang ini essential untuk AI engineer.",
-                "Ini adalah fondasi dari banyak aplikasi AI kontemporer."
-              ];
-              responseText += `\n\n💡 **Insight**: ${insights[Math.floor(Math.random() * insights.length)]}`;
-            }
-            return {
-              text: responseText,
-              source: { type: 'kb_ai', id: question },
-              confidence: 0.95
-            };
-          }
-        } catch (e) {
-          console.warn('Error processing AI KB entry:', e);
-          continue;
+    if (smartResults && smartResults.length > 0) {
+      const bestMatch = smartResults[0];
+      
+      // Jika match sangat kuat, langsung kembalikan
+      if (bestMatch.relevanceScore > 0.6) {
+        let responseText = bestMatch.answer;
+        
+        // Tambahkan context jika dari file upload
+        if (bestMatch.source === 'uploaded_file') {
+          responseText = `📄 **Dari file "${bestMatch.fileName || 'Unknown'}"**:\n${responseText}\n\n*Informasi ini berasal dari file yang Anda upload.*`;
         }
+
+        if (settings?.creativeMode) {
+          const insights = [
+            "Konsep ini terus berkembang dengan penelitian terbaru.",
+            "Teknologi ini sangat relevan dalam pengembangan AI modern.",
+            "Pemahaman mendalam tentang ini essential untuk AI engineer.",
+            "Ini adalah fondasi dari banyak aplikasi AI kontemporer."
+          ];
+          responseText += `\n\n💡 **Insight**: ${insights[Math.floor(Math.random() * insights.length)]}`;
+        }
+
+        return {
+          text: responseText,
+          source: { 
+            type: bestMatch.source, 
+            id: bestMatch.question || bestMatch.fileName,
+            matchType: bestMatch.matchType,
+            score: bestMatch.relevanceScore
+          },
+          confidence: Math.min(0.99, bestMatch.relevanceScore + 0.1)
+        };
       }
     }
 
-    // Query 2: Uploaded Files
-    if (settings?.useUploadedData && Array.isArray(safeKnowledgeBase?.uploadedData) && safeKnowledgeBase.uploadedData.length > 0) {
-      for (const fileData of safeKnowledgeBase.uploadedData) {
-        try {
-          if (Array.isArray(fileData?.sentences)) {
-            for (const sentence of fileData.sentences) {
-              const cleanSentence = String(sentence).toLowerCase();
-              const inputWords = input.split(/\s+/).filter(w => w.length > 3);
-              const sentenceWords = cleanSentence.split(/\s+/).filter(w => w.length > 3);
-              
-              const matchWords = inputWords.filter(inputWord =>
-                sentenceWords.some(sentenceWord =>
-                  sentenceWord.includes(inputWord) || inputWord.includes(sentenceWord)
-                )
-              );
-
-              if (matchWords.length >= Math.max(1, inputWords.length * 0.5)) {
-                return {
-                  text: `📄 **Dari file "${fileData.fileName || 'Unknown'}"**:\n${cleanSentence}\n\n*Informasi ini berasal dari file yang Anda upload.*`,
-                  source: { type: 'uploaded_file', fileName: fileData.fileName },
-                  confidence: 0.9
-                };
-              }
-            }
-          }
-        } catch (e) {
-          console.warn('Error processing uploaded file:', e);
-          continue;
-        }
-      }
-    }
-
+    // Fallback ke pencarian kategori spesifik (hobbies, skills, dll) jika smartKBQuery belum mencakupnya
     // Query 3: Other Knowledge Sources (hobbies, skills, certificates, etc)
     const knowledgeSources = [
       { data: safeKnowledgeBase?.hobbies, type: 'hobi', emoji: '🎯' },

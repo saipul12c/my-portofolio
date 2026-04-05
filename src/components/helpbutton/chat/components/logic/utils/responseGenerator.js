@@ -31,11 +31,16 @@ import { quickNLU } from './nluProcessing';
 import { 
   generateComprehensiveAnswer as generateEnhancedAnswer,
   findKnowledgeNode,
-  getRelatedConcepts
+  getRelatedConcepts,
+  validateKnowledgeStatement,
+  expandKnowledgeBase,
+  inferNewKnowledge
 } from './enhancedKnowledgeBase';
+import { generateSmartFallback } from './clarificationSystem';
 
 // ===== GREETING & SIMPLE PATTERN RECOGNITION =====
 import { recognizeGreeting } from './greetingRecognizer';
+import { findBestFAQMatch } from './faqIntegration';
 
 /**
  * Integrasi data.json dan riwayat.json ke dalam proses pembuatan respon
@@ -44,25 +49,25 @@ import { recognizeGreeting } from './greetingRecognizer';
  * @param {array} conversationContext
  * @param {object} safeKnowledgeBase
  * @param {object} knowledgeStats
+ * @param {object} intent - Hasil klasifikasi intent dari useChatbot
  * @returns {object} response
  */
-export function getSmartReply(msg, settings, conversationContext, safeKnowledgeBase, knowledgeStats) {
+export function getSmartReply(msg, settings, conversationContext, safeKnowledgeBase, knowledgeStats, intent) {
   const text = msg.toLowerCase().trim();
 
   // ===== ENHANCED TEXT PROCESSING =====
   const textAnalysis = enhancedTextProcessing(msg);
   const processedText = textAnalysis.normalized || text;
-  // Absolute response rules enforcement (safety / non-fabrication / no PII)
+
+  // Absolute response rules enforcement (safety / non-fabrication)
   try {
-    const piiPattern = /(password|passw(or)?d|pin|cvv|card number|kartu kredit|rekening|norek|no\s?rek|nik|ktp|ssn|social security|credit card)/i;
     const illegalPattern = /(make a bomb|how to make a bomb|explode|assassin|kill someone|murder|hack into|ddos|how to hack|steal|rob bank)/i;
-    if (piiPattern.test(text)) {
-      return { text: 'Maaf, saya tidak dapat memproses atau menyimpan data sensitif. Silakan jangan mengirimkan informasi pribadi atau transaksi melalui chat.', source: { type: 'policy', id: 'no_pii' }, confidence: 1 };
-    }
     if (illegalPattern.test(text)) {
       return { text: 'Maaf, saya tidak dapat membantu dengan permintaan yang berbahaya atau ilegal.', source: { type: 'policy', id: 'no_illegal' }, confidence: 1 };
     }
-  } catch { /* ignore */ }
+  } catch (e) { 
+    console.error('Safety check failed:', e);
+  }
 
   // === RATE LIMITING (client-side, best-effort) ===
   try {
@@ -70,7 +75,13 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
     const now = Date.now();
     const windowMs = (settings?.rateLimitWindowMs) || 60000; // 60s default
     const maxReq = (settings?.maxRequestsPerWindow) || 20; // default
-    let entries = JSON.parse(localStorage.getItem(rlKey) || '[]');
+    let entries = [];
+    try {
+      entries = JSON.parse(localStorage.getItem(rlKey) || '[]');
+    } catch (e) {
+      console.warn('Failed to parse rate limit entries:', e);
+      entries = [];
+    }
     entries = (Array.isArray(entries) ? entries : []).filter(ts => (now - ts) <= windowMs);
     if (entries.length >= maxReq) {
       // log moderation flag
@@ -78,12 +89,20 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
         const flags = JSON.parse(localStorage.getItem('saipul_moderation_flags') || '[]');
         flags.push({ type: 'rate_limit', ts: new Date().toISOString(), count: entries.length });
         localStorage.setItem('saipul_moderation_flags', JSON.stringify(flags.slice(-200)));
-      } catch (e) {}
+      } catch (e) {
+        console.debug('Failed to log rate limit moderation flag:', e);
+      }
       return { text: 'Terlalu banyak permintaan dalam waktu singkat. Mohon tunggu beberapa detik sebelum mencoba lagi.', source: { type: 'throttle' }, confidence: 0.2 };
     }
     entries.push(now);
-    try { localStorage.setItem(rlKey, JSON.stringify(entries)); } catch (e) { /* ignore */ }
-  } catch (e) { /* ignore rate limit errors */ }
+    try { 
+      localStorage.setItem(rlKey, JSON.stringify(entries)); 
+    } catch (e) { 
+      console.warn('Failed to save rate limit entries:', e);
+    }
+  } catch (e) { 
+    console.error('Rate limiting internal error:', e);
+  }
 
   // === PII detection & enforcement ===
   try {
@@ -102,7 +121,9 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
         return { text: `Maaf, saya mendeteksi informasi sensitif (PII) dalam pesan Anda dan tidak dapat memprosesnya. Contoh yang disamarkan: "${(redacted.text || '').slice(0, 200)}". Silakan hapus info sensitif dan coba lagi.`, source: { type: 'policy', id: 'pii_block' }, confidence: 1 };
       }
     }
-  } catch (e) { /* ignore */ }
+  } catch (e) { 
+    console.error('PII detection internal error:', e);
+  }
 
   // ===== NEW: EMOTION & CHARACTER DETECTION =====
   const emotionData = detectEmotion(msg);
@@ -116,7 +137,23 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
   const updatedProfile = updateUserProfileFromEntities(entities, userProfile);
   try {
     localStorage.setItem('saipul_profile', JSON.stringify(updatedProfile));
-  } catch { /* ignore storage errors */ }
+  } catch (e) {
+    console.warn('Failed to save user profile:', e);
+  }
+
+  // ===== NEW: FAQ INTEGRATION (High Priority) =====
+  // Cek FAQ sebelum greeting untuk memastikan pertanyaan teknis terjawab dengan akurat
+  const faqMatch = findBestFAQMatch(msg);
+  if (faqMatch && faqMatch.score > 80) {
+     return {
+       text: (typeof cautionNote !== 'undefined' ? `${cautionNote}\n\n` : '') + 
+             `**FAQ Detail:**\n${faqMatch.item.answer}\n\n💡 *Jawaban ini diambil dari database FAQ kami.*`,
+       source: { type: 'faq', id: `faq_${faqMatch.item.id}` },
+       confidence: Math.min(faqMatch.score / 150, 0.95),
+       emotion: emotionData.primary,
+       character: characterData.character
+     };
+  }
 
   // ===== NEW: GREETING & SIMPLE PATTERN RECOGNITION =====
   // Check for greetings dan simple interactions sebelum advanced processing
@@ -272,7 +309,9 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
       if (ner.names && ner.names.length > 0) return { text: `Senang bertemu, ${profileRaw.name}! Saya akan mengingat nama Anda untuk percakapan ini.`, source: { type: 'system', id: 'save_name' }, confidence: 0.9 };
       if (ner.locations && ner.locations.length > 0) return { text: `Baik, saya mencatat bahwa Anda dari ${profileRaw.location}. Senang berkenalan!`, source: { type: 'system', id: 'save_location' }, confidence: 0.9 };
     }
-  } catch { /* ignore profile storage errors */ }
+  } catch (e) {
+    console.warn('NER and profile storage failed:', e);
+  }
 
   // time queries: "waktu di <place>" or "what time in <place>"
   const timeMatch = msg.match(/waktu(?: sekarang)?(?: di| in)\s+([A-Za-z\s-]+)/i) || msg.match(/what time(?: is it)? in\s+([A-Za-z\s-]+)/i);
@@ -329,7 +368,9 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
         }
       }
     }
-  } catch { /* ignore storage errors */ }
+  } catch (e) {
+    console.warn('Failed to analyze local reports for caution Note:', e);
+  }
 
   if (text.includes('upload') || text === 'upload_file') {
     return {
@@ -443,10 +484,12 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
     kbMonitor.recordQuery(text, sourceType.replace('kb_', ''), true);
     
     // apply style preference: settings -> profile preference -> random
-    const profileRaw = JSON.parse(localStorage.getItem('saipul_profile') || '{}');
-    const style = settings.responseStyle || profileRaw.preferenceStyle || (settings.preferredStyle || null);
     if (knowledgeResponse && typeof knowledgeResponse.text === 'string' && style) {
-      try { knowledgeResponse.text = applyStyle(knowledgeResponse.text, style); } catch { /* ignore style errors */ }
+      try { 
+        knowledgeResponse.text = applyStyle(knowledgeResponse.text, style); 
+      } catch (e) { 
+        console.warn('Failed to apply response style:', e);
+      }
     }
     return knowledgeResponse;
   }
@@ -487,32 +530,50 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
     return { text: (cautionNote ? `${cautionNote}\n\n` : '') + `Hai juga! 👋 Aku SaipulAI v${CHATBOT_VERSION} Enhanced dengan kemampuan:\n\n• 🧮 **Matematika Lanjutan** & Scientific Computing\n• 📊 **Multi-format File Processing** (PDF, DOCX, XLSX, Images)\n• 🤖 **Dynamic Knowledge Base** Integration\n• 🎯 **Context-Aware Intelligent Responses**\n• 📁 **Advanced File Management** & Metadata\n• 🔍 **Smart Search** Across All Data Sources\n\n💡 **Tips**: Coba upload file atau tanyakan tentang topik spesifik!`, source: { type: 'system', id: 'greeting' }, confidence: 0.7 };
 
   if (text.includes('terima kasih') || text.includes('thanks') || text.includes('thank you')) 
-    return { text: (cautionNote ? `${cautionNote}\n\n` : '') + "Sama-sama! 😊 Senang bisa membantu analisis dan pencarian informasimu. Jika ada yang lain, jangan ragu untuk bertanya!", source: { type: 'system', id: 'thanks' }, confidence: 0.7 };
+    return { text: (typeof cautionNote !== 'undefined' ? `${cautionNote}\n\n` : '') + "Sama-sama! 😊 Senang bisa membantu analisis dan pencarian informasimu. Jika ada yang lain, jangan ragu untuk bertanya!", source: { type: 'system', id: 'thanks' }, confidence: 0.7 };
 
   if (text.includes('versi') || text.includes('version')) {
     // Integrasi info dari data.json dan riwayat.json
     const versi = aiDocData?.header_information?.version || CHATBOT_VERSION;
     const lastUpdate = aiDocData?.header_information?.last_update || '-';
-    const totalFitur = aiDocData?.statistik_versi_saat_ini?.total_fitur || '-';
-    const totalVersi = aiDocData?.statistik_versi_saat_ini?.total_versi_dokumentasi || '-';
-    const releaseRange = aiDocData?.statistik_versi_saat_ini?.rentang_waktu || '-';
-    const rataRataRelease = aiDocData?.statistik_versi_saat_ini?.rata_rata_release || '-';
-    const changelog = aiDocData?.change_log_sesi_terakhir?.[0]?.description || '-';
-    const riwayat = riwayatData?.version_history_detail?.[0]?.summary || '-';
+    
+    // Stats mapping
+    const stats = aiDocData?.statistik_versi_saat_ini || {};
+    const totalFitur = stats.total_fitur || '-';
+    const totalVersi = stats.total_versi_dokumentasi || '-';
+    const releaseRange = stats.rentang_waktu || '-';
+    const rataRataRelease = stats.rata_rata_release || '-';
+    const bundleSize = stats.ukuran_bundle || '-';
+    const responseTime = stats.waktu_respons || '-';
+    
+    // Changelog mapping - ambil 3 entri terakhir jika ada
+    const changelogEntries = (aiDocData?.change_log_sesi_terakhir || []).slice(0, 3);
+    const changelogText = changelogEntries.length > 0 
+      ? changelogEntries.map(c => `• **${c.date}**: ${c.description}`).join('\n')
+      : '-';
+      
+    // Riwayat mapping - ambil ringkasan dari riwayatData
+    const riwayatSummary = riwayatData?.version_history_detail?.[0]?.summary || '-';
+    const riwayatFull = riwayatData?.version_history_detail?.[0]?.highlights 
+      ? `\n**Highlights Riwayat:**\n${riwayatData.version_history_detail[0].highlights.map(h => `• ${h}`).join('\n')}`
+      : '';
+
     return {
       text:
         (cautionNote ? `${cautionNote}\n\n` : '') +
         `🤖 **SaipulAI v${versi} (Terbaru)**\n` +
-        `• Update terakhir: ${lastUpdate}\n` +
-        `• Total fitur: ${totalFitur}\n` +
-        `• Total versi dokumentasi: ${totalVersi}\n` +
-        `• Rata-rata rilis: ${rataRataRelease}\n` +
-        `• Rentang rilis: ${releaseRange}\n` +
-        `\n**Changelog Terbaru:**\n${changelog}\n` +
-        `\n**Ringkasan Riwayat:**\n${riwayat}\n` +
-        `\n• Model: ${String(settings.aiModel || '').toUpperCase()}\n• Presisi: ${settings.calculationPrecision}\n• Memori: ${settings.memoryContext ? 'Aktif' : 'Nonaktif'}\n• File Support: ${Array.isArray(settings.allowedFileTypes) ? settings.allowedFileTypes.join(', ') : ''}\n• Data Sources: ${knowledgeStats && knowledgeStats.totalCategories ? knowledgeStats.totalCategories : 0} kategori\n• File Upload: ${settings.enableFileUpload ? 'Aktif' : 'Nonaktif'}`,
+        `• **Update terakhir**: ${lastUpdate}\n` +
+        `• **Total fitur**: ${totalFitur}\n` +
+        `• **Total versi dokumen**: ${totalVersi}\n` +
+        `• **Rata-rata rilis**: ${rataRataRelease}\n` +
+        `• **Rentang rilis**: ${releaseRange}\n` +
+        `• **Ukuran bundle**: ${bundleSize}\n` +
+        `• **Waktu respons**: ${responseTime}\n` +
+        `\n**Changelog Terbaru:**\n${changelogText}\n` +
+        `\n**Ringkasan Pengembangan:**\n${riwayatSummary}${riwayatFull}\n` +
+        `\n**Konfigurasi Aktif:**\n• Model: ${String(settings.aiModel || 'Expert').toUpperCase()}\n• Presisi: ${settings.calculationPrecision}\n• Memori Konteks: ${settings.memoryContext ? 'Aktif' : 'Nonaktif'}\n• Lang-Support: ${Array.isArray(stats.bahasa_didukung) ? stats.bahasa_didukung.join(', ') : 'Indonesia, English'}\n• Data Sources: ${knowledgeStats && knowledgeStats.totalCategories ? knowledgeStats.totalCategories : 0} kategori\n• Live Analytics: ${settings.enableAnalytics ? 'Aktif' : 'Nonaktif'}`,
       source: { type: 'system', id: 'version' },
-      confidence: 0.9
+      confidence: 1.0
     };
   }
 
@@ -523,10 +584,15 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
   if (text.includes('fitur') || text.includes('bisa apa') || text.includes('help') || text.includes('bantuan')) {
     // Integrasi fitur utama dari data.json
     const fiturUtama = aiDocData?.fitur_utama?.map((f, i) => `${i + 1}. ${f}`).join('\n') || '-';
+    
+    // Integrasi komponen AI/NLP
+    const coreNLP = (aiDocData?.ai_nlp_ringkasan?.komponen_inti || []).map(m => `• ${m}`).join('\n');
+    const advancedNLP = (aiDocData?.ai_nlp_ringkasan?.modul_lanjutan || []).map(m => `• ${m}`).join('\n');
+    
     return {
-      text: `🤖 **Fitur SaipulAI v7.1.0**\n\n${fiturUtama}\n\n💡 Untuk detail lebih lanjut, cek dokumentasi atau ketik 'versi' untuk info update terbaru.`,
+      text: `🤖 **Fitur Utama SaipulAI v7.1.0**\n\n${fiturUtama}\n\n🧠 **Teknologi NLP & AI Core:**\n${coreNLP}\n\n🚀 **Modul Lanjutan:**\n${advancedNLP}\n\n💡 **Tips**: Untuk detail teknis, ketik 'versi' atau klik ikon bantuan di pojok menu.`,
       source: { type: 'system', id: 'features' },
-      confidence: 0.85
+      confidence: 1.0
     };
   }
 
@@ -639,8 +705,7 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
       };
     }
   } catch (e) {
-    console.error('Data integration error:', e);
-    /* non-fatal */
+    console.error('Data integration internal error:', e);
   }
 
   // Try RAG: retrieve docs and synthesize, used as a non-invasive enhancement before fallback
@@ -655,7 +720,9 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
         return { text: paraphrased, source: { type: 'rag', sources: ragAnswer.sources }, confidence: ragAnswer.confidence };
       }
     }
-  } catch { /* non-fatal */ }
+  } catch (e) {
+    console.warn('RAG processing internal error:', e);
+  }
 
   // If reports indicate repeated or high-severity complaints about similar content,
   // prefer to escalate / withhold detailed instructions and provide safe next steps.
@@ -675,17 +742,9 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
     }
   } catch { /* ignore */ }
 
-  const fallbacks = [
-    `Saya belum memiliki informasi spesifik tentang "${text}" di database saya. Apakah Anda ingin mencoba mengupload file terkait atau bertanya tentang hal lain (seperti Matematika, AI, atau profil saya)?`,
-    `Maaf, saya tidak menemukan jawaban yang tepat untuk "${text}". Namun, saya bisa membantu Anda menganalisis data jika Anda memberikan angka atau mengupload dokumen di sini.`,
-    `Terdengar menarik! Sayangnya pengetahuan saya tentang "${text}" masih terbatas. Mau bantu saya belajar dengan mengupload referensi lewat tombol 📎?`,
-    `Sepertinya "${text}" bukan sesuatu yang ada di knowledge base saya saat ini. Apa kita mau coba hitung sesuatu atau bicara soal masa depan AI?`
-  ];
-  
-  const pick = getRandomItem(fallbacks);
-  // pick a style
-  const chosenStyle = settings.responseStyle || styles[Math.floor(Math.random() * styles.length)];
-  const styledResponse = applyStyle(pick, chosenStyle);
+  // Use Intelligent Smart Fallback instead of static messages
+  const smartFallback = generateSmartFallback(msg, 0.35, conversationContext);
+  const styledResponse = applyStyle(smartFallback.text, settings.responseStyle || 'neutral');
   
   // ===== NEW: WRAP FALLBACK RESPONSE WITH EMOTION & CHARACTER =====
   const finalResponse = wrapResponseWithEmotion(
@@ -697,11 +756,12 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
   
   const finalResult = {
     text: finalResponse,
-    source: { type: 'fallback' },
-    confidence: 0.45,
+    source: smartFallback.source,
+    confidence: smartFallback.confidence || 0.45,
     emotion: emotionData.primary,
     character: characterData.character,
-    suggestedTopics: ['Matematika', 'AI Concepts', 'Upload File', 'Profil Pemilik']
+    suggestedTopics: ['Matematika', 'AI Concepts', 'Upload File', 'Profil Pemilik'],
+    suggestion: smartFallback.suggestion
   };
 
   // ===== EVALUATE RESPONSE QUALITY =====
@@ -1480,4 +1540,38 @@ export function generateEnglishResponse(intent, entities = {}, context = {}) {
 
   const intentResponses = responses[intent] || responses.unknown;
   return intentResponses[Math.floor(Math.random() * intentResponses.length)];
+}
+
+/**
+ * Advanced text processing utility
+ */
+export function enhancedTextProcessing(text) {
+  if (!text) return { normalized: '', length: 0, words: [], language: 'id' };
+  
+  const normalized = text.toLowerCase().trim();
+  const words = normalized.split(/\s+/).filter(w => w.length > 0);
+  
+  // Basic language detection (ID vs EN)
+  const indonesianIndicators = ['yang', 'dan', 'ini', 'itu', 'adalah', 'saya', 'apa', 'bagaimana'];
+  const englishIndicators = ['the', 'and', 'this', 'that', 'is', 'i', 'what', 'how'];
+  
+  let idScore = 0;
+  let enScore = 0;
+  
+  words.forEach(word => {
+    if (indonesianIndicators.includes(word)) idScore++;
+    if (englishIndicators.includes(word)) enScore++;
+  });
+  
+  const language = enScore > idScore ? 'en' : 'id';
+  
+  return {
+    original: text,
+    normalized,
+    length: text.length,
+    wordCount: words.length,
+    words,
+    language,
+    timestamp: new Date().toISOString()
+  };
 }

@@ -13,6 +13,20 @@ export default defineConfig({
     compress(),
     compress({ algorithm: 'brotliCompress', ext: '.br' })
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor': ['react', 'react-dom', 'react-router-dom'],
+          'three': ['three', '@react-three/fiber', '@react-three/drei', '@react-three/rapier'],
+          'motion': ['framer-motion'],
+          'ui': ['lucide-react', 'react-icons', 'emoji-picker-react'],
+          'nlp': ['compromise'],
+          'supabase': ['@supabase/supabase-js']
+        }
+      }
+    }
+  },
   server: {
     // Proxy configuration removed: using Supabase for all dynamic data
   }

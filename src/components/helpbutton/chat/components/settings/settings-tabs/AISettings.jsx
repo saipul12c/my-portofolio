@@ -5,15 +5,15 @@ export function AISettings({ settings, handleSave }) {
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-gray-400 mb-2">Model AI</label>
+        <label className="block text-[var(--saipul-text-secondary)] mb-2">Model AI</label>
         <select 
           value={settings.aiModel}
           onChange={(e) => handleSave("aiModel", e.target.value)}
-          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+          className="w-full bg-[var(--saipul-bg-input)] border border-[var(--saipul-border)] rounded-lg px-3 py-2 text-[var(--saipul-text-primary)] focus:ring-2 focus:ring-[var(--saipul-accent)] outline-none"
         >
           {AI_MODELS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
         </select>
-        <p className="text-xs text-gray-500 mt-1">Enhanced: Optimalkan untuk analisis multidomain dan reasoning kompleks</p>
+        <p className="text-xs text-[var(--saipul-text-muted)] mt-1">Enhanced: Optimalkan untuk analisis multidomain dan reasoning kompleks</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -50,29 +50,22 @@ export function AISettings({ settings, handleSave }) {
       </div>
 
       <div className="space-y-3">
-        <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
-          <div>
-            <span className="text-white">Mode Matematika Lanjutan</span>
-            <p className="text-xs text-gray-500">Aktifkan kalkulus dan aljabar kompleks</p>
+        {[
+          { id: 'advancedMath', label: 'Mode Matematika Lanjutan', sub: 'Aktifkan kalkulus dan aljabar kompleks' },
+          { id: 'creativeMode', label: 'Mode Kreatif', sub: 'Generasi konten kreatif dan solusi inovatif' }
+        ].map(item => (
+          <div key={item.id} className="flex items-center justify-between p-3 bg-[var(--saipul-bg-card)] border border-[var(--saipul-border)] rounded-lg">
+            <div>
+              <span className="text-[var(--saipul-text-primary)]">{item.label}</span>
+              <p className="text-xs text-[var(--saipul-text-secondary)]">{item.sub}</p>
+            </div>
+            <ToggleSwitch 
+              checked={settings[item.id]}
+              onChange={(value) => handleSave(item.id, value)}
+              id={item.id}
+            />
           </div>
-          <ToggleSwitch 
-            checked={settings.advancedMath}
-            onChange={(value) => handleSave("advancedMath", value)}
-            id="advancedMath"
-          />
-        </div>
-
-        <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
-          <div>
-            <span className="text-white">Mode Kreatif</span>
-            <p className="text-xs text-gray-500">Generasi konten kreatif dan solusi inovatif</p>
-          </div>
-          <ToggleSwitch 
-            checked={settings.creativeMode}
-            onChange={(value) => handleSave("creativeMode", value)}
-            id="creativeMode"
-          />
-        </div>
+        ))}
       </div>
     </div>
   );

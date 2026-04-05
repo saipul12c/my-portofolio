@@ -80,11 +80,11 @@ export default function Contact() {
       </div>
 
       {/* 📮 Enhanced Container Form & Data */}
-      <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-start relative z-10 px-2 sm:px-0">
-        <div className="w-full">
+      <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-start relative z-10 px-0">
+        <div className="w-full order-2 lg:order-1">
           <ContactList />
         </div>
-        <div className="w-full">
+        <div className="w-full order-1 lg:order-2">
           <ContactForm formAnim={formAnim} />
         </div>
       </div>

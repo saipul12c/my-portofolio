@@ -37,6 +37,8 @@ const ContactForm = () => {
   const [recaptchaToken, setRecaptchaToken] = useState(null);
   const [recaptchaVerifying, setRecaptchaVerifying] = useState(false);
   const messageRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
+  const validationTimeoutRef = useRef(null);
   const { showRecaptcha, hideRecaptcha } = useRecaptcha();
 
   const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
@@ -124,25 +126,36 @@ const ContactForm = () => {
     
     return () => {
       clearInterval(interval);
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      if (validationTimeoutRef.current) clearTimeout(validationTimeoutRef.current);
       hideRecaptcha();
     };
   }, [showRecaptcha, hideRecaptcha, RECAPTCHA_SITE_KEY]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
     
-    if (e.target.name === 'message') {
-      setCharCount(e.target.value.length);
+    if (name === 'message') {
+      setCharCount(value.length);
       setIsTyping(true);
-      setTimeout(() => setIsTyping(false), 1000);
+      
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1000);
     }
     
-    // Validate email on change
-    if (e.target.name === 'email' && e.target.value) {
-      const validation = verifyEmail(e.target.value);
-      setEmailValidation(validation);
-    } else if (e.target.name === 'email') {
-      setEmailValidation(null);
+    // Validate email with slight debounce to avoid heavy regex on every single keystroke
+    if (name === 'email') {
+      if (validationTimeoutRef.current) clearTimeout(validationTimeoutRef.current);
+      
+      if (value) {
+        validationTimeoutRef.current = setTimeout(() => {
+          const validation = verifyEmail(value);
+          setEmailValidation(validation);
+        }, 300);
+      } else {
+        setEmailValidation(null);
+      }
     }
   };
 
@@ -422,125 +435,56 @@ const ContactForm = () => {
         </div>
       </motion.div>
 
-      {/* Rate Limit Status Indicator */}
-      {rateLimitStatus && !rateLimitStatus.blocked && (
-        <div className="mt-2 sm:mt-3 p-2 sm:p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-          <div className="flex items-center gap-2 text-xs text-blue-700 dark:text-blue-300">
-            <Clock size={14} className="flex-shrink-0" />
-            <span className="break-words">
-              Sisa: {rateLimitStatus.remaining.minute}/menit, {rateLimitStatus.remaining.hour}/jam, {rateLimitStatus.remaining.day}/hari
-            </span>
-          </div>
-        </div>
-      )}
-      
-      {rateLimitStatus && rateLimitStatus.blocked && (
-        <div className="mt-2 sm:mt-3 p-2 sm:p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
-          <div className="flex items-center gap-2 text-xs text-red-700 dark:text-red-300">
-            <ShieldAlert size={14} className="flex-shrink-0" />
-            <span className="break-words">{rateLimitStatus.message}</span>
-          </div>
-        </div>
-      )}
-
-      {/* reCAPTCHA Status Indicator with Animation */}
-      {RECAPTCHA_SITE_KEY && (
+      {/* Consolidated Security & Rate Limit Status */}
+      {(rateLimitStatus || RECAPTCHA_SITE_KEY) && (
         <motion.div 
           layout
-          initial={{ opacity: 0, y: -10 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`mt-2 sm:mt-3 p-3 sm:p-4 rounded-lg border transition-all duration-300 ${
-            recaptchaVerifying 
-              ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800' 
-              : recaptchaToken
-              ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-              : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+          className={`p-3 sm:p-4 rounded-xl border transition-all duration-300 backdrop-blur-sm ${
+            rateLimitStatus?.blocked 
+              ? 'bg-red-50/80 dark:bg-red-900/20 border-red-200 dark:border-red-800' 
+              : recaptchaVerifying 
+                ? 'bg-yellow-50/80 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800' 
+                : recaptchaToken
+                  ? 'bg-green-50/80 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                  : 'bg-indigo-50/80 dark:bg-indigo-900/20 border-indigo-100 dark:border-indigo-800'
           }`}
         >
-          <div className="flex items-center gap-2 text-xs">
-            {recaptchaVerifying ? (
-              <>
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                  className="text-yellow-600 dark:text-yellow-400 flex-shrink-0"
-                >
-                  <Shield size={14} />
-                </motion.div>
-                <span className="text-yellow-700 dark:text-yellow-300">
-                  Sedang memverifikasi keamanan Anda...
-                </span>
-              </>
-            ) : recaptchaToken ? (
-              <>
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 200 }}
-                  className="text-green-600 dark:text-green-400 flex-shrink-0"
-                >
-                  <CheckCircle2 size={14} />
-                </motion.div>
-                <span className="text-green-700 dark:text-green-300">
-                  ✓ Verifikasi berhasil! Form siap dikirim
-                </span>
-              </>
-            ) : recaptchaLoaded ? (
-              <>
-                <motion.div
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="text-blue-600 dark:text-blue-400 flex-shrink-0"
-                >
-                  <Shield size={14} />
-                </motion.div>
-                <span className="text-blue-700 dark:text-blue-300">
-                  ✓ Form dilindungi dan terhindar dari spam
-                </span>
-              </>
-            ) : (
-              <>
-                <motion.div
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                  className="text-blue-600 dark:text-blue-400 flex-shrink-0"
-                >
-                  <Shield size={14} />
-                </motion.div>
-                <span className="text-blue-700 dark:text-blue-300">
-                  ⏳ Memuat verifikasi keamanan...
-                </span>
-              </>
+          <div className="space-y-2">
+            {/* Rate Limit Info */}
+            {rateLimitStatus && (
+              <div className={`flex items-center gap-2 text-[10px] sm:text-xs font-medium ${rateLimitStatus.blocked ? 'text-red-600 dark:text-red-400' : 'text-indigo-600 dark:text-indigo-400'}`}>
+                {rateLimitStatus.blocked ? <ShieldAlert size={14} /> : <Clock size={14} />}
+                <span>{rateLimitStatus.message || `Sisa: ${rateLimitStatus.remaining.minute}/mnt, ${rateLimitStatus.remaining.hour}/jam`}</span>
+              </div>
             )}
-          </div>
 
-          {/* Progress Bar untuk Verifikasi */}
-          {recaptchaVerifying && (
-            <motion.div
-              className="mt-2 sm:mt-3 h-1 bg-yellow-200 dark:bg-yellow-800 rounded-full overflow-hidden"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              <motion.div
-                className="h-full bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full"
-                animate={{ x: [-100, 100] }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-              />
-            </motion.div>
-          )}
-
-          {/* Additional Info */}
-          <div className="mt-2 text-xs text-gray-600 dark:text-gray-400">
-            <small>
-              {recaptchaVerifying 
-                ? 'Jangan refresh atau menutup halaman selama proses berlangsung...'
-                : recaptchaToken
-                ? 'Token Berhasil Diperoleh. Silahkan kirim pesan dan tunggu admin merespon.'
-                : 'Keamanan data Anda adalah prioritas kami'}
-            </small>
+            {/* reCAPTCHA Info */}
+            {RECAPTCHA_SITE_KEY && (
+              <div className="flex items-center gap-2 text-[10px] sm:text-xs font-medium border-t border-black/5 dark:border-white/5 pt-2">
+                {recaptchaVerifying ? (
+                  <>
+                    <Loader2 size={14} className="animate-spin text-yellow-600" />
+                    <span className="text-yellow-700 dark:text-yellow-400">Verifikasi keamanan...</span>
+                  </>
+                ) : recaptchaToken ? (
+                  <>
+                    <CheckCircle2 size={14} className="text-green-600" />
+                    <span className="text-green-700 dark:text-green-400">✓ Keamanan terverifikasi</span>
+                  </>
+                ) : (
+                  <>
+                    <Shield size={14} className="text-indigo-600" />
+                    <span className="text-indigo-700 dark:text-indigo-400">{recaptchaLoaded ? '✓ Dilindungi anti-spam' : '⏳ Memuat keamanan...'}</span>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </motion.div>
       )}
+
 
       {/* Enhanced Submit Button */}
       <motion.button

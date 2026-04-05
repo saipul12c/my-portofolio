@@ -7,7 +7,10 @@
 const PATTERNS = {
   email: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g,
   phone: /(?:\+62|62|0)\d{8,14}/g,
-  creditcard: /(?:\b\d{13,16}\b)/g,
+  creditcard: /(?:\b\d{13,19}\b)/g, // Updated to 13-19 for broader coverage
+  nik: /\b\d{16}\b/g, // Indonesian NIK
+  bankAccount: /(?:rekening|no\s?rek|norek)\D{0,30}(?:\d[ -]?){6,20}/gi,
+  cvv: /(?:cvv|cvc)\D{0,8}\d{3,4}/gi,
   ssnLike: /\b\d{3}-\d{2}-\d{4}\b/g
 };
 

@@ -90,6 +90,13 @@ class ConversationContextManager {
   }
 
   /**
+   * Get all messages in context
+   */
+  getContext() {
+    return this.messages || [];
+  }
+
+  /**
    * Get recent context untuk response generation
    */
   getRecentContext(count = 3) {

@@ -1,3 +1,5 @@
+import { detectPII } from './piiDetector';
+
 export function extractThemes(userMessages) {
   const themes = [];
   const words = userMessages.flatMap(msg => msg.content.toLowerCase().split(/\s+/));
@@ -198,47 +200,11 @@ export function clearUserTraining() {
 }
 
 export function containsPII(text) {
-  if (!text || typeof text !== 'string') return false;
-  const s = text.trim();
   try {
-    const lower = s.toLowerCase();
-
-    // Strong numeric indicators: credit card (13-19 digits, allow spaces/dashes), NIK (16 digits)
-    const ccDigits = /(?:\b|\D)(?:\d[ -]?){13,19}(?:\b|\D)/;
-    if (ccDigits.test(s)) return true;
-    const nik = /\b\d{16}\b/; // Indonesian NIK is 16 digits
-    if (nik.test(s)) return true;
-
-    // Bank account numbers when mentioned together with keywords like rekening / no rek / norek
-    const bankWithDigits = /(?:rekening|no\s?rek|norek)\D{0,30}(?:\d[ -]?){6,20}/i;
-    if (bankWithDigits.test(s)) return true;
-
-    // CVV/CVC nearby a short digit group
-    const cvvPattern = /(?:cvv|cvc)\D{0,8}\d{3,4}/i;
-    if (cvvPattern.test(s)) return true;
-
-    // Password patterns: only flag if likely being shared (e.g. contains separators, quotes, or nearby possession words)
-    const pwKeyword = /\b(password|passw(or)?d|pass)\b/i;
-    if (pwKeyword.test(lower)) {
-      // if there's an obvious assignment like password: 12345 or password = "abc"
-      const pwAssign = /\b(password|passw(or)?d)\b\s*[:=]\s*(?:"[^"]+"|'[^']+'|\S+)/i;
-      if (pwAssign.test(s)) return true;
-      // or if user explicitly says "password saya" / "passwordku"
-      const pwPossessive = /\b(password|passw(or)?d)\b\s+(saya|ku|kamu|anda|nya|adalah)\b/i;
-      if (pwPossessive.test(lower)) return true;
-      // otherwise do not assume any password mention is a share
-    }
-
-    // Generic keyword-based checks but require context (digit nearby or explicit 'kartu kredit' etc.)
-    const genericKeywords = /\b(kartu kredit|card number|credit card|cvv|pin|ssn|social security|norek|no\s?rek|rekening|nik|ktp)\b/i;
-    if (genericKeywords.test(s)) {
-      // if it's just a mention in an explanatory sentence (no digit sequences), consider safe
-      // check for presence of short/long digit sequences nearby
-      if (ccDigits.test(s) || nik.test(s) || bankWithDigits.test(s) || cvvPattern.test(s)) return true;
-    }
-
-    return false;
+    const detections = detectPII(text);
+    return detections.length > 0;
   } catch (e) {
+    console.error('PII check error in helpers:', e);
     return false;
   }
 }

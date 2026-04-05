@@ -307,25 +307,25 @@ function detectTimeBasedGreeting(input) {
   // Check morning greeting
   if (timePeriod === 'morning' && /pagi|selamat pagi|good morning|morning/.test(input)) {
     const patternKey = 'morningGreeting';
-    return buildResponse(GREETING_PATTERNS[patternKey], patternKey);
+    return buildResponse(GREETING_PATTERNS[patternKey], patternKey, {}, input);
   }
   
   // Check afternoon greeting
   if (timePeriod === 'afternoon' && /siang|selamat siang|good afternoon|afternoon/.test(input)) {
     const patternKey = 'afternoonGreeting';
-    return buildResponse(GREETING_PATTERNS[patternKey], patternKey);
+    return buildResponse(GREETING_PATTERNS[patternKey], patternKey, {}, input);
   }
   
   // Check evening greeting
   if (timePeriod === 'evening' && /sore|selamat sore|good evening|evening/.test(input)) {
     const patternKey = 'eveningGreeting';
-    return buildResponse(GREETING_PATTERNS[patternKey], patternKey);
+    return buildResponse(GREETING_PATTERNS[patternKey], patternKey, {}, input);
   }
   
   // Check night greeting
   if (timePeriod === 'night' && /malam|selamat malam|good night|sleep|tidur/.test(input)) {
     const patternKey = 'nightGreeting';
-    return buildResponse(GREETING_PATTERNS[patternKey], patternKey);
+    return buildResponse(GREETING_PATTERNS[patternKey], patternKey, {}, input);
   }
   
   return null;
@@ -349,7 +349,7 @@ function checkSimplePatterns(input, userProfile = {}) {
     
     for (const p of pattern.patterns) {
       if (input.includes(p) || input === p) {
-        return buildResponse(pattern, key, userProfile);
+        return buildResponse(pattern, key, userProfile, input);
       }
     }
   }
@@ -363,11 +363,11 @@ function checkSimplePatterns(input, userProfile = {}) {
     for (const p of pattern.patterns) {
       if (pattern.isRegex) {
         if (p.test(input)) {
-          return buildResponse(pattern, key, userProfile);
+          return buildResponse(pattern, key, userProfile, input);
         }
       } else {
         if (input.includes(p) || input === p) {
-          return buildResponse(pattern, key, userProfile);
+          return buildResponse(pattern, key, userProfile, input);
         }
       }
     }
@@ -383,7 +383,7 @@ function checkSimplePatterns(input, userProfile = {}) {
  * @param {object} userProfile - profil user
  * @returns {object}
  */
-function buildResponse(pattern, patternKey, userProfile = {}) {
+function buildResponse(pattern, patternKey, userProfile = {}, userInput = '') {
   let responseText = '';
   
   if (pattern.responses && Array.isArray(pattern.responses)) {
@@ -398,6 +398,17 @@ function buildResponse(pattern, patternKey, userProfile = {}) {
   if (userProfile.name && (patternKey === 'generalGreeting' || /greeting/.test(patternKey))) {
     responseText = responseText.replace('Anda', `${userProfile.name}`);
     responseText = responseText.replace('kamu', `${userProfile.name}`);
+  }
+
+  // Topic replacement for regex-based patterns
+  if (responseText.includes('{topic}')) {
+    const extractedEntities = extractSimpleEntity(userInput);
+    if (extractedEntities.target) {
+      responseText = responseText.replace('{topic}', extractedEntities.target);
+    } else {
+      // Fallback if target extraction fails
+      responseText = responseText.replace('{topic}', 'hal tersebut');
+    }
   }
   
   return {

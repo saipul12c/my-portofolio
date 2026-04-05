@@ -185,11 +185,16 @@ const findBestMatch = (query) => {
   };
 };
 
+import { findBestFAQMatch } from "../../chat/components/logic/utils/faqIntegration";
+// Note: We'll dynamic import or pass getSmartReply to avoid complex circular dependencies if needed,
+// but for now let's try a direct import if it doesn't cause issues in the build.
+// Since Bot.jsx is used in FAQ page, it might not have the same context.
+
 // Generate enhanced AI response
 const generateAIResponse = async (query, filteredFaqs = []) => {
   await simulateAIDelay(query.length > 50 ? 2 : 1);
   
-  const matchResult = findBestMatch(query);
+  const matchResult = findBestFAQMatch(query);
   
   if (matchResult && matchResult.score > 60) {
     // Successful match
@@ -206,6 +211,18 @@ const generateAIResponse = async (query, filteredFaqs = []) => {
     return responseTypes[Math.floor(Math.random() * responseTypes.length)];
   }
   
+  // No good FAQ match found, try to fallback to main Robot logic if possible
+  try {
+     const { getSmartReply } = await import("../../chat/components/logic/utils/responseGenerator");
+     // Signature: (msg, settings, conversationContext, safeKnowledgeBase, knowledgeStats, intent)
+     const chatResponse = await getSmartReply(query, { memoryContext: false, aiModel: 'expert' }, [], {}, {}, {});
+     if (chatResponse && chatResponse.confidence > 0.6) {
+        return `Saya tidak menemukan jawaban persis di FAQ, tetapi berdasarkan basis pengetahuan SaipulAI:\n\n${chatResponse.text}\n\n*Jawaban ini dihasilkan oleh mesin NLP Live Chat kami.*`;
+     }
+  } catch (e) {
+     console.warn("Fallback to chat logic failed:", e);
+  }
+
   // No good match found, try to provide helpful information
   aiStats.totalQuestions++;
   

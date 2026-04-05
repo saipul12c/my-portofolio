@@ -142,7 +142,11 @@ function VersionBadge() {
         </div>
         <button
           onClick={handleOpenVersionPage}
-          className="text-xs bg-white/6 px-2 py-1 rounded-md hover:bg-white/10 transition-colors"
+          className="text-xs font-semibold px-3 py-1.5 rounded-md
+            bg-cyan-500/10 border border-cyan-500/30 text-cyan-400
+            hover:bg-cyan-500/20 hover:border-cyan-500/50 
+            transition-all duration-300 active:scale-95
+            shadow-[0_0_10px_rgba(34,211,238,0.1)]"
           aria-label="Lihat detail versi"
         >
           Detail

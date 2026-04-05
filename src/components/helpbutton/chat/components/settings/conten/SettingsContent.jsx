@@ -97,19 +97,19 @@ export function SettingsContent({
                 {key: 'openUpload', label: 'Open upload dialog'}
               ].map(item => (
                 <div key={item.key} className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
-                  <div className="text-gray-200 md:w-44">
+                  <div className="text-[var(--saipul-text-secondary)] md:w-44">
                     {item.label}
                   </div>
                   <input
                     type="text"
                     value={shortcuts[item.key] || ''}
                     onChange={(e) => handleSave('shortcuts', { ...(settings.shortcuts || {}), [item.key]: e.target.value })}
-                    className="w-full md:flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white"
+                    className="w-full md:flex-1 bg-[var(--saipul-bg-input)] border border-[var(--saipul-border)] rounded px-3 py-2 text-sm text-[var(--saipul-text-primary)]"
                   />
                 </div>
               ))}
             </div>
-            <div className="text-xs text-gray-500">Gunakan format seperti <code>Ctrl+Enter</code> atau <code>Ctrl+Shift+U</code>.</div>
+            <div className="text-xs text-[var(--saipul-text-muted)]">Gunakan format seperti <code>Ctrl+Enter</code> atau <code>Ctrl+Shift+U</code>.</div>
           </div>
         );
       }
@@ -124,27 +124,27 @@ export function SettingsContent({
     <div className="flex-1 p-4 text-sm space-y-4 overflow-y-auto">
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="font-semibold text-white text-lg bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+          <h3 className="font-semibold text-white text-lg bg-gradient-to-r from-[var(--saipul-accent-1)] to-[var(--saipul-accent-2)] bg-clip-text text-transparent">
             Pengaturan Lanjutan SaipulAI
           </h3>
           <div className="mt-1 text-xs text-gray-400">
-            <span style={{ background: 'var(--saipul-accent-gradient)', color: 'white' }} className="inline-block px-2 py-0.5 rounded">{tabLabels[activeTab] || 'Umum'}</span>
+            <span style={{ background: 'var(--saipul-accent-gradient)', color: 'white' }} className="inline-block px-2 py-0.5 rounded-full shadow-sm">{tabLabels[activeTab] || 'Umum'}</span>
           </div>
         </div>
         <div className="flex gap-2">
           <button
             onClick={exportKnowledgeBase}
-            className="px-3 py-1 text-xs rounded-lg transition text-white border flex items-center gap-1"
-            style={{ background: 'var(--saipul-accent-gradient)', borderColor: 'rgba(255,255,255,0.06)' }}
+            className="px-3 py-1.5 text-xs rounded-lg transition-all text-white border flex items-center gap-1.5 hover:brightness-110 active:scale-95"
+            style={{ background: 'var(--saipul-accent-gradient)', borderColor: 'rgba(255,255,255,0.1)' }}
           >
-            <Download size={12} />
-            Export
+            <Download size={14} />
+            Export Data
           </button>
           <button
             onClick={handleReset}
-            className="px-3 py-1 text-xs rounded-lg bg-red-900/30 hover:bg-red-800/50 transition text-red-400 border border-red-500/30 flex items-center gap-1"
+            className="px-3 py-1.5 text-xs rounded-lg bg-red-900/20 hover:bg-red-800/40 transition-all text-red-400 border border-red-500/20 flex items-center gap-1.5 active:scale-95"
           >
-            <RefreshCw size={12} />
+            <RefreshCw size={14} />
             Reset
           </button>
         </div>

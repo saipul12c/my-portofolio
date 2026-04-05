@@ -144,7 +144,7 @@ export function ChatMessage({ message, handleQuickAction }) {
       setTypingDots('');
       setLoadingLabel('');
     };
-  }, [message]);
+  }, [message?.id, message?.type, message?._meta?.expectedText]);
 
   const formatTextToElements = (txt) => {
     if (!txt) return null;
@@ -240,8 +240,18 @@ export function ChatMessage({ message, handleQuickAction }) {
         {isUser && message?.intent && (
           <div className="text-[10px] opacity-90 mb-1 flex justify-end">
             <span className="px-2 py-0.5 rounded-full" style={{ background: 'rgba(0,0,0,0.12)', color: 'var(--saipul-surface)' }}>
-              {typeof message.intent === 'object' && message.intent.type ? message.intent.type : String(message.intent)}
+              {typeof message.intent === 'object' 
+                ? (message.intent.type || message.intent.intent || 'MESSAGE').toUpperCase() 
+                : String(message.intent).toUpperCase()}
               {message.intent && typeof message.intent === 'object' && message.intent.confidence !== undefined ? ` • ${Math.round((message.intent.confidence||0)*100)}%` : ''}
+            </span>
+          </div>
+        )}
+
+        {isUser && message?._meta?.progress > 0 && message?._meta?.progress < 100 && (
+          <div className="text-[10px] opacity-70 mb-1 flex justify-end">
+            <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">
+              Uploading: {Math.round(message._meta.progress)}%
             </span>
           </div>
         )}

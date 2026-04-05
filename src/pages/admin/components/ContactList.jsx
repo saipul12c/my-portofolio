@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Loader2,
   Mail,
@@ -18,10 +19,10 @@ import { getEmailSecurityBadge } from "../utils/emailValidator";
 import { shouldMarkAsPriority, analyzePriority } from "../utils/analyzePriority";
 
 const ContactList = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("recent"); // Default ke terbaru
   const [hoveredContact, setHoveredContact] = useState(null);
   const [emailWarningTooltip, setEmailWarningTooltip] = useState(null);
-  const [chatRoomHover, setChatRoomHover] = useState(false);
   const [showSpamFilter, setShowSpamFilter] = useState(true); // Toggle spam filter
   
   const {
@@ -121,8 +122,8 @@ const ContactList = () => {
     return isNaN(date.getTime()) ? 0 : date.getTime();
   };
 
-  // Filter contacts based on active tab (contacts sudah difilter dari hook)
-  const getFilteredContacts = () => {
+  // Memoize filtered and analyzed contacts
+  const displayContacts = useMemo(() => {
     // Pastikan contacts selalu array, bahkan jika undefined/null
     const safeContacts = Array.isArray(contacts) ? contacts : [];
     
@@ -161,10 +162,15 @@ const ContactList = () => {
     if (activeTab !== "recent" && activeTab !== "priority") {
       filtered = filtered.slice(0, 5);
     }
-    return filtered;
-  };
+    
+    // Pre-calculate analysis for each displayed contact to avoid heavy logic during UI map
+    return filtered.map(contact => ({
+      ...contact,
+      analysis: analyzePriority(contact.message, contact.email),
+      emailStatus: getEmailVerification(contact.email)
+    }));
+  }, [contacts, activeTab]); // Only recompute when contacts or activeTab changes
 
-  const displayContacts = getFilteredContacts();
   const displayedCount = Array.isArray(contacts) ? contacts.length : 0;
   const totalCount = totalContacts || 0;
 
@@ -230,32 +236,17 @@ const ContactList = () => {
                 </button>
               ))}
               
-              {/* Tombol Room Chat - Disabled */}
               <div
                 className="relative ml-1 sm:ml-2"
-                onMouseEnter={() => setChatRoomHover(true)}
-                onMouseLeave={() => setChatRoomHover(false)}
               >
                 <button
-                  disabled
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed opacity-60 flex items-center gap-1 sm:gap-2"
+                  onClick={() => navigate("/Live-Discussion")}
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-1 sm:gap-2 active:scale-95"
                 >
                   <MessageSquare size={14} />
                   <span className="hidden sm:inline">Room Chat</span>
                   <span className="sm:hidden">Chat</span>
                 </button>
-                
-                {/* Hover Popup */}
-                {chatRoomHover && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute top-full mt-2 left-0 bg-gray-900 dark:bg-gray-800 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap shadow-lg border border-gray-700 z-50"
-                  >
-                    🔧 Fitur sedang dikembangkan
-                  </motion.div>
-                )}
               </div>
             </div>
           </div>
@@ -300,133 +291,87 @@ const ContactList = () => {
             </div>
           ) : displayContacts.length > 0 ? (
             displayContacts.map((contact, idx) => (
-              <div
+              <motion.div
                 key={contact.id || `contact-${idx}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
                 onMouseEnter={() => setHoveredContact(idx)}
                 onMouseLeave={() => setHoveredContact(null)}
-                className={`bg-gradient-to-br from-white to-gray-50 dark:from-gray-700 dark:to-gray-800 border-2 rounded-lg sm:rounded-2xl p-3 sm:p-5 transition-all duration-300 group cursor-pointer ${
+                className={`bg-white dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50 rounded-xl sm:rounded-2xl p-3 sm:p-4 transition-all duration-300 group cursor-pointer ${
                   hoveredContact === idx
-                    ? "border-purple-300 dark:border-purple-500 shadow-2xl transform scale-105"
-                    : "border-purple-100 dark:border-purple-900/30 shadow-lg"
+                    ? "ring-2 ring-purple-500/30 shadow-xl"
+                    : "shadow-sm hover:shadow-md"
                 }`}
               >
-                <div className="space-y-3 sm:space-y-4">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-start justify-between gap-2 sm:gap-3">
-                    <div className="flex items-start gap-2 sm:gap-3 min-w-0 flex-1">
-                      <div className={`w-10 h-10 sm:w-12 sm:h-12 ${getInitialColor(contact.name)} rounded-lg sm:rounded-2xl flex items-center justify-center text-white text-base sm:text-lg font-bold shadow-lg flex-shrink-0`}>
+                <div className="flex flex-col gap-3">
+                  {/* Header: User Info & Time */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`w-8 h-8 sm:w-10 sm:h-10 shrink-0 bg-gradient-to-br ${getInitialColor(contact.name)} rounded-lg flex items-center justify-center text-white text-xs sm:text-sm font-bold shadow-sm`}>
                         {contact.name ? contact.name.charAt(0).toUpperCase() : "?"}
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base break-words">
+                      <div className="min-w-0">
+                        <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-[13px] sm:text-sm truncate">
                           {contact.name || "Anonymous"}
                         </h3>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1 break-all">
-                          <Mail size={11} className="flex-shrink-0" />
-                          {contact.email || "Email tidak tersedia"}
-                        </p>
+                        <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
+                          <Mail size={10} className="shrink-0" />
+                          <span className="truncate">{contact.email || "No email"}</span>
+                        </div>
                       </div>
                     </div>
                     
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs flex-shrink-0 w-full sm:w-auto">
-                      <div className="flex items-center gap-2 text-xs text-gray-400 bg-gray-100 dark:bg-gray-600 px-2 sm:px-3 py-1 rounded-full whitespace-nowrap">
-                        <Calendar size={11} className="flex-shrink-0" />
-                        <span className="truncate">{contact.date ? formatSheetDBDateToHuman(contact.date) : (contact.timestamp ? formatDate(contact.timestamp) : "Tanggal tidak tersedia")}</span>
+                    <div className="flex flex-col items-end gap-1.5 shrink-0">
+                      <div className="flex items-center gap-1 text-[10px] text-gray-400">
+                        <Calendar size={10} />
+                        <span>{contact.date ? formatSheetDBDateToHuman(contact.date) : "N/A"}</span>
                       </div>
-                      
-                      {/* Priority Badge - Automatic Analysis */}
                       {(() => {
-                        const analysis = analyzePriority(contact.message, contact.email);
+                        const analysis = contact.analysis;
                         return (
-                          <div
-                            className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full font-semibold border transition-all whitespace-nowrap ${
-                              analysis.level === 'high'
-                                ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800'
-                                : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800'
-                            }`}
-                            title={`Priority Score: ${analysis.score}/100\n${analysis.reasons.join('\n')}`}
-                          >
-                            <span className="text-sm">{analysis.level === 'high' ? '🔴' : '🔵'}</span>
-                            <span className="hidden sm:inline">{analysis.level === 'high' ? 'HIGH' : 'NORMAL'}</span>
-                            <span className="sm:hidden">{analysis.level === 'high' ? 'H' : 'N'}</span>
-                            <span className="opacity-70">({analysis.score})</span>
+                          <div className={`text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold border ${
+                            analysis.level === 'high' 
+                              ? 'bg-red-50 dark:bg-red-900/20 text-red-600 border-red-100 dark:border-red-800' 
+                              : 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 border-blue-100 dark:border-blue-800'
+                          }`}>
+                            {analysis.level.toUpperCase()}
                           </div>
                         );
                       })()}
                     </div>
                   </div>
                   
-                  <div className="space-y-2 sm:space-y-3">
-                    <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-gray-600/50 dark:to-gray-700/50 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-purple-100 dark:border-purple-900/30">
-                      <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-4">
-                        {contact.message || "Pesan tidak tersedia"}
-                      </p>
+                  {/* Message Body */}
+                  <div className="bg-gray-50 dark:bg-gray-900/30 rounded-lg p-2.5 sm:p-3 border border-gray-100/50 dark:border-gray-700/30">
+                    <p className="text-[12px] sm:text-[13px] text-gray-700 dark:text-gray-300 line-clamp-3 leading-relaxed">
+                      {contact.message || "No message available"}
+                    </p>
+                  </div>
+                  
+                  {/* Footer: Verification status */}
+                  <div className="flex items-center justify-between text-[10px]">
+                    <div className="relative group">
+                      {(() => {
+                        const emailStatus = contact.emailStatus;
+                        return (
+                          <div 
+                            className={`flex items-center gap-1 ${emailStatus.color} font-medium`}
+                            onMouseEnter={() => setEmailWarningTooltip(idx)}
+                            onMouseLeave={() => setEmailWarningTooltip(null)}
+                          >
+                            {emailStatus.icon}
+                            <span>{emailStatus.text}</span>
+                          </div>
+                        );
+                      })()}
                     </div>
-                    
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
-                      <div className="flex items-center gap-2 sm:gap-4 flex-wrap w-full sm:w-auto">
-                        <div className="relative group">
-                          {(() => {
-                            const emailStatus = getEmailVerification(contact.email);
-                            
-                            return (
-                              <>
-                                <span 
-                                  className={`flex items-center gap-1 ${emailStatus.color} cursor-help transition-all truncate`}
-                                  onMouseEnter={() => setEmailWarningTooltip(idx)}
-                                  onMouseLeave={() => setEmailWarningTooltip(null)}
-                                >
-                                  {emailStatus.icon}
-                                  <span className="truncate">{emailStatus.text}</span>
-                                </span>
-                                
-                                {emailWarningTooltip === idx && (
-                                  <div className={`absolute bottom-full left-0 mb-2 w-64 sm:w-72 p-3 rounded-lg shadow-2xl z-50 animate-fadeIn ${
-                                    emailStatus.showWarning
-                                      ? emailStatus.warningLevel === 'danger'
-                                        ? 'bg-red-600 text-white'
-                                        : 'bg-orange-500 text-white'
-                                      : 'bg-blue-600 text-white'
-                                  }`}>
-                                    <div className="font-bold mb-1 flex items-center gap-1 text-xs sm:text-sm">
-                                      {emailStatus.showWarning ? (
-                                        <>
-                                          <ShieldAlert size={13} />
-                                          {emailStatus.warningLevel === 'danger' ? 'Peringatan Keamanan Tinggi' : 'Peringatan Keamanan'}
-                                        </>
-                                      ) : (
-                                        <>
-                                          <ShieldCheck size={13} />
-                                          Verifikasi Email
-                                        </>
-                                      )}
-                                    </div>
-                                    <p className="leading-relaxed text-xs">{emailStatus.description}</p>
-                                    {emailStatus.typoSuggestion && (
-                                      <p className="mt-2 text-xs bg-white/20 p-2 rounded">
-                                        💡 Saran: {emailStatus.typoSuggestion}
-                                      </p>
-                                    )}
-                                    <div className={`absolute -bottom-1 left-4 w-2 h-2 transform rotate-45 ${
-                                      emailStatus.showWarning
-                                        ? emailStatus.warningLevel === 'danger'
-                                          ? 'bg-red-600'
-                                          : 'bg-orange-500'
-                                        : 'bg-blue-600'
-                                    }`}></div>
-                                  </div>
-                                )}
-                              </>
-                            );
-                          })()}
-                        </div>
-                        <span className="text-gray-400 hidden sm:inline">
-                          {contact.message && contact.message.length > 100 ? '⭐ Prioritas tinggi' : '💬 Pesan standar'}
-                        </span>
-                      </div>
-                    </div>
+                    <span className="text-gray-400 italic">
+                      {contact.message?.length > 100 ? 'Long Msg' : 'Short Msg'}
+                    </span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))
           ) : (
             <div className="text-center py-12 sm:py-16 text-gray-500 dark:text-gray-400 px-2">

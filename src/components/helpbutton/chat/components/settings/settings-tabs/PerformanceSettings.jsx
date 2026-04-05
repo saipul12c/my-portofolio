@@ -5,87 +5,59 @@ import { Battery, Cpu, HardDrive, Zap } from "lucide-react";
 export function PerformanceSettings({ settings, handleSave }) {
   return (
     <div className="space-y-4">
-      <div className="p-4 bg-gradient-to-r from-orange-900/20 to-red-900/20 rounded-lg border border-orange-500/30">
-        <h4 className="font-medium text-orange-400 mb-2 flex items-center gap-2">
+      <div className="p-4 bg-gradient-to-r from-[var(--saipul-accent-1)]/10 to-[var(--saipul-accent-2)]/10 rounded-lg border border-[var(--saipul-accent-1)]/20 shadow-inner">
+        <h4 className="font-medium text-[var(--saipul-accent-1)] mb-2 flex items-center gap-2">
           <Zap size={16} /> Status Performa Sistem
         </h4>
-        <div className="text-xs space-y-2">
+        <div className="text-xs space-y-2 text-[var(--saipul-text-secondary)]">
           <div className="flex justify-between items-center">
             <span>Mode AI:</span>
-            <span className="text-green-400">{settings.aiModel.toUpperCase()}</span>
+            <span className="text-[var(--saipul-accent-1)] font-semibold">{String(settings.aiModel || '').toUpperCase()}</span>
           </div>
           <div className="flex justify-between">
             <span>Response Speed:</span>
-            <span className="text-green-400">{settings.responseSpeed}</span>
+            <span className="text-[var(--saipul-accent-1)]">{settings.responseSpeed || 'Balanced'}</span>
           </div>
           <div className="flex justify-between">
             <span>Memory Usage:</span>
-            <span className="text-green-400">Optimal</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Processing Power:</span>
-            <span className="text-green-400">High</span>
+            <span className="text-[var(--saipul-accent-2)]">Optimal</span>
           </div>
         </div>
       </div>
 
       <div className="space-y-3">
-        <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
-          <div className="flex items-center gap-3">
-            <Battery size={16} className="text-gray-400" />
-            <div>
-              <span className="text-white">Battery Saver Mode</span>
-              <p className="text-xs text-gray-500">Mengurangi konsumsi daya</p>
+        {[
+          { id: 'batterySaver', label: 'Battery Saver Mode', sub: 'Mengurangi konsumsi daya', icon: Battery },
+          { id: 'hardwareAcceleration', label: 'Hardware Acceleration', sub: 'Gunakan GPU untuk processing', icon: Cpu },
+          { id: 'realTimeProcessing', label: 'Real-time Processing', sub: 'Proses data secara real-time', icon: HardDrive }
+        ].map(item => (
+          <div key={item.id} className="flex items-center justify-between p-3 bg-[var(--saipul-bg-card)] border border-[var(--saipul-border)] rounded-lg">
+            <div className="flex items-center gap-3">
+              <item.icon size={16} className="text-[var(--saipul-accent-1)]" />
+              <div>
+                <span className="text-[var(--saipul-text-primary)]">{item.label}</span>
+                <p className="text-xs text-[var(--saipul-text-secondary)]">{item.sub}</p>
+              </div>
             </div>
+            <ToggleSwitch 
+              checked={settings[item.id]}
+              onChange={(value) => handleSave(item.id, value)}
+              id={item.id}
+            />
           </div>
-          <ToggleSwitch 
-            checked={settings.batterySaver}
-            onChange={(value) => handleSave("batterySaver", value)}
-            id="batterySaver"
-          />
-        </div>
-
-        <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
-          <div className="flex items-center gap-3">
-            <Cpu size={16} className="text-gray-400" />
-            <div>
-              <span className="text-white">Hardware Acceleration</span>
-              <p className="text-xs text-gray-500">Gunakan GPU untuk processing</p>
-            </div>
-          </div>
-          <ToggleSwitch 
-            checked={settings.hardwareAcceleration}
-            onChange={(value) => handleSave("hardwareAcceleration", value)}
-            id="hardwareAcceleration"
-          />
-        </div>
-
-        <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
-          <div className="flex items-center gap-3">
-            <HardDrive size={16} className="text-gray-400" />
-            <div>
-              <span className="text-white">Real-time Processing</span>
-              <p className="text-xs text-gray-500">Proses data secara real-time</p>
-            </div>
-          </div>
-          <ToggleSwitch 
-            checked={settings.realTimeProcessing}
-            onChange={(value) => handleSave("realTimeProcessing", value)}
-            id="realTimeProcessing"
-          />
-        </div>
+        ))}
       </div>
 
       <div>
-        <label className="block text-gray-400 mb-2">Cache Size</label>
+        <label className="block text-[var(--saipul-text-secondary)] mb-2">Cache Size</label>
         <select 
           value={settings.cacheSize}
           onChange={(e) => handleSave("cacheSize", e.target.value)}
-          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+          className="w-full bg-[var(--saipul-bg-input)] border border-[var(--saipul-border)] rounded-lg px-3 py-2 text-[var(--saipul-text-primary)] focus:ring-2 focus:ring-[var(--saipul-accent)] outline-none"
         >
           {CACHE_SIZES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
         </select>
-        <p className="text-xs text-gray-500 mt-1">Ukuran cache untuk meningkatkan kecepatan respons</p>
+        <p className="text-xs text-[var(--saipul-text-muted)] mt-1">Ukuran cache untuk meningkatkan kecepatan respons</p>
       </div>
 
       <div className="pt-4 border-t border-gray-700">

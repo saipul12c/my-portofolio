@@ -4,8 +4,8 @@ import { THEMES, ACCENTS, LANGUAGES } from '../settingsConfig';
 export function GeneralSettings({ settings, handleSave }) {
   return (
     <div className="space-y-4">
-      <div className="p-3 bg-gray-800/40 rounded-lg">
-        <h4 className="text-sm font-medium text-white mb-2">Profil & Personalisasi</h4>
+      <div className="p-3 bg-[var(--saipul-bg-input)] border border-[var(--saipul-border)] rounded-lg">
+        <h4 className="text-sm font-medium text-[var(--saipul-text-primary)] mb-2">Profil & Personalisasi</h4>
         <div className="grid grid-cols-1 gap-3">
           <input
             aria-label="Nama pengguna"
@@ -13,9 +13,9 @@ export function GeneralSettings({ settings, handleSave }) {
             value={settings.profile?.name || ''}
             onChange={(e) => {
               const v = e.target.value;
-              try { window.dispatchEvent(new CustomEvent('saipul_profile_updated', { detail: { name: v } })); } catch (_e) { void _e; }
+              handleSave("profile", { ...settings.profile, name: v });
             }}
-            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm"
+            className="w-full bg-[var(--saipul-bg-input)] border border-[var(--saipul-border)] rounded-lg px-3 py-2 text-[var(--saipul-text-primary)] text-sm focus:ring-2 focus:ring-[var(--saipul-accent)] outline-none"
           />
           <input
             aria-label="Kota / Lokasi"
@@ -93,41 +93,23 @@ export function GeneralSettings({ settings, handleSave }) {
       </div>
 
       <div className="space-y-3">
-        <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
-          <div>
-            <span className="text-white">Memori Konteks</span>
-            <p className="text-xs text-gray-500">Mengingat percakapan sebelumnya</p>
+        {[
+          { id: 'memoryContext', label: 'Memori Konteks', sub: 'Mengingat percakapan sebelumnya' },
+          { id: 'autoSuggestions', label: 'Saran Otomatis', sub: 'Menampilkan saran respons' },
+          { id: 'autoSave', label: 'Auto Save', sub: 'Simpan otomatis perubahan' }
+        ].map(item => (
+          <div key={item.id} className="flex items-center justify-between p-3 bg-[var(--saipul-bg-card)] border border-[var(--saipul-border)] rounded-lg">
+            <div>
+              <span className="text-[var(--saipul-text-primary)]">{item.label}</span>
+              <p className="text-xs text-[var(--saipul-text-secondary)]">{item.sub}</p>
+            </div>
+            <ToggleSwitch 
+              checked={settings[item.id]}
+              onChange={(value) => handleSave(item.id, value)}
+              id={item.id}
+            />
           </div>
-          <ToggleSwitch 
-            checked={settings.memoryContext}
-            onChange={(value) => handleSave("memoryContext", value)}
-            id="memoryContext"
-          />
-        </div>
-
-        <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
-          <div>
-            <span className="text-white">Saran Otomatis</span>
-            <p className="text-xs text-gray-500">Menampilkan saran respons</p>
-          </div>
-          <ToggleSwitch 
-            checked={settings.autoSuggestions}
-            onChange={(value) => handleSave("autoSuggestions", value)}
-            id="autoSuggestions"
-          />
-        </div>
-
-        <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
-          <div>
-            <span className="text-white">Auto Save</span>
-            <p className="text-xs text-gray-500">Simpan otomatis perubahan</p>
-          </div>
-          <ToggleSwitch 
-            checked={settings.autoSave}
-            onChange={(value) => handleSave("autoSave", value)}
-            id="autoSave"
-          />
-        </div>
+        ))}
       </div>
     </div>
   );

@@ -3,7 +3,6 @@ export const THEMES = [
   { value: 'system', label: 'System Auto' },
   { value: 'dark', label: 'Dark Mode' },
   { value: 'light', label: 'Light Mode' },
-  { value: 'auto', label: 'Auto Switch' },
   { value: 'sepia', label: 'Sepia (Warm)' },
   { value: 'solar', label: 'Solar (Soft)' },
   { value: 'midnight', label: 'Midnight (Deep)' },
@@ -11,9 +10,33 @@ export const THEMES = [
   { value: 'contrast', label: 'High Contrast' }
 ];
 
+export const PALETTES = {
+  system: { surface: '#0f172a', text: '#e6eef8', muted: '#94a3b8', border: '#1f2a44' },
+  dark: { surface: '#0b1220', text: '#e6eef8', muted: '#98a2b3', border: '#162232' },
+  light: { surface: '#ffffff', text: '#0b1220', muted: '#6b7280', border: '#e6eef8' },
+  sepia: { surface: '#fbf1e6', text: '#2b2b2b', muted: '#7b6f63', border: '#f0e6da' },
+  solar: { surface: '#fff7ed', text: '#2a2a2a', muted: '#7a5a3c', border: '#f5e6d8' },
+  midnight: { surface: '#071133', text: '#dbeafe', muted: '#93c5fd', border: '#0b2646' },
+  soft: { surface: '#f7fafc', text: '#0b1220', muted: '#94a3b8', border: '#eef2f7' },
+  contrast: { surface: '#000000', text: '#ffffff', muted: '#b3b3b3', border: '#222222' }
+};
+
 export const ACCENTS = [
   'cyan','blue','purple','green','orange','teal','rose','lime','amber','pink'
 ];
+
+export const ACCENT_COLORS = {
+  cyan: { accent: '#06b6d4', accent2: '#0891b2' },
+  amber: { accent: '#f59e0b', accent2: '#d97706' },
+  blue: { accent: '#2563eb', accent2: '#1e40af' },
+  teal: { accent: '#0ea5a4', accent2: '#0f766e' },
+  rose: { accent: '#fb7185', accent2: '#be185d' },
+  lime: { accent: '#84cc16', accent2: '#65a30d' },
+  purple: { accent: '#7c3aed', accent2: '#6d28d9' },
+  green: { accent: '#10b981', accent2: '#059669' },
+  orange: { accent: '#f59e0b', accent2: '#d97706' },
+  pink: { accent: '#ec4899', accent2: '#db2777' }
+};
 
 export const LANGUAGES = [
   { value: 'auto', label: 'Auto (Indonesia/English)' },
