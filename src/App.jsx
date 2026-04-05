@@ -73,8 +73,8 @@ const Portal = lazy(() => import("./pages/portal/Portal"));
 const Hobbies = lazy(() => import("./pages/hub/Hobbies"));
 const HobbiesDetail = lazy(() => import("./pages/hub/HobbyDetail.jsx"));
 const S1PGMI = lazy(() => import("./pages/akademik/S1"));
-const Sidang = lazy(() => import("./pages/akademik/sidang/sidang"));
-const Sempro = lazy(() => import("./pages/akademik/sempro/sempro"));
+const Sidang = lazy(() => import("./pages/akademik/sidang/Sidang"));
+const Sempro = lazy(() => import("./pages/akademik/sempro/Sempro"));
 const Wisuda = lazy(() => import("./pages/akademik/wisuda/Wisuda"));
 
 const Blog = lazy(() => import("./pages/blog/Blog"));
