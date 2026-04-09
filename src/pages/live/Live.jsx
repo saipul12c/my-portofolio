@@ -98,6 +98,39 @@ function Live() {
 
   // Header state
   const [scrolled, setScrolled] = useState(false);
+
+  // Sync Live CS context with Chatbot settings
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('saipul_settings') || '{}');
+      const originalContext = saved.settingsContext;
+      
+      // Set context to live-cs
+      localStorage.setItem('saipul_settings', JSON.stringify({
+        ...saved,
+        settingsContext: 'live-cs'
+      }));
+      
+      // Dispatch event to notify Chatbot components
+      window.dispatchEvent(new CustomEvent('saipul_settings_updated', { 
+        detail: { key: 'settingsContext', value: 'live-cs' } 
+      }));
+
+      return () => {
+        // Restore original context on unmount
+        const current = JSON.parse(localStorage.getItem('saipul_settings') || '{}');
+        localStorage.setItem('saipul_settings', JSON.stringify({
+          ...current,
+          settingsContext: originalContext || null
+        }));
+        window.dispatchEvent(new CustomEvent('saipul_settings_updated', { 
+          detail: { key: 'settingsContext', value: originalContext || null } 
+        }));
+      };
+    } catch (e) {
+      console.warn('Failed to sync Live CS context', e);
+    }
+  }, []);
   const [theme, setTheme] = useState(localStorage.getItem('saipul_theme') || 'default');
 
   // Sync theme
@@ -126,17 +159,20 @@ function Live() {
       }
 
       const { data, error } = await supabase
-        .from('profiles')
+        .from('users')
         .select('*')
         .eq('id', authUser.id)
-        .single();
+        .maybeSingle();
 
-      // Check for ban or deactivated status (ONLY if profile data is available)
+      // Handle banned or deactivated account (ONLY if profile data is available)
       if (data) {
         const userStatus = data.status?.toLowerCase();
         if (userStatus === 'nonaktif' || userStatus === 'banned') {
           setError('Akun Anda dinonaktifkan atau diblokir.');
-          setTimeout(() => setUser(null), 3000);
+          setTimeout(() => {
+            supabase.auth.signOut();
+            setUser(null);
+          }, 3000);
           return;
         }
       }
@@ -199,7 +235,7 @@ function Live() {
 
         // Update message stats
         if (user) {
-          const limit = MESSAGE_LIMITS[user.role] || 5;
+          const limit = systemConfig.message_limits[user.role] || 5;
           const remaining = Math.max(0, limit - user.messageCount);
           setMessageStats({ sent: user.messageCount, remaining });
         }
@@ -1172,14 +1208,12 @@ function Live() {
         />
       </div>
 
-      {/* Modern Floating Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 p-2 sm:p-4 pointer-events-none">
+      {/* Modern Floating Header (Integrated into Flex Flow) */}
+      <div className="z-50 p-2 sm:p-4 w-full">
         <motion.header 
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className={`max-w-6xl mx-auto w-full pointer-events-auto transition-all duration-500 rounded-3xl border border-[var(--theme-border)] ${
-            scrolled ? 'bg-[var(--theme-surface)] backdrop-blur-2xl py-3 px-4 sm:px-6 shadow-2xl' : 'bg-[var(--theme-surface)] backdrop-blur-md py-4 px-4 sm:px-8'
-          }`}
+          className={`max-w-6xl mx-auto w-full transition-all duration-500 rounded-3xl border border-[var(--theme-border)] bg-[var(--theme-surface)] backdrop-blur-2xl py-4 px-4 sm:px-8 shadow-xl`}
         >
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
@@ -1283,7 +1317,7 @@ function Live() {
         </motion.header>
       </div>
 
-      <main className="flex-1 w-full max-w-6xl mx-auto flex flex-col pt-24 sm:pt-32 pb-20 sm:pb-4 px-2 sm:px-6 relative z-10 overflow-hidden">
+      <main className="flex-1 w-full max-w-6xl mx-auto flex flex-col pt-2 sm:pt-4 pb-24 sm:pb-8 px-2 sm:px-6 relative z-10 overflow-hidden">
         {/* Alerts Container */}
         <div className="fixed top-20 sm:top-24 right-4 z-[60] flex flex-col gap-2 max-w-xs pointer-events-none">
           <AnimatePresence>

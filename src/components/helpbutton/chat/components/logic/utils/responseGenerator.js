@@ -4,7 +4,7 @@ import { handleConversion } from './conversions';
 import { generatePrediction, analyzeData, calculateStatistics } from './analytics';
 import { extractThemes, getRandomItem, simpleNER } from './helpers';
 import { getFileIcon } from './fileIcons';
-import { CHATBOT_VERSION } from '../../../config.js';
+import { CHATBOT_VERSION, LIVE_CS_PATH } from '../../../config.js';
 import aiDocData from '../../../../../../data/AIDoc/data.json';
 import riwayatData from '../../../../../../data/AIDoc/riwayat/riwayat.json';
 import { 
@@ -141,6 +141,54 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
     console.warn('Failed to save user profile:', e);
   }
 
+  // ===== NEW: CAUTION NOTE ANALYSIS (Moved up to prevent ReferenceError) =====
+  let cautionNote = '';
+  let reportInfluence = { found: false, count: 0, highestSeverity: null, categories: [] };
+  try {
+    const reports = JSON.parse(localStorage.getItem('saipul_chat_reports') || '[]');
+    if (Array.isArray(reports) && reports.length > 0) {
+      // examine recent reports but compute aggregate signals
+      const recent = reports.slice(-200);
+      for (const r of recent) {
+        const snippet = (r.messageSnippet || r.messageText || '').toLowerCase();
+        if (!snippet) continue;
+        // token-overlap + phrase match heuristic
+        const tokens = snippet.split(/\W+/).filter(w => w.length > 3);
+        if (tokens.length === 0) continue;
+        let matches = 0;
+        for (const w of tokens) if (text.includes(w)) matches++;
+        // also check direct phrase containment
+        if (matches >= Math.min(2, tokens.length) || (snippet.length > 20 && text.includes(snippet.slice(0, Math.min(60, snippet.length))))) {
+          reportInfluence.found = true;
+          reportInfluence.count = (reportInfluence.count || 0) + 1;
+          // severity priorities: low < medium < high
+          try {
+            const s = (r.severity || r.level || '').toString().toLowerCase();
+            if (!reportInfluence.highestSeverity) reportInfluence.highestSeverity = s || 'medium';
+            else {
+              const order = { low: 1, medium: 2, high: 3 };
+              if ((order[s] || 2) > (order[reportInfluence.highestSeverity] || 2)) reportInfluence.highestSeverity = s;
+            }
+          } catch { /* ignore */ }
+          const c = (r.category || r.reason || 'other');
+          if (!reportInfluence.categories.includes(c)) reportInfluence.categories.push(c);
+        }
+      }
+
+      if (reportInfluence.found) {
+        // craft caution note depending on severity/count/categories
+        const catLabel = reportInfluence.categories.slice(0,2).join(', ');
+        if (reportInfluence.count >= 3 || reportInfluence.highestSeverity === 'high') {
+          cautionNote = `⚠️ Peringatan: topik/kalimat serupa telah dilaporkan beberapa kali (${reportInfluence.count}) dengan kategori: ${catLabel}. Saya akan sangat berhati-hati — beberapa detail mungkin disembunyikan atau saya akan memberikan saran untuk menghubungi dukungan.`;
+        } else {
+          cautionNote = `⚠️ Catatan: topik/kalimat serupa pernah dilaporkan (${catLabel}). Saya akan berhati-hati dan menyertakan referensi atau meminta klarifikasi jika diperlukan.`;
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to analyze local reports for caution Note:', e);
+  }
+
   // ===== NEW: FAQ INTEGRATION (High Priority) =====
   // Cek FAQ sebelum greeting untuk memastikan pertanyaan teknis terjawab dengan akurat
   const faqMatch = findBestFAQMatch(msg);
@@ -153,6 +201,43 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
        emotion: emotionData.primary,
        character: characterData.character
      };
+  }
+  
+  // ===== NEW: LIVE CS CONTEXT CHECK =====
+  // Jika sedang di halaman Live CS, berikan respon minimal agar tidak mengganggu agen manusia
+  if (settings?.settingsContext === 'live-cs') {
+    return {
+      text: "👋 Saya sedang standby menemani Anda di Room Diskusi. Silakan berinteraksi dengan agen kami atau kirim pesan di sini jika ada pertanyaan teknis singkat.",
+      source: { type: 'system', id: 'live_cs_context' },
+      confidence: 1.0,
+      emotion: 'friendly'
+    };
+  }
+
+  // ===== NEW: LIVE CS DETECTION (High Priority) =====
+  // Deteksi jika user ingin bantuan manusia berdasarkan intent atau kata kunci
+  const isAskingForCS = (intent && (intent.intent === 'live_cs' || intent.type === 'live_cs')) || 
+                        /\b(cs|agen|agent|admin|manusia|human|live support|bantuan langsung|diskusi)\b/i.test(text);
+  
+  // Perbaikan loop: Jika input adalah 'Hubungi Agen' (berasal dari klik tombol/saran), 
+  // berikan respon yang lebih definitif bukannya mengulang saran yang sama.
+  if (text === 'hubungi agen' || text === 'hubungi cs') {
+    return {
+      text: `🎧 **Menghubungkan ke Live CS**\n\nSilakan klik tombol **"Hubungi Agen Sekarang"** di atas untuk diarahkan ke Room Diskusi kami.\n\nJika tombol tidak muncul, Anda bisa langsung mengakses menu **Room Diskusi** dari halaman utama.`,
+      source: { type: 'system', id: 'live_cs_direct' },
+      confidence: 1.0,
+      action: 'suggest_live_cs' // Pastikan tombol tetap muncul
+    };
+  }
+
+  if (isAskingForCS) {
+    return {
+      text: `🎧 **Pusat Bantuan & Live CS**\n\nSaya mengerti Anda ingin bantuan lebih lanjut. Anda dapat menghubungi agen manusia melalui **Room Diskusi** kami.\n\nKlik tombol di bawah untuk bergabung ke diskusi atau beralih ke mode bantuan langsung.`,
+      source: { type: 'system', id: 'live_cs_referral' },
+      confidence: 1.0,
+      suggestedTopics: ['Hubungi Agen', 'Panduan Keamanan', 'Kembali ke Bot'],
+      action: 'suggest_live_cs'
+    };
   }
 
   // ===== NEW: GREETING & SIMPLE PATTERN RECOGNITION =====
@@ -324,53 +409,6 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
     const tzLabel = tz || 'UTC';
     return { text: `Waktu saat ini di ${loc} (${tzLabel}): ${formatted}`, source: { type: 'time' }, confidence: 0.95 };
   }
-  // Enhanced: Check local saved reports and build a richer caution/behavior signal
-  let cautionNote = '';
-  let reportInfluence = { found: false, count: 0, highestSeverity: null, categories: [] };
-  try {
-    const reports = JSON.parse(localStorage.getItem('saipul_chat_reports') || '[]');
-    if (Array.isArray(reports) && reports.length > 0) {
-      // examine recent reports but compute aggregate signals
-      const recent = reports.slice(-200);
-      for (const r of recent) {
-        const snippet = (r.messageSnippet || r.messageText || '').toLowerCase();
-        if (!snippet) continue;
-        // token-overlap + phrase match heuristic
-        const tokens = snippet.split(/\W+/).filter(w => w.length > 3);
-        if (tokens.length === 0) continue;
-        let matches = 0;
-        for (const w of tokens) if (text.includes(w)) matches++;
-        // also check direct phrase containment
-        if (matches >= Math.min(2, tokens.length) || (snippet.length > 20 && text.includes(snippet.slice(0, Math.min(60, snippet.length))))) {
-          reportInfluence.found = true;
-          reportInfluence.count = (reportInfluence.count || 0) + 1;
-          // severity priorities: low < medium < high
-          try {
-            const s = (r.severity || r.level || '').toString().toLowerCase();
-            if (!reportInfluence.highestSeverity) reportInfluence.highestSeverity = s || 'medium';
-            else {
-              const order = { low: 1, medium: 2, high: 3 };
-              if ((order[s] || 2) > (order[reportInfluence.highestSeverity] || 2)) reportInfluence.highestSeverity = s;
-            }
-          } catch { /* ignore */ }
-          const c = (r.category || r.reason || 'other');
-          if (!reportInfluence.categories.includes(c)) reportInfluence.categories.push(c);
-        }
-      }
-
-      if (reportInfluence.found) {
-        // craft caution note depending on severity/count/categories
-        const catLabel = reportInfluence.categories.slice(0,2).join(', ');
-        if (reportInfluence.count >= 3 || reportInfluence.highestSeverity === 'high') {
-          cautionNote = `⚠️ Peringatan: topik/kalimat serupa telah dilaporkan beberapa kali (${reportInfluence.count}) dengan kategori: ${catLabel}. Saya akan sangat berhati-hati — beberapa detail mungkin disembunyikan atau saya akan memberikan saran untuk menghubungi dukungan.`;
-        } else {
-          cautionNote = `⚠️ Catatan: topik/kalimat serupa pernah dilaporkan (${catLabel}). Saya akan berhati-hati dan menyertakan referensi atau meminta klarifikasi jika diperlukan.`;
-        }
-      }
-    }
-  } catch (e) {
-    console.warn('Failed to analyze local reports for caution Note:', e);
-  }
 
   if (text.includes('upload') || text === 'upload_file') {
     return {
@@ -484,9 +522,9 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
     kbMonitor.recordQuery(text, sourceType.replace('kb_', ''), true);
     
     // apply style preference: settings -> profile preference -> random
-    if (knowledgeResponse && typeof knowledgeResponse.text === 'string' && style) {
+    if (knowledgeResponse && typeof knowledgeResponse.text === 'string' && settings.responseStyle) {
       try { 
-        knowledgeResponse.text = applyStyle(knowledgeResponse.text, style); 
+        knowledgeResponse.text = applyStyle(knowledgeResponse.text, settings.responseStyle); 
       } catch (e) { 
         console.warn('Failed to apply response style:', e);
       }
@@ -582,6 +620,19 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
   }
 
   if (text.includes('fitur') || text.includes('bisa apa') || text.includes('help') || text.includes('bantuan')) {
+    // Check if specifically asking for human/CS
+    const isAskingForHuman = /\b(agen|agent|human|manusia|admin|cs|live)\b/i.test(text) || text.includes('hubungi');
+    
+    if (isAskingForHuman) {
+      return {
+        text: `🎧 **Pusat Bantuan & Live CS**\n\nAnda dapat menghubungi agen manusia melalui **Room Diskusi** kami. Agen kami tersedia Senin–Jumat pukul 09:00–17:00.`,
+        source: { type: 'system', id: 'live_cs_referral' },
+        confidence: 1.0,
+        suggestedTopics: ['Hubungi Agen', 'Panduan Keamanan', 'Kembali ke Bot'],
+        action: 'suggest_live_cs'
+      };
+    }
+
     // Integrasi fitur utama dari data.json
     const fiturUtama = aiDocData?.fitur_utama?.map((f, i) => `${i + 1}. ${f}`).join('\n') || '-';
     

@@ -1,10 +1,17 @@
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import nlp from "compromise";
+import faqsData from "../../../../../components/helpbutton/faq/data/faqs.json";
+import commitmentsData from "../../../../../components/helpbutton/komit/data/commitments.json";
+import softSkillsData from "../../../../../data/skills/softskills.json";
+import { compileAuthorProfiles, findAuthorByName } from "../../../utils/authorUtils";
 
-export default function AiOverview({ searchTerm, filteredBlogs, allBlogs, setSearchTerm, setCurrentPage, onSearch }) {
+export default function AiOverview({ searchTerm, filteredBlogs, allBlogs, onSearch }) {
   const [visible, setVisible] = useState(false);
   const [isThinking, setIsThinking] = useState(true);
+  const [aiAnalysis, setAiAnalysis] = useState(null);
   const navigate = useNavigate();
 
   // Handle clicks on suggested keywords/labels so they update the search state
@@ -14,8 +21,6 @@ export default function AiOverview({ searchTerm, filteredBlogs, allBlogs, setSea
     if (typeof onSearch === "function") {
       onSearch(text);
     } else {
-      if (setSearchTerm) setSearchTerm(text);
-      if (setCurrentPage) setCurrentPage(1);
       navigate(`/blog?search=${encodeURIComponent(text)}`);
     }
 
@@ -25,238 +30,340 @@ export default function AiOverview({ searchTerm, filteredBlogs, allBlogs, setSea
     }
   };
 
-  // === 🧠 AI Reasoning & Analysis ===
-  const aiAnalysis = useMemo(() => {
-    const dataSource = (filteredBlogs && filteredBlogs.length > 0)
-      ? filteredBlogs
-      : (allBlogs && allBlogs.length > 0 ? allBlogs : null);
-
-    if (!dataSource) return null;
+  // === 🧠 AI Reasoning & Analysis (Optimized for Large Data) ===
+  useEffect(() => {
+    if (!searchTerm) {
+      setAiAnalysis(null);
+      setVisible(false);
+      return;
+    }
 
     setIsThinking(true);
-    const total = dataSource.length;
-    const authors = Array.from(new Set(dataSource.map((p) => p.author))).slice(0, 5);
-    const categories = Array.from(new Set(dataSource.map((p) => p.category))).slice(0, 3);
-    const allLabels = dataSource.flatMap((p) => p.labels || []);
-    const popularLabels = Array.from(new Set(allLabels)).slice(0, 6);
+    setVisible(true);
 
-    // Gabungkan seluruh konten artikel untuk analisis
-    const combinedText = dataSource.map((p) => p.content || "").join(" ");
-    const doc = nlp(combinedText);
-    const sentences = doc.sentences().out("array");
+    // Use a small delay to ensure the browser can render the "Thinking" state first
+    const timer = setTimeout(() => {
+      // --- DATA SOURCE CONFIG ---
+      // AI now strictly follows the filtered results. No silent local fallback to all articles.
+      const dataSource = (filteredBlogs && filteredBlogs.length > 0) ? filteredBlogs : [];
+      const total = dataSource.length;
 
-    // === 🔧 Text sanitizer to remove markdown and tidy sentences ===
-    const cleanText = (s) => {
-      if (!s || typeof s !== "string") return s;
-      let t = s;
-      // Remove bold/italic/backticks and markdown links
-      t = t.replace(/\*\*(.*?)\*\*/g, "$1");
-      t = t.replace(/\*(.*?)\*/g, "$1");
-      t = t.replace(/`(.*?)`/g, "$1");
-      t = t.replace(/\[(.*?)\]\((.*?)\)/g, "$1");
-      // Collapse whitespace and trim
-      t = t.replace(/\s+/g, " ").trim();
-      // Capitalize first letter if necessary
-      if (t.length > 1) t = t.charAt(0).toUpperCase() + t.slice(1);
-      return t;
-    };
+      if (total === 0) {
+        setIsThinking(false);
+        setAiAnalysis({
+          total: 0,
+          answer: `Waduh! 👋 Sepertinya saya belum menemukan artikel yang pas banget untuk pencarian **"${searchTerm}"**. \n\nMungkin bisa coba pakai kata kunci yang lebih umum, atau cek topik terpopuler seperti **Fotografi** atau **Desain Digital** di bawah ya! ✨`,
+          confidence: "low",
+          insights: ["Tidak ada artikel yang cocok dengan pencarian saat ini."],
+          topKeywords: [],
+          popularLabels: [],
+          topRelatedArticles: [],
+          context: ["Kosong"],
+          tone: "informatif",
+          qualityMetrics: { depth: "N/A", recency: "N/A", expertise: "N/A" }
+        });
+        return;
+      }
 
-    // === 🎯 AI Question Analysis ===
-    const lowerSearch = searchTerm.toLowerCase();
-    
-    // Deteksi jenis pertanyaan
-    const questionType = {
-      isWhat: /(apa|what|pengertian|definisi|arti)/i.test(searchTerm),
-      isHow: /(bagaimana|how|cara|langkah|tutorial)/i.test(searchTerm),
-      isWhy: /(mengapa|why|alasan|sebab)/i.test(searchTerm),
-      isWhen: /(kapan|when|waktu|jadwal)/i.test(searchTerm),
-      isWho: /(siapa|who|penemu|pembuat)/i.test(searchTerm),
-      isComparison: /(perbedaan|beda|vs|banding)/i.test(searchTerm),
-      isRecommendation: /(rekomendasi|saran|tips|terbaik)/i.test(searchTerm)
-    };
+      // --- OPTIMIZATION: Limit data for high performance ---
+      // We analyze the top 8 results (which are already sorted by relevance in our new hook)
+      const analysisLimit = 8;
+      const limitedSource = dataSource.slice(0, analysisLimit);
 
-    // === 🤖 Smart Answer Generation ===
-    const generateAnswer = () => {
-      let answer = "";
-      let confidence = "high";
+      const authors = Array.from(new Set(limitedSource.map((p) => p.author))).slice(0, 5);
+      const categories = Array.from(new Set(limitedSource.map((p) => p.category))).slice(0, 3);
+      // --- SEMANTIC TOPIC EXTRACTION ---
+      // Instead of generic status labels, we use actual content tags
+      const allTags = limitedSource.flatMap((p) => p.tags || []);
+      const tagCounts = allTags.reduce((acc, tag) => {
+        // Normalize: Capitalize first letter, rest lower
+        const normTag = tag.trim().charAt(0).toUpperCase() + tag.trim().slice(1).toLowerCase();
+        acc[normTag] = (acc[normTag] || 0) + 1;
+        return acc;
+      }, {});
 
-      // Cari kalimat yang paling relevan dengan pertanyaan
-      const relevantSentences = sentences.filter((s) =>
-        s.toLowerCase().includes(lowerSearch)
+      const popularLabels = Object.entries(tagCounts)
+        .sort((a, b) => b[1] - a[1]) // Rank by frequency
+        .slice(0, 6)
+        .map(([tag]) => tag);
+
+      // Split content into clean text for NLP analysis
+      const combinedTextRaw = limitedSource
+        .map((p) => (p.content || "").substring(0, 2000))
+        .join(" ");
+
+      // Strip markdown symbols for internal NLP analysis
+      const combinedTextClean = combinedTextRaw
+        .replace(/[#*`~]/g, "")
+        .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      // Heavy NLP operation - now running in a deferred state
+      const doc = nlp(combinedTextClean);
+      const sentences = doc.sentences().out("array");
+
+      const cleanText = (s) => {
+        if (!s || typeof s !== "string") return s;
+        let t = s;
+        // Basic cleanup for fragments
+        t = t.replace(/\s+/g, " ").trim();
+        if (t.length > 1) t = t.charAt(0).toUpperCase() + t.slice(1);
+        return t;
+      };
+
+      const lowerSearch = searchTerm.toLowerCase();
+      // Expanded Intent Detection
+      const intents = {
+        isWho: /(siapa|who|author|penulis|pencipta)/i.test(searchTerm),
+        isTeam: /(tim|team|daftar penulis|siapa saja|anggota|staf|personil)/i.test(searchTerm),
+        isExpertise: /(ahli|spesialis|pakar|pakar|expert|jago)/i.test(searchTerm),
+        isWhen: /(kapan|when|tanggal|date|update|terbaru|terlama)/i.test(searchTerm),
+        isHowMany: /(berapa|how many|jumlah|total)/i.test(searchTerm),
+        isWhat: /(apa|what|pengertian|definisi|arti)/i.test(searchTerm),
+        isHow: /(bagaimana|how|cara|langkah|tutorial)/i.test(searchTerm),
+        isWhy: /(mengapa|why|alasan|sebab)/i.test(searchTerm),
+        isRecommendation: /(rekomendasi|saran|tips|terbaik|populer|bagus)/i.test(searchTerm)
+      };
+
+      const generateAnswer = () => {
+        const greetings = [
+          `Halo! 👋 Senang sekali bisa bantu kamu cari tahu soal **"${searchTerm}"**. `,
+          `Ouh, halo! 👋 Wah, topik **"${searchTerm}"** ini menarik banget ya buat dibahas. `,
+          `Hai! 🚀 Saya sudah menyelami koleksi tulisan kamu dan menemukan hal seru soal **"${searchTerm}"**. `,
+          `Halo! ✨ Berdasarkan hasil riset kilat saya di blog kamu, ini lho informasi soal **"${searchTerm}"**: `
+        ];
+        const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+        let answer = randomGreeting;
+        let confidence = "high";
+
+        // --- CROSS-CONTEXT ENRICHMENT (FAQ & Commitments) ---
+        const matchedFaq = faqsData.find(f =>
+          f.question.toLowerCase().includes(lowerSearch) ||
+          f.answer.toLowerCase().includes(lowerSearch)
+        );
+        const matchedCommit = (commitmentsData.commitments || []).find(c =>
+          c.title.toLowerCase().includes(lowerSearch) ||
+          c.desc.toLowerCase().includes(lowerSearch)
+        );
+        const matchedSkill = (softSkillsData?.skills || []).find(s =>
+          s.name.toLowerCase().includes(lowerSearch) ||
+          (s.tags || []).some(t => lowerSearch.includes(t.toLowerCase()))
+        );
+
+        // --- INTELLIGENT SEARCH FEEDBACK ---
+        const bestMatch = dataSource[0];
+        const hasDirectTitleMatch = bestMatch.title.toLowerCase().includes(lowerSearch);
+        const profiles = compileAuthorProfiles(allBlogs);
+        const specificAuthor = findAuthorByName(profiles, searchTerm.replace(/(siapa|penulis|author|about|ahli|pakar|spesialis)/i, "").trim());
+
+        // Don't apologize if we found a specific person or strong external context
+        if (!hasDirectTitleMatch && !intents.isHowMany && !specificAuthor && !matchedFaq && !matchedCommit) {
+          answer = `Halo! 👋 Saya tidak menemukan artikel dengan judul persis **"${searchTerm}"**, tapi saya menemukan beberapa tulisan yang **sangat berkaitan erat** dengan topik tersebut. \n\nSalah satu yang menarik adalah artikel **"${bestMatch.title}"**. `;
+        }
+
+        const addCrossContext = () => {
+          let extra = "";
+          if (matchedFaq) {
+            extra += `\n\n> [!NOTE]\n> **Informasi Tambahan dari FAQ:**\n> ${matchedFaq.answer}\n`;
+          }
+          if (matchedCommit) {
+            extra += `\n\n> [!IMPORTANT]\n> **Komitmen Terkait:**\n> ${matchedCommit.desc}\n`;
+          }
+          if (matchedSkill) {
+            extra += `\n\n> [!NOTE]\n> **Wawasan Soft Skill:**\n> Saipul memiliki keahlian **${matchedSkill.name}** dengan level **${matchedSkill.level}** (${matchedSkill.experience}%). ${matchedSkill.description}\n`;
+          }
+          return extra;
+        };
+
+        // --- 1. HANDLE METADATA INTENTS ---
+        if (intents.isHowMany) {
+          answer += `\n\nSangat senang membantu! Saya menemukan total **${total}** artikel yang berkaitan dengan pencarian kamu. `;
+          if (categories.length > 0) {
+            answer += `Semuanya tersebar di kategori seru seperti **${categories.join(", ")}**. ✨`;
+          }
+          answer += addCrossContext();
+          return { answer, confidence: "high" };
+        }
+
+        if (intents.isTeam) {
+          const allProfiles = Object.values(profiles);
+          answer += `\n\nTentu! 👋 Kami punya tim penulis yang luar biasa hebat. Ini daftar mereka: \n\n`;
+          allProfiles.forEach(p => {
+            answer += `* **${p.name}** (${p.expertise[0]}) - ${p.totalPosts} artikel\n`;
+          });
+          answer += `\nMereka semua berkolaborasi untuk menyajikan konten terbaik buat kamu! 🤝✨`;
+          return { answer, confidence: "high" };
+        }
+
+        if (intents.isWho || intents.isExpertise) {
+          if (specificAuthor) {
+            answer += `\n\nKenalin, **${specificAuthor.name}** adalah sosok yang kamu cari. \n\n${specificAuthor.bio} \n\nBeliau adalah **${specificAuthor.expertise.join(", ")}** andalan kami dengan total **${specificAuthor.totalPosts}** karya hebat. Ratingnya pun luar biasa: **${specificAuthor.avgRating.toFixed(1)}/5**! ⭐`;
+            return { answer, confidence: "high" };
+          }
+
+          // Search by expertise if name not found
+          const expert = Object.values(profiles).find(p =>
+            p.expertise.some(e => lowerSearch.includes(e.toLowerCase()) || e.toLowerCase().includes(lowerSearch))
+          );
+          if (expert && intents.isExpertise) {
+            answer += `\n\nWah, kalau cari pakar soal itu, jawabannya pasti **${expert.name}**! 🎯 \n\n${expert.bio} \n\nBeliau sudah menulis banyak seputar **${expert.expertise.join(" & ")}**. Cek saja artikel-artikel karyanya ya!`;
+            return { answer, confidence: "high" };
+          }
+
+          const authorList = Array.from(new Set(limitedSource.map(b => b.author))).filter(Boolean);
+          if (authorList.length === 1) {
+            const prof = findAuthorByName(profiles, authorList[0]);
+            answer += `\n\nBicara soal penulis, artikel yang kamu cari ini ternyata buah pemikiran dari **${authorList[0]}**. ${prof ? prof.bio : "Beliau adalah spesialis di bidang ini!"} ✍️`;
+          } else if (authorList.length > 1) {
+            answer += `\n\nWah, topik ini dibahas oleh tim hebat lho! Ada **${authorList.join(", ")}** yang menuangkan ide mereka di sini. 🤝`;
+          }
+          return { answer, confidence: "high" };
+        }
+
+        if (intents.isWhen) {
+          const dates = limitedSource.map(b => new Date(b.date)).sort((a, b) => b - a);
+          const newest = dates[0] ? dates[0].toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : null;
+          if (newest) {
+            answer += `Informasi yang paling *fresh* soal ini terakhir diperbarui pada **${newest}**. Jadi tenang saja, datanya masih hangat! 🔥`;
+          }
+          return { answer, confidence: "high" };
+        }
+
+        // --- 2. HANDLE RECOMMENDATION INTENTS ---
+        if (intents.isRecommendation) {
+          const best = [...limitedSource].sort((a, b) => b.rating - a.rating)[0];
+          if (best) {
+            answer += `Ohiya! Kalau kamu tanya yang paling "juara", saya sangat merekomendasikan artikel **"${best.title}"**. Kenapa? Karena ratingnya paling tinggi, yaitu **${best.rating}/5**! ⭐ `;
+            if (best.excerpt) answer += `Di sana dijelaskan kalau ${cleanText(best.excerpt)}`;
+          } else {
+            answer += `Saran saya sih, coba deh intip kategori **${categories[0] || "ini"}**, artikel-artikelnya oke punya lho! 💡`;
+          }
+          return { answer, confidence: "high" };
+        }
+
+        // --- 3. HANDLE CONTENT-BASED INTENTS (NLP Synthesis) ---
+        const relevantSentences = sentences.filter((s) => s.toLowerCase().includes(lowerSearch));
+
+        if (intents.isWhat) {
+          const definition = relevantSentences.find(s => /(adalah|merupakan|ialah|artinya)/i.test(s)) || relevantSentences[0];
+          if (definition) {
+            answer += `Jadi begini, secara ringkas **${searchTerm}** itu ${cleanText(definition.substring(definition.toLowerCase().indexOf(searchTerm) + searchTerm.length))}. Menarik, kan? 🧐`;
+          } else {
+            answer = `Hmm, sepertinya di koleksi blog kita, **"${searchTerm}"** diposisikan sebagai bagian penting dari strategi ${categories[0] || "digital"} yang sedang tren! 📈`;
+          }
+        } else if (intents.isHow) {
+          const steps = relevantSentences.filter(s => /(langkah|tahap|step|cara|untuk|dengan)/i.test(s)).slice(0, 3);
+          if (steps.length > 0) {
+            answer += `Tenang, caranya nggak ribet kok! Ini langkah-langkahnya: \n\n`;
+            steps.forEach((s, i) => {
+              answer += `* **Langkah ${i + 1}:** ${cleanText(s)}\n`;
+            });
+            answer += `\nSemoga langkah ini bisa membantu kamu ya! 🛠️`;
+          } else {
+            answer += `Untuk urusan ${searchTerm}, artikel-artikel tersebut menyarankan kamu buat lihat langsung studi kasus yang sudah saya siapkan di bawah. Pasti langsung paham! ✨`;
+          }
+        } else if (intents.isWhy) {
+          const reasons = relevantSentences.filter(s => /(karena|sebab|alasan|mengapa|penting)/i.test(s)).slice(0, 2);
+          if (reasons.length > 0) {
+            answer += `Ternyata alasannya cukup kuat lho! Yaitu karena ${cleanText(reasons.join(". Ohiya, selain itu juga "))}. Penting banget kan buat diketahui? 🎯`;
+          } else {
+            answer += `Intinya, **${searchTerm}** itu krusial banget buat meningkatkan efisiensi dan hasil kerja kamu ke depannya. 🚀`;
+          }
+        } else {
+          // General Synthesis
+          const insights = relevantSentences.slice(0, 2);
+          if (insights.length > 0) {
+            answer += `Menjawab rasa penasaran kamu: ${cleanText(insights.join(". Maka dari itu, "))}. Semoga ini mencerahkan ya! 💡`;
+          } else {
+            const topPost = limitedSource[0];
+            answer += `Saya menemukan wawasan keren di artikel **"${topPost?.title}"**. Intinya, hal ini sangat berkaitan erat dengan dunia **${topPost?.category}** yang lagi hits! 🌟`;
+            confidence = "medium";
+          }
+        }
+
+        answer += addCrossContext();
+        return { answer, confidence };
+      };
+
+      const INDO_STOPWORDS = ["namun", "tetapi", "bahwa", "dengan", "adalah", "untuk", "dari", "pada", "dalam", "sebagai", "oleh", "juga", "atau", "yang", "tidak", "terkecuali", "merupakan", "ialah", "bahwa"];
+      const nounFreq = doc.nouns().out("frequency").slice(0, 20);
+      const topNouns = nounFreq.map((n) => {
+        const text = n.normal.replace(/[#*`~]/g, "").trim();
+        // Only keep short, meaningful terms (max 3 words)
+        return text.split(" ").length <= 3 ? text : "";
+      }).filter(n =>
+        n.length > 3 &&
+        !n.startsWith('http') &&
+        !INDO_STOPWORDS.includes(n.toLowerCase())
       );
 
-      // Analisis konteks dari seluruh konten
-      const lc = combinedText.toLowerCase();
-      
-      // Deteksi topik utama
-      const isTech = lc.includes("teknologi") || lc.includes("digital") || lc.includes("software");
-      const isDesign = lc.includes("desain") || lc.includes("ui") || lc.includes("ux");
-      const isMarketing = lc.includes("marketing") || lc.includes("branding") || lc.includes("media sosial");
+      const contextAnalysis = () => {
+        const lc = combinedTextClean.toLowerCase();
+        let contexts = [];
+        let tone = "informatif";
+        if (lc.includes("pemula") || lc.includes("dasar")) { contexts.push("level pemula"); tone = "edukatif"; }
+        if (lc.includes("lanjutan") || lc.includes("advanced")) { contexts.push("level lanjutan"); tone = "teknis"; }
+        if (lc.includes("strategi") || lc.includes("taktik")) { contexts.push("strategis"); tone = "analitis"; }
+        if (lc.includes("inspirasi") || lc.includes("kreatif")) { contexts.push("kreatif"); tone = "inspiratif"; }
+        return { context: contexts.length > 0 ? contexts : ["komprehensif"], tone };
+      };
 
-      // Generate answer berdasarkan jenis pertanyaan
-      if (questionType.isWhat) {
-        const definition = relevantSentences.find(s => 
-          /(adalah|merupakan|ialah|artinya)/i.test(s)
-        ) || relevantSentences[0];
-        
-        answer = definition ? 
-          `Berdasarkan analisis konten, ${cleanText(definition)}` :
-          `Terkait "${searchTerm}", artikel-artikel ini membahas konsep dan implementasinya dalam konteks ${isTech ? "teknologi" : isDesign ? "desain" : isMarketing ? "marketing" : "umum"}.`;
-          
-      } else if (questionType.isHow) {
-        const steps = relevantSentences.filter(s => 
-          /(langkah|tahap|step|cara|untuk|dengan)/i.test(s)
-        ).slice(0, 3);
-        
-        answer = steps.length > 0 ? 
-          `Untuk ${searchTerm}, berikut pendekatan yang disarankan: ${cleanText(steps.join(" "))}` :
-          `Artikel menyajikan berbagai metode dan praktik terbaik untuk ${searchTerm} dengan fokus pada implementasi yang efektif.`;
-          
-      } else if (questionType.isWhy) {
-        const reasons = relevantSentences.filter(s => 
-          /(karena|sebab|alasan|mengapa|penting)/i.test(s)
-        ).slice(0, 2);
-        
-        answer = reasons.length > 0 ?
-          `Alasan utama ${searchTerm} adalah: ${cleanText(reasons.join(" "))}` :
-          `Artikel menjelaskan pentingnya ${searchTerm} dalam konteks perkembangan saat ini.`;
-          
-      } else if (questionType.isRecommendation) {
-        const tips = relevantSentences.filter(s => 
-          /(tips|saran|rekomendasi|sebaiknya|disarankan)/i.test(s)
-        ).slice(0, 3);
-        
-        answer = tips.length > 0 ?
-          `Rekomendasi untuk ${searchTerm}: ${cleanText(tips.join(" "))}` :
-          `Berdasarkan analisis, berikut beberapa praktik terbaik untuk ${searchTerm}.`;
-      } else {
-        // Default answer untuk pertanyaan umum
-        const keyInsights = relevantSentences.slice(0, 2);
-        answer = keyInsights.length > 0 ?
-          `Tentang "${searchTerm}": ${cleanText(keyInsights.join(" "))}` :
-          `Artikel-artikel ini memberikan wawasan mendalam tentang ${searchTerm} dari berbagai perspektif.`;
-        confidence = "medium";
-      }
+      const qualityMetrics = {
+        depth: dataSource.length > 3 ? "mendalam" : dataSource.length > 1 ? "cukup" : "pengenalan",
+        recency: limitedSource.some(p => {
+          const postDate = new Date(p.date);
+          const sixMonthsAgo = new Date();
+          sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+          return postDate > sixMonthsAgo;
+        }) ? "terkini" : "klasik",
+        expertise: authors.length > 2 ? "beragam ahli" : authors.length > 0 ? "spesialis" : "berbagai sumber"
+      };
 
-      return { answer, confidence };
-    };
+      const { answer, confidence } = generateAnswer();
+      const { context, tone } = contextAnalysis();
+      const generateInsights = () => {
+        const insights = [];
+        if (total >= 3) insights.push(`Wuih! Ada **${total}** artikel seru yang membahas ini lho. Koleksi kamu lengkap banget!`);
+        if (topNouns.length >= 3) insights.push(`Kalau kuperhatikan, fokus pembicaraannya banyak seputar **${topNouns.slice(0, 3).join(", ")}**.`);
+        if (qualityMetrics.recency === "terkini") insights.push("Oiya, semua datanya juga *update* banget, jadi informasinya masih sangat relevan.");
+        if (categories.length > 1) insights.push(`Ilmunya dibahas dari berbagai sisi, mulai dari **${categories.join(" sampai ")}**. Menarik ya?`);
+        return insights.length > 0 ? insights : ["Koleksi artikel ini bakal kasih kamu wawasan yang berharga banget tentang topik ini. ✨"];
+      };
 
-    // === 📊 Advanced Semantic Analysis ===
-    const nounFreq = doc.nouns().out("frequency").slice(0, 8);
-    const verbFreq = doc.verbs().out("frequency").slice(0, 5);
-    const adjFreq = doc.adjectives().out("frequency").slice(0, 4);
-    
-    const topNouns = nounFreq.map((n) => n.normal);
-    const topVerbs = verbFreq.map((v) => v.normal);
-    const adjectives = adjFreq.map((a) => a.normal);
+      const topRelatedArticles = (limitedSource || [])
+        .sort((a, b) => {
+          // 1. Prioritize Search Score (Relevance)
+          if ((b.searchScore || 0) !== (a.searchScore || 0)) {
+            return (b.searchScore || 0) - (a.searchScore || 0);
+          }
+          // 2. Secondary: Popularity/Rating
+          return (b.rating + b.views / 1000) - (a.rating + a.views / 1000);
+        })
+        .slice(0, 3);
 
-    // === 🎭 Context Analysis ===
-    const contextAnalysis = () => {
-      const lc = combinedText.toLowerCase();
-      let context = [];
-      let tone = "informatif";
+      const activeQuestionType = Object.entries(intents).find(([, value]) => value)?.[0] || "general";
 
-      if (lc.includes("pemula") || lc.includes("dasar")) {
-        context.push("level pemula");
-        tone = "edukatif";
-      }
-      if (lc.includes("lanjutan") || lc.includes("advanced")) {
-        context.push("level lanjutan");
-        tone = "teknis";
-      }
-      if (lc.includes("strategi") || lc.includes("taktik")) {
-        context.push("strategis");
-        tone = "analitis";
-      }
-      if (lc.includes("inspirasi") || lc.includes("kreatif")) {
-        context.push("kreatif");
-        tone = "inspiratif";
-      }
+      setAiAnalysis({
+        total,
+        authors,
+        categories,
+        popularLabels,
+        topKeywords: topNouns.slice(0, 5),
+        answer,
+        confidence,
+        context,
+        tone,
+        qualityMetrics,
+        insights: generateInsights(),
+        topRelatedArticles,
+        questionType: activeQuestionType
+      });
+      setIsThinking(false);
+    }, 100);
 
-      return { context: context.length > 0 ? context : ["komprehensif"], tone };
-    };
-
-    // === 📈 Content Quality Assessment ===
-    const qualityMetrics = {
-      depth: dataSource.length > 3 ? "mendalam" : dataSource.length > 1 ? "cukup" : "pengenalan",
-      recency: dataSource.some(p => {
-        const postDate = new Date(p.date);
-        const sixMonthsAgo = new Date();
-        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-        return postDate > sixMonthsAgo;
-      }) ? "terkini" : "klasik",
-      expertise: authors.length > 2 ? "beragam ahli" : authors.length > 0 ? "spesialis" : "berbagai sumber"
-    };
-
-    const { answer, confidence } = generateAnswer();
-    const { context, tone } = contextAnalysis();
-
-    // === 💡 Intelligent Insights ===
-    const generateInsights = () => {
-      const insights = [];
-      
-      if (dataSource.length >= 3) {
-        insights.push(`Terdapat ${dataSource.length} artikel yang membahas topik ini secara komprehensif.`);
-      }
-      
-      if (topNouns.length >= 3) {
-        insights.push(`Fokus utama pembahasan pada ${topNouns.slice(0, 3).join(", ")}.`);
-      }
-      
-      if (qualityMetrics.recency === "terkini") {
-        insights.push("Materi diperbarui dengan informasi terkini.");
-      }
-      
-      if (categories.length > 1) {
-        insights.push(`Dibahas dari perspektif ${categories.join(" dan ")}.`);
-      }
-
-      return insights.length > 0 ? insights : [
-        "Artikel memberikan pandangan yang berharga tentang topik ini."
-      ];
-    };
-
-    const topRelatedArticles = (dataSource || [])
-      .sort((a, b) => (b.rating + b.views / 1000) - (a.rating + a.views / 1000))
-      .slice(0, 3);
-
-    // Temukan jenis pertanyaan yang aktif - FIXED ESLINT ERROR
-    const activeQuestionType = Object.entries(questionType).find(([, value]) => value)?.[0] || "general";
-
-    const analysisResult = {
-      total,
-      authors,
-      categories,
-      popularLabels,
-      topKeywords: topNouns.slice(0, 5),
-      topVerbs,
-      adjectives,
-      answer,
-      confidence,
-      context,
-      tone,
-      qualityMetrics,
-      insights: generateInsights(),
-      topRelatedArticles,
-      questionType: activeQuestionType
-    };
-
-    // Simulate AI thinking delay
-    setTimeout(() => setIsThinking(false), 800);
-
-    return analysisResult;
+    return () => clearTimeout(timer);
   }, [searchTerm, filteredBlogs, allBlogs]);
-
-  // === ✨ Transition Effects ===
-  useEffect(() => {
-    const hasData = (filteredBlogs && filteredBlogs.length > 0) || (allBlogs && allBlogs.length > 0 && searchTerm);
-    if (hasData) {
-      const timer = setTimeout(() => setVisible(true), 300);
-      return () => clearTimeout(timer);
-    } else {
-      setVisible(false);
-    }
-  }, [filteredBlogs, allBlogs, searchTerm]);
 
   if (!aiAnalysis || !visible) return null;
 
@@ -267,9 +374,9 @@ export default function AiOverview({ searchTerm, filteredBlogs, allBlogs, setSea
       medium: { color: "text-yellow-400", label: "Sedang", icon: "💡" },
       low: { color: "text-orange-400", label: "Perlu konfirmasi", icon: "🤔" }
     };
-    
+
     const { color, label, icon } = config[level] || config.medium;
-    
+
     return (
       <div className={`inline-flex items-center gap-1 text-xs ${color} bg-gray-800/50 px-2 py-1 rounded-full`}>
         <span>{icon}</span>
@@ -313,20 +420,30 @@ export default function AiOverview({ searchTerm, filteredBlogs, allBlogs, setSea
           <span className="text-cyan-400 text-base sm:text-lg">💬</span>
           <h3 className="text-base sm:text-lg font-semibold text-white">Jawaban AI</h3>
         </div>
-        <p className="text-gray-100 text-sm sm:text-base leading-relaxed bg-gray-800/30 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-cyan-500/20">
+        <div className="text-gray-100 text-sm sm:text-base leading-relaxed bg-gray-800/30 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-cyan-500/20 prose prose-invert prose-sm sm:prose-base max-w-none">
           {isThinking ? (
             <div className="flex items-center gap-2 text-gray-400">
               <div className="flex gap-1">
                 <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-cyan-400 rounded-full animate-bounce"></div>
-                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-cyan-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-cyan-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
               </div>
               Menganalisis konten dan menyusun jawaban...
             </div>
           ) : (
-            aiAnalysis.answer
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                strong: ({ node, ...props }) => <strong className="text-cyan-300 font-bold" {...props} />,
+                h1: ({ node, ...props }) => <h1 className="text-xl font-bold text-white mb-2" {...props} />,
+                h2: ({ node, ...props }) => <h2 className="text-lg font-bold text-white mb-2" {...props} />,
+                h3: ({ node, ...props }) => <h3 className="text-md font-bold text-white mb-1" {...props} />,
+              }}
+            >
+              {aiAnalysis.answer}
+            </ReactMarkdown>
           )}
-        </p>
+        </div>
       </div>
 
       {/* === Context & Insights === */}
@@ -342,7 +459,9 @@ export default function AiOverview({ searchTerm, filteredBlogs, allBlogs, setSea
               {aiAnalysis.insights.map((insight, index) => (
                 <div key={index} className="flex items-start gap-2 sm:gap-3 text-gray-200 text-xs sm:text-sm">
                   <span className="text-cyan-400 mt-0.5 sm:mt-1">•</span>
-                  <span>{insight}</span>
+                  <div className="prose prose-invert prose-xs">
+                    <ReactMarkdown>{insight}</ReactMarkdown>
+                  </div>
                 </div>
               ))}
             </div>
@@ -446,7 +565,7 @@ export default function AiOverview({ searchTerm, filteredBlogs, allBlogs, setSea
       {/* === AI Footer === */}
       <div className="border-t border-white/10 pt-3 sm:pt-4 mt-3 sm:mt-4">
         <p className="text-gray-500 text-[10px] sm:text-xs text-center">
-          🤖 Analisis AI didukung oleh NLP dan machine learning • Terakhir diperbarui secara real-time
+          🤖 Analisis AI didukung oleh SaipulAI • Data diverifikasi real-time • Terakhir diperbarui secara real-time
         </p>
       </div>
 

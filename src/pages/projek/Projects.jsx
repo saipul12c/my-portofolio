@@ -5,9 +5,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import data from "../../data/projects.json";
 import coursesData from "../../data/pendidikan/data.json";
 import { useErrorAuth } from "../../context/useErrorAuth";
-import SearchBar from "./pencarian/SearchBar";
 import ProjectPopup from "./ProjectPopup";
 import CoursePopup from "./CoursePopup";
+import ProjectAI from "./pencarian/AI/ProjectAI";
 
 // Memoized CourseCard component untuk menampilkan kartu kursus
 const CourseCard = ({ course, index, onSelect }) => (
@@ -288,12 +288,12 @@ export default function Projects() {
         </p>
       </motion.div>
 
-      {/* 🔍 Komponen SearchBar */}
-      <SearchBar
-        projects={projects}
+      {/* 🤖 Unified AI Search & Category Filter Section */}
+      <ProjectAI 
+        onSearch={setSearchTerm} 
         categories={categories}
-        onSearchChange={setSearchTerm}
         onCategoryChange={setActiveCategory}
+        onSelectProject={handleSelectProject}
       />
 
       {/* 📦 Grid Proyek */}

@@ -25,7 +25,8 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, kno
     clearChat,
     getAccentGradient,
     generateBotReply,
-    settings } = useChatbot(knowledgeBase, knowledgeStats);
+    settings,
+    isAgentOnline } = useChatbot(knowledgeBase, knowledgeStats);
   // Handler untuk quick actions (like, dislike, regenerate, report)
   const handleQuickAction = (action, messageId, extra) => {
     
@@ -235,7 +236,7 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, kno
       />
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-3 sm:p-4" style={{ WebkitOverflowScrolling: 'touch' }}>
+      <div className="chat-window flex-1 overflow-y-auto p-3 sm:p-4" style={{ WebkitOverflowScrolling: 'touch' }}>
         {(() => {
           const lastBotIndex = (() => {
             for (let i = messages.length - 1; i >= 0; i--) {
@@ -253,6 +254,7 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, kno
                 getAccentGradient={getAccentGradient}
                 sentiment={message.sentiment}
                 handleQuickAction={handleQuickAction}
+                isAgentOnline={isAgentOnline}
               />
               {index === lastBotIndex && suggestions && suggestions.length > 0 && suggestionsVisible && (
                 <div className="mt-2 mb-3 p-2 rounded-md bg-gray-800">

@@ -1,14 +1,15 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, SlidersHorizontal, Grid3x3, Grid2x2 } from "lucide-react";
 
-export default function PhotoSearch({ onSearch, allPhotos = [], onFilterChange, onViewChange, currentView = "grid" }) {
+function PhotoSearch({ onSearch, allPhotos = [], onFilterChange, onViewChange, currentView = "grid" }) {
   const [query, setQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [placeholderText, setPlaceholderText] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("date");
+  const [isFocused, setIsFocused] = useState(false);
 
   const phrases = useMemo(
     () => [
@@ -28,6 +29,8 @@ export default function PhotoSearch({ onSearch, allPhotos = [], onFilterChange, 
 
   // Typing effect untuk placeholder
   useEffect(() => {
+    if (isFocused || query) return; // Pause typing if focused or has query
+    
     let currentPhrase = 0;
     let currentChar = 0;
     let deleting = false;
@@ -57,13 +60,16 @@ export default function PhotoSearch({ onSearch, allPhotos = [], onFilterChange, 
 
     type();
     return () => clearTimeout(timeout);
-  }, [phrases]);
+  }, [phrases, isFocused, query]);
 
-  const suggestions = allPhotos
-    .flatMap((p) => [p.title, p.category, p.mood, p.location])
-    .filter((item, index, self) => item && self.indexOf(item) === index)
-    .filter((item) => item.toLowerCase().includes(query.toLowerCase()))
-    .slice(0, 6);
+  const suggestions = useMemo(() => {
+    if (!query) return [];
+    return allPhotos
+      .flatMap((p) => [p.title, p.category, p.mood, p.location])
+      .filter((item, index, self) => item && self.indexOf(item) === index)
+      .filter((item) => item.toLowerCase().includes(query.toLowerCase()))
+      .slice(0, 6);
+  }, [allPhotos, query]);
 
   const handleChange = (e) => {
     const value = e.target.value;
@@ -114,8 +120,14 @@ export default function PhotoSearch({ onSearch, allPhotos = [], onFilterChange, 
             placeholder={placeholderText || "Cari foto..."}
             value={query}
             onChange={handleChange}
-            onFocus={() => setShowSuggestions(true)}
-            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+            onFocus={() => {
+              setShowSuggestions(true);
+              setIsFocused(true);
+            }}
+            onBlur={() => {
+              setTimeout(() => setShowSuggestions(false), 200);
+              setIsFocused(false);
+            }}
             className="w-full bg-white/5 border border-white/10 rounded-full py-2.5 pl-10 pr-10 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder-gray-400 transition-all"
           />
 
@@ -249,3 +261,5 @@ export default function PhotoSearch({ onSearch, allPhotos = [], onFilterChange, 
     </div>
   );
 }
+
+export default memo(PhotoSearch);

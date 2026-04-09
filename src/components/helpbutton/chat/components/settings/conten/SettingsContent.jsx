@@ -1,4 +1,5 @@
-import { Download, RefreshCw, Trash2, Upload } from "lucide-react";
+import { motion } from "framer-motion";
+import { Download, RefreshCw, Trash2, Upload, ExternalLink } from "lucide-react";
 import { CHATBOT_VERSION, AI_DOCS_PATH } from '../../../config';
 import { GeneralSettings } from "../settings-tabs/GeneralSettings";
 import { AISettings } from "../settings-tabs/AISettings";
@@ -151,16 +152,32 @@ export function SettingsContent({
       </div>
 
       {isLiveCS && (
-        <div className="p-3 rounded-lg bg-cyan-900/10 border border-cyan-800/30 text-sm text-cyan-100">
-          <div className="font-semibold">Live CS Mode</div>
-          <div className="text-xs text-gray-200 mt-1">Anda sedang melihat pengaturan untuk Live CS SaipulAI. Mengubah pengaturan seperti <strong>Privacy</strong> atau <strong>Transcripts</strong> akan mempengaruhi bagaimana percakapan dibagikan ke tim Live CS.</div>
-          <div className="mt-2 text-xs">
-            - Ketersediaan Live CS: Senin–Jumat 09:00–17:00
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 bg-gradient-to-br from-cyan-500/10 to-blue-500/5 border border-cyan-500/20 rounded-xl mb-6 shadow-lg backdrop-blur-sm"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+            <div className="font-bold text-cyan-200 uppercase tracking-wider text-[10px]">Live CS Active Mode</div>
           </div>
-          <div className="mt-1 text-xs">
-            - Lihat panduan keamanan di <a href="/live-cs/security" className="text-cyan-200 underline">Panduan Keamanan</a>
+          <div className="text-xs text-cyan-100/80 leading-relaxed font-light">
+            Anda sedang dalam mode dukungan langsung. Beberapa fitur bot dinonaktifkan untuk mengutamakan privasi dan kecepatan agen manusia.
+            <ul className="mt-2 space-y-1.5 list-none opacity-90">
+              <li className="flex items-center gap-2">
+                <span className="text-cyan-400">🕒</span> Jadwal: Senin–Jumat 09:00–17:00
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-cyan-400">🛡️</span> Privasi: Transkrip hanya dibagikan ke agen
+              </li>
+              <li className="mt-3">
+                <a href="/live-cs/security" className="inline-flex items-center gap-1 text-cyan-300 hover:text-cyan-100 underline decoration-cyan-500/30 transition-colors">
+                  Baca Panduan Keamanan <ExternalLink size={10} />
+                </a>
+              </li>
+            </ul>
           </div>
-        </div>
+        </motion.div>
       )}
 
       <div className="text-xs text-gray-400">Perubahan pengaturan akan diterapkan langsung ke chat aktif.</div>

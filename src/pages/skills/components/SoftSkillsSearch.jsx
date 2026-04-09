@@ -1,9 +1,9 @@
 // SoftSkillsSearch.jsx
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Clock, Sparkles, ArrowRight } from "lucide-react";
+import { Search, Clock, Sparkles, ArrowRight, Bot, History } from "lucide-react";
 
-export default function SoftSkillsSearch({ skills = [], onFilterChange, highlightText }) {
+const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onOpenAI }) => {
   const searchRef = useRef(null);
   const [search, setSearch] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -17,7 +17,6 @@ export default function SoftSkillsSearch({ skills = [], onFilterChange, highligh
       const v = localStorage.getItem("ss_recent_search");
       return v ? JSON.parse(v) : [];
     } catch {
-      // intentionally left blank
       return [];
     }
   });
@@ -26,13 +25,22 @@ export default function SoftSkillsSearch({ skills = [], onFilterChange, highligh
   const typeStateRef = useRef({ currentPhrase: 0, currentChar: 0, deleting: false });
   const debounceRef = useRef(null);
 
-  // Placeholder typewriter animation (cleaned up)
+  // Suggestions for AI (from Header)
+  const aiSuggestions = [
+    { text: "Bagaimana menilai keberhasilan pembelajaran digital?", color: "from-cyan-400 to-blue-500" },
+    { text: "Teknologi apa yang paling efektif untuk mengajar?", color: "from-purple-400 to-pink-500" },
+    { text: "Bagaimana menjadi guru yang kreatif di era digital?", color: "from-orange-400 to-yellow-500" },
+  ];
+
+  // Combined typewriter phrases
   useEffect(() => {
     const phrases = [
-      "Cari skill...",
-      "Cari kemampuan komunikasi...",
+      "Bagaimana menjadi guru yang kreatif?",
+      "Cara meningkatkan kemampuan komunikasi...",
       "Cari kreativitas...",
+      "Tips mengelola waktu dengan efektif...",
       "Cari teamwork...",
+      "Apa itu growth mindset?",
       "Cari kepemimpinan...",
     ];
 
@@ -56,7 +64,7 @@ export default function SoftSkillsSearch({ skills = [], onFilterChange, highligh
           state.currentPhrase = (state.currentPhrase + 1) % phrases.length;
         }
       }
-      typeTimeoutRef.current = setTimeout(type, state.deleting ? 40 : 80);
+      typeTimeoutRef.current = setTimeout(type, state.deleting ? 100 : 150);
     };
 
     type();
@@ -181,107 +189,163 @@ export default function SoftSkillsSearch({ skills = [], onFilterChange, highligh
   };
 
   return (
-    <div className="relative flex flex-col sm:flex-row items-center w-full max-w-5xl gap-6 mb-12">
-      {/* Search Input Layer */}
-      <div className="relative w-full sm:w-2/3">
-        <Search className="absolute left-4 top-3.5 text-gray-400 w-5 h-5" />
+    <div className="w-full max-w-5xl flex flex-col gap-6 mb-12">
+      <div className="relative flex flex-col sm:flex-row items-center gap-6">
+        {/* Search Input Layer */}
+        <div className="relative w-full sm:w-2/3">
+          <Search className="absolute left-4 top-3.5 text-gray-400 w-5 h-5" />
 
-        {/* Ghost Auto-Text (Read-Only) */}
-        <input
-          type="text"
-          readOnly
-          value={ghostText}
-          className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-3 text-sm text-gray-500 pointer-events-none select-none opacity-80"
-          aria-hidden
-        />
+          {/* Ghost Auto-Text (Read-Only) */}
+          <input
+            type="text"
+            readOnly
+            value={ghostText}
+            className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-3 text-sm text-gray-500 pointer-events-none select-none opacity-80"
+            aria-hidden
+          />
 
-        {/* Main Input (Typing) */}
-        <input
-          ref={searchRef}
-          type="text"
-          placeholder={placeholderText || "Cari skill..."}
-          className="absolute top-0 left-0 w-full bg-transparent border border-white/10 rounded-2xl pl-12 pr-10 py-3 text-sm text-white focus:border-cyan-400 outline-none z-10 transition-all"
-          style={{ caretColor: "#22d3ee" }}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onFocus={() => setShowSuggestions(true)}
-          onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-          aria-label="Cari skill"
-        />
-
-        {/* Clear Button */}
-        {search && (
-          <button
-            onClick={() => {
-              setSearch("");
-              setSuggestions([]);
-              setGhostText("");
-            }}
-            className="absolute right-4 top-3.5 text-gray-400 hover:text-white"
-            aria-label="Bersihkan pencarian"
-          >
-            ✕
-          </button>
-        )}
-
-        {/* Suggestion Dropdown */}
-        <AnimatePresence>
-          {showSuggestions && suggestions.length > 0 && (
-            <motion.ul
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -5 }}
-              className="absolute z-20 w-full mt-2 bg-gray-900/95 border border-white/10 rounded-xl shadow-xl backdrop-blur-md overflow-hidden"
+          {/* Main Input (Typing) */}
+          <div className="absolute top-0 left-0 w-full h-full flex items-center pr-2">
+            <input
+              ref={searchRef}
+              type="text"
+              placeholder={placeholderText || "Cari skill..."}
+              className="w-full bg-transparent border border-white/10 rounded-2xl pl-12 pr-[120px] py-3 text-sm text-white focus:border-cyan-400 outline-none z-10 transition-all h-full"
+              style={{ caretColor: "#22d3ee" }}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+              aria-label="Cari skill"
+            />
+            
+            {/* Unified AI Button inside Search Bar */}
+            <button
+              onClick={() => onOpenAI?.(search)}
+              className="absolute right-2 flex items-center gap-2 px-4 py-1.5 rounded-xl bg-[#252b3d] hover:bg-[#2d354a] text-gray-300 hover:text-white transition-all border border-white/5 z-20"
             >
-              {suggestions.map((s, i) => (
-                <motion.li
-                  key={s.id || `${s.name}-${i}`}
-                  layout
-                  onClick={() => handleSelectSuggestion(s.name)}
-                  onMouseEnter={() => setActiveSuggestion(i)}
-                  className={`flex items-center justify-between px-4 py-2 cursor-pointer transition-all ${
-                    activeSuggestion === i
-                      ? "bg-cyan-600/40 text-white"
-                      : "hover:bg-cyan-500/20"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    {s.priority ? (
-                      <Sparkles className="w-4 h-4 text-cyan-400" />
-                    ) : (
-                      <Clock className="w-4 h-4 text-gray-400" />
-                    )}
-                    <span
-                      dangerouslySetInnerHTML={{
-                        __html: highlightText(s.name, search),
-                      }}
-                    />
-                  </div>
+              <Bot className="w-4 h-4" />
+              <span className="font-semibold text-[10px] uppercase tracking-wider">Tanya AI</span>
+            </button>
+          </div>
 
-                  {activeSuggestion === i && (
-                    <ArrowRight className="w-4 h-4 text-cyan-300" />
-                  )}
-                </motion.li>
-              ))}
-            </motion.ul>
+          {/* Clear Button (Offset by AI button) */}
+          {search && (
+            <button
+              onClick={() => {
+                setSearch("");
+                setSuggestions([]);
+                setGhostText("");
+              }}
+              className="absolute right-[110px] top-3.5 text-gray-400 hover:text-white z-20"
+              aria-label="Bersihkan pencarian"
+            >
+              ✕
+            </button>
           )}
-        </AnimatePresence>
+
+          {/* Suggestion Dropdown */}
+          <AnimatePresence>
+            {showSuggestions && suggestions.length > 0 && (
+              <motion.ul
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                className="absolute z-[30] w-full mt-2 bg-gray-900/95 border border-white/10 rounded-xl shadow-xl backdrop-blur-md overflow-hidden"
+              >
+                {suggestions.map((s, i) => (
+                  <motion.li
+                    key={s.id || `${s.name}-${i}`}
+                    layout
+                    onClick={() => handleSelectSuggestion(s.name)}
+                    onMouseEnter={() => setActiveSuggestion(i)}
+                    className={`flex items-center justify-between px-4 py-2 cursor-pointer transition-all ${
+                      activeSuggestion === i
+                        ? "bg-cyan-600/40 text-white"
+                        : "hover:bg-cyan-500/20"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {s.priority ? (
+                        <Sparkles className="w-4 h-4 text-cyan-400" />
+                      ) : (
+                        <Clock className="w-4 h-4 text-gray-400" />
+                      )}
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: highlightText(s.name, search),
+                        }}
+                      />
+                    </div>
+
+                    {activeSuggestion === i && (
+                      <ArrowRight className="w-4 h-4 text-cyan-300" />
+                    )}
+                  </motion.li>
+                ))}
+              </motion.ul>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Category Filter */}
+        <div className="relative w-full sm:w-1/3">
+          <select
+            className="w-full p-3.5 rounded-2xl bg-gray-800 border border-white/10 text-white focus:border-cyan-400 outline-none cursor-pointer"
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            aria-label="Filter kategori"
+          >
+            <option value="All">🔥 Semua Kategori</option>
+            <option value="Soft Skill">Soft Skill</option>
+            <option value="Professional Skill">Professional Skill</option>
+          </select>
+        </div>
       </div>
 
-      {/* Category Filter */}
-      <div className="relative w-full sm:w-1/3">
-        <select
-          className="w-full p-3.5 rounded-2xl bg-gray-800 border border-white/10 text-white focus:border-cyan-400 outline-none cursor-pointer"
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-          aria-label="Filter kategori"
+      {/* Suggestions & History (from Header) */}
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full flex flex-wrap items-center justify-between gap-4 px-2"
+      >
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 text-yellow-400/80">
+            <Sparkles className="w-4 h-4" />
+            <span className="text-[11px] font-bold uppercase tracking-wider opacity-70">Saran:</span>
+          </div>
+          
+          <div className="flex flex-wrap gap-2">
+            {aiSuggestions.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => onOpenAI?.(s.text)}
+                className={`text-[11px] font-medium px-4 py-2 rounded-full bg-gradient-to-r ${s.color} text-white shadow-lg hover:scale-105 transition-transform truncate max-w-[200px] sm:max-w-none`}
+              >
+                <div className="flex items-center gap-2">
+                   <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                   {s.text}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <button 
+          onClick={() => {
+            if (recentSearch.length > 0) {
+              setSearch(recentSearch[0]);
+            }
+          }}
+          className="flex items-center gap-2 text-gray-500 hover:text-gray-300 transition-colors"
         >
-          <option value="All">🔥 Semua Kategori</option>
-          <option value="Soft Skill">Soft Skill</option>
-          <option value="Professional Skill">Professional Skill</option>
-        </select>
-      </div>
+          <History className="w-4 h-4" />
+          <span className="text-[11px] font-bold uppercase tracking-wider">Riwayat</span>
+        </button>
+      </motion.div>
     </div>
   );
-}
+});
+
+export default SoftSkillsSearch;

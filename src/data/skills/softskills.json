@@ -580,7 +580,6 @@
       "colorGradient": ["purple-500", "purple-700"],
       "popularityScore": 90
     },
-    [
   {
     "id": "25",
     "name": "Etika Profesional",
@@ -949,7 +948,5 @@
     "colorGradient": ["pink-500", "pink-700"],
     "popularityScore": 90
   }
-]
-
   ]
 }

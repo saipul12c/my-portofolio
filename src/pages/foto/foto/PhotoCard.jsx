@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { motion } from "framer-motion";
 import { Camera, MapPin } from "lucide-react";
 
-export default function PhotoCard({ photo, onClick }) {
+function PhotoCard({ photo, onClick }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [loadProgress, setLoadProgress] = useState(0);
@@ -112,3 +112,5 @@ export default function PhotoCard({ photo, onClick }) {
     </motion.div>
   );
 }
+
+export default memo(PhotoCard);

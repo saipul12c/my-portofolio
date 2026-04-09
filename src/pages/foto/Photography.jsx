@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Maintenance from "../errors/Maintenance";
 import photos from "../../data/foto/photos.json";
@@ -41,14 +41,14 @@ export default function Photography() {
     // Sort
     switch (filterOptions.sortBy) {
       case "title":
-        result.sort((a, b) => a.title.localeCompare(b.title));
+        result.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
         break;
       case "category":
-        result.sort((a, b) => a.category.localeCompare(b.category));
+        result.sort((a, b) => (a.category || "").localeCompare(b.category || ""));
         break;
       case "date":
       default:
-        result.sort((a, b) => new Date(b.date_taken) - new Date(a.date_taken));
+        result.sort((a, b) => new Date(b.date_taken || 0) - new Date(a.date_taken || 0));
         break;
     }
 
@@ -58,31 +58,35 @@ export default function Photography() {
   // 🧮 Hitung pagination
   const totalPages = Math.ceil(filteredAndSortedPhotos.length / photosPerPage);
   const startIndex = (currentPage - 1) * photosPerPage;
-  const currentPhotos = filteredAndSortedPhotos.slice(startIndex, startIndex + photosPerPage);
+  const currentPhotos = useMemo(() => 
+    filteredAndSortedPhotos.slice(startIndex, startIndex + photosPerPage),
+    [filteredAndSortedPhotos, startIndex]
+  );
 
   // 🔄 Reset ke halaman 1 saat pencarian atau filter berubah
-  const handleSearch = (value) => {
+  const handleSearch = useCallback((value) => {
     setSearchTerm(value);
     setCurrentPage(1);
-  };
+  }, []);
 
-  const handleFilterChange = (options) => {
+  const handleFilterChange = useCallback((options) => {
     setFilterOptions(options);
     setCurrentPage(1);
-  };
+  }, []);
 
-  const handleViewChange = (mode) => {
+  const handleViewChange = useCallback((mode) => {
     setViewMode(mode);
-  };
+  }, []);
 
   // 🎯 Fungsi untuk mengganti halaman
-  const handlePageChange = (page) => {
+  const handlePageChange = useCallback((page) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  }, []);
 
   // Navigate between photos in modal
-  const handlePhotoNavigate = (direction) => {
+  const handlePhotoNavigate = useCallback((direction) => {
+    if (!selectedPhoto) return;
     const currentIndex = filteredAndSortedPhotos.findIndex(p => p.id === selectedPhoto.id);
     let newIndex;
     
@@ -93,7 +97,7 @@ export default function Photography() {
     }
     
     setSelectedPhoto(filteredAndSortedPhotos[newIndex]);
-  };
+  }, [filteredAndSortedPhotos, selectedPhoto]);
 
   if (isMaintenance) return <Maintenance />;
 

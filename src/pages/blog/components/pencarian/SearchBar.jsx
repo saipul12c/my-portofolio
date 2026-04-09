@@ -1,11 +1,15 @@
 import { useState, useMemo, useEffect, useRef } from "react";
+import { Bot, History, Sparkles, Send } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function SearchBar({
   blogs,
   searchTerm,
   setSearchTerm,
   setCurrentPage,
+  onAiClick // New prop if we want to trigger something specific
 }) {
+  const [localSearchValue, setLocalSearchValue] = useState(searchTerm);
   const [predictedTerm, setPredictedTerm] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
@@ -19,6 +23,23 @@ export default function SearchBar({
     setSearchHistory(stored);
   }, []);
 
+  // Sync with parent searchTerm (e.g. from URL or AI result)
+  useEffect(() => {
+    if (searchTerm !== localSearchValue) {
+      setLocalSearchValue(searchTerm);
+    }
+  }, [searchTerm]);
+
+  // Debounce external search update
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (localSearchValue !== searchTerm) {
+        setSearchTerm(localSearchValue);
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [localSearchValue]);
+
   // === 💾 Save search term ===
   const saveToHistory = (term) => {
     if (!term.trim()) return;
@@ -30,8 +51,11 @@ export default function SearchBar({
 
   // === 🧠 Autocomplete & Smart Suggestions ===
   const suggestions = useMemo(() => {
-    if (!searchTerm) return [];
-    const lower = searchTerm.toLowerCase();
+    if (!localSearchValue || localSearchValue.length < 1) return [];
+    const lower = localSearchValue.toLowerCase();
+
+    // Optimization: Only scan a subset of blogs if there are too many for suggestions
+    const blogSubset = blogs.length > 50 ? blogs.slice(0, 50) : blogs;
 
     // 🔍 Ambil semua teks dari setiap post (judul, kategori, isi, dll)
     const extractTexts = (post) => {
@@ -78,8 +102,8 @@ export default function SearchBar({
       return texts;
     };
 
-    // Ambil semua teks dari semua blog
-    const allSuggestions = blogs.flatMap(extractTexts);
+    // Ambil semua teks dari subset blog
+    const allSuggestions = blogSubset.flatMap(extractTexts);
 
     // Buat unik (hindari duplikasi)
     const unique = [
@@ -103,12 +127,12 @@ export default function SearchBar({
 
   // === ✨ Predictive typing ===
   useEffect(() => {
-    if (suggestions.length > 0 && searchTerm) {
+    if (suggestions.length > 0 && localSearchValue) {
       setPredictedTerm(suggestions[0].text);
     } else {
       setPredictedTerm("");
     }
-  }, [searchTerm, suggestions]);
+  }, [localSearchValue, suggestions]);
 
   // === ⌨️ Keyboard navigation ===
   const handleKeyDown = (e) => {
@@ -140,6 +164,7 @@ export default function SearchBar({
 
   // === 🖱️ Select suggestion ===
   const handleSelectSuggestion = (text) => {
+    setLocalSearchValue(text);
     setSearchTerm(text);
     setCurrentPage(1);
     setShowSuggestions(false);
@@ -151,21 +176,22 @@ export default function SearchBar({
   // === 🧩 Highlight matched substring ===
   const highlightMatch = (text) => {
     if (!text) return "";
-    const lower = searchTerm.toLowerCase();
+    const lower = localSearchValue.toLowerCase();
     const index = text.toLowerCase().indexOf(lower);
     if (index === -1) return text;
     return (
       <>
         {text.slice(0, index)}
         <span className="text-cyan-300 font-semibold">
-          {text.slice(index, index + searchTerm.length)}
+          {text.slice(index, index + localSearchValue.length)}
         </span>
-        {text.slice(index + searchTerm.length)}
+        {text.slice(index + localSearchValue.length)}
       </>
     );
   };
 
   const clearSearch = () => {
+    setLocalSearchValue("");
     setSearchTerm("");
     setShowSuggestions(false);
     setHighlightIndex(-1);
@@ -175,165 +201,232 @@ export default function SearchBar({
   const trending = useMemo(() => {
     const tags = blogs.flatMap((b) => b.tags || []);
     const categories = blogs.map((b) => b.category);
-    const authors = blogs.map((b) => b.author);
-    const mix = [...new Set([...tags, ...categories, ...authors])];
-    return mix.filter(Boolean).sort(() => 0.5 - Math.random()).slice(0, 5);
+    const mix = [...new Set([...tags, ...categories])].filter(Boolean);
+    return mix.sort(() => 0.5 - Math.random()).slice(0, 3);
   }, [blogs]);
 
+  const handleAiAsk = () => {
+    if (localSearchValue) {
+      // Trigger AI search
+      saveToHistory(localSearchValue);
+      setSearchTerm(localSearchValue);
+      setCurrentPage(1);
+      // Trigger AI visibility
+      if (typeof onAiClick === "function") onAiClick();
+    } else {
+      // Maybe focus input?
+      inputRef.current?.focus();
+    }
+  };
+
+  const suggestionPills = [
+    { text: "Teknologi digital terbaru?", color: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30" },
+    { text: "Cara meningkatkan kreativitas?", color: "bg-purple-500/20 text-purple-300 border-purple-500/30" },
+    { text: "Seni dan teknologi?", color: "bg-orange-500/20 text-orange-300 border-orange-500/30" },
+  ];
+
   return (
-    <div className="w-full mb-6 relative">
-      <div className="relative">
-        {/* Predictive Text Overlay */}
-        <div className="absolute inset-0 px-4 py-3 text-gray-600 pointer-events-none select-none overflow-hidden">
-          <span className="invisible">{searchTerm}</span>
-          <span className="text-gray-500">
-            {predictedTerm.slice(searchTerm.length)}
-          </span>
-        </div>
+    <div className="w-full flex flex-col gap-4 relative">
+      {/* --- Row 1: Search Input & AI Bot Button --- */}
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+        <div className="relative flex-1 group">
+          {/* Predictive Text Overlay */}
+          <div className="absolute inset-0 px-4 py-3 text-gray-600 pointer-events-none select-none overflow-hidden flex items-center">
+            <span className="invisible text-sm">{localSearchValue}</span>
+            <span className="text-gray-500 text-sm">
+              {predictedTerm.slice(localSearchValue.length)}
+            </span>
+          </div>
 
-        {/* Search Input */}
-        <input
-          ref={inputRef}
-          type="text"
-          value={searchTerm}
-          onFocus={() => setShowSuggestions(true)}
-          onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setCurrentPage(1);
-            setShowSuggestions(true);
-            setHighlightIndex(-1);
-          }}
-          onKeyDown={handleKeyDown}
-          placeholder="Cari artikel..."
-          className="w-full px-4 py-3 pr-12 rounded-xl bg-gray-800/80 border border-gray-600/50 
-          text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 
-          focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200
-          backdrop-blur-sm text-sm"
-        />
-
-        {/* Clear Button */}
-        {searchTerm && (
-          <button
-            onClick={clearSearch}
-            className="absolute right-10 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-100 transition-colors duration-200 p-1"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-cyan-400 transition-colors">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-          </button>
-        )}
+          </div>
 
-        {/* Search Icon */}
-        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-cyan-500">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </div>
-      </div>
+          {/* Search Input */}
+          <input
+            ref={inputRef}
+            type="text"
+            value={localSearchValue}
+            onFocus={() => setShowSuggestions(true)}
+            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+            onChange={(e) => {
+              setLocalSearchValue(e.target.value);
+              setCurrentPage(1);
+              setShowSuggestions(true);
+              setHighlightIndex(-1);
+            }}
+            onKeyDown={handleKeyDown}
+            placeholder="Ketik pertanyaan atau cari artikel..."
+            className="w-full pl-12 pr-12 py-3 rounded-xl bg-gray-900/40 border border-gray-700/50 
+            text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 
+            focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all duration-300
+            backdrop-blur-md text-sm shadow-inner"
+          />
 
-      {/* Suggestions Dropdown */}
-      {showSuggestions && (
-        <div
-          ref={listRef}
-          className="absolute w-full mt-1 bg-gray-900/95 backdrop-blur-xl 
-          rounded-lg shadow-xl border border-gray-600/50 overflow-y-auto animate-fadeIn max-h-80"
-          style={{ 
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            zIndex: 9999
-          }}
-        >
-          {searchTerm && suggestions.length > 0 && (
-            <>
-              {suggestions.map((s, idx) => (
-                <button
-                  key={idx}
-                  onMouseDown={() => handleSelectSuggestion(s.text)}
-                  className={`w-full text-left px-4 py-2.5 text-sm flex justify-between items-center cursor-pointer 
-                  transition-all duration-150 border-b border-gray-700/50 last:border-b-0 ${
-                    idx === highlightIndex
-                      ? "bg-cyan-500/20 text-white"
-                      : "hover:bg-gray-700/50 text-gray-200"
-                  }`}
-                >
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <span className="text-sm flex-shrink-0">{s.icon}</span>
-                    <div className="truncate flex-1 text-left">
-                      {highlightMatch(s.text)}
+          {/* Clear Button */}
+          <AnimatePresence>
+            {localSearchValue && (
+              <motion.button
+                key="clear-search-btn"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                onClick={clearSearch}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors z-10"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </motion.button>
+            )}
+          </AnimatePresence>
+
+          {/* Suggestions Dropdown - Aligned to input width */}
+          {showSuggestions && (
+            <div
+              ref={listRef}
+              className="absolute w-full mt-2 bg-gray-900/95 backdrop-blur-xl 
+              rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-gray-700/50 
+              overflow-hidden animate-fadeIn max-h-[400px] z-[100]"
+              style={{ top: '100%' }}
+            >
+              <div className="overflow-y-auto max-h-[400px] no-scrollbar">
+                {localSearchValue && suggestions.length > 0 && (
+                  <div className="p-1">
+                    {suggestions.map((s, idx) => (
+                      <button
+                        key={idx}
+                        onMouseDown={() => handleSelectSuggestion(s.text)}
+                        className={`w-full text-left px-4 py-3 text-sm flex justify-between items-center cursor-pointer 
+                        transition-all duration-150 rounded-lg mb-0.5 last:mb-0 ${
+                          idx === highlightIndex
+                            ? "bg-cyan-500/20 text-white"
+                            : "hover:bg-gray-800/50 text-gray-300"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <span className="text-lg flex-shrink-0">{s.icon}</span>
+                          <div className="truncate flex-1 text-left">
+                            {highlightMatch(s.text)}
+                          </div>
+                        </div>
+                        <span className="text-[10px] text-gray-500 flex-shrink-0 ml-2 px-1.5 py-0.5 bg-gray-800/80 rounded border border-gray-700/50">
+                          {s.type}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {localSearchValue && suggestions.length === 0 && (
+                  <div className="px-6 py-8 text-sm text-gray-500 text-center">
+                    <div className="text-2xl mb-2 opacity-20">🔍</div>
+                    Tidak ada hasil untuk <span className="text-cyan-400">"{localSearchValue}"</span>
+                  </div>
+                )}
+
+                {/* Search History */}
+                {!localSearchValue && searchHistory.length > 0 && (
+                  <div className="border-b border-gray-800/50 last:border-0">
+                    <div className="px-4 py-2 text-[10px] text-gray-500 font-bold uppercase tracking-widest bg-gray-800/30">
+                      🔄 Riwayat Pencarian
+                    </div>
+                    <div className="p-1">
+                      {searchHistory.map((item, i) => (
+                        <button
+                          key={i}
+                          onMouseDown={() => handleSelectSuggestion(item)}
+                          className="w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-800/50 
+                          rounded-lg transition-all duration-150 flex items-center gap-3 mb-0.5 last:mb-0"
+                        >
+                          <History className="w-4 h-4 text-gray-600 flex-shrink-0" />
+                          <span className="truncate">{item}</span>
+                        </button>
+                      ))}
                     </div>
                   </div>
-                  <span className="text-xs text-gray-400 flex-shrink-0 ml-2 px-2 py-0.5 bg-gray-800 rounded">
-                    {s.type}
-                  </span>
-                </button>
-              ))}
-            </>
-          )}
+                )}
 
-          {searchTerm && suggestions.length === 0 && (
-            <div className="px-4 py-3 text-sm text-gray-400 text-center border-b border-gray-700/50">
-              Tidak ada hasil untuk{" "}
-              <span className="text-cyan-400 font-medium">"{searchTerm}"</span>
-            </div>
-          )}
+                {/* Trending Suggestions */}
+                {!localSearchValue && (
+                  <div className="last:border-0">
+                    <div className="px-4 py-2 text-[10px] text-gray-500 font-bold uppercase tracking-widest bg-gray-800/30">
+                      🔥 Topik Populer
+                    </div>
+                    <div className="p-1">
+                      {trending.map((t, i) => (
+                        <button
+                          key={i}
+                          onMouseDown={() => handleSelectSuggestion(t)}
+                          className="w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-800/50 
+                          rounded-lg transition-all duration-150 flex items-center gap-3 mb-0.5 last:mb-0"
+                        >
+                          <Sparkles className="w-4 h-4 text-orange-500/50 flex-shrink-0" />
+                          <span className="truncate">{t}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-          {/* Search History */}
-          {!searchTerm && searchHistory.length > 0 && (
-            <div className="border-b border-gray-700/50">
-              <div className="px-4 py-2 text-xs text-gray-500 font-medium bg-gray-800/50">
-                🔄 Riwayat Pencarian
+                {/* Quick Tips */}
+                <div className="px-4 py-3 bg-gray-950/30 border-t border-gray-800/50">
+                  <div className="text-[10px] text-gray-600 text-center flex items-center justify-center gap-2">
+                    <span className="flex items-center gap-1">
+                      <kbd className="px-1.5 py-0.5 bg-gray-800 rounded border border-gray-700">↑↓</kbd> Navigasi
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <kbd className="px-1.5 py-0.5 bg-gray-800 rounded border border-gray-700">Enter</kbd> Pilih
+                    </span>
+                  </div>
+                </div>
               </div>
-              {searchHistory.map((item, i) => (
-                <button
-                  key={i}
-                  onMouseDown={() => handleSelectSuggestion(item)}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700/50 
-                  cursor-pointer transition-all duration-150 flex items-center gap-3 border-b border-gray-700/30 last:border-b-0"
-                >
-                  <svg className="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span className="truncate">{item}</span>
-                </button>
-              ))}
             </div>
           )}
+        </div>
 
-          {/* Trending Suggestions */}
-          {!searchTerm && (
-            <div>
-              <div className="px-4 py-2 text-xs text-gray-500 font-medium bg-gray-800/50">
-                🔥 Pencarian Populer
-              </div>
-              {trending.map((t, i) => (
-                <button
-                  key={i}
-                  onMouseDown={() => handleSelectSuggestion(t)}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700/50 
-                  cursor-pointer transition-all duration-150 flex items-center gap-3 border-b border-gray-700/30 last:border-b-0"
-                >
-                  <svg className="w-4 h-4 text-orange-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
-                  </svg>
-                  <span className="truncate">{t}</span>
-                </button>
-              ))}
-            </div>
-          )}
+        {/* --- Tanya AI Button --- */}
+        <button
+          onClick={handleAiAsk}
+          className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-900/60 border border-gray-700/50 
+          hover:border-cyan-500/50 rounded-xl text-gray-300 hover:text-white transition-all 
+          duration-300 group relative overflow-hidden backdrop-blur-md shadow-lg"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Bot className="w-5 h-5 text-cyan-400 group-hover:animate-pulse" />
+          <span className="text-sm font-medium">Tanya AI</span>
+        </button>
+      </div>
 
-          {/* Quick Tips */}
-          <div className="px-4 py-2 bg-gray-800/70 border-t border-gray-700/50">
-            <div className="text-xs text-gray-500 text-center">
-              💡 Gunakan <kbd className="px-1.5 py-0.5 mx-1 bg-gray-700 rounded text-xs">↑↓</kbd> untuk navigasi, 
-              <kbd className="px-1.5 py-0.5 mx-1 bg-gray-700 rounded text-xs">Enter</kbd> untuk memilih
-            </div>
+      {/* --- Row 2: Suggested Tags & History --- */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 w-full sm:w-auto">
+          <Sparkles className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider mr-1">Saran:</span>
+          <div className="flex gap-2">
+            {suggestionPills.map((pill, idx) => (
+              <button
+                key={idx}
+                onClick={() => handleSelectSuggestion(pill.text)}
+                className={`text-[11px] px-3 py-1.5 rounded-full border whitespace-nowrap transition-all duration-300 hover:scale-105 active:scale-95 ${pill.color}`}
+              >
+                {pill.text}
+              </button>
+            ))}
           </div>
         </div>
-      )}
+
+        <button 
+          onClick={() => setShowSuggestions(true)}
+          className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-cyan-400 transition-colors py-1 group"
+        >
+          <History className="w-4 h-4 group-hover:rotate-[-45deg] transition-transform" />
+          <span>Riwayat</span>
+        </button>
+      </div>
+
     </div>
   );
 }

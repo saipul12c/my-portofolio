@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { Sparkles, Camera, Heart, Eye } from "lucide-react";
+import { memo } from "react";
 
-export default function PhotoPhilosophy() {
+function PhotoPhilosophy() {
   const title = "Filosofi di Balik Lensa".split(" ");
   const philosophyPoints = [
     {
@@ -83,7 +84,7 @@ export default function PhotoPhilosophy() {
       {/* Animated Sparkles Icon */}
       <motion.div
         variants={itemVariants}
-        className="relative"
+        className="relative will-change-transform"
       >
         <motion.div
           animate={{
@@ -108,7 +109,7 @@ export default function PhotoPhilosophy() {
         
         {/* Floating particles effect */}
         <motion.div
-          className="absolute inset-0"
+          className="absolute inset-0 pointer-events-none"
           animate={{
             opacity: [0, 1, 0],
           }}
@@ -210,7 +211,7 @@ export default function PhotoPhilosophy() {
         {[0, 1, 2].map((index) => (
           <motion.div
             key={index}
-            className="w-2 h-2 bg-cyan-400 rounded-full"
+            className="w-2 h-2 bg-cyan-400 rounded-full will-change-transform"
             animate={{
               scale: [1, 1.5, 1],
               opacity: [0.5, 1, 0.5],
@@ -226,3 +227,5 @@ export default function PhotoPhilosophy() {
     </motion.section>
   );
 }
+
+export default memo(PhotoPhilosophy);

@@ -4,6 +4,10 @@
  */
 
 import faqsData from "../data/faqs.json";
+import commitmentsData from "../../komit/data/commitments.json";
+import blogData from "../../../../data/blog/data.json";
+import softSkillsData from "../../../../data/skills/softskills.json";
+import { compileAuthorProfiles, findAuthorByName } from "../../../../pages/blog/utils/authorUtils";
 
 // Cache for performance
 const faqCache = new Map();
@@ -33,7 +37,7 @@ const preprocessFAQData = () => {
     const extractKeywords = (text) => {
       const words = text.split(/[^a-z0-9]+/)
         .filter(word => word.length > 2)
-        .filter(word => !['yang', 'dengan', 'dalam', 'untuk', 'dari', 'pada', 'ke', 'di'].includes(word));
+        .filter(word => !['yang', 'dengan', 'dalam', 'untuk', 'dari', 'pada', 'ke', 'di', 'ini', 'adalah', 'kami'].includes(word));
       
       return [...new Set(words)]; // Remove duplicates
     };
@@ -43,25 +47,98 @@ const preprocessFAQData = () => {
     
     // Extract categories based on content
     const categories = [];
-    if (question.includes('teknologi') || answer.includes('teknologi')) categories.push('teknologi');
-    if (question.includes('pendidikan') || answer.includes('pendidikan')) categories.push('pendidikan');
-    if (question.includes('kreatif') || answer.includes('kreatif')) categories.push('kreativitas');
-    if (question.includes('fotografi') || answer.includes('fotografi')) categories.push('fotografi');
-    if (question.includes('digital') || answer.includes('digital')) categories.push('digital');
-    if (question.includes('guru') || answer.includes('guru')) categories.push('guru');
-    if (question.includes('belajar') || answer.includes('belajar')) categories.push('belajar');
+    const lowerText = `${question} ${answer}`;
+    if (lowerText.includes('teknologi')) categories.push('teknologi');
+    if (lowerText.includes('pendidikan')) categories.push('pendidikan');
+    if (lowerText.includes('kreatif')) categories.push('kreativitas');
+    if (lowerText.includes('fotografi')) categories.push('fotografi');
+    if (lowerText.includes('digital')) categories.push('digital');
+    if (lowerText.includes('guru')) categories.push('guru');
+    if (lowerText.includes('belajar')) categories.push('belajar');
+    if (lowerText.includes('komitmen') || lowerText.includes('janji')) categories.push('komitmen');
     
     return {
       ...item,
-      id: index,
+      id: `faq-${index}`,
       questionKeywords,
       answerKeywords,
       categories,
       questionLength: question.length,
       answerLength: answer.length,
-      fullText: `${question} ${answer}`
+      fullText: `${question} ${answer}`,
+      source: 'faq'
     };
   });
+
+  // Normalize and add commitments data
+  if (commitmentsData && commitmentsData.commitments) {
+    commitmentsData.commitments.forEach((item, index) => {
+      const question = item.title.toLowerCase();
+      const pointsText = item.key_points ? item.key_points.join(", ") : "";
+      const answer = `${item.desc} ${pointsText}`.toLowerCase();
+      
+      // Extract keywords
+      const extractKeywords = (text) => {
+        const words = text.split(/[^a-z0-9]+/)
+          .filter(word => word.length > 2)
+          .filter(word => !['yang', 'dengan', 'dalam', 'untuk', 'dari', 'pada', 'ke', 'di', 'ini', 'adalah', 'kami'].includes(word));
+        
+        return [...new Set(words)];
+      };
+
+      const questionKeywords = extractKeywords(question);
+      const answerKeywords = extractKeywords(answer);
+
+      // Categories
+      const categories = ['komitmen'];
+      const lowerText = `${question} ${answer}`;
+      if (lowerText.includes('teknologi')) categories.push('teknologi');
+      if (lowerText.includes('pendidikan')) categories.push('pendidikan');
+      if (lowerText.includes('kreatif')) categories.push('kreativitas');
+      
+      processed.push({
+        question: item.title,
+        answer: item.desc,
+        id: `komit-${item.id || index}`,
+        questionKeywords,
+        answerKeywords,
+        categories,
+        questionLength: question.length,
+        answerLength: answer.length,
+        fullText: `${question} ${answer}`,
+        source: 'commitment'
+      });
+    });
+  }
+
+  // --- NEW: Integrate Soft Skills into Knowledge Base ---
+  if (softSkillsData && softSkillsData.skills) {
+    softSkillsData.skills.forEach((skill, index) => {
+      const question = skill.name.toLowerCase();
+      const answer = `${skill.description} Level: ${skill.level} (${skill.experience}%). Tags: ${skill.tags?.join(", ")}`.toLowerCase();
+      
+      const extractKeywords = (text) => {
+        const words = text.split(/[^a-z0-9]+/)
+          .filter(word => word.length > 2)
+          .filter(word => !['yang', 'dengan', 'dalam', 'untuk', 'dari', 'pada', 'ke', 'di', 'ini', 'adalah', 'kami'].includes(word));
+        return [...new Set(words)];
+      };
+
+      processed.push({
+        question: `Skill: ${skill.name}`,
+        answer: skill.description,
+        id: `skill-${index}`,
+        questionKeywords: extractKeywords(question),
+        answerKeywords: extractKeywords(answer),
+        categories: ['softskill', skill.category.toLowerCase()],
+        questionLength: question.length,
+        answerLength: answer.length,
+        fullText: `${question} ${answer}`,
+        source: 'softskill',
+        metadata: skill // Keep original data for richer answers
+      });
+    });
+  }
   
   faqCache.set('preprocessed', processed);
   return processed;
@@ -197,18 +274,25 @@ const generateAIResponse = async (query, filteredFaqs = []) => {
   const matchResult = findBestFAQMatch(query);
   
   if (matchResult && matchResult.score > 60) {
-    // Successful match
-    aiStats.successfulMatches++;
+    const relevance = Math.round(Math.min(matchResult.score / 2, 98));
     
     const responseTypes = [
-      `Berdasarkan analisis data yang relevan, berikut adalah informasi terkait pertanyaan Anda:\n\n${matchResult.item.answer}\n\n*Jawaban ini memiliki ${Math.min(matchResult.score / 2, 98)}% relevansi dengan pertanyaan Anda.*`,
+      `Berdasarkan analisis data ${matchResult.item.source === 'commitment' ? 'komitmen' : matchResult.item.source === 'softskill' ? 'soft skill' : 'FAQ'} kami, berikut adalah informasi yang relevan:\n\n${matchResult.item.answer}`,
       
-      `Saya menemukan informasi yang sangat relevan dalam database FAQ:\n\n${matchResult.item.answer}\n\n*Informasi ini diambil dari FAQ #${matchResult.item.id + 1} dengan kecocokan semantik tingkat tinggi.*`,
+      `Saya menemukan informasi yang sangat relevan dalam basis data ${matchResult.item.source === 'commitment' ? 'komitmen' : matchResult.item.source === 'softskill' ? 'soft skill' : 'FAQ'}:\n\n${matchResult.item.answer}`,
       
-      `Pertanyaan Anda terkait erat dengan topik berikut. Berdasarkan data Muhammad Syaiful Mukmin:\n\n${matchResult.item.answer}\n\n*Dianalisis dalam ${Math.round(matchResult.responseTime || 50)}ms dengan ${matchResult.score} poin kecocokan.*`
+      `Pertanyaan Anda terkait erat dengan topik ${matchResult.item.source === 'commitment' ? 'komitmen' : matchResult.item.source === 'softskill' ? 'soft skill' : 'FAQ'} berikut. Berdasarkan data Muhammad Syaiful Mukmin:\n\n${matchResult.item.answer}`
     ];
+
+    let finalResponse = responseTypes[Math.floor(Math.random() * responseTypes.length)];
     
-    return responseTypes[Math.floor(Math.random() * responseTypes.length)];
+    // Add enrichment for Soft Skills
+    if (matchResult.item.source === 'softskill' && matchResult.item.metadata) {
+      const m = matchResult.item.metadata;
+      finalResponse += `\n\n> 📊 **Statistik Skill:**\n> Level: ${m.level} (${m.experience}% penguasaan)\n> Kategori: ${m.category}`;
+    }
+    
+    return { text: finalResponse, relevance };
   }
   
   // No good FAQ match found, try to fallback to main Robot logic if possible
@@ -217,10 +301,38 @@ const generateAIResponse = async (query, filteredFaqs = []) => {
      // Signature: (msg, settings, conversationContext, safeKnowledgeBase, knowledgeStats, intent)
      const chatResponse = await getSmartReply(query, { memoryContext: false, aiModel: 'expert' }, [], {}, {}, {});
      if (chatResponse && chatResponse.confidence > 0.6) {
-        return `Saya tidak menemukan jawaban persis di FAQ, tetapi berdasarkan basis pengetahuan SaipulAI:\n\n${chatResponse.text}\n\n*Jawaban ini dihasilkan oleh mesin NLP Live Chat kami.*`;
+        return { 
+          text: `Saya tidak menemukan jawaban persis di FAQ, tetapi berdasarkan basis pengetahuan SaipulAI:\n\n${chatResponse.text}\n\n*Jawaban ini dihasilkan oleh mesin NLP Live Chat kami.*`,
+          relevance: Math.round(chatResponse.confidence * 100)
+        };
      }
   } catch (e) {
      console.warn("Fallback to chat logic failed:", e);
+  }
+
+  // --- NEW: Blog Integration Fallback ---
+  const q = query.toLowerCase();
+  const matchedBlog = blogData.find(b => 
+    b.title.toLowerCase().includes(q) || 
+    (b.tags || []).some(t => t.toLowerCase().includes(q))
+  );
+
+  // --- NEW: Author Integration ---
+  const profiles = compileAuthorProfiles(blogData);
+  const matchedAuthor = findAuthorByName(profiles, query.replace(/(siapa|penulis|author|about)/i, "").trim());
+  
+  if (matchedAuthor && query.match(/(siapa|penulis|author|about)/i)) {
+    return {
+      text: `Tentu! **${matchedAuthor.name}** adalah salah satu kontributor hebat di blog kami. \n\n${matchedAuthor.bio} \n\nBeliau adalah pakar dalam topik **${matchedAuthor.expertise.join(", ")}**. Ingin membaca artikel tulisan beliau? Cek saja di kategori ${matchedAuthor.expertise[0]} ya! ✍️✨`,
+      relevance: 95
+    };
+  }
+
+  if (matchedBlog) {
+    return {
+      text: `Saya belum menemukan jawaban spesifik di FAQ, tapi Syaiful punya artikel blog yang sangat relevan tentang ini: **"${matchedBlog.title}"**.\n\nKamu bisa membacanya untuk penjelasan lebih mendalam! 📖✨`,
+      relevance: 85
+    };
   }
 
   // No good match found, try to provide helpful information
@@ -240,7 +352,7 @@ const generateAIResponse = async (query, filteredFaqs = []) => {
     });
     
     response += `*Gunakan pencarian yang lebih spesifik atau ajukan pertanyaan berbeda untuk hasil yang lebih tepat.*`;
-    return response;
+    return { text: response, relevance: 40 };
   }
   
   // Generic helpful responses
@@ -254,7 +366,11 @@ const generateAIResponse = async (query, filteredFaqs = []) => {
     `Topik "${query}" termasuk dalam lingkup pendidikan digital yang ditekuni Muhammad Syaiful Mukmin. Beliau percaya teknologi harus memperkuat, bukan menggantikan, interaksi manusia dalam belajar. Untuk informasi detail, coba cari dengan kata kunci yang lebih spesifik.`
   ];
   
-  return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+  return { 
+    text: defaultResponses[Math.floor(Math.random() * defaultResponses.length)],
+    relevance: 30
+  };
+
 };
 
 // Main AI function
@@ -263,18 +379,28 @@ const askAI = async (question, filteredFaqs = []) => {
   
   try {
     if (!question || typeof question !== 'string') {
-      return "Silakan ajukan pertanyaan yang valid. Pertanyaan harus berupa teks.";
+      return { 
+        text: "Silakan ajukan pertanyaan yang valid. Pertanyaan harus berupa teks.",
+        relevance: 0
+      };
     }
     
     const q = question.trim();
     
     if (q.length < 3) {
-      return "Pertanyaan terlalu pendek. Silakan ajukan pertanyaan minimal 3 karakter untuk mendapatkan jawaban yang bermakna.";
+      return {
+        text: "Pertanyaan terlalu pendek. Silakan ajukan pertanyaan minimal 3 karakter untuk mendapatkan jawaban yang bermakna.",
+        relevance: 0
+      };
     }
     
     if (q.length > 500) {
-      return "Pertanyaan terlalu panjang. Silakan ringkas pertanyaan Anda menjadi maksimal 500 karakter untuk analisis yang lebih efektif.";
+      return {
+        text: "Pertanyaan terlalu panjang. Silakan ringkas pertanyaan Anda menjadi maksimal 500 karakter untuk analisis yang lebih efektif.",
+        relevance: 0
+      };
     }
+
     
     // Update statistics
     aiStats.totalQuestions++;
@@ -303,7 +429,10 @@ const askAI = async (question, filteredFaqs = []) => {
     
   } catch (error) {
     console.error("Enhanced AI Service Error:", error);
-    return `Maaf, terjadi kesalahan dalam memproses pertanyaan Anda: ${error.message}\n\nSilakan:\n1. Periksa koneksi internet Anda\n2. Coba lagi dalam beberapa saat\n3. Gunakan pencarian FAQ manual jika masalah berlanjut`;
+    return {
+      text: `Maaf, terjadi kesalahan dalam memproses pertanyaan Anda: ${error.message}\n\nSilakan:\n1. Periksa koneksi internet Anda\n2. Coba lagi dalam beberapa saat\n3. Gunakan pencarian FAQ manual jika masalah berlanjut`,
+      relevance: 0
+    };
   }
 };
 

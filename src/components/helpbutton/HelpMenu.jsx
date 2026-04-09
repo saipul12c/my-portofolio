@@ -76,8 +76,8 @@ function HelpMenuItem({ title, subtitle, icon: Icon, to, external = false, disab
           <ExternalLink size={14} className="text-gray-400 mt-1" />
         )}
 
-        {/* Label custom atau OFF bila dinonaktifkan */}
-        {disabled && (
+        {/* Label custom, LIVE badge, atau OFF bila dinonaktifkan */}
+        {(disabled || label === "LIVE") && (
           <div className={`text-[10px] mt-1 px-2.5 py-1 rounded-full font-medium ${
             label === "COMING SOON" 
               ? "bg-amber-500/20 text-amber-300 border border-amber-400/40"
@@ -270,12 +270,12 @@ export default function HelpMenu({ onOpenChat, chatbotEnabled = false, roomEnabl
         />
         <HelpMenuItem
           title="Room Diskusi"
-          subtitle="Masuk ke ruang diskusi langsung"
+          subtitle="Hubungi Agent & Diskusi Langsung"
           icon={MessageCircle}
           to="/Live-Discussion"
-          disabled={!roomEnabled}
-          label="COMING SOON"
-          disabledMessage="Fitur ini sedang dikembangkan"
+          disabled={false}
+          label="LIVE"
+          disabledMessage="Fitur ini sedang aktif"
         />
         <HelpMenuItem
           title="Komitmen / Kebijakan"

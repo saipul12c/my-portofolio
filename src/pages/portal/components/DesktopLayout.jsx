@@ -13,6 +13,7 @@ import QRCode from 'qrcode';
 import Avatar from '../ui/Avatar';
 import DesktopPlatformCard from '../ui/DesktopPlatformCard';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Import Hobbies data and icons
 import hobbiesData from '../../../data/hub/hobbiesData.json';
@@ -101,6 +102,22 @@ const DesktopLayout = memo(({
   const [downloadSuccess, setDownloadSuccess] = useState(false);
   const [qrCopied, setQrCopied] = useState(false);
   const [recentChats, setRecentChats] = useState([]);
+  const [specialtyIndex, setSpecialtyIndex] = useState(0);
+
+  const specialties = useMemo(() => [
+    "Developer",
+    "Freelancer",
+    "Problem Solver",
+    "Tech Enthusiast",
+    "UI/UX Learner"
+  ], []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSpecialtyIndex((prev) => (prev + 1) % specialties.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [specialties.length]);
 
   // Fetch recent Live Discussion messages & Realtime Setup
   useEffect(() => {
@@ -330,7 +347,21 @@ const DesktopLayout = memo(({
                     </span>
                   </span>
                 </h1>
-                <p className="text-gray-400 mb-1">Digital Creator & Developer</p>
+                <p className="text-gray-400 mb-1 flex items-center gap-1.5 justify-center lg:justify-start h-6">
+                  <span>Digital Creator &</span>
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={specialtyIndex}
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      transition={{ duration: 0.5 }}
+                      className="text-yellow-400 font-medium"
+                    >
+                      {specialties[specialtyIndex]}
+                    </motion.span>
+                  </AnimatePresence>
+                </p>
                 <p className="text-gray-500 text-sm">Manage all your social connections in one place</p>
               </div>
             </div>

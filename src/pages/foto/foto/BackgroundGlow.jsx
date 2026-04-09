@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
+import { memo } from "react";
 
-export default function BackgroundGlow() {
+function BackgroundGlow() {
   const { scrollYProgress } = useScroll();
   
   // Parallax effects
@@ -10,10 +11,10 @@ export default function BackgroundGlow() {
   const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.1, 0.05, 0]);
 
   return (
-    <div className="fixed inset-0 -z-10 overflow-hidden">
+    <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
       {/* Animated gradient orbs with parallax */}
       <motion.div 
-        className="absolute top-0 left-0 w-48 h-48 sm:w-72 sm:h-72 bg-cyan-500/10 rounded-full blur-3xl"
+        className="absolute top-0 left-0 w-48 h-48 sm:w-72 sm:h-72 bg-cyan-500/10 rounded-full blur-3xl will-change-transform"
         style={{ y: y1, opacity }}
         animate={{ 
           scale: [1, 1.2, 1],
@@ -27,7 +28,7 @@ export default function BackgroundGlow() {
       />
       
       <motion.div 
-        className="absolute bottom-10 right-4 sm:right-10 w-40 h-40 sm:w-80 sm:h-80 bg-purple-500/10 rounded-full blur-3xl"
+        className="absolute bottom-10 right-4 sm:right-10 w-40 h-40 sm:w-80 sm:h-80 bg-purple-500/10 rounded-full blur-3xl will-change-transform"
         style={{ y: y2, opacity }}
         animate={{ 
           scale: [1, 1.3, 1],
@@ -41,7 +42,7 @@ export default function BackgroundGlow() {
       />
       
       <motion.div 
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl"
+        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl will-change-transform"
         style={{ y: y3, opacity }}
         animate={{ 
           scale: [1, 1.4, 1],
@@ -56,7 +57,7 @@ export default function BackgroundGlow() {
 
       {/* Additional floating particles */}
       <motion.div 
-        className="absolute top-1/4 right-1/4 w-32 h-32 bg-green-500/5 rounded-full blur-2xl"
+        className="absolute top-1/4 right-1/4 w-32 h-32 bg-green-500/5 rounded-full blur-2xl will-change-transform"
         animate={{ 
           y: [0, -30, 0],
           x: [0, 20, 0],
@@ -70,7 +71,7 @@ export default function BackgroundGlow() {
       />
 
       <motion.div 
-        className="absolute bottom-1/4 left-1/4 w-40 h-40 bg-pink-500/5 rounded-full blur-2xl"
+        className="absolute bottom-1/4 left-1/4 w-40 h-40 bg-pink-500/5 rounded-full blur-2xl will-change-transform"
         animate={{ 
           y: [0, 40, 0],
           x: [0, -25, 0],
@@ -88,3 +89,5 @@ export default function BackgroundGlow() {
     </div>
   );
 }
+
+export default memo(BackgroundGlow);

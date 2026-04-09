@@ -1,10 +1,11 @@
 // SoftSkills.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import SoftSkillsHeader from "./components/SoftSkillsHeader";
 import SoftSkillsSearch from "./components/SoftSkillsSearch";
 import SoftSkillsCardGrid from "./components/SoftSkillsCardGrid";
 import SoftSkillsPopup from "./components/SoftSkillsPopup";
+import SoftSkillsAI from "./AI/SoftSkillsAI";
 import { highlightText } from "./components/SoftSkillsUtils";
 
 /**
@@ -13,6 +14,7 @@ import { highlightText } from "./components/SoftSkillsUtils";
  * - Memproses daftar skills (labels, colors, gradients)
  * - Menyimpan filteredSkills yang dikirim dari SoftSkillsSearch via onFilterChange
  * - Menangani popup berdasarkan route param id
+ * - Menangani fitur Tanya AI
  */
 export default function SoftSkills() {
   const [skillsData, setSkillsData] = useState(null);
@@ -20,6 +22,19 @@ export default function SoftSkills() {
   const [filteredSkills, setFilteredSkills] = useState([]);
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [isAIOpen, setIsAIOpen] = useState(false);
+  const [aiQuery, setAiQuery] = useState("");
+
+  const handleOpenAI = (query = "") => {
+    setAiQuery(query);
+    setIsAIOpen(true);
+  };
+
+  // Memoize onFilterChange to prevent unnecessary re-renders in SoftSkillsSearch
+  const handleFilterChange = useCallback((newFilteredSkills, searchValue) => {
+    setFilteredSkills(newFilteredSkills);
+    setSearchKeyword(searchValue || "");
+  }, []);
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -41,22 +56,28 @@ export default function SoftSkills() {
     ];
 
     const fetchSequential = async () => {
-      for (const p of tryPaths) {
+      // Prioritaskan path yang paling mungkin berhasil di environment Vite
+      const optimizedPaths = [
+        `${publicBase}data/about/softskills.json`,
+        "/data/about/softskills.json",
+        "./data/about/softskills.json",
+      ];
+
+      for (const p of optimizedPaths) {
         try {
           const res = await fetch(p);
           if (!res.ok) continue;
           const data = await res.json();
-          if (mounted) setSkillsData(data);
-          return;
+          if (mounted) {
+            setSkillsData(data);
+            return;
+          }
         } catch {
           continue;
         }
       }
 
-      if (mounted) {
-        console.error("❌ Gagal memuat softskills.json dari semua path percobaan");
-        setSkillsData({ error: true, message: "Gagal memuat data skill." });
-      }
+      if (mounted) console.error("❌ Gagal memuat softskills.json");
     };
 
     fetchSequential();
@@ -66,7 +87,7 @@ export default function SoftSkills() {
     };
   }, []);
 
-  // 🔹 Proses data skill (labels, colors, gradients)
+  // 🔹 Proses data skill (labels, colors, gradients) - dioptimasi dengan useMemo
   useEffect(() => {
     if (!skillsData || !Array.isArray(skillsData.skills)) return;
 
@@ -112,36 +133,31 @@ export default function SoftSkills() {
       .map((skill) => {
         const labels = [...(skill.labels || [])];
 
-        // Hanya tambahkan label "Baru" jika skill ditambahkan dalam 1 tahun terakhir
         if (skill.dateAdded) {
           const addedDate = new Date(skill.dateAdded);
           if (addedDate > oneYearAgo && !labels.includes("Baru"))
             labels.push("Baru");
         }
 
-        // ❌ DIHAPUS: Penambahan label random "Populer" dan "Hot" yang berlebihan
-        // ["Populer", "Hot"].forEach((label) => {
-        //   if (!labels.includes(label) && Math.random() < 0.25) labels.push(label);
-        // });
-
         const labelColorMap = {};
         labels.forEach((label) => {
-          labelColorMap[label] =
-            colors.label[Math.floor(Math.random() * colors.label.length)];
+          // Gunakan seed stabil (index id atau name) agar warna tidak acak setiap re-render
+          const seed = (label.length + (skill.id || 0)) % colors.label.length;
+          labelColorMap[label] = colors.label[seed];
         });
+
+        const levelSeed = (skill.level.length + (skill.id || 0)) % colors.level.length;
+        const cardSeed = ((skill.name?.length || 0) + (skill.id || 0)) % colors.card.length;
 
         return {
           ...skill,
           labels,
           labelColorMap,
-          levelColor:
-            colors.level[Math.floor(Math.random() * colors.level.length)],
-          cardGradient:
-            colors.card[Math.floor(Math.random() * colors.card.length)],
+          levelColor: colors.level[levelSeed],
+          cardGradient: colors.card[cardSeed],
         };
       });
 
-    // Urutkan berdasarkan jumlah label (yang punya label lebih banyak di atas)
     processed.sort((a, b) => (b.labels?.length || 0) - (a.labels?.length || 0));
 
     setSkills(processed);
@@ -175,16 +191,27 @@ export default function SoftSkills() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[var(--color-gray-900)] to-[var(--color-gray-800)] text-white flex flex-col items-center px-6 py-20">
       {/* Header */}
-      <SoftSkillsHeader title={skillsData.sectionTitle} />
+      <SoftSkillsHeader 
+        title={skillsData.sectionTitle} 
+      />
 
       {/* Search & Filter */}
       <SoftSkillsSearch
         skills={skills}
-        onFilterChange={(newFilteredSkills, searchValue) => {
-          setFilteredSkills(newFilteredSkills);
-          setSearchKeyword(searchValue || "");
-        }}
+        onFilterChange={handleFilterChange}
         highlightText={highlightText}
+        onOpenAI={handleOpenAI}
+      />
+
+      {/* Specialized AI Chat (Inline Results) */}
+      <SoftSkillsAI 
+        isOpen={isAIOpen}
+        onClose={() => {
+          setIsAIOpen(false);
+          setAiQuery("");
+        }}
+        skills={skills}
+        initialQuery={aiQuery}
       />
 
       {/* Skill Cards */}
@@ -201,6 +228,7 @@ export default function SoftSkills() {
         setSelectedSkill={setSelectedSkill}
         navigate={navigate}
       />
+
     </main>
   );
 }

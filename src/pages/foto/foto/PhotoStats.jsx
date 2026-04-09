@@ -1,13 +1,14 @@
 import { motion } from "framer-motion";
+import { useMemo, memo } from "react";
 import { Camera, Image as ImageIcon, MapPin, Heart } from "lucide-react";
 
-export default function PhotoStats({ photos }) {
-  const stats = {
+function PhotoStats({ photos }) {
+  const stats = useMemo(() => ({
     total: photos.length,
     categories: [...new Set(photos.map(p => p.category).filter(Boolean))].length,
     locations: [...new Set(photos.map(p => p.location).filter(Boolean))].length,
     featured: photos.filter(p => p.featured).length,
-  };
+  }), [photos]);
 
   const statItems = [
     { icon: ImageIcon, label: "Total Foto", value: stats.total, color: "cyan" },
@@ -60,3 +61,5 @@ export default function PhotoStats({ photos }) {
     </motion.div>
   );
 }
+
+export default memo(PhotoStats);

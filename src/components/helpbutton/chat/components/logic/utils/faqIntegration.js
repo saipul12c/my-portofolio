@@ -3,6 +3,7 @@
  * Bridge for sharing FAQ data and logic with Live Chat system.
  */
 import faqsData from "../../../../faq/data/faqs.json";
+import commitmentsData from "../../../../komit/data/commitments.json";
 
 const faqCache = new Map();
 
@@ -32,25 +33,59 @@ export const preprocessFAQData = () => {
     const answerKeywords = extractKeywords(answer);
     
     const categories = [];
-    if (question.includes('teknologi') || answer.includes('teknologi')) categories.push('teknologi');
-    if (question.includes('pendidikan') || answer.includes('pendidikan')) categories.push('pendidikan');
-    if (question.includes('kreatif') || answer.includes('kreatif')) categories.push('kreativitas');
-    if (question.includes('fotografi') || answer.includes('fotografi')) categories.push('fotografi');
-    if (question.includes('digital') || answer.includes('digital')) categories.push('digital');
-    if (question.includes('guru') || answer.includes('guru')) categories.push('guru');
-    if (question.includes('belajar') || answer.includes('belajar')) categories.push('belajar');
+    const lowerText = `${question} ${answer}`;
+    if (lowerText.includes('teknologi')) categories.push('teknologi');
+    if (lowerText.includes('pendidikan')) categories.push('pendidikan');
+    if (lowerText.includes('kreatif')) categories.push('kreativitas');
+    if (lowerText.includes('fotografi')) categories.push('fotografi');
+    if (lowerText.includes('digital')) categories.push('digital');
+    if (lowerText.includes('guru')) categories.push('guru');
+    if (lowerText.includes('belajar')) categories.push('belajar');
+    if (lowerText.includes('komitmen') || lowerText.includes('janji')) categories.push('komitmen');
     
     return {
       ...item,
-      id: index,
+      id: `faq-${index}`,
       questionKeywords,
       answerKeywords,
       categories,
       questionLength: question.length,
       answerLength: answer.length,
-      fullText: `${question} ${answer}`
+      fullText: `${question} ${answer}`,
+      source: 'faq'
     };
   });
+
+  // Normalize and add commitments data
+  if (commitmentsData && commitmentsData.commitments) {
+    commitmentsData.commitments.forEach((item, index) => {
+      const question = item.title.toLowerCase();
+      const pointsText = item.key_points ? item.key_points.join(", ") : "";
+      const answer = `${item.desc} ${pointsText}`.toLowerCase();
+      
+      const questionKeywords = extractKeywords(question);
+      const answerKeywords = extractKeywords(answer);
+
+      const categories = ['komitmen'];
+      const lowerText = `${question} ${answer}`;
+      if (lowerText.includes('teknologi')) categories.push('teknologi');
+      if (lowerText.includes('pendidikan')) categories.push('pendidikan');
+      if (lowerText.includes('kreatif')) categories.push('kreativitas');
+      
+      processed.push({
+        question: item.title,
+        answer: item.desc,
+        id: `komit-${item.id || index}`,
+        questionKeywords,
+        answerKeywords,
+        categories,
+        questionLength: question.length,
+        answerLength: answer.length,
+        fullText: `${question} ${answer}`,
+        source: 'commitment'
+      });
+    });
+  }
   
   faqCache.set('preprocessed', processed);
   return processed;

@@ -87,6 +87,7 @@ const SocialPortal = () => {
       setActiveTab={setActiveTab}
       stats={stats}
       certificates={certificates}
+      projects={projects}
       openCertModal={(cert) => setSelectedCert(cert)}
     />
   );

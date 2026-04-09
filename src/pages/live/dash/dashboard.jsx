@@ -129,10 +129,10 @@ const Dashboard = () => {
           .from('users')
           .select('id, role, nama')
           .eq('id', authUser.id)
-          .single();
+          .maybeSingle();
 
         if (dbError || !dbUser || !['SUPER_ADMIN', 'ADMIN', 'MODERATOR'].includes(dbUser.role)) {
-          console.warn('Dashboard access revoked by database policy.');
+          console.warn('Dashboard access revoked or profile missing.');
           localStorage.removeItem('local_user');
           navigate('/Live-Discussion');
           return;

@@ -5,6 +5,7 @@ import AiOverview from "./components/pencarian/AI/AiOverview";
 import SearchBar from "./components/pencarian/SearchBar"; 
 import { useBlogData } from "./hooks/useBlogData";
 import { useBlogFilters } from "./hooks/useBlogFilters";
+import { useDebounce } from "../../hooks/useDebounce";
 import { POSTS_PER_PAGE } from "./utils/constants";
 
 // Import komponen modular
@@ -22,12 +23,22 @@ export default function Blog() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [showTooltip, setShowTooltip] = useState(null);
   
+  const [isAiActive, setIsAiActive] = useState(false);
+  
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Debounce search term to prevent heavy calculations on every keystroke
+  const debouncedSearchTerm = useDebounce(searchTerm, 400);
+
+  // Sync with AI toggle: Close AI if search term changes or is cleared
+  useEffect(() => {
+    setIsAiActive(false);
+  }, [debouncedSearchTerm]);
+
   // Custom hooks untuk data processing
   const processedBlogs = useBlogData(blogs);
-  const filteredBlogs = useBlogFilters(processedBlogs, searchTerm, selectedCategory, sortBy);
+  const filteredBlogs = useBlogFilters(processedBlogs, debouncedSearchTerm, selectedCategory, sortBy);
 
   // Pagination
   const indexOfLast = currentPage * POSTS_PER_PAGE;
@@ -64,16 +75,37 @@ export default function Blog() {
     document.body.style.overflow = "auto";
   };
 
-  // Sync search term from URL ?search=... so clicking links updates the search box
+  // 1. Sync state FROM URL on mount and location changes
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const q = params.get("search") || "";
-    if (q !== searchTerm) {
-      setSearchTerm(q);
-      setCurrentPage(1);
-    }
+    const cat = params.get("category") || "all";
+    const sort = params.get("sort") || "newest";
+
+    if (q !== searchTerm) setSearchTerm(q);
+    if (cat !== selectedCategory) setSelectedCategory(cat);
+    if (sort !== sortBy) setSortBy(sort);
+    
+    // Always reset to page 1 if URL search changes (likely a new search/filter)
+    setCurrentPage(1);
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
+
+  // 2. Sync state TO URL when states change (Bidirectional)
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchTerm) params.set("search", searchTerm);
+    if (selectedCategory !== "all") params.set("category", selectedCategory);
+    if (sortBy !== "newest") params.set("sort", sortBy);
+    
+    const newSearch = params.toString();
+    const currentSearch = location.search.replace(/^\?/, "");
+    
+    if (newSearch !== currentSearch) {
+      navigate({ search: newSearch ? `?${newSearch}` : "" }, { replace: true });
+    }
+  }, [searchTerm, selectedCategory, sortBy, navigate, location.search]);
 
   // Centralized handler for searches initiated from AI overview
   const handleAiSearch = (text) => {
@@ -81,6 +113,10 @@ export default function Blog() {
     setSearchTerm(text);
     setCurrentPage(1);
     navigate(`/blog?search=${encodeURIComponent(text)}`);
+  };
+
+  const handleAiToggle = () => {
+    setIsAiActive(true);
   };
 
   return (
@@ -98,13 +134,14 @@ export default function Blog() {
           sortBy={sortBy}
           setSortBy={setSortBy}
           categories={categories}
+          onAiClick={handleAiToggle}
         />
 
         {/* AI Overview */}
-        {searchTerm && (
+        {isAiActive && debouncedSearchTerm && (
           <div className="mb-8 sm:mb-10">
             <AiOverview
-              searchTerm={searchTerm}
+              searchTerm={debouncedSearchTerm}
               filteredBlogs={filteredBlogs}
               allBlogs={processedBlogs}
               onSearch={handleAiSearch}
@@ -116,7 +153,7 @@ export default function Blog() {
         <div className="flex flex-wrap gap-3 sm:gap-4 mb-6 sm:mb-8 text-xs sm:text-sm text-gray-400">
           <span>📄 {filteredBlogs.length} artikel ditemukan</span>
           {selectedCategory !== "all" && <span>📂 Kategori: {selectedCategory}</span>}
-          {searchTerm && <span>🔍 Pencarian: "{searchTerm}"</span>}
+          {debouncedSearchTerm && <span>🔍 Pencarian: "{debouncedSearchTerm}"</span>}
         </div>
 
         {/* No Results */}

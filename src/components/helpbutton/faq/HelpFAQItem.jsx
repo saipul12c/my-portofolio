@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { LazyMotion, m, AnimatePresence, domAnimation } from "framer-motion";
 import { ChevronDown, Search, HelpCircle, Send, Bot, Sparkles, TrendingUp, BookOpen, Lightbulb, X, History, Clock } from "lucide-react";
 import faqsData from "./data/faqs.json";
+import commitmentsData from "../komit/data/commitments.json";
 import askAI, { getAISuggestions, getCyclingSuggestions, getAIStatistics } from "./AI/Bot";
 
 // Utility untuk menyimpan riwayat ke localStorage
@@ -88,6 +89,8 @@ export default function HelpFAQItem() {
   const [searchHistory, setSearchHistory] = useState(getHistory());
   const [activeTab, setActiveTab] = useState("faq");
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const [aiRelevance, setAiRelevance] = useState(0);
+
   
   const suggestionIntervalRef = useRef(null);
   const inputRef = useRef(null);
@@ -160,12 +163,14 @@ export default function HelpFAQItem() {
     setAiQuestion(q);
     
     try {
-      const response = await askAI(q, filteredFaqs);
-      setAiAnswer(response);
+      const result = await askAI(q, filteredFaqs);
+      setAiAnswer(result.text);
+      setAiRelevance(result.relevance);
       
-      // Save to history
-      const updatedHistory = saveToHistory(q, response, 'ai');
+      // Save to history (save only text for simplicity in history)
+      const updatedHistory = saveToHistory(q, result.text, 'ai');
       setSearchHistory(updatedHistory);
+
       
       // Update stats
       const stats = getAIStatistics();
@@ -575,12 +580,16 @@ export default function HelpFAQItem() {
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <h3 className="text-xl font-bold text-emerald-300 mb-1">Jawaban AI</h3>
-                      <p className="text-sm text-gray-400">Berbasis data dari {faqsData.length} FAQ</p>
+                      <p className="text-sm text-gray-400">Berbasis data dari {faqsData.length} FAQ & {commitmentsData.commitments?.length || 0} Komitmen</p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="text-xs px-3 py-1 bg-emerald-900/50 text-emerald-300 rounded-full">
-                        Confidence: {Math.min(95 + Math.floor(Math.random() * 5), 100)}%
+                      <div 
+                        className="text-xs px-3 py-1 bg-emerald-900/50 text-emerald-300 rounded-full cursor-help whitespace-nowrap"
+                        title={`Jawaban ini memiliki ${aiRelevance}% relevansi dengan pertanyaan Anda.`}
+                      >
+                        Confidence: {aiRelevance}%
                       </div>
+
                       <button
                         onClick={() => setShowAiAnswer(false)}
                         className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"

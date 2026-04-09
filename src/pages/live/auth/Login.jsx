@@ -56,105 +56,97 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
     setMessage({ type: '', text: '' });
 
     try {
-      // Login with Supabase Auth
+      // 1. Auth Login
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email: formData.email.toLowerCase(),
         password: formData.password
       });
 
-      if (authError) {
-        throw new Error('Email atau password salah');
-      }
+      if (authError) throw new Error('Email atau password salah');
 
-      // Ambil user profil dari tabel public.users
-      const { data: users, error: dbError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('email', formData.email.toLowerCase());
+      // 2. Profile Fetch with Retry (Antisipasi delay trigger database)
+      let user = null;
+      let retries = 3;
+      
+      while (retries > 0 && !user) {
+        const { data: users, error: dbError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', authData.user.id)
+          .maybeSingle();
 
-      if (dbError || !users || users.length === 0) {
-        throw new Error('Data profil belum lengkap di server. Silakan coba sebentar lagi.');
-      }
-
-      const user = users[0];
-
-      if (user) {
-        const userStatus = user.status?.toLowerCase();
-        if (userStatus !== 'aktif' && userStatus !== 'active') {
-          await supabase.auth.signOut(); // force logout
-          throw new Error('Akun Anda tidak aktif. Hubungi administrator.');
-        }
-
-        // Deteksi role otomatis dari database
-        const userRole = user.role?.toUpperCase() || 'USER';
-        const roleConfig = {
-          'SUPER_ADMIN': { level: 6, name: 'Super Admin', badge: '👑', color: 'from-purple-600 to-pink-600' },
-          'ADMIN': { level: 5, name: 'Admin', badge: '🛡️', color: 'from-red-500 to-orange-500' },
-          'MODERATOR': { level: 4, name: 'Moderator', badge: '⭐', color: 'from-blue-500 to-cyan-500' },
-          'PREMIUM': { level: 3, name: 'Premium', badge: '💎', color: 'from-green-500 to-emerald-500' },
-          'VERIFIED': { level: 2, name: 'Verified', badge: '✅', color: 'from-yellow-500 to-amber-500' },
-          'USER': { level: 1, name: 'User', badge: '👤', color: 'from-gray-500 to-gray-700' }
-        };
-
-        const config = roleConfig[userRole] || roleConfig.USER;
-
-        setMessage({
-          type: 'success',
-          text: `Login berhasil! Selamat datang ${config.name}. Mengarahkan...`
-        });
-
-        // Simpan session dengan informasi role lengkap
-        const localUser = {
-          id: authData.user.id,
-          username: user.nama || formData.email.split('@')[0],
-          email: user.email,
-          role: userRole,
-          roleName: config.name,
-          roleLevel: config.level,
-          roleBadge: config.badge,
-          roleColor: config.color,
-          messageCount: parseInt(user.message_count) || 0,
-          lastReset: user.last_reset || new Date().toISOString().split('T')[0],
-          joinDate: user.tanggal_daftar || new Date().toISOString(),
-          loginTime: new Date().toISOString()
-        };
-
-        // Simpan ke localStorage
-        localStorage.setItem('local_user', JSON.stringify(localUser));
-
-        // Jika remember me dicentang, simpan email
-        if (rememberMe) {
-          localStorage.setItem('rememberedEmail', formData.email);
+        if (users) {
+          user = users;
         } else {
-          localStorage.removeItem('rememberedEmail');
+          retries--;
+          if (retries > 0) await new Promise(res => setTimeout(res, 1000));
         }
+      }
 
-        // Redirect berdasarkan role
+      if (!user) {
+        throw new Error('Sinkronisasi profil sedang berlangsung. Silakan coba masuk kembali dalam hitungan detik.');
+      }
+
+      // 3. Status Check
+      const userStatus = user.status?.toLowerCase();
+      if (userStatus === 'nonaktif' || userStatus === 'banned') {
+        await supabase.auth.signOut();
+        throw new Error('Akun Anda tidak aktif atau diblokir. Hubungi administrator.');
+      }
+
+      // 4. Role Config Mapping
+      const userRole = user.role?.toUpperCase() || 'USER';
+      const roleConfig = {
+        'SUPER_ADMIN': { level: 6, name: 'Super Admin', badge: '👑', color: 'from-purple-600 to-pink-600' },
+        'ADMIN': { level: 5, name: 'Admin', badge: '🛡️', color: 'from-red-500 to-orange-500' },
+        'MODERATOR': { level: 4, name: 'Moderator', badge: '⭐', color: 'from-blue-500 to-cyan-500' },
+        'PREMIUM': { level: 3, name: 'Premium', badge: '💎', color: 'from-green-500 to-emerald-500' },
+        'VERIFIED': { level: 2, name: 'Verified', badge: '✅', color: 'from-yellow-500 to-amber-500' },
+        'USER': { level: 1, name: 'User', badge: '👤', color: 'from-gray-500 to-gray-700' }
+      };
+
+      const config = roleConfig[userRole] || roleConfig.USER;
+
+      // 5. Save Session Data
+      const localUser = {
+        id: authData.user.id,
+        username: user.nama || formData.email.split('@')[0],
+        email: user.email,
+        role: userRole,
+        roleName: config.name,
+        roleLevel: config.level,
+        roleBadge: config.badge,
+        roleColor: config.color,
+        messageCount: parseInt(user.message_count) || 0,
+        lastReset: user.last_reset || new Date().toISOString().split('T')[0],
+        joinDate: user.tanggal_daftar || new Date().toISOString(),
+        loginTime: new Date().toISOString()
+      };
+
+      localStorage.setItem('local_user', JSON.stringify(localUser));
+      if (rememberMe) localStorage.setItem('rememberedEmail', formData.email);
+      else localStorage.removeItem('rememberedEmail');
+
+      setMessage({ type: 'success', text: 'Sinyal terhubung! Mengarahkan...' });
+
+      // 6. Redirect
+      setTimeout(() => {
         if (['SUPER_ADMIN', 'ADMIN', 'MODERATOR'].includes(userRole)) {
           navigate('/Live-Discussion/dashboard');
         } else {
           navigate('/Live-Discussion');
         }
-
-      } else {
-        throw new Error('Profil pengguna tidak ditemukan');
-      }
+      }, 500);
 
     } catch (error) {
       console.error('Login error:', error);
-      setMessage({
-        type: 'error',
-        text: error.message || 'Koneksi gagal. Periksa koneksi internet Anda.'
-      });
+      setMessage({ type: 'error', text: error.message || 'Koneksi gagal.' });
     } finally {
       setLoading(false);
     }

@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FiX, FiCheckCircle, FiUser, FiBookmark, FiShare2 } from "react-icons/fi";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { 
   getLabelColor, 
   getTagColor, 
@@ -21,6 +21,18 @@ export default function BlogPopup({
   onHideTooltip,
   showTooltip
 }) {
+  // --- TRACK TOPIK UNTUK AI ---
+  useEffect(() => {
+    if (selectedPost) {
+      const topicData = {
+        name: selectedPost.category || (selectedPost.tags && selectedPost.tags[0]) || "Umum",
+        title: selectedPost.title,
+        timestamp: Date.now()
+      };
+      localStorage.setItem('saipul_ai_last_topic', JSON.stringify(topicData));
+    }
+  }, [selectedPost]);
+
   if (!selectedPost) return null;
 
   return (

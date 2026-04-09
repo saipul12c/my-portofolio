@@ -9,6 +9,7 @@ import { classifyIntent, INTENT_TYPES } from '../utils/advancedIntentClassifier'
 import { ConversationContextManager, isFollowUp, extractTopics } from '../utils/conversationContext';
 import { DEFAULT_SETTINGS, CHATBOT_VERSION } from '../../../config.js';
 import { storageService } from '../utils/storageService';
+import { supabase } from '../../../../../../lib/supabaseClient';
 
 const DEFAULT_KB = {
   AI: {},
@@ -48,8 +49,12 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
         const { input, response } = event.detail || {};
         if (input && response) {
           setMessages((prev) => {
-            // Cari pesan bot yang placeholder/fallback
-            const idx = prev.findIndex(m => m.from === 'bot' && m.text.includes('Maaf, saya belum punya jawaban spesifik'));
+            // Cari pesan bot yang placeholder/fallback (cocokkan dengan output responseGenerator)
+            const idx = prev.findIndex(m => m.from === 'bot' && (
+              m.text.includes('Maaf, saya belum punya jawaban spesifik') || 
+              m.text.includes('Maaf, aku belum sepenuhnya mengerti') ||
+              m.text.includes('Hmm, ada sesuatu yang tidak jelas')
+            ));
             if (idx !== -1) {
               const updated = [...prev];
               updated[idx] = {
@@ -74,6 +79,28 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
       return () => window.removeEventListener('saipul_chat_gemini', handleGeminiResponse);
     }, []);
   const [kbState, setKbState] = useState(() => ({ ...DEFAULT_KB, ...(knowledgeBase || {}) }));
+  const [isAgentOnline, setIsAgentOnline] = useState(false);
+
+  // Track agent presence for live support handover
+  useEffect(() => {
+    // Gunakan channel 'online-users' sesuai dengan implementasi di Live.jsx
+    const channel = supabase.channel('online-users');
+
+    channel
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        // Ambil semua presence dan filter berdasarkan role admin/moderator
+        const onlineAgents = Object.values(state).flat().filter(
+          presence => presence.role === 'ADMIN' || presence.role === 'SUPER_ADMIN' || presence.role === 'MODERATOR'
+        );
+        setIsAgentOnline(onlineAgents.length > 0);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const [messages, setMessages] = useState(() => {
     try {
@@ -638,6 +665,15 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
       // generate reply early so we can create a typing placeholder that reveals progressively
       // Meneruskan intent yang sudah diklasifikasi untuk efisiensi
       const replyObj = getSmartReply(userText, settings, conversationContext, kbState, knowledgeStats, intent);
+      
+      // Handle Live CS suggestions based on agent availability
+      if (replyObj && replyObj.action === 'suggest_live_cs') {
+        if (!isAgentOnline) {
+          replyObj.text = `🎧 **Pusat Bantuan & Live CS**\n\nMaaf, saat ini belum ada agen yang online. Agen kami tersedia Senin–Jumat pukul 09:00–17:00.\n\nAnda tetap bisa meninggalkan pesan di **Room Diskusi** atau membaca dokumentasi kami.`;
+          replyObj.suggestedTopics = ['Tinggalkan Pesan', 'Buka Dokumentasi', 'Kembali ke Bot'];
+        }
+      }
+
       let replyText = typeof replyObj === 'string' ? replyObj : (replyObj && replyObj.text) || FRIENDLY_MESSAGES.responseError;
 
       // post-process reply text to improve presentation (clean up formatting, truncate preview)
@@ -808,7 +844,9 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
               _meta: Object.assign({}, (typeof replyObj === 'object' && replyObj ? {
                 source: replyObj.source || null,
                 confidence: typeof replyObj.confidence === 'number' ? replyObj.confidence : null
-              } : {}), replyMetaFromPost ? { post: replyMetaFromPost } : {})
+              } : {}), replyMetaFromPost ? { post: replyMetaFromPost } : {}),
+              action: (replyObj && replyObj.action) || null,
+              suggestedTopics: (replyObj && replyObj.suggestedTopics) || null
             };
 
             setMessages(prev => prev.map(m => m.id === placeholderId ? botMsg : m));
@@ -931,8 +969,9 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     return () => window.removeEventListener('saipul_chat_report', handleReport);
   }, [messages, conversationContext, settings, knowledgeStats]);
 
-  const handleSend = useCallback(() => {
-    const clean = sanitizeInput(input || '');
+  const handleSend = useCallback((overrideData = {}) => {
+    const textToProcess = (overrideData && typeof overrideData === 'object' && overrideData.text) ? overrideData.text : input;
+    const clean = sanitizeInput(textToProcess || '');
     if (!clean || !clean.trim()) return;
 
     // Enforce input rules: reject sensitive personal data in user input (use contextual detector)
@@ -968,6 +1007,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
       id: `msg_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
       from: "user",
       text: clean,
+      sentiment: (overrideData && overrideData.sentiment) || null,
       intent: classification || { type: 'statement', confidence: 0.6 },
       timestamp: new Date().toISOString(),
       type: "text"
@@ -1564,6 +1604,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     generateSessionSummary,
     recallPreviousQuestions,
     // expose last input type classification
-    lastInputType
+    lastInputType,
+    isAgentOnline
   };
 }

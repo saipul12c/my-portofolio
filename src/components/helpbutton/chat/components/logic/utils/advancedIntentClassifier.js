@@ -41,6 +41,7 @@ export const INTENT_TYPES = {
   // Meta
   CLARIFICATION: 'clarification',
   CORRECTION: 'correction',
+  LIVE_CS: 'live_cs',
   UNKNOWN: 'unknown'
 };
 
@@ -198,6 +199,14 @@ const INTENT_PATTERNS = {
       /\b(alternatif|pilihan|option|choice)\b/i
     ],
     confidence_boost: 0.15
+  },
+  [INTENT_TYPES.LIVE_CS]: {
+    patterns: [
+      /\b(cs|agent|agen|human|manusia|admin|live support|bantuan langsung|diskusi)\b/i,
+      /\b(hubungi|bicara|tanya|panggil)\s+(cs|agent|agen|admin|manusia)\b/i,
+      /^(tolong|panggilkan|sambungkan)\s+(cs|admin|agent|agen)\b/i
+    ],
+    confidence_boost: 0.2
   }
 };
 

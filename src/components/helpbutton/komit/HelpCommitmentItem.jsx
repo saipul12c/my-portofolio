@@ -1,6 +1,5 @@
 import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 import commitmentsData from "./data/commitments.json";
 import {
   Heart, Sparkles, HandHeart, Users, Globe, Lightbulb, Star,
@@ -8,8 +7,52 @@ import {
   Target, Shield, Zap, TrendingUp, Award, Clock, Globe2,
   Puzzle, RefreshCw, MessageSquare, BarChart, GitBranch,
   CheckCircle, BookOpen, Coins, GitMerge, Eye, Cpu, Map,
-  Feather, Cloud, ThumbsUp, Search, Filter, X
+  Feather, Cloud, ThumbsUp, Search, Filter, X,
+  Bot, Send, History
 } from "lucide-react";
+import askAI, { getAISuggestions, getCyclingSuggestions, getAIStatistics } from "../faq/AI/Bot";
+import { Link, useNavigate } from "react-router-dom";
+
+// Utility untuk menyimpan riwayat ke localStorage
+const HISTORY_KEY = 'ai_search_history';
+const HISTORY_MAX_ITEMS = 20;
+
+const saveToHistory = (query, answer = '', type = 'ai') => {
+  try {
+    const historyItem = {
+      id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+      query,
+      answer,
+      type,
+      timestamp: new Date().toISOString(),
+      page: window.location.pathname
+    };
+    const existingHistory = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    const filteredHistory = existingHistory.filter(item =>
+      item.query.toLowerCase() !== query.toLowerCase()
+    );
+    const newHistory = [historyItem, ...filteredHistory].slice(0, HISTORY_MAX_ITEMS);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(newHistory));
+    return newHistory;
+  } catch (error) {
+    console.error('Error saving to history:', error);
+    return [];
+  }
+};
+
+const getHistory = () => {
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  } catch (error) {
+    return [];
+  }
+};
+
+const colorVariants = [
+  "from-cyan-500 to-blue-500",
+  "from-purple-500 to-pink-500",
+  "from-amber-500 to-orange-500"
+];
 
 // Update iconMap untuk mendukung semua ikon
 const iconMap = {
@@ -83,6 +126,21 @@ export default function HelpCommitmentItem() {
   const observerRef = useRef(null);
   const containerRef = useRef(null);
 
+  // AI States
+  const [aiQuestion, setAiQuestion] = useState("");
+  const [aiAnswer, setAiAnswer] = useState("");
+  const [isLoadingAI, setIsLoadingAI] = useState(false);
+  const [showAiAnswer, setShowAiAnswer] = useState(false);
+  const [suggestionsList, setSuggestionsList] = useState(getAISuggestions());
+  const [suggestionIndex, setSuggestionIndex] = useState(0);
+  const [aiStats, setAiStats] = useState({ totalQuestions: 0, successRate: 0 });
+  const [searchHistory, setSearchHistory] = useState(getHistory());
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const [aiRelevance, setAiRelevance] = useState(0);
+
+  const suggestionIntervalRef = useRef(null);
+  const inputRef = useRef(null);
+
   // Update itemsPerPage saat window resize
   useEffect(() => {
     const handleResize = () => {
@@ -122,13 +180,13 @@ export default function HelpCommitmentItem() {
       setIsLoading(true);
       // Simulasi delay loading untuk data besar
       await new Promise(resolve => setTimeout(resolve, 300));
-      
+
       // Tambahkan slug ke setiap item jika belum ada
       const commitmentsWithSlug = (commitmentsData.commitments || []).map(item => ({
         ...item,
         slug: item.slug || createSlug(item.title)
       }));
-      
+
       setCommitments(commitmentsWithSlug);
       setIsLoading(false);
     };
@@ -168,7 +226,7 @@ export default function HelpCommitmentItem() {
     // Apply sorting
     result.sort((a, b) => {
       let aValue, bValue;
-      
+
       switch (sortBy) {
         case 'title':
           aValue = a.title.toLowerCase();
@@ -226,6 +284,87 @@ export default function HelpCommitmentItem() {
 
     return () => observer.disconnect();
   }, [currentPage, totalPages]);
+
+  // AI Logic
+  const handleAskAI = useCallback(async () => {
+    const q = (searchTerm || aiQuestion || "").trim();
+    if (!q || q.length < 3) {
+      alert("Silakan masukkan pertanyaan minimal 3 karakter");
+      inputRef.current?.focus();
+      return;
+    }
+
+    setIsLoadingAI(true);
+    setShowAiAnswer(true);
+    setAiQuestion(q);
+
+    try {
+      const result = await askAI(q, filteredCommitments);
+      setAiAnswer(result.text);
+      setAiRelevance(result.relevance);
+      const updatedHistory = saveToHistory(q, result.text, 'ai');
+      setSearchHistory(updatedHistory);
+
+      const stats = getAIStatistics();
+      setAiStats(stats);
+    } catch (error) {
+      setAiAnswer(`Maaf, terjadi kesalahan: ${error.message}. Silakan coba lagi.`);
+    } finally {
+      setIsLoadingAI(false);
+      setTimeout(() => {
+        document.getElementById("ai-answer-section")?.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+      }, 100);
+    }
+  }, [searchTerm, aiQuestion, filteredCommitments]);
+
+  const handleKeyPress = useCallback((e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleAskAI();
+    }
+  }, [handleAskAI]);
+
+  const handleQuickExample = useCallback((example) => {
+    setSearchTerm(example);
+    setTimeout(() => {
+      handleAskAI();
+    }, 100);
+  }, [handleAskAI]);
+
+  useEffect(() => {
+    const cycling = getCyclingSuggestions();
+    setSuggestionsList(cycling.list || getAISuggestions());
+    if (suggestionIntervalRef.current) clearInterval(suggestionIntervalRef.current);
+    suggestionIntervalRef.current = setInterval(() => {
+      setSuggestionIndex(i => (i + 1) % (cycling.list.length || 1));
+    }, cycling.interval || 3000);
+    return () => {
+      if (suggestionIntervalRef.current) clearInterval(suggestionIntervalRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    const stats = getAIStatistics();
+    setAiStats(stats);
+  }, []);
+
+  const quickExamples = useMemo(() => {
+    return suggestionsList.slice(0, 3).map((text, idx) => ({
+      text: text.length > 40 ? text.substring(0, 40) + "..." : text,
+      fullText: text,
+      color: colorVariants[idx % colorVariants.length]
+    }));
+  }, [suggestionsList]);
+
+  const recentHistory = useMemo(() => {
+    return searchHistory.slice(0, 2).map(item => ({
+      ...item,
+      displayText: item.query.length > 20 ? item.query.substring(0, 20) + "..." : item.query
+    }));
+  }, [searchHistory]);
 
   // Handlers
   const handleSearch = useCallback((e) => {
@@ -306,7 +445,7 @@ export default function HelpCommitmentItem() {
           <h3 className={`text-xl font-bold bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
             {item.title}
           </h3>
-          
+
           {item.category && (
             <span className="inline-block text-xs font-medium px-3 py-1 rounded-full bg-pink-100 dark:bg-pink-900/30 text-pink-800 dark:text-pink-300">
               {item.category}
@@ -328,9 +467,8 @@ export default function HelpCommitmentItem() {
             {item.short_desc}
           </p>
 
-          <p className={`text-gray-700 dark:text-gray-300 text-sm leading-relaxed ${
-            isExpanded ? '' : 'line-clamp-3'
-          }`}>
+          <p className={`text-gray-700 dark:text-gray-300 text-sm leading-relaxed ${isExpanded ? '' : 'line-clamp-3'
+            }`}>
             {item.desc}
           </p>
 
@@ -339,9 +477,9 @@ export default function HelpCommitmentItem() {
             <div className="space-y-2 pt-2">
               {item.key_points.slice(0, isExpanded ? 10 : 3).map((point, pointIndex) => (
                 <div key={pointIndex} className="flex items-start gap-2">
-                  <CheckCircle2 
-                    className={`flex-shrink-0 mt-0.5 ${gradient.replace('from-', 'text-').split(' ')[0]}`} 
-                    size={16} 
+                  <CheckCircle2
+                    className={`flex-shrink-0 mt-0.5 ${gradient.replace('from-', 'text-').split(' ')[0]}`}
+                    size={16}
                   />
                   <span className="text-gray-600 dark:text-gray-400 text-xs">
                     {point}
@@ -362,7 +500,7 @@ export default function HelpCommitmentItem() {
               Lihat Detail
               <ArrowRight size={14} />
             </motion.button>
-            
+
             <button
               onClick={() => handleCardExpand(item.id)}
               className="px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
@@ -429,25 +567,85 @@ export default function HelpCommitmentItem() {
       </motion.div>
 
       {/* Controls Section */}
-      <div className="max-w-6xl mx-auto mb-8 space-y-4">
-        {/* Search Bar */}
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-          <input
-            type="text"
-            placeholder="Cari komitmen berdasarkan judul, deskripsi, atau kategori..."
-            value={searchTerm}
-            onChange={handleSearch}
-            className="w-full pl-12 pr-4 py-3 bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-xl border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-          />
-          {searchTerm && (
+      <div className="max-w-6xl mx-auto mb-12 space-y-6">
+        {/* Enhanced AI Search Bar */}
+        <div className="relative group/search">
+          <div className="absolute inset-0 bg-gradient-to-r from-pink-500/10 to-purple-500/10 rounded-2xl blur-xl opacity-0 group-hover/search:opacity-100 transition-opacity duration-500" />
+          <div className="relative flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 z-10" size={22} />
+              <input
+                ref={inputRef}
+                type="text"
+                value={searchTerm}
+                onChange={handleSearch}
+                onKeyPress={handleKeyPress}
+                onFocus={() => setIsInputFocused(true)}
+                onBlur={() => setIsInputFocused(false)}
+                placeholder={!isInputFocused && suggestionsList[suggestionIndex] ? suggestionsList[suggestionIndex] : "Cari atau tanya AI tentang komitmen kami..."}
+                className="w-full pl-12 pr-12 py-4 bg-white/70 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500 transition-all duration-300 text-lg shadow-lg dark:shadow-pink-500/5"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors z-20"
+                >
+                  <X size={20} />
+                </button>
+              )}
+            </div>
+
             <button
-              onClick={() => setSearchTerm('')}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              onClick={handleAskAI}
+              disabled={(!searchTerm || !searchTerm.trim()) || isLoadingAI}
+              className={`flex items-center justify-center gap-3 px-8 py-4 rounded-2xl font-bold transition-all duration-300 min-w-[160px] ${(!searchTerm || !searchTerm.trim()) || isLoadingAI
+                ? "bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed border border-gray-300 dark:border-gray-700"
+                : "bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg shadow-pink-500/25 hover:shadow-pink-500/40 hover:scale-[1.02] active:scale-95"
+                }`}
             >
-              <X size={20} />
+              {isLoadingAI ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span>Memproses...</span>
+                </>
+              ) : (
+                <>
+                  <Bot className="w-5 h-5" />
+                  <span>Tanya AI</span>
+                </>
+              )}
             </button>
-          )}
+          </div>
+
+          {/* Quick Suggestions */}
+          <div className="mt-4 flex flex-wrap items-center gap-3 px-2">
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mr-2">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <span>Saran:</span>
+            </div>
+            {quickExamples.map((example, idx) => (
+              <button
+                key={idx}
+                onClick={() => handleQuickExample(example.fullText)}
+                className={`group relative overflow-hidden bg-gradient-to-r ${example.color} px-4 py-2 rounded-xl text-white font-medium text-xs transition-all duration-300 hover:scale-105 active:scale-95 shadow-md`}
+              >
+                <div className="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition-colors" />
+                <span className="relative flex items-center gap-2">
+                  <Lightbulb className="w-3 h-3" />
+                  {example.text}
+                </span>
+              </button>
+            ))}
+
+            {recentHistory.length > 0 && (
+              <div className="flex items-center gap-2 ml-auto">
+                <Link to="/help/faq/riwayat/ai" className="text-xs text-gray-400 hover:text-pink-500 flex items-center gap-1 transition-colors">
+                  <History className="w-3 h-3" />
+                  <span>Riwayat</span>
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Filters */}
@@ -519,11 +717,10 @@ export default function HelpCommitmentItem() {
                 <button
                   key={tag}
                   onClick={() => handleTagToggle(tag)}
-                  className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
-                    selectedTags.includes(tag)
+                  className={`px-3 py-1.5 text-sm rounded-full transition-colors ${selectedTags.includes(tag)
                       ? 'bg-pink-500 text-white'
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                  }`}
+                    }`}
                 >
                   {tag} {selectedTags.includes(tag) && '✓'}
                 </button>
@@ -539,16 +736,124 @@ export default function HelpCommitmentItem() {
 
         {/* Active Filters Info */}
         {(searchTerm || selectedCategory !== 'all' || selectedTags.length > 0) && (
-          <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-            <p className="text-sm text-blue-700 dark:text-blue-300">
-              <strong>Filter Aktif:</strong> 
-              {searchTerm && ` Pencarian: "${searchTerm}"`}
-              {selectedCategory !== 'all' && ` • Kategori: ${selectedCategory}`}
-              {selectedTags.length > 0 && ` • Tag: ${selectedTags.join(', ')}`}
+          <div className="p-3 bg-pink-50 dark:bg-pink-900/10 border border-pink-100 dark:border-pink-900/30 rounded-xl">
+            <p className="text-sm text-pink-700 dark:text-pink-300 flex items-center gap-2">
+              <Filter className="w-4 h-4" />
+              <span>
+                <strong>Filter Aktif:</strong>
+                {searchTerm && ` Pencarian: "${searchTerm}"`}
+                {selectedCategory !== 'all' && ` • Kategori: ${selectedCategory}`}
+                {selectedTags.length > 0 && ` • Tag: ${selectedTags.join(', ')}`}
+              </span>
             </p>
           </div>
         )}
       </div>
+
+      {/* AI Answer Section */}
+      <AnimatePresence>
+        {showAiAnswer && (
+          <motion.div
+            id="ai-answer-section"
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className="max-w-6xl mx-auto mb-12"
+          >
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#072521]/90 to-[#051a18]/95 backdrop-blur-2xl border border-emerald-500/30 shadow-2xl shadow-emerald-500/10">
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 md:p-8 bg-gradient-to-r from-emerald-500/20 to-teal-500/10 border-b border-emerald-500/20">
+                <div className="flex items-center gap-4">
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-emerald-500 rounded-xl blur-md opacity-50 group-hover:opacity-100 transition-opacity" />
+                    <div className="relative p-3 bg-emerald-500 rounded-xl">
+                      <Bot className="w-6 h-6 text-white" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-xl md:text-2xl font-bold text-emerald-400">Jawaban AI</h3>
+                    <p className="text-xs text-gray-400">Pencarian cerdas melalui basis data & FAQ</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <div 
+                    className="hidden sm:flex items-center gap-2 px-4 py-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-bold cursor-help whitespace-nowrap"
+                    title={`Jawaban ini memiliki ${aiRelevance}% relevansi dengan pertanyaan Anda.`}
+                  >
+                    <TrendingUp className="w-3.5 h-3.5" />
+                    Confidence: {aiRelevance}%
+                  </div>
+
+                  <button
+                    onClick={() => setShowAiAnswer(false)}
+                    className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Content body */}
+              <div className="p-6 md:p-8 space-y-8">
+                {isLoadingAI ? (
+                  <div className="py-12 flex flex-col items-center justify-center space-y-6">
+                    <div className="relative">
+                      <div className="w-16 h-16 border-4 border-emerald-500/10 border-t-emerald-500 rounded-full animate-spin" />
+                      <Bot className="absolute inset-0 m-auto w-6 h-6 text-emerald-400 animate-pulse" />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-emerald-400 font-bold text-lg">Menganalisis Pertanyaan...</p>
+                      <p className="text-gray-400 text-sm">Menelusuri FAQ dan komitmen kami untuk Anda</p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-sm text-gray-400">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full" />
+                        <span>Pertanyaan Anda:</span>
+                      </div>
+                      <div className="bg-white/5 border border-white/10 rounded-2xl p-5 text-gray-200 font-medium italic text-lg leading-relaxed">
+                        "{aiQuestion}"
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 text-sm text-gray-400">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                        <span>Jawaban AI:</span>
+                      </div>
+                      <div className="bg-emerald-500/5 dark:bg-black/40 border border-emerald-500/20 rounded-2xl p-6 md:p-8">
+                        <div className="text-white text-lg leading-relaxed whitespace-pre-line prose prose-invert max-w-none">
+                          {aiAnswer.split('\n').map((line, i) => (
+                            <p key={i} className="mb-4 last:mb-0">
+                              {line}
+                            </p>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="p-6 bg-black/40 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                  <span className="text-xs text-gray-500 font-medium tracking-wide uppercase">
+                    Dijawab oleh AI berdasarkan data Muhammad Syaiful Mukmin
+                  </span>
+                </div>
+                <div className="text-[10px] text-gray-600 font-mono tracking-tighter">
+                  SESSIONID: {Math.random().toString(36).substring(7).toUpperCase()}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Loading State */}
       {isLoading ? (
@@ -561,7 +866,7 @@ export default function HelpCommitmentItem() {
       ) : (
         <>
           {/* Commitment Cards Grid */}
-          <div 
+          <div
             ref={containerRef}
             className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative"
           >
@@ -577,7 +882,7 @@ export default function HelpCommitmentItem() {
                 Menampilkan {Math.min(startIndex + 1, filteredCommitments.length)} - {Math.min(endIndex, filteredCommitments.length)} dari {filteredCommitments.length} komitmen
                 {windowWidth < 768 ? ' (6 per halaman)' : ' (9 per halaman)'}
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
@@ -586,7 +891,7 @@ export default function HelpCommitmentItem() {
                 >
                   <ChevronLeft size={20} />
                 </button>
-                
+
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                   let pageNum;
                   if (totalPages <= 5) {
@@ -598,26 +903,25 @@ export default function HelpCommitmentItem() {
                   } else {
                     pageNum = currentPage - 2 + i;
                   }
-                  
+
                   return (
                     <button
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
-                      className={`px-4 py-2 rounded-lg transition-colors ${
-                        currentPage === pageNum
+                      className={`px-4 py-2 rounded-lg transition-colors ${currentPage === pageNum
                           ? 'bg-pink-500 text-white'
                           : 'bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
-                      }`}
+                        }`}
                     >
                       {pageNum}
                     </button>
                   );
                 })}
-                
+
                 {totalPages > 5 && (
                   <span className="px-2 text-gray-500">...</span>
                 )}
-                
+
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                   disabled={currentPage === totalPages}

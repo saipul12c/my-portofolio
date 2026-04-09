@@ -43,8 +43,8 @@ export default function SoftSkillsCardGrid({ filteredSkills, search = "", highli
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.4, delay: i * 0.03 }}
-              className={`relative p-6 rounded-3xl shadow-xl border border-gray-700 bg-gradient-to-br ${skill.cardGradient} hover:scale-105 hover:shadow-2xl transition-all cursor-pointer backdrop-blur-lg`}
+              transition={{ duration: 0.3, delay: Math.min(i * 0.02, 0.2) }}
+              className={`relative p-6 rounded-3xl shadow-lg border border-white/10 bg-gradient-to-br ${skill.cardGradient} hover:scale-[1.03] hover:shadow-2xl transition-all duration-300 cursor-pointer backdrop-blur-md`}
               onClick={() => skill.id ? navigate(`/SoftSkills/${skill.id}`) : undefined}
             >
               {/* label dan detail skill */}

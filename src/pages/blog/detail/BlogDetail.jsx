@@ -41,10 +41,20 @@ export default function BlogDetail() {
     return posts.map(r => ({ post: r, reason: post.relatedPosts?.includes(r.slug) ? 'Direkomendasikan' : 'Terkait' }));
   }, [post, relatedLimit]);
 
-  // Scroll ke atas saat artikel berubah
+  // Scroll ke atas saat artikel berubah & Track topik untuk AI
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [slug]);
+    
+    // --- TRACK TOPIK UNTUK AI ---
+    if (post) {
+      const topicData = {
+        name: post.category || (post.tags && post.tags[0]) || "Umum",
+        title: post.title,
+        timestamp: Date.now()
+      };
+      localStorage.setItem('saipul_ai_last_topic', JSON.stringify(topicData));
+    }
+  }, [slug, post]);
 
   // Handle scroll untuk tombol back to top
   useEffect(() => {

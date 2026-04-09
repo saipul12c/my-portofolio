@@ -1,5 +1,6 @@
 import React, { memo, useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   MdEmail, MdShare, MdQrCode, MdHome, MdInfo, MdFolderOpen, 
   MdMailOutline, MdContentCopy, MdDownload, MdChat, MdForum, MdOpenInNew, MdVerified 
@@ -90,6 +91,7 @@ const MobileLayout = memo(({
   setActiveTab,
   stats,
   certificates = [],
+  projects = [],
   openCertModal
 }) => {
   const navigate = useNavigate();
@@ -99,6 +101,22 @@ const MobileLayout = memo(({
   const [isGenerating, setIsGenerating] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
   const [recentChats, setRecentChats] = useState([]);
+  const [specialtyIndex, setSpecialtyIndex] = useState(0);
+
+  const specialties = useMemo(() => [
+    "Developer",
+    "Freelancer",
+    "Problem Solver",
+    "Tech Enthusiast",
+    "UI/UX Learner"
+  ], []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSpecialtyIndex((prev) => (prev + 1) % specialties.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [specialties.length]);
 
   // Fetch recent Live Discussion messages & Setup Realtime
   useEffect(() => {
@@ -286,7 +304,28 @@ const MobileLayout = memo(({
             Muhammad Syaiful Mukmin
             <MdVerified className="w-5 h-5 text-blue-500 fill-blue-500" />
           </h1>
-          <p className="text-gray-400 mb-6">Digital Creator & Developer</p>
+          <p className="text-gray-400 mb-6 flex items-center justify-center gap-1.5 h-6">
+            <span>Digital Creator &</span>
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={specialtyIndex}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                transition={{ duration: 0.5 }}
+                className="text-yellow-400 font-medium"
+              >
+                {specialties[specialtyIndex]}
+              </motion.span>
+            </AnimatePresence>
+          </p>
+
+          {/* Short Bio - Mobile Only */}
+          <div className="max-w-xs mx-auto mb-8 px-4">
+            <p className="text-gray-500 text-xs leading-relaxed italic">
+              "Seorang EduTech Enthusiast yang berdedikasi menciptakan solusi inovatif melalui konten digital & pengembangan perangkat lunak."
+            </p>
+          </div>
           
           {/* Email card */}
           <div className="bg-gray-900/50 backdrop-blur-sm rounded-2xl p-4 border border-gray-800 max-w-md mx-auto">
@@ -315,9 +354,9 @@ const MobileLayout = memo(({
           </div>
         </div>
 
-        {/* Tabs - Symmetric Grid Layout (4 columns now: Links, Chat, Stats, Website) */}
-        <div className="grid grid-cols-4 gap-1 mb-8 bg-gray-900/40 backdrop-blur-md rounded-2xl p-1.5 max-w-md mx-auto border border-gray-800/50 shadow-lg">
-          {['social', 'chat', 'setup', 'website'].map((tab) => (
+        {/* Tabs - Symmetric Grid Layout (5 columns: Links, Chat, Stats, Projek, Website) */}
+        <div className="grid grid-cols-5 gap-1 mb-8 bg-gray-900/40 backdrop-blur-md rounded-2xl p-1.5 max-w-md mx-auto border border-gray-800/50 shadow-lg">
+          {['social', 'chat', 'setup', 'projects', 'website'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -327,7 +366,7 @@ const MobileLayout = memo(({
                   : 'text-gray-400 hover:text-white hover:bg-gray-800/30'
               }`}
             >
-              {tab === 'social' ? 'Links' : tab === 'setup' ? 'Stats' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+              {tab === 'social' ? 'Links' : tab === 'setup' ? 'Stats' : tab === 'projects' ? 'Projek' : tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
           ))}
         </div>
@@ -335,16 +374,18 @@ const MobileLayout = memo(({
         {/* Content based on active tab */}
         <div className="max-w-md mx-auto">
           {activeTab === 'social' && (
-            <div className="space-y-3">
-              {Object.entries(platformData).map(([key, data]) => (
-                <MobilePlatformCard
-                  key={key}
-                  platform={key.charAt(0).toUpperCase() + key.slice(1)}
-                  icon={data.icon}
-                  username={data.username}
-                  url={data.url}
-                />
-              ))}
+            <>
+              <div className="grid grid-cols-2 gap-2">
+                {Object.entries(platformData).map(([key, data]) => (
+                  <MobilePlatformCard
+                    key={key}
+                    platform={key.charAt(0).toUpperCase() + key.slice(1)}
+                    icon={data.icon}
+                    username={data.username}
+                    url={data.url}
+                  />
+                ))}
+              </div>
               
               {/* About Syaiful Mukmin Section */}
               <div className="mt-6 pt-6 border-t border-gray-700">
@@ -404,6 +445,53 @@ const MobileLayout = memo(({
                     );
                   })}
                 </div>
+              </div>
+            </>
+          )}
+
+          {activeTab === 'projects' && (
+            <div className="space-y-4">
+              <div className="bg-gray-900/50 backdrop-blur-sm rounded-2xl p-5 border border-gray-800">
+                <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+                  <MdFolderOpen className="w-4 h-4 text-purple-400" />
+                  Featured Projects
+                </h3>
+                <div className="grid grid-cols-1 gap-3">
+                  {projects && projects.slice(0, 3).map((project, i) => (
+                    <div 
+                      key={project.id || i}
+                      onClick={() => navigate(`/project-detail/${project.id || project.slug}`)}
+                      className="group bg-gray-800/30 p-3 rounded-xl border border-gray-700/50 transition-all active:scale-95 flex gap-3"
+                    >
+                      <div className="w-16 h-16 rounded-lg bg-gray-700 overflow-hidden flex-shrink-0">
+                        {project.image ? (
+                          <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gray-700">
+                             <MdFolderOpen className="w-6 h-6 text-gray-500" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-xs font-bold text-white truncate mb-1 group-hover:text-purple-400 transition-colors">
+                          {project.title}
+                        </h4>
+                        <p className="text-[10px] text-gray-500 line-clamp-2 leading-relaxed">
+                          {project.description}
+                        </p>
+                      </div>
+                      <div className="flex items-center">
+                        <MdOpenInNew className="w-4 h-4 text-gray-600" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  onClick={() => navigate("/projects")}
+                  className="w-full mt-4 py-2.5 bg-gray-800/30 hover:bg-gray-800/50 rounded-xl text-xs text-gray-400 hover:text-white transition-all border border-gray-700/50 hover:border-gray-600 font-medium"
+                >
+                  Lihat Semua Projek →
+                </button>
               </div>
             </div>
           )}

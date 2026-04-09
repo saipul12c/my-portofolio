@@ -6,6 +6,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { ChatbotWindow } from "./helpbutton/chat/components/ChatbotWindow";
 import { ChatbotSettings } from "./helpbutton/chat/components/ChatbotSettings";
 import { useRecaptcha } from "../context/useRecaptcha";
+import { useNavigate } from "react-router-dom";
 
 function ChatbotErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -31,6 +32,20 @@ export default function HelpButton() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [showMainTooltip, setShowMainTooltip] = useState(false);
   const { isRecaptchaVisible } = useRecaptcha();
+  const navigate = useNavigate();
+
+  // Listen for navigation events from chatbot components
+  useEffect(() => {
+    const handleNavigate = (e) => {
+      const path = e?.detail?.path;
+      if (path) {
+        navigate(path);
+        setIsChatOpen(false); // Otomatis tutup chat saat navigasi
+      }
+    };
+    window.addEventListener('saipul_navigate', handleNavigate);
+    return () => window.removeEventListener('saipul_navigate', handleNavigate);
+  }, [navigate]);
 
   // Ubah ke false jika fitur maintenance sudah selesai
   const isMaintenance = false;
@@ -69,22 +84,7 @@ export default function HelpButton() {
 
   const closeSettings = () => setIsSettingsOpen(false);
 
-  // ✅ Logika untuk menyimpan percakapan chatbot di localStorage
-  useEffect(() => {
-    if (isChatOpen) {
-      const chatObserver = new MutationObserver(() => {
-        const chatContent = document.querySelector(".chat-window").innerText;
-        localStorage.setItem("chatHistory", chatContent);
-      });
 
-      const chatWindow = document.querySelector(".chat-window");
-      if (chatWindow) {
-        chatObserver.observe(chatWindow, { childList: true, subtree: true });
-      }
-
-      return () => chatObserver.disconnect();
-    }
-  }, [isChatOpen]);
 
   return (
     <div
@@ -158,7 +158,6 @@ export default function HelpButton() {
           style={{ 
             bottom: `calc(${isRecaptchaVisible ? '110px' : '20px'} + 5rem)`,
             right: '3rem',
-            transformOrigin: "bottom right" 
           }}
         >
           <ErrorBoundary FallbackComponent={ChatbotErrorFallback}>
@@ -175,7 +174,7 @@ export default function HelpButton() {
 
       {/* Popup Chatbot - TERPISAH dari menu bantuan */}
       {isChatOpen && (
-        <div className="fixed bottom-24 right-80 z-[10000]">
+        <div className="z-[10000]">
           <ChatbotWindow
             onClose={closeChat}
             onOpenSettings={openSettings}
@@ -185,7 +184,7 @@ export default function HelpButton() {
 
       {/* Popup Settings */}
       {isSettingsOpen && (
-        <div className="fixed bottom-24 right-80 z-[10000]">
+        <div className="z-[10000]">
           <ChatbotSettings onClose={closeSettings} />
         </div>
       )}

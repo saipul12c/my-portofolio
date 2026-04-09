@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
-import { ThumbsUp, ThumbsDown, RefreshCw, Flag, Trash, Copy, Check, Volume2, VolumeX } from "lucide-react";
+import { ThumbsUp, ThumbsDown, RefreshCw, Flag, Trash, Copy, Check, Volume2, VolumeX, MessageSquare, User, ExternalLink } from "lucide-react";
 import ReportModal from "./ReportModal";
 import { useState, useEffect } from "react";
 import { MultiLoadingAnimation } from "./LoadingAnimations";
+import { LIVE_CS_PATH } from "../../../config.js";
 
 // escape potentially unsafe characters (extra safety, React already escapes by default)
 function escapeHtml(unsafe) {
@@ -15,7 +16,7 @@ function escapeHtml(unsafe) {
     .replace(/'/g, '&#039;');
 }
 
-export function ChatMessage({ message, handleQuickAction }) {
+export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
   const isUser = message.from === "user";
   const [reportCount, setReportCount] = useState(0);
   const [reportSeverity, setReportSeverity] = useState(null);
@@ -281,6 +282,38 @@ export function ChatMessage({ message, handleQuickAction }) {
                   minute: "2-digit",
                 }) : ""}
         </span>
+        
+        {/* Action Buttons for items like Live CS */}
+        {message && message.action === 'suggest_live_cs' && (
+          <div className="mt-4 pt-3 border-t border-white/10 flex flex-col gap-2">
+            <button
+              onClick={() => {
+                // Gunakan event navigasi kustom agar tidak reload halaman (SPA Navigation)
+                window.dispatchEvent(new CustomEvent('saipul_navigate', { 
+                  detail: { path: LIVE_CS_PATH } 
+                }));
+              }}
+              className={`w-full py-2.5 px-4 rounded-lg font-semibold text-sm transition-all shadow-lg active:scale-[0.98] flex items-center justify-center gap-2 ${
+                isAgentOnline 
+                ? "bg-cyan-500 hover:bg-cyan-600 text-white shadow-cyan-500/20" 
+                : "bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/20"
+              }`}
+            >
+              {isAgentOnline ? (
+                <><User size={16} /> Hubungi Agen Sekarang</>
+              ) : (
+                <><MessageSquare size={16} /> Tinggalkan Pesan di Room</>
+              )}
+            </button>
+            <div className="flex items-center justify-between px-1">
+              <p className="text-[9px] opacity-70 italic">Senin–Jumat: 09:00–17:00</p>
+              <div className="flex items-center gap-1">
+                <div className={`w-1.5 h-1.5 rounded-full ${isAgentOnline ? 'bg-green-400 animate-pulse' : 'bg-gray-500'}`} />
+                <span className="text-[9px] font-medium opacity-80">{isAgentOnline ? 'Agen Online' : 'Agen Offline'}</span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Quick Actions */}
         <div className="flex gap-2 mt-2">

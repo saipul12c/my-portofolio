@@ -5,7 +5,7 @@
 CREATE TABLE IF NOT EXISTS public.users (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
-  nama TEXT UNIQUE NOT NULL,
+  nama TEXT NOT NULL,
   role TEXT DEFAULT 'USER' NOT NULL,
   status TEXT DEFAULT 'aktif' NOT NULL, -- Standardized: 'aktif'
   message_count INTEGER DEFAULT 0 NOT NULL,
@@ -39,6 +39,13 @@ CREATE TABLE IF NOT EXISTS public.messages (
   timestamp BIGINT NOT NULL,
   CONSTRAINT content_length_check CHECK (char_length(content) <= 3000)
 );
+
+-- Optimization: Add indexes for faster message lookups and stats
+CREATE INDEX IF NOT EXISTS idx_messages_user_id ON public.messages(user_id);
+CREATE INDEX IF NOT EXISTS idx_messages_timestamp ON public.messages(timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_messages_created_at ON public.messages(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_users_is_shadowbanned ON public.users(is_shadowbanned);
+CREATE INDEX IF NOT EXISTS idx_users_status ON public.users(status);
 
 -- 3. Tabel Achievements
 CREATE TABLE IF NOT EXISTS public.achievements (
@@ -149,6 +156,13 @@ ALTER TABLE public.system_config ENABLE ROW LEVEL SECURITY;
 
 -- 6. Kebijakan Keamanan (Policies)
 
+-- Users Policies
+DROP POLICY IF EXISTS "Users can view own full profile" ON public.users;
+CREATE POLICY "Users can view own full profile" ON public.users FOR SELECT USING (auth.uid() = id);
+
+DROP POLICY IF EXISTS "Public can view basic profiles" ON public.users;
+CREATE POLICY "Public can view basic profiles" ON public.users FOR SELECT USING (true);
+
 -- System Config Policies
 DROP POLICY IF EXISTS "Anyone can view config" ON public.system_config;
 CREATE POLICY "Anyone can view config" ON public.system_config FOR SELECT USING (true);
@@ -190,8 +204,6 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- Profiles: Mask email for regular users
-DROP POLICY IF EXISTS "Public profile view" ON public.users;
-CREATE POLICY "Users can view own full profile" ON public.users FOR SELECT USING (auth.uid() = id);
 -- Note: All public lookups should use the 'profiles' VIEW below which handles email privacy.
 -- Note: Email masking is implemented via column-level security (Grants) or Views.
 -- For RLS row-level, we combine it with data masking logic in the Select policy if possible, 
@@ -588,10 +600,10 @@ BEGIN
         RAISE EXCEPTION 'Akses ditolak: Operasi ini memerlukan hak akses administratif.';
     END IF;
 
-    SELECT count(*) INTO total_users FROM public.users;
-    SELECT count(*) INTO active_users FROM public.users WHERE status = 'aktif';
-    SELECT count(*) INTO total_messages FROM public.messages;
-    SELECT count(*) INTO today_messages FROM public.messages WHERE created_at >= CURRENT_DATE;
+    SELECT count(*)::INTEGER INTO total_users FROM public.users;
+    SELECT count(*)::INTEGER INTO active_users FROM public.users WHERE status = 'aktif';
+    SELECT count(*)::INTEGER INTO total_messages FROM public.messages;
+    SELECT count(*)::INTEGER INTO today_messages FROM public.messages WHERE created_at >= CURRENT_DATE;
     
     RETURN json_build_object(
         'totalUsers', total_users,
@@ -610,12 +622,13 @@ REVOKE ALL ON ALL FUNCTIONS IN SCHEMA public FROM anon, authenticated;
 GRANT USAGE ON SCHEMA public TO anon, authenticated;
 
 -- Tables
-GRANT SELECT ON public.users TO authenticated;
+GRANT SELECT ON public.users TO authenticated, anon;
 GRANT SELECT ON public.messages TO authenticated, anon;
 GRANT INSERT ON public.messages TO authenticated;
 GRANT SELECT ON public.achievements TO authenticated, anon;
 GRANT SELECT ON public.tags TO authenticated, anon;
 GRANT INSERT ON public.tags TO authenticated;
+GRANT SELECT ON public.system_config TO authenticated, anon;
 
 -- Functions
 GRANT EXECUTE ON FUNCTION public.get_dashboard_stats TO authenticated, anon; -- RPC can be called but interior logic checks Role Level
