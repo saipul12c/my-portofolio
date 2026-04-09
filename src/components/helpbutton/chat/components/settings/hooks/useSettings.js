@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { DEFAULT_SETTINGS } from '../../../config.js';
 import { SETTINGS_KEY } from '../../logic/utils/fileProcessor';
 import { storageService } from '../../logic/utils/storageService';
@@ -47,7 +47,7 @@ export function useSettings(knowledgeBase = {}, initialTab = null) {
     }
   }, [settings.theme, settings.accent]);
 
-  const safeKnowledgeBase = {
+  const safeKnowledgeBase = useMemo(() => ({
     AI: {},
     hobbies: [],
     cards: [],
@@ -58,14 +58,14 @@ export function useSettings(knowledgeBase = {}, initialTab = null) {
     softskills: [],
     uploadedData: [],
     fileMetadata: [],
-    ...knowledgeBase
-  };
+    ...(knowledgeBase || {})
+  }), [knowledgeBase]);
 
-  const totalKBCategories = Object.keys(safeKnowledgeBase).filter(key => {
+  const totalKBCategories = useMemo(() => Object.keys(safeKnowledgeBase).filter(key => {
     const value = safeKnowledgeBase[key];
     return Array.isArray(value) ? value.length > 0 :
       typeof value === 'object' && value !== null ? Object.keys(value).length > 0 : false;
-  }).length;
+  }).length, [safeKnowledgeBase]);
 
   useEffect(() => {
     try {
@@ -78,33 +78,36 @@ export function useSettings(knowledgeBase = {}, initialTab = null) {
     }
   }, []);
 
-  const handleSave = (key, value) => {
-    let newSettings;
-    if (typeof key === 'object' && key !== null) {
-      newSettings = { ...settings, ...key };
-    } else {
-      newSettings = { ...settings, [key]: value };
-    }
-    setSettings(newSettings);
-    try {
-      storageService.set(SETTINGS_KEY, newSettings);
-      window.dispatchEvent(new Event("storage"));
-
-      if (typeof key === 'string') {
-        window.dispatchEvent(new CustomEvent('saipul_settings_updated', {
-          detail: { key, value }
-        }));
+  const handleSave = useCallback((key, value) => {
+    setSettings(prev => {
+      let newSettings;
+      if (typeof key === 'object' && key !== null) {
+        newSettings = { ...prev, ...key };
       } else {
-        window.dispatchEvent(new CustomEvent('saipul_settings_updated', {
-          detail: { settings: newSettings }
-        }));
+        newSettings = { ...prev, [key]: value };
       }
-    } catch (e) {
-      console.error("Error saving settings:", e);
-    }
-  };
 
-  const handleReset = () => {
+      try {
+        storageService.set(SETTINGS_KEY, newSettings);
+        window.dispatchEvent(new Event("storage"));
+
+        if (typeof key === 'string') {
+          window.dispatchEvent(new CustomEvent('saipul_settings_updated', {
+            detail: { key, value }
+          }));
+        } else {
+          window.dispatchEvent(new CustomEvent('saipul_settings_updated', {
+            detail: { settings: newSettings }
+          }));
+        }
+      } catch (e) {
+        console.error("Error saving settings:", e);
+      }
+      return newSettings;
+    });
+  }, []);
+
+  const handleReset = useCallback(() => {
     setSettings(prev => ({ ...DEFAULT_SETTINGS, activeTab: prev.activeTab }));
     try {
       storageService.set(SETTINGS_KEY, DEFAULT_SETTINGS);
@@ -112,7 +115,7 @@ export function useSettings(knowledgeBase = {}, initialTab = null) {
     } catch (e) {
       console.error("Error resetting settings:", e);
     }
-  };
+  }, []);
 
   return {
     settings,

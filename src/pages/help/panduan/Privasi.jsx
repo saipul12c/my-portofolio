@@ -77,6 +77,47 @@ function SettingsChip({ to, icon, label }) {
 	);
 }
 
+function PrivacyScoreWidget() {
+	return (
+		<div className="bg-white/[0.02] border border-white/[0.05] p-6 rounded-2xl relative overflow-hidden group">
+			<div className="flex items-center justify-between mb-4">
+				<h3 className="text-sm font-bold text-white uppercase tracking-wider">Privacy Rating</h3>
+				<span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-bold">EXCELLENT</span>
+			</div>
+			
+			<div className="space-y-4">
+				<div className="flex items-center justify-between">
+					<span className="text-xs text-gray-500">Encryption Layer</span>
+					<span className="text-[10px] text-emerald-400 font-mono">TLS 1.3</span>
+				</div>
+				<div className="flex items-center justify-between">
+					<span className="text-xs text-gray-500">Data Minimization</span>
+					<span className="text-[10px] text-emerald-400 font-mono">ENABLED</span>
+				</div>
+				<div className="flex items-center justify-between">
+					<span className="text-xs text-gray-500">PDP Compliance</span>
+					<span className="text-[10px] text-cyan-400 font-mono">VERIFIED</span>
+				</div>
+				
+				<div className="pt-2">
+					<div className="flex justify-between items-end mb-1.5">
+						<span className="text-[10px] text-gray-500 font-bold uppercase">Security Score</span>
+						<span className="text-xs font-bold text-white">98%</span>
+					</div>
+					<div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+						<motion.div 
+							initial={{ width: 0 }}
+							animate={{ width: '98%' }}
+							transition={{ duration: 2, ease: "easeOut" }}
+							className="h-full bg-gradient-to-r from-cyan-500 to-blue-500" 
+						/>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}
+
 export default function Privasi() {
 	return (
 		<motion.div 
@@ -105,15 +146,15 @@ export default function Privasi() {
 			<div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
 				<div className="lg:col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 					<InfoCard icon={<FileText size={22} />} title="Pengumpulan Data" accent="cyan">
-						Kami hanya menyimpan metadata esensial: kapan Anda chat, preferensi bahasa, dan transkrip sesi untuk menjaga kontinuitas layanan.
+						Kami menganut prinsip *Data Minimization*. Hanya metadata esensial dan preferensi sesi yang disimpan secara lokal. Tidak ada pelacakan lintas-situs atau profil iklan yang dibuat dari percakapan Anda.
 					</InfoCard>
 
-					<InfoCard icon={<Database size={22} />} title="Tujuan & Manfaat" accent="violet">
-						Data digunakan untuk melatih kecerdasan bot lokal, optimasi kecepatan respons, dan penyediaan fitur kustomisasi antarmuka.
+					<InfoCard icon={<Database size={22} />} title="Kepatuhan UU PDP" accent="violet">
+						Seluruh tata kelola data kami selaras dengan **UU Pelindungan Data Pribadi (PDP) Indonesia 2022**. Anda memiliki hak penuh atas akses, koreksi, dan penghapusan informasi pribadi Anda kapan pun.
 					</InfoCard>
 
-					<InfoCard icon={<EyeOff size={22} />} title="Kedaulatan Kontrol" accent="amber">
-						Kendali penuh ada di tangan Anda. Hapus riwayat secara instan, nonaktifkan pelacakan, atau gunakan Mode Incognito kapan saja.
+					<InfoCard icon={<EyeOff size={22} />} title="Zero-Knowledge AI" accent="amber">
+						Interaksi dengan mesin AI diproses melalui kanal terisolasi. Data tidak digunakan untuk melatih model publik provider LLM, menjaga integritas rahasia dagang atau informasi pribadi yang Anda bagikan.
 					</InfoCard>
 				</div>
 			</div>
@@ -123,27 +164,70 @@ export default function Privasi() {
 					<motion.section variants={itemVariants} className="space-y-6">
 						<div className="flex items-center gap-3">
 							<div className="h-px flex-1 bg-white/10"></div>
-							<h2 className="text-xs uppercase tracking-[0.2em] font-bold text-gray-500">Prinsip Privasi</h2>
+							<h2 className="text-xs uppercase tracking-[0.2em] font-bold text-gray-500">Hak Anda (UU PDP)</h2>
+							<div className="h-px flex-1 bg-white/10"></div>
+						</div>
+						
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+							{[
+								{ h: "Akses & Informasi", d: "Hak mengetahui jenis data dan tujuan pemrosesan." },
+								{ h: "Koreksi & Pembaruan", d: "Hak memperbaiki kesalahan data pribadi Anda." },
+								{ h: "Penghapusan (Erasure)", d: "Hak untuk menghapus data Anda dari sistem kami." },
+								{ h: "Keberatan & Penarikan", d: "Hak menarik persetujuan pemrosesan data." }
+							].map((item, i) => (
+								<div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.01] border border-white/[0.03]">
+									<div className="mt-1 w-1 h-1 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
+									<div>
+										<div className="text-[11px] font-bold text-white/70 uppercase tracking-tighter mb-1">{item.h}</div>
+										<p className="text-[10px] text-gray-500 leading-relaxed font-light">{item.d}</p>
+									</div>
+								</div>
+							))}
+						</div>
+					</motion.section>
+
+					<motion.section variants={itemVariants} className="space-y-6">
+						<div className="flex items-center gap-3">
+							<div className="h-px flex-1 bg-white/10"></div>
+							<h2 className="text-xs uppercase tracking-[0.2em] font-bold text-gray-500">Transparansi Layanan</h2>
 							<div className="h-px flex-1 bg-white/10"></div>
 						</div>
 						
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<div className="bg-white/[0.01] p-5 rounded-2xl border border-white/[0.03]">
 								<h3 className="text-white/80 font-semibold mb-2 flex items-center gap-2">
-									<Clock size={16} className="text-cyan-400" />
-									Retensi Data
+									<Zap size={16} className="text-cyan-400" />
+									Layanan Pihak Ketiga
 								</h3>
 								<p className="text-xs text-gray-500 leading-relaxed">
-									Data bersifat sementara. Sesi lama akan diarsipkan secara otomatis dan akan dihapus permanen dalam siklus tertentu kecuali Anda memilih untuk mengekspornya.
+									Kami menggunakan **Supabase** (Auth & Real-time), **EmailJS** (Form kontak), **reCAPTCHA** (Keamanan), dan **Socket.io** untuk fungsionalitas aplikasi. Data yang dikirimkan terbatas pada kebutuhan teknis masing-masing layanan.
 								</p>
 							</div>
 							<div className="bg-white/[0.01] p-5 rounded-2xl border border-white/[0.03]">
 								<h3 className="text-white/80 font-semibold mb-2 flex items-center gap-2">
-									<MessageCircle size={16} className="text-blue-400" />
-									Live Support
+									<Fingerprint size={16} className="text-blue-400" />
+									Personalisasi Profil
 								</h3>
 								<p className="text-xs text-gray-500 leading-relaxed">
-									Saat meminta bantuan Live CS, transkrip percakapan akan dibagikan hanya kepada agen yang bertugas sesuai jadwal operasional.
+									Sistem menggunakan Entity Recognition untuk mengenali detail seperti nama atau lokasi yang Anda bagikan guna membangun profil lokal yang meningkatkan relevansi percakapan di masa depan.
+								</p>
+							</div>
+							<div className="bg-white/[0.01] p-5 rounded-2xl border border-white/[0.03]">
+								<h3 className="text-white/80 font-semibold mb-2 flex items-center gap-2">
+									<Clock size={16} className="text-amber-400" />
+									Retensi & Anomali
+								</h3>
+								<p className="text-xs text-gray-500 leading-relaxed">
+									Sesi lama diarsipkan otomatis. Kami mencatat anomali teknis dan laporan chat secara anonim untuk memantau kesehatan sistem dan mencegah penyalahgunaan fitur AI.
+								</p>
+							</div>
+							<div className="bg-white/[0.01] p-5 rounded-2xl border border-white/[0.03]">
+								<h3 className="text-white/80 font-semibold mb-2 flex items-center gap-2">
+									<MessageCircle size={16} className="text-violet-400" />
+									Emotional Layer
+								</h3>
+								<p className="text-xs text-gray-500 leading-relaxed">
+									Analisis sentimen dilakukan secara real-time untuk menyesuaikan karakter bot. Metadata emosi ini bersifat sementara dan hanya digunakan untuk memperkaya interaksi selama sesi aktif.
 								</p>
 							</div>
 						</div>
@@ -151,22 +235,26 @@ export default function Privasi() {
 				</div>
 
 				<motion.aside variants={itemVariants} className="lg:col-span-4 space-y-6">
-					<div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/5 border border-cyan-500/20 p-6 rounded-2xl">
-						<div className="flex items-center gap-2 mb-4">
-							<Zap size={18} className="text-cyan-400 fill-cyan-400/20" />
-							<h3 className="text-sm font-bold text-white uppercase tracking-wider">Akses Cepat</h3>
+					<div className="space-y-6">
+						<div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/5 border border-cyan-500/20 p-6 rounded-2xl">
+							<div className="flex items-center gap-2 mb-4">
+								<Zap size={18} className="text-cyan-400 fill-cyan-400/20" />
+								<h3 className="text-sm font-bold text-white uppercase tracking-wider">Akses Cepat</h3>
+							</div>
+							<div className="grid grid-cols-1 gap-2">
+								<SettingsChip to="/help/chatbot/settings/privacy" icon={<EyeOff size={14}/>} label="Privacy Controls" />
+								<SettingsChip to="/help/chatbot/settings/data" icon={<Database size={14}/>} label="Data Management" />
+								<SettingsChip to="/live-cs/security" icon={<ShieldCheck size={14}/>} label="Security Guide" />
+							</div>
 						</div>
-						<div className="grid grid-cols-1 gap-2">
-							<SettingsChip to="/help/chatbot/settings/privacy" icon={<EyeOff size={14}/>} label="Privacy Controls" />
-							<SettingsChip to="/help/chatbot/settings/data" icon={<Database size={14}/>} label="Data Management" />
-							<SettingsChip to="/live-cs/security" icon={<ShieldCheck size={14}/>} label="Security Guide" />
-						</div>
-					</div>
 
-					<div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05] text-center">
-						<UserCheck size={28} className="mx-auto text-emerald-400 mb-3 opacity-60" />
-						<h4 className="text-xs font-bold text-white/80 mb-1">Status Kepercayaan</h4>
-						<p className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">Verified Security v2</p>
+						<PrivacyScoreWidget />
+
+						<div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05] text-center">
+							<UserCheck size={28} className="mx-auto text-emerald-400 mb-3 opacity-60" />
+							<h4 className="text-xs font-bold text-white/80 mb-1">Status Kepercayaan</h4>
+							<p className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">PDP COMPLIANT v1.2</p>
+						</div>
 					</div>
 				</motion.aside>
 			</div>

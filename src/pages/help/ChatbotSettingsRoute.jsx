@@ -19,13 +19,11 @@ export default function ChatbotSettingsRoute() {
   const navigate = useNavigate();
 
   const handleClose = () => {
-    // Navigate back to home or previous non-settings page
-    // Since we now use replace: true inside settings, 
-    // navigate(-1) will take us back to where we started before opening settings
-    try {
+    // Navigate back to where we came from, or to AI Docs as a fallback
+    if (window.history.length > 1) {
       navigate(-1);
-    } catch (e) {
-      navigate("/", { replace: true });
+    } else {
+      navigate("/help/docs/ai", { replace: true });
     }
   };
 

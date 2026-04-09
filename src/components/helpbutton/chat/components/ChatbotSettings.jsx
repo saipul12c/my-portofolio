@@ -6,6 +6,21 @@ import { SettingsContent } from "./settings/conten/SettingsContent";
 import { useSettings } from "./settings/hooks/useSettings";
 import { useFileManagement } from "./settings/hooks/useFileManagement";
 
+// Enhanced settings validation dari file kedua
+const validateSettings = (settings) => {
+  if (settings.maxFileSize <= 0) {
+    console.warn("Invalid maxFileSize, resetting to default (10MB)");
+    settings.maxFileSize = 10;
+  }
+
+  if (!Array.isArray(settings.allowedFileTypes) || settings.allowedFileTypes.length === 0) {
+    console.warn("Invalid allowedFileTypes, resetting to default");
+    settings.allowedFileTypes = DEFAULT_ALLOWED_TYPES;
+  }
+
+  return settings;
+};
+
 export function ChatbotSettings({
   onClose,
   knowledgeBase = {},
@@ -35,29 +50,7 @@ export function ChatbotSettings({
   const saveDebounceRef = useRef(null);
   const lastSaveRef = useRef(null);
 
-  // Enhanced settings validation dari file kedua
-  const validateSettings = (settings) => {
-    if (settings.maxFileSize <= 0) {
-      console.warn("Invalid maxFileSize, resetting to default (10MB)");
-      settings.maxFileSize = 10;
-    }
 
-    if (!Array.isArray(settings.allowedFileTypes) || settings.allowedFileTypes.length === 0) {
-      console.warn("Invalid allowedFileTypes, resetting to default");
-      settings.allowedFileTypes = DEFAULT_ALLOWED_TYPES;
-    }
-
-    return settings;
-  };
-
-  // Handle performance settings
-  const handlePerformanceSave = (key, value) => {
-    setPerformanceSettings(prev => ({
-      ...prev,
-      [key]: value
-    }));
-    handleSave(key, value);
-  };
 
   useEffect(() => {
     // Refresh file stats whenever the safe KB changes
@@ -137,10 +130,7 @@ export function ChatbotSettings({
         exportDate: new Date().toISOString(),
         knowledgeBase: safeKnowledgeBase,
         fileStats: fileStats,
-        settings: {
-          ...settings,
-          ...performanceSettings
-        },
+        settings: settings,
         stats: knowledgeStats,
         uploadedFiles: uploadedFiles
       };
@@ -261,13 +251,7 @@ export function ChatbotSettings({
             <SettingsContent
               activeTab={settings.activeTab}
               settings={settings}
-              handleSave={(key, value) => {
-                if (key in performanceSettings) {
-                  handlePerformanceSave(key, value);
-                } else {
-                  handleSave(key, value);
-                }
-              }}
+              handleSave={handleSave}
               handleReset={enhancedHandleReset}
               onClose={handleClose}
               uploadedFiles={uploadedFiles}
