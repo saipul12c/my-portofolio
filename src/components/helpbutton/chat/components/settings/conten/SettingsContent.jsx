@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Download, RefreshCw, Trash2, Upload, ExternalLink } from "lucide-react";
 import { CHATBOT_VERSION, AI_DOCS_PATH } from '../../../config';
@@ -24,7 +25,6 @@ export function SettingsContent({
   formatFileSize,
   totalKBCategories,
   knowledgeStats,
-  
 }) {
   const tabLabels = {
     umum: 'Tampilan & Umum',
@@ -37,16 +37,17 @@ export function SettingsContent({
     shortcuts: 'Keyboard Shortcuts'
   };
 
-  const renderTabContent = () => {
-    const commonProps = {
-      settings,
-      handleSave,
-      fileStats,
-      formatFileSize,
-      totalKBCategories,
-      knowledgeStats
-    };
+  const commonProps = useMemo(() => ({
+    settings,
+    handleSave,
+    fileStats,
+    formatFileSize,
+    totalKBCategories,
+    knowledgeStats
+  }), [settings, handleSave, fileStats, formatFileSize, totalKBCategories, knowledgeStats]);
 
+
+  const renderedTabContent = useMemo(() => {
     switch (activeTab) {
       case "umum":
         return <GeneralSettings {...commonProps} />;
@@ -117,7 +118,16 @@ export function SettingsContent({
       default:
         return <GeneralSettings {...commonProps} />;
     }
-  };
+  }, [
+    activeTab, 
+    commonProps, 
+    handleFileUpload, 
+    clearUploadedData, 
+    getFileIcon, 
+    uploadedFiles, 
+    exportKnowledgeBase, 
+    settings.shortcuts
+  ]);
 
   const isLiveCS = settings?.settingsContext === 'live-cs';
 
@@ -141,6 +151,7 @@ export function SettingsContent({
             <Download size={14} />
             Export Data
           </button>
+
           <button
             onClick={handleReset}
             className="px-3 py-1.5 text-xs rounded-lg bg-red-900/20 hover:bg-red-800/40 transition-all text-red-400 border border-red-500/20 flex items-center gap-1.5 active:scale-95"
@@ -182,7 +193,7 @@ export function SettingsContent({
 
       <div className="text-xs text-gray-400">Perubahan pengaturan akan diterapkan langsung ke chat aktif.</div>
 
-      {renderTabContent()}
+      {renderedTabContent}
 
       <div className="pt-4 flex justify-between items-center border-t border-gray-700">
         <div className="text-xs text-gray-500">

@@ -80,32 +80,32 @@ export function useSettings(knowledgeBase = {}, initialTab = null) {
 
   const handleSave = useCallback((key, value) => {
     setSettings(prev => {
-      let newSettings;
       if (typeof key === 'object' && key !== null) {
-        newSettings = { ...prev, ...key };
+        return { ...prev, ...key };
       } else {
-        newSettings = { ...prev, [key]: value };
+        if (prev[key] === value) return prev;
+        return { ...prev, [key]: value };
       }
-
-      try {
-        storageService.set(SETTINGS_KEY, newSettings);
-        window.dispatchEvent(new Event("storage"));
-
-        if (typeof key === 'string') {
-          window.dispatchEvent(new CustomEvent('saipul_settings_updated', {
-            detail: { key, value }
-          }));
-        } else {
-          window.dispatchEvent(new CustomEvent('saipul_settings_updated', {
-            detail: { settings: newSettings }
-          }));
-        }
-      } catch (e) {
-        console.error("Error saving settings:", e);
-      }
-      return newSettings;
     });
   }, []);
+
+  // Dedicated effect for side effects like persistence and notification
+  // This is the safest way to avoid update loops
+  useEffect(() => {
+    // Skip on first mount if needed, or always sync
+    try {
+      storageService.set(SETTINGS_KEY, settings);
+      window.dispatchEvent(new Event("storage"));
+      window.dispatchEvent(new CustomEvent('saipul_settings_updated', {
+        detail: { settings }
+      }));
+    } catch (e) {
+      console.error("Error persisting settings:", e);
+    }
+  }, [settings]);
+
+
+
 
   const handleReset = useCallback(() => {
     setSettings(prev => ({ ...DEFAULT_SETTINGS, activeTab: prev.activeTab }));

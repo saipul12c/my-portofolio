@@ -53,41 +53,43 @@ export function ChatbotSettings({
 
 
   useEffect(() => {
-    // Refresh file stats whenever the safe KB changes
+    // Refresh file stats once on mount or when KB data structure is updated
     loadFileStatistics();
+  }, [loadFileStatistics]);
 
+  useEffect(() => {
     // Validate settings saat komponen dimuat — only save if different
-    // BUT dengan debounce untuk prevent multiple rapid saves
+
     const validatedSettings = validateSettings({ ...settings });
 
-    // Clear previous debounce timer
     if (saveDebounceRef.current) {
       clearTimeout(saveDebounceRef.current);
     }
 
-    // Set new debounce timer (300ms to batch rapid changes)
     saveDebounceRef.current = setTimeout(() => {
       try {
-        const current = JSON.stringify(lastSaveRef.current || {});
-        const validated = JSON.stringify(validatedSettings || {});
+        const currentStr = JSON.stringify(lastSaveRef.current || {});
+        const validatedStr = JSON.stringify(validatedSettings || {});
 
-        if (current !== validated) {
+        if (currentStr !== validatedStr) {
+          lastSaveRef.current = validatedSettings; // Update ref immediately before call
           handleSave(validatedSettings);
-          lastSaveRef.current = validatedSettings;
         }
       } catch (err) {
         console.warn("Error comparing settings:", err);
       }
       saveDebounceRef.current = null;
-    }, 300);
+    }, 500); 
 
-    // Cleanup debounce on unmount
+
     return () => {
       if (saveDebounceRef.current) {
         clearTimeout(saveDebounceRef.current);
       }
     };
-  }, [safeKnowledgeBase, settings, handleSave, loadFileStatistics]);
+  }, [settings, handleSave]); // Removed safeKnowledgeBase and loadFileStatistics to avoid loops
+
+
 
   // Listen for external requests to open a specific settings tab
   const handler = useCallback((e) => {
@@ -177,60 +179,14 @@ export function ChatbotSettings({
     }
   };
 
-  // Apply theme/accent to modal via CSS variables override if needed
+  // Determine theme style category for CSS targeting
+  const theme = settings?.theme || 'dark';
+  const isLightLike = ['light', 'sepia', 'solar', 'soft'].includes(theme) || (theme === 'system' && typeof window !== 'undefined' && !window.matchMedia('(prefers-color-scheme: dark)').matches);
+  const themeStyleAttribute = isLightLike ? 'light' : 'dark';
+
   const modalRef = useRef(null);
 
-  useEffect(() => {
-    const el = modalRef.current;
-    if (!el) return;
 
-    try {
-      // Cleanup previous overrides
-      if (el._saipul_modified && Array.isArray(el._saipul_modified)) {
-        el._saipul_modified.forEach(node => {
-          if (node && node.style) {
-            node.style.backgroundColor = '';
-            node.style.color = '';
-            node.style.borderColor = '';
-          }
-        });
-        el._saipul_modified = null;
-      }
-
-      // If light-like theme, adjust common dark utility classes inside modal to readable light equivalents
-      const theme = settings?.theme || 'dark';
-      const isLightLike = ['light', 'sepia', 'solar', 'soft'].includes(theme) || (theme === 'system' && !window.matchMedia('(prefers-color-scheme: dark)').matches);
-      
-      if (isLightLike) {
-        const all = el.querySelectorAll('*');
-        const modified = [];
-        all.forEach((node) => {
-          const cls = node.className || '';
-          if (typeof cls === 'string' && (cls.includes('bg-gray-800') || cls.includes('bg-gray-900') || cls.includes('bg-gray-800/50'))) {
-            node.style.backgroundColor = 'var(--saipul-surface, #f3f4f6)';
-            node.style.color = 'var(--saipul-text, #0b1220)';
-            modified.push(node);
-          }
-          // text-white on light -> set dark text
-          if (typeof cls === 'string' && cls.includes('text-white')) {
-            node.style.color = 'var(--saipul-text, #0b1220)';
-            modified.push(node);
-          }
-          // inputs/selects
-          if (node.tagName === 'SELECT' || node.tagName === 'INPUT' || node.tagName === 'TEXTAREA') {
-            node.style.backgroundColor = 'var(--saipul-surface, #ffffff)';
-            node.style.color = 'var(--saipul-text, #0b1220)';
-            node.style.borderColor = 'rgba(15,23,36,0.08)';
-            modified.push(node);
-          }
-        });
-        // store modified elements so we can cleanup next run
-        el._saipul_modified = modified;
-      }
-    } catch (e) {
-      console.warn('Error adjusting settings theme overrides:', e);
-    }
-  }, [settings.theme, settings.accent]);
 
   return (
     <AnimatePresence>
@@ -241,7 +197,8 @@ export function ChatbotSettings({
         transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 30 }}
         className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-[10000] p-4"
       >
-        <div ref={modalRef} className="saipul-settings-root bg-gray-900 text-gray-200 w-full max-w-[700px] max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden border border-gray-700" style={{ background: 'var(--saipul-modal-bg)' }}>
+        <div ref={modalRef} data-theme-style={themeStyleAttribute} className="saipul-settings-root bg-gray-900 text-gray-200 w-full max-w-[700px] max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden border border-gray-700" style={{ background: 'var(--saipul-modal-bg)' }}>
+
           <div className="flex flex-row h-[550px]">
             <SettingsSidebar
               activeTab={settings.activeTab}

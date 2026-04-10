@@ -95,11 +95,38 @@ input::placeholder {
   border-color: var(--saipul-border) !important;
 }
 
+/* Theme overrides for "light-like" themes (light, sepia, solar, soft) 
+   These replace the expensive querySelectorAll('*') loop in JS */
+.saipul-settings-root[data-theme-style="light"] .bg-gray-800,
+.saipul-settings-root[data-theme-style="light"] .bg-gray-900,
+.saipul-settings-root[data-theme-style="light"] .bg-gray-800\/50,
+.saipul-settings-root[data-theme-style="light"] .bg-gray-900\/50 {
+  background-color: var(--saipul-surface, #f3f4f6) !important;
+  color: var(--saipul-text, #0b1220) !important;
+}
+
+.saipul-settings-root[data-theme-style="light"] .text-white {
+  color: var(--saipul-text, #0b1220) !important;
+}
+
+.saipul-settings-root[data-theme-style="light"] .text-gray-200 {
+  color: var(--saipul-text-secondary, #475569) !important;
+}
+
+.saipul-settings-root[data-theme-style="light"] input,
+.saipul-settings-root[data-theme-style="light"] select,
+.saipul-settings-root[data-theme-style="light"] textarea {
+  background-color: var(--saipul-surface, #ffffff) !important;
+  color: var(--saipul-text, #0b1220) !important;
+  border-color: rgba(15, 23, 36, 0.1) !important;
+}
+
 /* Enhance focus/hover visibility for native selects inside modal */
 .saipul-settings-root select:focus {
   outline: 2px solid rgba(0,0,0,0.08);
   box-shadow: 0 0 0 3px var(--saipul-button-hover);
 }
+
 
 /* Chat UI styling driven by saipul variables */
 .saipul-chat-root {

@@ -5,7 +5,6 @@
     "config_location": "src/components/helpbutton/chat/config.js",
     "last_update": "2025-01-05"
   },
-  
   "change_log_sesi_terakhir": [
     {
       "date": "2025-01-05",
@@ -28,7 +27,6 @@
       "description": "Memperbaiki masalah respons yang hanya mengulang input pengguna dengan mengganti placeholder reply menjadi pemanggilan generator respons nyata di useChatbot.js"
     }
   ],
-  
   "statistik_versi_saat_ini": {
     "total_fitur": "58+",
     "knowledge_base_files": "7 file",
@@ -37,11 +35,13 @@
     "total_versi_dokumentasi": "88 versi",
     "rentang_waktu": "2024-05-15 hingga 2025-01-05",
     "rata_rata_release": "5.1 hari per versi",
-    "bahasa_didukung": ["Indonesia", "English"],
+    "bahasa_didukung": [
+      "Indonesia",
+      "English"
+    ],
     "akurasi_deteksi_bahasa": "95%+",
     "metrik_evaluasi_respon": "6 kategori"
   },
-  
   "informasi_sebelumnya": {
     "masalah_diperbaiki": [
       "Respons chatbot yang hanya menampilkan teks 'Smart reply for: <input>' (disebabkan placeholder lokal yang mengembalikan input pengguna)",
@@ -52,9 +52,7 @@
     ],
     "catatan": "Perbaikan di atas menargetkan akar masalah tersebut — memperbaiki impor, memperbaiki urutan deklarasi, memperkenalkan util pemrosesan file terpusat, dan mengganti evaluator matematika. Pastikan menjalankan `npm install` setelah menarik pembaruan karena dependency baru (mis. mathjs)."
   },
-  
   "ringkasan_singkat": "SaipulAI adalah asisten lokal ringan dengan pipeline NLP terintegrasi (lexical → corpus → NLU → knowledge graph), knowledge base berbasis file JSON, utilitas pemrosesan file terpusat, kalkulator berbasis mathjs, keyboard shortcuts konfigurabel, dan mekanisme saran otomatis. File yang diunggah dapat diindeks ke KB secara lokal dan diproses realtime melalui event internal. Kini dengan kemampuan bilingual Indonesia-Inggris dan sistem evaluasi respons yang canggih.",
-  
   "fitur_utama": [
     "🌍 Bilingual AI Assistant — Komunikasi dalam bahasa Indonesia dan Inggris dengan automatic language detection dan switching",
     "🧠 Advanced NLP Pipeline — 5 modul inti: lexicalDatabase, languageCorpus, nluDataset, nluProcessing, enhancedKnowledgeBase (semantic knowledge graph)",
@@ -73,13 +71,11 @@
     "🎙️ Input suara & speech recognition — integrasi Web Speech API dengan toggle dan callback",
     "💡 Saran kontekstual & quick actions berdasarkan topik percakapan"
   ],
-  
   "sumber_data_knowledge_base": [
     "Uploaded files / saved KB (localStorage via fileProcessor)",
     "Enhanced Knowledge Graph nodes: AI, Machine Learning, Neural Networks, NLP (relasi semantik)",
     "Bilingual dictionaries: Indonesian-English word pairs dengan weighted frequency"
   ],
-  
   "pengaturan_konfigurasi": {
     "default_settings": {
       "chatbotVersion": "7.1.0",
@@ -108,7 +104,6 @@
     },
     "catatan": "Konfigurasi default dapat dilihat di src/components/helpbutton/chat/config.js. Untuk mengubah perilaku (mis. presisi matematika, mode NLU quick/comprehensive, ambang kepercayaan), edit file konfigurasi lalu restart dev server. Setelah menarik pembaruan, jalankan `npm install` untuk dependency baru (mis. mathjs). Integrasi NLP tidak menambah dependency eksternal."
   },
-  
   "contoh_pertanyaan_cara_kerja": [
     {
       "tipe": "lookup_sederhana",
@@ -151,7 +146,6 @@
       "output": "Deteksi sentimen negatif → Response dengan empati → 'Saya minta maaf atas kekecewaan Anda. Bisakah Anda ceritakan masalahnya agar saya bisa membantu?'"
     }
   ],
-  
   "troubleshooting_error_umum": [
     "Import gagal: pastikan semua file yang di-import ada di path yang benar (lihat pesan error Vite). Jika menambahkan file baru, restart dev server",
     "Jawaban kosong/tidak relevan: periksa struktur JSON & gunakan kunci yang spesifik untuk lookup cepat",
@@ -164,9 +158,7 @@
     "Deteksi bahasa tidak akurat: pastikan input cukup panjang (minimal 3 kata) untuk analisis yang lebih baik",
     "Terjemahan tidak natural: perluas dictionary dan patterns di translation engine"
   ],
-  
   "privasi_keamanan": "Secara default, SaipulAI memproses data secara lokal. File yang diunggah hanya disimpan/diindeks bila fitur upload diaktifkan; proses ini bersifat lokal dan dapat dipicu/diakses melalui event internal. Jangan unggah data sensitif tanpa enkripsi; selalu review kebijakan privasi aplikasi Anda sebelum menyimpan data user.",
-  
   "cara_kontribusi_menambah_data": [
     "Edit atau buat file JSON di src/components/helpbutton/chat/data/ dengan struktur yang konsisten",
     "Jika menambahkan modul utilitas baru, tempatkan di src/components/helpbutton/chat/components/logic/utils/ (contoh: fileProcessor.js) atau src/components/helpbutton/chat/logic/utils/",
@@ -175,7 +167,6 @@
     "Untuk sentiment analysis: tambahkan pola kata untuk deteksi sentimen positif/negatif",
     "Restart aplikasi (npm run dev) agar perubahan ter-load"
   ],
-
   "ai_nlp_ringkasan": {
     "komponen_inti": [
       "lexicalDatabase.js — analisis kata, lemma, sinonim, normalisasi (ID/EN) dengan weighted word lists",
@@ -195,7 +186,6 @@
     ],
     "catatan": "Seluruh integrasi bersifat tambahan (non-breaking) dan tidak menambah dependency eksternal. Sistem sekarang fully bilingual dengan akurasi deteksi bahasa 95%+."
   },
-
   "ai_nlp_statistik": {
     "core_modules": 5,
     "advanced_modules": 7,
@@ -208,7 +198,6 @@
     "intents_didukung": 14,
     "entities_didukung": 8
   },
-
   "ai_nlp_performa": {
     "quick_nlu": "~60ms",
     "comprehensive_nlu": "~250–350ms",
@@ -218,31 +207,66 @@
     "response_evaluation": "~40ms",
     "end_to_end_response": "~600–900ms (dengan enrichment, KB semantik, dan bilingual processing)"
   },
-
   "ai_nlp_supported": {
     "nlu_dataset_intents": [
-      "greeting", "ask_question", "request_information", "request_help", "express_appreciation", "provide_feedback", "express_confusion"
+      "greeting",
+      "ask_question",
+      "request_information",
+      "request_help",
+      "express_appreciation",
+      "provide_feedback",
+      "express_confusion"
     ],
     "advanced_intents": [
-      "greeting", "farewell", "simple_factual", "complex_reasoning", "how_to", "definition", "comparison", "calculation", "analysis", "command", "complaint", "praise", "clarification", "unknown"
+      "greeting",
+      "farewell",
+      "simple_factual",
+      "complex_reasoning",
+      "how_to",
+      "definition",
+      "comparison",
+      "calculation",
+      "analysis",
+      "command",
+      "complaint",
+      "praise",
+      "clarification",
+      "unknown"
     ],
     "entities": [
-      "PERSON", "LOCATION", "DATE", "TIME", "ORGANIZATION", "SKILL", "PRODUCT", "TOPIC"
+      "PERSON",
+      "LOCATION",
+      "DATE",
+      "TIME",
+      "ORGANIZATION",
+      "SKILL",
+      "PRODUCT",
+      "TOPIC"
     ],
     "sentence_types": [
-      "Interrogative", "Declarative", "Imperative", "Exclamatory"
+      "Interrogative",
+      "Declarative",
+      "Imperative",
+      "Exclamatory"
     ],
     "bahasa": [
-      "Indonesia", "English"
+      "Indonesia",
+      "English"
     ],
     "sentiment_types": [
-      "positive", "negative", "neutral"
+      "positive",
+      "negative",
+      "neutral"
     ],
     "evaluation_metrics": [
-      "relevance", "informativeness", "coherence", "appropriateness", "engagement", "safety"
+      "relevance",
+      "informativeness",
+      "coherence",
+      "appropriateness",
+      "engagement",
+      "safety"
     ]
   },
-
   "ai_nlp_file_locations": {
     "path": "src/components/helpbutton/chat/components/logic/utils/",
     "files": [
@@ -260,7 +284,6 @@
       "responseEvaluator.js"
     ]
   },
-  
   "peningkatan_bahasa_dan_evaluasi": {
     "advanced_language_detection": {
       "linguistic_analysis": "Analisis mendalam dengan weighted word scoring",
@@ -297,7 +320,6 @@
       "continuous_improvement": "Belajar dari pola penggunaan bahasa"
     }
   },
-  
   "riwayat_penelitian_eksperimental": {
     "catatan": "10 entri tambahan ini merepresentasikan berbagai eksperimen dan penelitian yang dilakukan tim pengembang antara Mei 2024 hingga Februari 2025. Banyak fitur masih dalam tahap prototipe dan tidak mencapai produksi.",
     "kategori_riset": [
