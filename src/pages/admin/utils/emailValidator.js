@@ -62,14 +62,14 @@ const roleBasedAddresses = [
 /**
  * RFC 5322 compliant email regex (more strict)
  */
-const emailRegexStrict = /^[a-zA-Z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/;
+const emailRegexStrict = /^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/;
 
 /**
  * Additional validation patterns
  */
 const validationPatterns = {
   // Valid local part characters
-  validLocalPart: /^[a-zA-Z0-9!#$%&'*+\/=?^_`{|}~.-]+$/,
+  validLocalPart: /^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~.-]+$/,
   // Valid domain format
   validDomain: /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*$/,
   // IP address in domain (usually spam)

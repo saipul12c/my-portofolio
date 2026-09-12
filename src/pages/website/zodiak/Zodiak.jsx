@@ -8,7 +8,7 @@ export default function Zodiak() {
   const [zodiak, setZodiak] = useState(null);
   const [loading, setLoading] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
-  const [selectedZodiak, setSelectedZodiak] = useState(null);
+  const [SelectedZodiak, setSelectedZodiak] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const [userData, setUserData] = useState(null);
   const [compatibility, setCompatibility] = useState(null);

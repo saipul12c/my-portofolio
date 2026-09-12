@@ -4,7 +4,7 @@
  */
 
 const STORAGE_KEY = 'contact_form_rate_limit';
-const IP_SIMULATION_KEY = 'user_session_id';
+const IP_KEY = 'user_session_id';
 
 // Rate limit configurations
 const RATE_LIMITS = {
@@ -30,12 +30,12 @@ const RATE_LIMITS = {
  * Get or create a unique session ID (simulates IP tracking)
  */
 const getSessionId = () => {
-  let sessionId = localStorage.getItem(IP_SIMULATION_KEY);
+  let sessionId = localStorage.getItem(IP_KEY);
   
   if (!sessionId) {
     // Generate unique session ID
     sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
-    localStorage.setItem(IP_SIMULATION_KEY, sessionId);
+    localStorage.setItem(IP_KEY, sessionId);
   }
   
   return sessionId;
@@ -50,7 +50,7 @@ const getSubmissionHistory = () => {
     if (!data) return { submissions: [], blocked: false, blockedUntil: null };
     
     return JSON.parse(data);
-  } catch (error) {
+  } catch {
     return { submissions: [], blocked: false, blockedUntil: null };
   }
 };
@@ -61,7 +61,7 @@ const getSubmissionHistory = () => {
 const saveSubmissionHistory = (history) => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-  } catch (error) {
+  } catch {
     // Silent fail - data will be lost but app continues
   }
 };
