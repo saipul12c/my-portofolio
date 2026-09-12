@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Edit, Save, X, AlertCircle } from 'lucide-react';
+import { Edit, Save, X, AlertCircle, CheckCircle, Shield, User, Mail, Calendar, LogOut } from 'lucide-react';
 
 export const ProfileEditor = ({ 
   profile, 
@@ -7,9 +7,10 @@ export const ProfileEditor = ({
   isEditing, 
   setIsEditing, 
   editForm, 
-  setEditForm,
-  onSave,
-  loading = false
+  setEditForm, 
+  onSave, 
+  onLogout,
+  loading = false 
 }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -17,7 +18,6 @@ export const ProfileEditor = ({
   // Check if current user can edit this profile
   const canEdit = () => {
     if (!currentUser || !profile) return false;
-    // Only user themselves can edit, or Super Admin/Admin
     return (
       currentUser.email === profile.email || 
       currentUser.role === 'SUPER_ADMIN' || 
@@ -40,11 +40,11 @@ export const ProfileEditor = ({
       setError('');
       const result = await onSave(editForm);
       if (result) {
-        setSuccess('Profile berhasil diperbarui!');
+        setSuccess('Profil berhasil diperbarui!');
         setIsEditing(false);
         setTimeout(() => setSuccess(''), 3000);
       } else {
-        setError('Gagal memperbarui profile');
+        setError('Gagal memperbarui profil');
       }
     } catch (err) {
       setError('Terjadi kesalahan: ' + err.message);
@@ -53,10 +53,10 @@ export const ProfileEditor = ({
 
   if (!canEdit() && isEditing) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
-        <AlertCircle className="w-5 h-5 text-red-600" />
-        <p className="text-red-800">
-          Anda hanya bisa edit profile sendiri. Hubungi admin jika ingin merubah profile orang lain.
+      <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-center gap-3">
+        <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+        <p className="text-red-200 text-xs font-semibold">
+          Anda hanya bisa mengedit profil sendiri. Hubungi admin jika ingin mengubah profil orang lain.
         </p>
       </div>
     );
@@ -64,146 +64,165 @@ export const ProfileEditor = ({
 
   if (!isEditing) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-bold text-gray-900">Tentang Saya</h3>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-cyan-500/20">
+              {profile?.nama?.[0]?.toUpperCase() || <User className="w-6 h-6" />}
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-[var(--theme-text)] leading-tight">{profile?.nama}</h3>
+              <p className="text-xs text-[var(--theme-text-muted)] font-mono">{profile?.email}</p>
+            </div>
+          </div>
           {canEdit() && (
             <button
               onClick={() => setIsEditing(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-cyan-500/20 active:scale-95"
             >
               <Edit className="w-4 h-4" />
-              Edit Profile
+              Edit Profil
             </button>
           )}
         </div>
         
-        <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+        <div className="bg-white/[0.02] border border-[var(--theme-border)] rounded-2xl p-5 space-y-4 backdrop-blur-xl">
           <div>
-            <p className="text-sm text-gray-600">Nama</p>
-            <p className="text-lg font-medium text-gray-900">{profile?.nama}</p>
+            <span className="text-[10px] font-black uppercase tracking-widest text-[var(--theme-text-muted)] block mb-1">
+              Bio / Deskripsi
+            </span>
+            <p className="text-sm text-[var(--theme-text)] leading-relaxed italic bg-white/[0.02] p-3 rounded-xl border border-white/5">
+              "{profile?.bio || 'Belum ada bio yang ditambahkan.'}"
+            </p>
           </div>
-          
-          <div>
-            <p className="text-sm text-gray-600">Bio</p>
-            <p className="text-gray-800 whitespace-pre-wrap">{profile?.bio || 'Belum ada bio'}</p>
+
+          <div className="grid grid-cols-2 gap-3 pt-2 border-t border-[var(--theme-border)]">
+            <div className="bg-white/[0.02] p-3 rounded-xl border border-white/5">
+              <span className="text-[9px] font-black uppercase tracking-widest text-[var(--theme-text-muted)] block mb-0.5">Role</span>
+              <span className="text-xs font-bold text-cyan-400 flex items-center gap-1">
+                <Shield className="w-3.5 h-3.5" />
+                {profile?.roleName || profile?.role || 'USER'}
+              </span>
+            </div>
+            
+            <div className="bg-white/[0.02] p-3 rounded-xl border border-white/5">
+              <span className="text-[9px] font-black uppercase tracking-widest text-[var(--theme-text-muted)] block mb-0.5">Status Akun</span>
+              <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                {profile?.status || 'Aktif'}
+              </span>
+            </div>
           </div>
-          
-          <div>
-            <p className="text-sm text-gray-600">Email</p>
-            <p className="text-gray-800">{profile?.email}</p>
-          </div>
+
+          {currentUser && onLogout && (
+            <div className="pt-3 border-t border-[var(--theme-border)] flex justify-end">
+              <button
+                type="button"
+                onClick={onLogout}
+                className="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-xl text-xs font-bold uppercase tracking-wider transition-all active:scale-95"
+              >
+                <LogOut className="w-4 h-4" />
+                Keluar dari Akun
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold text-gray-900">Edit Profile</h3>
-        {currentUser?.email === profile?.email && (
-          <p className="text-xs text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-            Anda hanya bisa edit profile sendiri
+    <div className="space-y-5">
+      <div className="flex items-center justify-between pb-3 border-b border-[var(--theme-border)]">
+        <div>
+          <h3 className="text-lg font-bold text-[var(--theme-text)]">Edit Profil Pengguna</h3>
+          <p className="text-[10px] uppercase font-black tracking-widest text-[var(--theme-text-muted)]">
+            Perbarui data identitas Anda di sistem
           </p>
-        )}
+        </div>
       </div>
 
       {/* Error message */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center gap-2">
-          <AlertCircle className="w-5 h-5 text-red-600" />
-          <p className="text-red-800 text-sm">{error}</p>
+        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+          <p className="text-red-200 text-xs font-medium">{error}</p>
         </div>
       )}
 
       {/* Success message */}
       {success && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-          <p className="text-green-800 text-sm">{success}</p>
+        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 flex items-center gap-2">
+          <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+          <p className="text-emerald-200 text-xs font-medium">{success}</p>
         </div>
       )}
 
       {/* Form fields */}
-      <div className="space-y-4 bg-gray-50 rounded-lg p-4">
+      <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-900 mb-2">
-            Nama <span className="text-red-500">*</span>
+          <label className="block text-xs font-bold uppercase tracking-wider text-[var(--theme-text)] mb-2">
+            Nama Lengkap / Panggilan <span className="text-red-400">*</span>
           </label>
           <input
             type="text"
             value={editForm.nama}
             onChange={(e) => setEditForm({ ...editForm, nama: e.target.value })}
             placeholder="Masukkan nama Anda"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 bg-white/[0.03] border border-[var(--theme-border)] rounded-xl text-sm text-[var(--theme-text)] placeholder-[var(--theme-text-muted)] focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all font-medium"
             maxLength={50}
           />
-          <p className="text-xs text-gray-500 mt-1">{editForm.nama.length}/50 karakter</p>
+          <span className="text-[10px] text-[var(--theme-text-muted)] mt-1 block text-right">{editForm.nama.length}/50</span>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-900 mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-[var(--theme-text)] mb-2">
             Bio / Tentang Saya
           </label>
           <textarea
             value={editForm.bio}
             onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
-            placeholder="Ceritakan tentang Anda..."
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-            rows="4"
+            placeholder="Ceritakan tentang minat atau keahlian Anda..."
+            className="w-full px-4 py-3 bg-white/[0.03] border border-[var(--theme-border)] rounded-xl text-sm text-[var(--theme-text)] placeholder-[var(--theme-text-muted)] focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all font-medium resize-none custom-scrollbar"
+            rows="3"
             maxLength={500}
           />
-          <p className="text-xs text-gray-500 mt-1">{editForm.bio.length}/500 karakter</p>
+          <span className="text-[10px] text-[var(--theme-text-muted)] mt-1 block text-right">{editForm.bio.length}/500</span>
         </div>
 
-        {/* Read-only fields */}
-        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
-          <div>
-            <p className="text-xs text-gray-600 mb-1">Email</p>
-            <p className="text-sm font-medium text-gray-900">{profile?.email}</p>
+        {/* Read-only info */}
+        <div className="grid grid-cols-2 gap-3 pt-3 border-t border-[var(--theme-border)]">
+          <div className="p-3 bg-white/[0.02] rounded-xl border border-white/5">
+            <span className="text-[9px] font-black uppercase tracking-widest text-[var(--theme-text-muted)] block mb-0.5">Email Terdaftar</span>
+            <span className="text-xs font-semibold text-[var(--theme-text)] truncate block">{profile?.email}</span>
           </div>
           
-          <div>
-            <p className="text-xs text-gray-600 mb-1">Role</p>
-            <p className="text-sm font-medium text-gray-900">{profile?.roleName}</p>
-          </div>
-          
-          <div>
-            <p className="text-xs text-gray-600 mb-1">Status</p>
-            <p className="text-sm font-medium text-green-600">Aktif</p>
-          </div>
-          
-          <div>
-            <p className="text-xs text-gray-600 mb-1">Bergabung</p>
-            <p className="text-sm font-medium text-gray-900">{profile?.joinDate}</p>
+          <div className="p-3 bg-white/[0.02] rounded-xl border border-white/5">
+            <span className="text-[9px] font-black uppercase tracking-widest text-[var(--theme-text-muted)] block mb-0.5">Tingkat Role</span>
+            <span className="text-xs font-semibold text-cyan-400">{profile?.roleName || profile?.role || 'USER'}</span>
           </div>
         </div>
       </div>
 
       {/* Buttons */}
-      <div className="flex gap-3 justify-end pt-4">
+      <div className="flex gap-3 justify-end pt-3 border-t border-[var(--theme-border)]">
         <button
           onClick={() => setIsEditing(false)}
-          className="flex items-center gap-2 px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          className="px-5 py-2.5 border border-[var(--theme-border)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
           disabled={loading}
         >
-          <X className="w-4 h-4" />
-          Batalkan
+          Batal
         </button>
         
         <button
           onClick={handleSave}
           disabled={loading}
-          className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-cyan-500/20 active:scale-95 disabled:opacity-50"
         >
           <Save className="w-4 h-4" />
-          {loading ? 'Menyimpan...' : 'Simpan Perubahan'}
+          {loading ? 'Menyimpan...' : 'Simpan'}
         </button>
       </div>
-
-      <p className="text-xs text-gray-500 text-center pt-2">
-        💡 Informasi Anda tidak akan dibagikan tanpa izin
-      </p>
     </div>
   );
 };

@@ -15,6 +15,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import GalleryShareBar from "../GalleryShareBar";
+import UniversalMediaPlayer from "../../components/UniversalMediaPlayer";
 import { sanitizeVideoUrl, sanitizeUrl } from "../../utils/sanitizers";
 
 export default function GalleryShortModal({
@@ -27,23 +28,76 @@ export default function GalleryShortModal({
   const [isMuted, setIsMuted] = useState(true);
   const [videoError, setVideoError] = useState(false);
   const [videoLoading, setVideoLoading] = useState(true);
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
   const newRef = useRef(null);
   const localVideoRef = videoRef || newRef;
   const navigate = useNavigate();
 
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (selectedMedia && selectedMedia.type === "short") {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [selectedMedia]);
+
+  // Reset state when media changes
+  useEffect(() => {
+    if (selectedMedia) {
+      setVideoError(false);
+      setVideoLoading(true);
+      setLiked(false);
+      setLikeCount(selectedMedia.engagement?.likes || 0);
+    }
+  }, [selectedMedia?.id]);
+
+  const handleToggleLike = () => {
+    setLiked((prev) => {
+      const next = !prev;
+      setLikeCount((c) => (next ? c + 1 : Math.max(0, c - 1)));
+      return next;
+    });
+  };
+
+  const handleNativeShare = async () => {
+    const url = `${window.location.origin}/gallery?media=${selectedMedia?.id || ""}&type=${selectedMedia?.type || ""}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: selectedMedia?.title || "Gallery Short",
+          text: selectedMedia?.desc || "Check out this short!",
+          url,
+        });
+      } catch (err) {
+        if (err.name !== "AbortError") console.error("Share failed:", err);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(url);
+        alert("Tautan short berhasil disalin ke clipboard!");
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
+
   // Keyboard navigation
   useEffect(() => {
+    if (!selectedMedia || selectedMedia.type !== "short") return;
+    
     const handleKeyDown = (e) => {
-      if (!selectedMedia || selectedMedia.type !== "short") return;
-      
       if (e.key === 'Escape') {
         setSelectedMedia(null);
       } else if (e.key === 'ArrowLeft') {
         e.preventDefault();
-        handlePrev();
+        handlePrev?.();
       } else if (e.key === 'ArrowRight') {
         e.preventDefault();
-        handleNext();
+        handleNext?.();
       } else if (e.key === 'm' || e.key === 'M') {
         e.preventDefault();
         setIsMuted(prev => !prev);
@@ -126,47 +180,21 @@ export default function GalleryShortModal({
         >
           {/* Video Area */}
           <div className="w-full md:w-[55%] bg-black flex items-center justify-center p-2 sm:p-4">
-            <div className="relative w-full max-w-[280px] sm:max-w-[320px] aspect-[9/16] flex items-center justify-center">
-              {videoError ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/90 rounded-xl">
-                  <X className="w-12 h-12 text-red-400 mb-2" />
-                  <p className="text-red-400 text-sm text-center px-4">Video gagal dimuat</p>
-                  <p className="text-gray-400 text-xs text-center px-4 mt-1">Periksa koneksi atau coba lagi</p>
-                </div>
-              ) : (
-                <>
-                  {videoLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/90 rounded-xl">
-                      <div className="animate-spin rounded-full h-12 w-12 border-4 border-cyan-400 border-t-transparent"></div>
-                    </div>
-                  )}
-                  <video
-                    ref={localVideoRef}
-                    src={sanitizeVideoUrl(selectedMedia.src)}
-                    muted={isMuted}
-                    loop
-                    playsInline
-                    autoPlay={false}
-                    preload="metadata"
-                    className="w-full h-full object-cover rounded-xl shadow-lg"
-                    onMouseEnter={handleVideoHover}
-                    onMouseLeave={handleVideoLeave}
-                    onError={handleVideoError}
-                    onLoadStart={handleVideoLoadStart}
-                    onLoadedData={handleVideoLoadedData}
-                    aria-label={`Short video: ${selectedMedia.title}`}
-                  />
-                </>
-              )}
-
-              {/* Mute/Unmute Button */}
-              <button
-                onClick={() => setIsMuted(!isMuted)}
-                aria-label={isMuted ? "Nyalakan suara" : "Matikan suara"}
-                className="absolute bottom-2 right-2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition"
-              >
-                {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-              </button>
+            <div className="relative w-full max-w-[280px] sm:max-w-[340px] aspect-[9/16] flex items-center justify-center">
+              <UniversalMediaPlayer
+                ref={localVideoRef}
+                src={selectedMedia.src}
+                poster={selectedMedia.thumbnail || selectedMedia.poster}
+                title={selectedMedia.title}
+                isShort={true}
+                muted={isMuted}
+                loop
+                autoPlay={false}
+                controls={true}
+                className="w-full h-full"
+                onError={handleVideoError}
+                onLoadedData={handleVideoLoadedData}
+              />
 
               {/* Mobile Navigation Hints */}
               <div className="absolute bottom-2 left-2 text-white/70 text-xs sm:hidden">
@@ -214,18 +242,26 @@ export default function GalleryShortModal({
             {/* Engagement Stats */}
             {selectedMedia.engagement && (
               <div className="flex items-center gap-3 sm:gap-4 mt-3 text-xs text-gray-400 flex-wrap">
-                <span className="flex items-center gap-1">
-                  <Heart size={14} className="text-pink-400" />{" "}
-                  {selectedMedia.engagement.likes?.toLocaleString()}
-                </span>
+                <button
+                  onClick={handleToggleLike}
+                  className="flex items-center gap-1 hover:text-pink-400 transition cursor-pointer"
+                  title="Sukai short ini"
+                >
+                  <Heart size={14} className={liked ? "fill-pink-400 text-pink-400" : "text-pink-400"} />{" "}
+                  {likeCount.toLocaleString()}
+                </button>
                 <span className="flex items-center gap-1">
                   <MessageCircle size={14} />{" "}
                   {selectedMedia.engagement.comments?.toLocaleString()}
                 </span>
-                <span className="flex items-center gap-1">
+                <button
+                  onClick={handleNativeShare}
+                  className="flex items-center gap-1 hover:text-cyan-400 transition cursor-pointer"
+                  title="Bagikan short ini"
+                >
                   <Share2 size={14} />{" "}
                   {selectedMedia.engagement.shares?.toLocaleString()}
-                </span>
+                </button>
                 <span className="flex items-center gap-1">
                   <Eye size={14} />{" "}
                   {selectedMedia.engagement.views?.toLocaleString()}
@@ -273,13 +309,23 @@ export default function GalleryShortModal({
 
             {/* Mobile Action Buttons */}
             <div className="flex flex-col gap-3 pt-4 mt-4 border-t border-white/10">
-              <GalleryShareBar media={selectedMedia} />
+              <GalleryShareBar media={selectedMedia} currentIndex={0} />
               <div className="flex gap-3 md:hidden">
-                <button className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 py-2 rounded-lg text-sm transition flex items-center justify-center gap-2">
-                  <Heart size={16} />
-                  Like
+                <button 
+                  onClick={handleToggleLike}
+                  className={`flex-1 py-2 rounded-lg text-sm transition flex items-center justify-center gap-2 ${
+                    liked 
+                      ? "bg-pink-500/30 text-pink-300 border border-pink-500/40" 
+                      : "bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300"
+                  }`}
+                >
+                  <Heart size={16} className={liked ? "fill-pink-400 text-pink-400" : ""} />
+                  {liked ? "Disukai" : "Like"} ({likeCount.toLocaleString()})
                 </button>
-                <button className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 py-2 rounded-lg text-sm transition flex items-center justify-center gap-2">
+                <button 
+                  onClick={handleNativeShare}
+                  className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 py-2 rounded-lg text-sm transition flex items-center justify-center gap-2"
+                >
                   <Share2 size={16} />
                   Share
                 </button>

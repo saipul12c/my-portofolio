@@ -156,8 +156,12 @@ export function isSafeOrigin(url) {
     
     // Add whitelist for trusted CDNs if needed
     const trustedOrigins = [
-      // Add trusted CDN origins here
-      // 'https://cdn.example.com'
+      'https://images.unsplash.com',
+      'https://commondatastorage.googleapis.com',
+      'https://assets.mixkit.co',
+      'https://cdn.pixabay.com',
+      'https://images.pexels.com',
+      'https://i.pravatar.cc'
     ];
     
     return trustedOrigins.includes(parsed.origin);

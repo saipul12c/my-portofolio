@@ -1,12 +1,14 @@
 // SoftSkills.jsx
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import SoftSkillsHeader from "./components/SoftSkillsHeader";
 import SoftSkillsSearch from "./components/SoftSkillsSearch";
 import SoftSkillsCardGrid from "./components/SoftSkillsCardGrid";
 import SoftSkillsPopup from "./components/SoftSkillsPopup";
 import SoftSkillsAI from "./AI/SoftSkillsAI";
 import { highlightText } from "./components/SoftSkillsUtils";
+import fallbackSkillsData from "../../data/skills/softskills.json";
 
 /**
  * Parent component:
@@ -39,21 +41,13 @@ export default function SoftSkills() {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  // ✅ Fetch JSON - aman untuk Vite & CRA
+  // ✅ Fetch JSON - aman untuk Vite & CRA dengan fallback offline
   useEffect(() => {
     let mounted = true;
 
     // Vite pakai import.meta.env.BASE_URL
     const publicBase =
       (typeof import.meta !== "undefined" && import.meta.env?.BASE_URL) || "";
-
-    const tryPaths = [
-      `${publicBase}data/about/softskills.json`,
-      "/data/about/softskills.json",
-      "/about/softskills.json",
-      "/softskills.json",
-      "./data/about/softskills.json",
-    ];
 
     const fetchSequential = async () => {
       // Prioritaskan path yang paling mungkin berhasil di environment Vite
@@ -68,7 +62,7 @@ export default function SoftSkills() {
           const res = await fetch(p);
           if (!res.ok) continue;
           const data = await res.json();
-          if (mounted) {
+          if (mounted && data && Array.isArray(data.skills)) {
             setSkillsData(data);
             return;
           }
@@ -77,7 +71,11 @@ export default function SoftSkills() {
         }
       }
 
-      if (mounted) console.error("❌ Gagal memuat softskills.json");
+      // Fallback ke data lokal jika fetch gagal
+      if (mounted) {
+        console.warn("Menggunakan data fallback lokal untuk soft skills");
+        setSkillsData(fallbackSkillsData);
+      }
     };
 
     fetchSequential();
@@ -190,6 +188,19 @@ export default function SoftSkills() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-[var(--color-gray-900)] to-[var(--color-gray-800)] text-white flex flex-col items-center px-6 py-20">
+      <Helmet>
+        <title>{skillsData.sectionTitle || "Soft Skills"} | Portofolio M. Syaiful Rahman</title>
+        <meta
+          name="description"
+          content="Eksplorasi nilai profesional, kompetensi interpersonal, dan soft skills yang dimiliki oleh M. Syaiful Rahman."
+        />
+        <meta property="og:title" content={`${skillsData.sectionTitle || "Soft Skills"} | Portofolio M. Syaiful Rahman`} />
+        <meta
+          property="og:description"
+          content="Eksplorasi nilai profesional, kompetensi interpersonal, dan soft skills yang dimiliki oleh M. Syaiful Rahman."
+        />
+      </Helmet>
+
       {/* Header */}
       <SoftSkillsHeader 
         title={skillsData.sectionTitle} 

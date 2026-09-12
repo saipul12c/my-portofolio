@@ -4,16 +4,172 @@
   "link": "/testimoni",
   "partners": [
     {
+      "id": 1,
       "name": "Digital Learning Studio",
-      "desc": "Pengembangan konten video edukatif berbasis interaktif."
+      "company": "Digital Learning Studio Indonesia",
+      "project": "Pengembangan Modul Pembelajaran Interaktif",
+      "desc": "Pengembangan modul pembelajaran interaktif yang memadukan fungsi, estetika visual, dan empati pengguna.",
+      "rating": 5
     },
     {
+      "id": 2,
       "name": "Madrasah Tech Community",
-      "desc": "Kolaborasi workshop integrasi teknologi pendidikan."
+      "company": "Madrasah Tech Community",
+      "project": "Pelatihan Guru Digital Literasi 4.0",
+      "desc": "Pelatihan guru digital literasi dan kolaborasi workshop integrasi teknologi pendidikan.",
+      "rating": 5
     },
     {
+      "id": 3,
       "name": "Kampus Merdeka Project",
-      "desc": "Membantu tim riset membuat media pembelajaran berbasis web."
+      "company": "Program Kampus Merdeka x Kemdikbud",
+      "project": "Produksi Media Pembelajaran Interaktif Berbasis Proyek",
+      "desc": "Produksi media pembelajaran interaktif berbasis web untuk 10.000+ mahasiswa nasional.",
+      "rating": 4.8
+    },
+    {
+      "id": 4,
+      "name": "EduVerse ID",
+      "company": "EduVerse ID",
+      "project": "Kampanye Literasi Digital Nasional 2025",
+      "desc": "Menerjemahkan konsep menjadi kampanye visual edukatif berskala nasional dengan 1 juta+ peserta.",
+      "rating": 5
+    },
+    {
+      "id": 5,
+      "name": "Nusantara EduTech",
+      "company": "PT Nusantara EduTech",
+      "project": "Implementasi Platform Pembelajaran Terpadu",
+      "desc": "Implementasi platform pembelajaran terpadu dengan integrasi sistem legacy dan UX modern.",
+      "rating": 4.9
+    },
+    {
+      "id": 6,
+      "name": "Al-Falah Islamic School",
+      "company": "Sekolah Islam Terpadu Al-Falah",
+      "project": "Digital Transformation Roadmap 2024-2026",
+      "desc": "Transformasi digital institusi pendidikan yang memadukan teknologi modern dan prinsip pendidikan berkarakter.",
+      "rating": 5
+    },
+    {
+      "id": 7,
+      "name": "EduPlay Games",
+      "company": "PT EduPlay Games Indonesia",
+      "project": "Seri Game Edukasi 'Petualangan Nusantara'",
+      "desc": "Pengembangan game edukasi anak usia dini dengan gamifikasi interaktif dan 100.000+ unduhan.",
+      "rating": 5
+    },
+    {
+      "id": 8,
+      "name": "BUMN Tech Solutions",
+      "company": "PT BUMN Tech Solutions",
+      "project": "Corporate Learning Management System",
+      "desc": "Membangun sistem Corporate LMS enterprise yang scalable dan user-friendly untuk 5.000+ karyawan.",
+      "rating": 4.9
+    },
+    {
+      "id": 9,
+      "name": "LinguaLearn AI",
+      "company": "LinguaLearn AI Singapore",
+      "project": "AI-Powered Language Learning Platform",
+      "desc": "Platform belajar bahasa asing berbasis AI dengan akurasi pengenalan suara dan user experience intuitif.",
+      "rating": 5
+    },
+    {
+      "id": 10,
+      "name": "Vocational Education Board",
+      "company": "National Vocational Education Board",
+      "project": "Digital Competency Assessment System",
+      "desc": "Sistem assessment kompetensi digital berbasis standar nasional untuk 200+ SMK di Indonesia.",
+      "rating": 4.8
+    },
+    {
+      "id": 11,
+      "name": "FinLearn Technologies",
+      "company": "PT FinLearn Technologies",
+      "project": "Microlearning Platform for Financial Literacy",
+      "desc": "Platform microlearning mobile untuk literasi keuangan digital dengan tingkat penyelesaian modul 90%.",
+      "rating": 5
+    },
+    {
+      "id": 12,
+      "name": "Industrial Safety Pro",
+      "company": "PT Industrial Safety Pro",
+      "project": "Virtual Reality Safety Training System",
+      "desc": "Sistem pelatihan keselamatan kerja berbasis Virtual Reality (VR) yang imersif dan aplikatif.",
+      "rating": 4.9
+    },
+    {
+      "id": 14,
+      "name": "Corporate Solutions Group",
+      "company": "PT Corporate Solutions Group",
+      "project": "Enterprise Digital Asset Management System",
+      "desc": "Sistem manajemen aset digital (DAM) enterprise yang aman, scalable, dan mengelola 50.000+ aset.",
+      "rating": 5
+    },
+    {
+      "id": 15,
+      "name": "Bank UMKM Nasional",
+      "company": "Bank UMKM Nasional",
+      "project": "Mobile Banking Application for SMEs",
+      "desc": "Pengembangan aplikasi mobile banking yang aman, intuitif, dan optimal untuk segmen pelaku UMKM.",
+      "rating": 4.8
+    },
+    {
+      "id": 16,
+      "name": "SocialFund Indonesia",
+      "company": "Yayasan SocialFund Indonesia",
+      "project": "Social Project Crowdfunding Platform",
+      "desc": "Platform crowdfunding inklusif untuk pendanaan dan pemberdayaan berbagai proyek sosial masyarakat.",
+      "rating": 5
+    },
+    {
+      "id": 17,
+      "name": "AgriTech Solutions",
+      "company": "PT AgriTech Solutions Indonesia",
+      "project": "IoT-Based Smart Farming System",
+      "desc": "Solusi pertanian pintar berbasis sensor IoT untuk meningkatkan efisiensi dan hasil panen petani.",
+      "rating": 4.9
+    },
+    {
+      "id": 18,
+      "name": "CodeKids Indonesia",
+      "company": "PT CodeKids Edu Indonesia",
+      "project": "Interactive Coding Platform for Children",
+      "desc": "Platform edukasi pemrograman interaktif dan ramah anak untuk membangun logika berpikir komputasi.",
+      "rating": 5
+    },
+    {
+      "id": 19,
+      "name": "SupplyChain Pro",
+      "company": "PT SupplyChain Pro Indonesia",
+      "project": "Digital Supply Chain Management System",
+      "desc": "Sistem manajemen rantai pasok digital untuk efisiensi inventaris, logistik, dan pelacakan pengiriman.",
+      "rating": 4.8
+    },
+    {
+      "id": 20,
+      "name": "MindCare Indonesia",
+      "company": "PT MindCare Digital Health",
+      "project": "Mental Health and Wellness Platform",
+      "desc": "Platform kesehatan mental dan wellness digital yang aman, suportif, dan menjaga privasi pengguna.",
+      "rating": 5
+    },
+    {
+      "id": 21,
+      "name": "PropertyHub Indonesia",
+      "company": "PT PropertyHub Digital",
+      "project": "Real Estate Property Management System",
+      "desc": "Sistem CRM dan manajemen properti real estate komprehensif untuk ribuan listing properti.",
+      "rating": 4.9
+    },
+    {
+      "id": 22,
+      "name": "InclusiveEdu Foundation",
+      "company": "Yayasan InclusiveEdu Indonesia",
+      "project": "Accessible E-Learning Platform for Disabilities",
+      "desc": "Platform e-learning ramah disabilitas yang memenuhi standar aksesibilitas WCAG 2.1 AA.",
+      "rating": 5
     }
   ]
 }

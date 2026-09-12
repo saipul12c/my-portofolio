@@ -146,7 +146,7 @@ const CardFront = memo(({ profile }) => (
     className="absolute inset-0 w-full h-full backface-hidden rounded-[28px] overflow-hidden border border-white/10 bg-[#0a0a0a]/90 backdrop-blur-xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)]"
     style={{ backfaceVisibility: "hidden" }}
   >
-    <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] pointer-events-none" />
+    <div className="absolute inset-0 opacity-[0.04] bg-[radial-gradient(circle_at_1px_1px,_white_1px,_transparent_0)] bg-[length:16px_16px] pointer-events-none" />
     <div className="absolute -inset-[100%] bg-gradient-to-tr from-transparent via-white/5 to-transparent rotate-45 pointer-events-none animate-[shine_5s_infinite_linear]" />
 
     <div className="relative z-10 flex flex-col items-center h-full p-6">
@@ -233,11 +233,31 @@ const CardBack = memo(({ profile }) => (
       {/* QRIS Section dengan desain yang lebih rapi */}
       <div className="flex flex-col items-center gap-4 flex-1 justify-center">
         <div className="bg-white p-3 rounded-xl shadow-2xl border border-white/20">
-          <img 
-            src={profile.qrisImage || "../../../data/IMG/Donate/Donate.png"} 
-            alt="QRIS Payment"
-            className="w-28 h-28 object-cover rounded-lg"
-          />
+          {profile.qrisImage ? (
+            <img 
+              src={profile.qrisImage} 
+              alt="QRIS Payment"
+              className="w-28 h-28 object-cover rounded-lg"
+            />
+          ) : (
+            <div className="w-28 h-28 flex flex-col items-center justify-center bg-gray-100 rounded-lg text-gray-800 p-2 border border-gray-300">
+              <svg className="w-16 h-16 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="5" height="5" x="3" y="3" rx="1"/>
+                <rect width="5" height="5" x="16" y="3" rx="1"/>
+                <rect width="5" height="5" x="3" y="16" rx="1"/>
+                <path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
+                <path d="M21 21v.01"/>
+                <path d="M12 7v3a2 2 0 0 1-2 2H7"/>
+                <path d="M3 12h.01"/>
+                <path d="M12 3h.01"/>
+                <path d="M12 16v.01"/>
+                <path d="M16 12h1"/>
+                <path d="M21 12v.01"/>
+                <path d="M12 21v-1"/>
+              </svg>
+              <span className="text-[8px] font-bold tracking-wider text-gray-500 mt-1 uppercase">QR CODE</span>
+            </div>
+          )}
         </div>
         <div className="text-center space-y-1">
           <p className="text-[10px] text-gray-400 leading-tight max-w-[140px]">

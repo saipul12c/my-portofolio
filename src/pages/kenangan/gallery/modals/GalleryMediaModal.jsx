@@ -1,24 +1,79 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight, Heart, MessageCircle, Share2, Eye, Tag, UserCheck, Music } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import GalleryShareBar from "../GalleryShareBar";
+import UniversalMediaPlayer from "../../components/UniversalMediaPlayer";
 import { getMediaRoute } from "../../utils/routeHelpers";
 import { sanitizeUrl, sanitizeVideoUrl, generateAltText } from "../../utils/sanitizers";
 
 export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, currentIndex, setCurrentIndex }) {
   const navigate = useNavigate();
   const [mediaError, setMediaError] = useState(false);
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
 
-  const handlePrev = () => {
-    if (!selectedMedia?.src?.length) return;
-    setCurrentIndex(prev => prev === 0 ? selectedMedia.src.length - 1 : prev - 1);
-  };
+  const isArraySrc = Array.isArray(selectedMedia?.src);
+  const srcLength = isArraySrc ? selectedMedia.src.length : 0;
 
-  const handleNext = () => {
-    if (!selectedMedia?.src?.length) return;
-    setCurrentIndex(prev => prev === selectedMedia.src.length - 1 ? 0 : prev + 1);
-  };
+  useEffect(() => {
+    if (selectedMedia) {
+      setLiked(false);
+      setLikeCount(selectedMedia.engagement?.likes || 0);
+      setMediaError(false);
+    }
+  }, [selectedMedia?.id]);
+
+  const handleToggleLike = useCallback(() => {
+    setLiked((prev) => {
+      const next = !prev;
+      setLikeCount((c) => (next ? c + 1 : Math.max(0, c - 1)));
+      return next;
+    });
+  }, []);
+
+  const handleNativeShare = useCallback(async () => {
+    const url = `${window.location.origin}/gallery?media=${selectedMedia?.id || ""}&type=${selectedMedia?.type || ""}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: selectedMedia?.title || "Gallery Media",
+          text: selectedMedia?.desc || "Check out this media from my gallery!",
+          url,
+        });
+      } catch (err) {
+        if (err.name !== "AbortError") console.error("Share failed:", err);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(url);
+        alert("Tautan media berhasil disalin ke clipboard!");
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, [selectedMedia]);
+
+  // Lock body scroll when modal is active
+  useEffect(() => {
+    if (selectedMedia && selectedMedia.type !== "short") {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [selectedMedia]);
+
+  const handlePrev = useCallback(() => {
+    if (!srcLength) return;
+    setCurrentIndex(prev => prev === 0 ? srcLength - 1 : prev - 1);
+  }, [srcLength, setCurrentIndex]);
+
+  const handleNext = useCallback(() => {
+    if (!srcLength) return;
+    setCurrentIndex(prev => prev === srcLength - 1 ? 0 : prev + 1);
+  }, [srcLength, setCurrentIndex]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -73,16 +128,16 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
 
           {/* Media Section */}
           <div className="w-full md:w-2/3 bg-black flex items-center justify-center relative p-4">
-            {/* Album/Image Gallery */}
-            {(selectedMedia.type === "album" || (selectedMedia.type === "image" && Array.isArray(selectedMedia.src))) ? (
+            {/* Album/Multi-Image Gallery: always render if src is array or type is album */}
+            {(selectedMedia.type === "album" || isArraySrc) ? (
               <>
                 <img 
-                  src={sanitizeUrl(selectedMedia.src[currentIndex])} 
-                  alt={`${selectedMedia.title} - Image ${currentIndex + 1} of ${selectedMedia.src.length}`} 
+                  src={sanitizeUrl(isArraySrc ? selectedMedia.src[currentIndex] : selectedMedia.src)} 
+                  alt={`${selectedMedia.title} - Image ${currentIndex + 1} of ${srcLength || 1}`} 
                   className="w-full h-full max-h-[70vh] object-contain rounded-lg"
                   onError={() => setMediaError(true)}
                 />
-                {selectedMedia.src.length > 1 && (
+                {srcLength > 1 && (
                   <>
                     <button 
                       onClick={handlePrev}
@@ -101,7 +156,7 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
                     
                     {/* Image Counter */}
                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white px-3 py-1 rounded-full text-sm" aria-live="polite">
-                      {currentIndex + 1} / {selectedMedia.src.length}
+                      {currentIndex + 1} / {srcLength}
                     </div>
                   </>
                 )}
@@ -117,16 +172,17 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
                     onError={() => setMediaError(true)}
                   />
                 ) : (
-                  <video 
-                    src={sanitizeVideoUrl(selectedMedia.src)} 
-                    controls 
-                    muted 
-                    loop 
-                    playsInline 
-                    preload="metadata"
-                    className="w-full h-full max-h-[70vh] object-contain rounded-lg"
+                  <UniversalMediaPlayer 
+                    src={selectedMedia.src}
+                    poster={selectedMedia.thumbnail || selectedMedia.poster}
+                    title={selectedMedia.title}
+                    isShort={selectedMedia.type === "short"}
+                    controls
+                    muted
+                    loop
+                    playsInline
+                    className="max-h-[70vh]"
                     onError={() => setMediaError(true)}
-                    aria-label={`Video: ${selectedMedia.title}`}
                   />
                 )}
               </>
@@ -191,18 +247,26 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
               {/* Engagement Stats */}
               {selectedMedia.engagement && (
                 <div className="flex items-center gap-4 mb-6 text-sm text-gray-400 flex-wrap">
-                  <span className="flex items-center gap-1">
-                    <Heart size={16} className="text-pink-400" /> 
-                    {(selectedMedia.engagement.likes || 0).toLocaleString()}
-                  </span>
+                  <button
+                    onClick={handleToggleLike}
+                    className="flex items-center gap-1 hover:text-pink-400 transition cursor-pointer"
+                    title="Sukai media ini"
+                  >
+                    <Heart size={16} className={liked ? "fill-pink-400 text-pink-400" : "text-pink-400"} /> 
+                    {likeCount.toLocaleString()}
+                  </button>
                   <span className="flex items-center gap-1">
                     <MessageCircle size={16} /> 
                     {(selectedMedia.engagement.comments || 0).toLocaleString()}
                   </span>
-                  <span className="flex items-center gap-1">
+                  <button
+                    onClick={handleNativeShare}
+                    className="flex items-center gap-1 hover:text-cyan-400 transition cursor-pointer"
+                    title="Bagikan media ini"
+                  >
                     <Share2 size={16} /> 
                     {(selectedMedia.engagement.shares || 0).toLocaleString()}
-                  </span>
+                  </button>
                   <span className="flex items-center gap-1">
                     <Eye size={16} /> 
                     {(selectedMedia.engagement.views || 0).toLocaleString()}
@@ -228,14 +292,14 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
                       </div>
                     ))}
                       <Link
-                        to={`/gallery/${selectedMedia.type === 'image' ? 'images' : selectedMedia.type === 'video' ? 'videos' : selectedMedia.type === 'album' ? 'albums' : 'shorts'}/${selectedMedia.id}`}
+                        to={getMediaRoute(selectedMedia.type, selectedMedia.id)}
                         onClick={() => setSelectedMedia(null)}
                         className="text-sm px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 text-center"
                       >
                         Lihat detail
                       </Link>
                       <Link
-                        to={`/gallery/${selectedMedia.type === 'image' ? 'images' : selectedMedia.type === 'video' ? 'videos' : selectedMedia.type === 'album' ? 'albums' : 'shorts'}/${selectedMedia.id}`}
+                        to={getMediaRoute(selectedMedia.type, selectedMedia.id)}
                         onClick={() => setSelectedMedia(null)}
                         className="text-sm px-3 py-1 rounded-lg border border-white/10 text-gray-300 hover:bg-white/5 text-center"
                       >
@@ -246,15 +310,25 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
               )}
             </div>
 
-            {/* Action Buttons for Mobile */}
+            {/* Action Buttons for Mobile & Share Bar */}
             <div className="flex gap-2 pt-4 border-t border-white/10 flex-col gap-3">
-              <GalleryShareBar media={selectedMedia} />
+              <GalleryShareBar media={selectedMedia} currentIndex={currentIndex} />
               <div className="flex gap-4 md:hidden">
-                <button className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 py-2 rounded-lg text-sm transition flex items-center justify-center gap-2">
-                  <Heart size={18} />
-                  Like
+                <button 
+                  onClick={handleToggleLike}
+                  className={`flex-1 py-2 rounded-lg text-sm transition flex items-center justify-center gap-2 ${
+                    liked 
+                      ? "bg-pink-500/30 text-pink-300 border border-pink-500/40" 
+                      : "bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300"
+                  }`}
+                >
+                  <Heart size={18} className={liked ? "fill-pink-400 text-pink-400" : ""} />
+                  {liked ? "Disukai" : "Like"} ({likeCount.toLocaleString()})
                 </button>
-                <button className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 py-2 rounded-lg text-sm transition flex items-center justify-center gap-2">
+                <button 
+                  onClick={handleNativeShare}
+                  className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 py-2 rounded-lg text-sm transition flex items-center justify-center gap-2"
+                >
                   <Share2 size={18} />
                   Share
                 </button>

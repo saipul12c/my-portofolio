@@ -4,10 +4,10 @@ import { useState } from "react";
 import { GALLERY_CONFIG } from "../utils/constants";
 import { sanitizeFilename, sanitizeExtension, isSafeOrigin } from "../utils/sanitizers";
 
-export default function GalleryShareBar({ media }) {
+export default function GalleryShareBar({ media, currentIndex = 0 }) {
   const [copied, setCopied] = useState(false);
 
-  const mediaUrl = `${window.location.origin}/gallery?media=${media?.id || ""}`;
+  const mediaUrl = `${window.location.origin}/gallery?media=${media?.id || ""}&type=${media?.type || ""}`;
 
   const handleCopy = async () => {
     try {
@@ -20,14 +20,18 @@ export default function GalleryShareBar({ media }) {
   };
 
   const handleDownload = async () => {
-    if (!media?.src) {
-      console.error('No media source available');
+    const targetSrc = Array.isArray(media?.src)
+      ? (media.src[currentIndex] || media.src[0])
+      : (media?.src || media?.thumbnail || media?.poster);
+
+    if (!targetSrc) {
+      console.error('No media source available for download');
       return;
     }
     
     try {
       // Validate URL
-      const url = new URL(media.src, window.location.origin);
+      const url = new URL(targetSrc, window.location.origin);
       
       // Security check: Only allow http/https
       if (url.protocol !== 'http:' && url.protocol !== 'https:') {
@@ -36,57 +40,56 @@ export default function GalleryShareBar({ media }) {
         return;
       }
       
-      // Check if same origin (for security)
-      const isSafe = isSafeOrigin(url.href);
-      if (!isSafe) {
-        console.warn('Cross-origin download blocked for security');
-        // For cross-origin, open in new tab instead
-        window.open(url.href, '_blank', 'noopener,noreferrer');
-        return;
-      }
-      
       // Sanitize filename
-      const baseFilename = media.title || 'media';
+      const baseFilename = media.title || 'gallery-media';
       const safeFilename = sanitizeFilename(baseFilename);
       
       // Get and validate file extension
       const urlPath = url.pathname;
       const extMatch = urlPath.match(/\.([a-z0-9]+)$/i);
-      const ext = extMatch ? sanitizeExtension(extMatch[1]) : null;
-      
+      let ext = extMatch ? sanitizeExtension(extMatch[1]) : null;
       if (!ext) {
-        console.warn('Invalid or missing file extension');
+        ext = media?.type === 'video' || media?.type === 'short' ? 'mp4' : 'jpg';
       }
       
-      const filename = `${safeFilename}.${ext || 'jpg'}`;
+      const filename = `${safeFilename}${Array.isArray(media?.src) ? `-${currentIndex + 1}` : ''}.${ext}`;
       
-      // For same-origin files, use fetch + blob to avoid CORS issues
-      try {
-        const response = await fetch(url.href);
-        if (!response.ok) throw new Error('Download failed');
-        
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        link.download = filename;
-        link.rel = 'noopener noreferrer';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        // Cleanup blob URL after a short delay
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
-      } catch (fetchErr) {
-        // Fallback to direct download if fetch fails
-        console.warn('Fetch failed, trying direct download:', fetchErr);
-        const link = document.createElement('a');
-        link.href = url.href;
-        link.download = filename;
-        link.rel = 'noopener noreferrer';
-        link.click();
+      // Check origin safety
+      const isSafe = isSafeOrigin(url.href);
+      
+      // If same origin or trusted CDN, attempt fetch + blob for seamless download
+      if (isSafe) {
+        try {
+          const response = await fetch(url.href, { mode: 'cors' });
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          
+          const blob = await response.blob();
+          const blobUrl = URL.createObjectURL(blob);
+          
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = filename;
+          link.rel = 'noopener noreferrer';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+          return;
+        } catch (fetchErr) {
+          console.warn('Fetch blob download failed, falling back to direct anchor:', fetchErr);
+        }
       }
+      
+      // Fallback: direct anchor download or open in new tab
+      const link = document.createElement('a');
+      link.href = url.href;
+      link.download = filename;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } catch (err) {
       console.error('Download failed:', err);
       alert('Gagal mengunduh file. Silakan coba lagi.');

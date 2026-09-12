@@ -23,27 +23,46 @@ export const levelToProgress = (level) => {
   return 40;
 };
 
+export const escapeHTML = (str) => {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+};
+
 export const formatYouTubeURL = (url) => {
   if (!url || typeof url !== "string") return "";
   try {
     const u = url.trim();
-    // Jika sudah dalam bentuk embed, return langsung (tetap pastikan ada video id)
+
+    const isDummyId = (id) => {
+      if (!id) return true;
+      const lower = id.toLowerCase();
+      return /^(example\d*|xyz\d*|test\d*|sample\d*)$/i.test(lower);
+    };
+
+    // Jika sudah dalam bentuk embed, return langsung jika bukan dummy
     if (u.includes("/embed/")) {
       const id = u.split("/embed/")[1].split(/[?&]/)[0];
-      return id ? `https://www.youtube.com/embed/${id}?rel=0` : "";
+      if (!id || isDummyId(id)) return "";
+      return `https://www.youtube.com/embed/${id}?rel=0`;
     }
 
-    // regex amat sederhana untuk menangkap id dari beberapa bentuk umum
+    // regex untuk menangkap id dari bentuk umum
     const patterns = [
       /(?:youtube\.com\/watch\?v=|youtube\.com\/watch\?.+&v=)([A-Za-z0-9_-]{8,})/, // watch?v=
-      /youtube\.com\/shorts\/([A-Za-z0-9_-]{8,})/, // shorts
-      /youtu\.be\/([A-Za-z0-9_-]{8,})/, // youtu.be
-      /youtube\.com\/v\/([A-Za-z0-9_-]{8,})/, // /v/
+      /youtube\.com\/shorts\/([A-Za-z0-9_-]{5,})/, // shorts
+      /youtu\.be\/([A-Za-z0-9_-]{5,})/, // youtu.be
+      /youtube\.com\/v\/([A-Za-z0-9_-]{5,})/, // /v/
     ];
 
     for (const p of patterns) {
       const m = u.match(p);
       if (m && m[1]) {
+        if (isDummyId(m[1])) return "";
         return `https://www.youtube.com/embed/${m[1]}?rel=0`;
       }
     }
@@ -51,27 +70,27 @@ export const formatYouTubeURL = (url) => {
     // Kalau url mengandung v= di query, fallback parse
     if (u.includes("watch?v=")) {
       const id = u.split("watch?v=")[1].split("&")[0];
-      if (id) return `https://www.youtube.com/embed/${id}?rel=0`;
+      if (id && !isDummyId(id)) return `https://www.youtube.com/embed/${id}?rel=0`;
     }
 
-    // No match
+    // No valid match
     return "";
   } catch {
-    // intentionally left blank — return default value below
     return "";
   }
 };
 
 export const highlightText = (text, keyword) => {
-  if (!text || !keyword) return text || "";
-  const s = String(text);
+  if (!text) return "";
+  const safeText = escapeHTML(text);
+  if (!keyword) return safeText;
   const k = String(keyword).trim();
-  if (k.length === 0) return s;
+  if (k.length === 0) return safeText;
 
-  const escapedKeyword = k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const escapedKeyword = escapeHTML(k).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const reg = new RegExp(`(${escapedKeyword})`, "gi");
 
-  return s.replace(
+  return safeText.replace(
     reg,
     `<mark class="bg-yellow-400/70 text-black rounded px-1">$1</mark>`
   );

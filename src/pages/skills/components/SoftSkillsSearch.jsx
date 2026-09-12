@@ -188,29 +188,28 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
     }
   };
 
+  const categories = useMemo(() => {
+    const set = new Set();
+    skills.forEach((s) => {
+      if (s?.category) set.add(s.category);
+    });
+    return ["All", ...Array.from(set)];
+  }, [skills]);
+
   return (
     <div className="w-full max-w-5xl flex flex-col gap-6 mb-12">
       <div className="relative flex flex-col sm:flex-row items-center gap-6">
         {/* Search Input Layer */}
         <div className="relative w-full sm:w-2/3">
-          <Search className="absolute left-4 top-3.5 text-gray-400 w-5 h-5" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 z-20 pointer-events-none" />
 
-          {/* Ghost Auto-Text (Read-Only) */}
-          <input
-            type="text"
-            readOnly
-            value={ghostText}
-            className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-3 text-sm text-gray-500 pointer-events-none select-none opacity-80"
-            aria-hidden
-          />
-
-          {/* Main Input (Typing) */}
-          <div className="absolute top-0 left-0 w-full h-full flex items-center pr-2">
+          {/* Main Input Container */}
+          <div className="relative w-full">
             <input
               ref={searchRef}
               type="text"
               placeholder={placeholderText || "Cari skill..."}
-              className="w-full bg-transparent border border-white/10 rounded-2xl pl-12 pr-[120px] py-3 text-sm text-white focus:border-cyan-400 outline-none z-10 transition-all h-full"
+              className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-[140px] py-3.5 text-sm text-white focus:border-cyan-400 outline-none z-10 transition-all"
               style={{ caretColor: "#22d3ee" }}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -219,31 +218,34 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
               onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
               aria-label="Cari skill"
             />
-            
-            {/* Unified AI Button inside Search Bar */}
-            <button
-              onClick={() => onOpenAI?.(search)}
-              className="absolute right-2 flex items-center gap-2 px-4 py-1.5 rounded-xl bg-[#252b3d] hover:bg-[#2d354a] text-gray-300 hover:text-white transition-all border border-white/5 z-20"
-            >
-              <Bot className="w-4 h-4" />
-              <span className="font-semibold text-[10px] uppercase tracking-wider">Tanya AI</span>
-            </button>
-          </div>
 
-          {/* Clear Button (Offset by AI button) */}
-          {search && (
-            <button
-              onClick={() => {
-                setSearch("");
-                setSuggestions([]);
-                setGhostText("");
-              }}
-              className="absolute right-[110px] top-3.5 text-gray-400 hover:text-white z-20"
-              aria-label="Bersihkan pencarian"
-            >
-              ✕
-            </button>
-          )}
+            {/* Action Buttons inside Search Bar */}
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5 z-20">
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearch("");
+                    setSuggestions([]);
+                    setGhostText("");
+                  }}
+                  className="px-2 py-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors text-xs"
+                  aria-label="Bersihkan pencarian"
+                >
+                  ✕
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => onOpenAI?.(search)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 hover:text-white transition-all border border-cyan-500/30 shadow-sm"
+              >
+                <Bot className="w-3.5 h-3.5" />
+                <span className="font-semibold text-[10px] uppercase tracking-wider">Tanya AI</span>
+              </button>
+            </div>
+          </div>
 
           {/* Suggestion Dropdown */}
           <AnimatePresence>
@@ -260,10 +262,10 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
                     layout
                     onClick={() => handleSelectSuggestion(s.name)}
                     onMouseEnter={() => setActiveSuggestion(i)}
-                    className={`flex items-center justify-between px-4 py-2 cursor-pointer transition-all ${
+                    className={`flex items-center justify-between px-4 py-2.5 cursor-pointer transition-all ${
                       activeSuggestion === i
                         ? "bg-cyan-600/40 text-white"
-                        : "hover:bg-cyan-500/20"
+                        : "hover:bg-cyan-500/20 text-gray-300"
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -292,14 +294,19 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
         {/* Category Filter */}
         <div className="relative w-full sm:w-1/3">
           <select
-            className="w-full p-3.5 rounded-2xl bg-gray-800 border border-white/10 text-white focus:border-cyan-400 outline-none cursor-pointer"
+            className="w-full p-3.5 rounded-2xl bg-gray-800 border border-white/10 text-white focus:border-cyan-400 outline-none cursor-pointer text-sm"
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
             aria-label="Filter kategori"
           >
             <option value="All">🔥 Semua Kategori</option>
-            <option value="Soft Skill">Soft Skill</option>
-            <option value="Professional Skill">Professional Skill</option>
+            {categories
+              .filter((cat) => cat !== "All")
+              .map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
           </select>
         </div>
       </div>

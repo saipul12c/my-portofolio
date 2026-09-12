@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Search, Filter, X, Bookmark, Star } from "lucide-react";
@@ -181,10 +181,26 @@ export default function GalleryFilter({ onFilter, allTags = [], allMedia = [] })
     return () => clearTimeout(timer);
   }, [searchTerm, allMedia, uniqueTags, history, bookmarks, isFocused]);
 
-  // Handlers
-  const applyFilter = (term = searchTerm, tags = selectedTags) => {
+  // Debounced filter for typing
+  const debounceTimerRef = useRef(null);
+
+  const applyFilterDebounced = useCallback((term, tags) => {
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    debounceTimerRef.current = setTimeout(() => {
+      onFilter?.({ searchTerm: term, tags });
+    }, 200);
+  }, [onFilter]);
+
+  const applyFilter = useCallback((term = searchTerm, tags = selectedTags) => {
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
     onFilter?.({ searchTerm: term, tags });
-  };
+  }, [onFilter, searchTerm, selectedTags]);
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    };
+  }, []);
 
   const handleToggleTag = (tag) => {
     const newTags = selectedTags.includes(tag) ? selectedTags.filter((t) => t !== tag) : [...selectedTags, tag];
@@ -201,8 +217,7 @@ export default function GalleryFilter({ onFilter, allTags = [], allMedia = [] })
   const handleSearchChange = (e) => {
     const term = e.target.value;
     setSearchTerm(term);
-    // live filter but debounced in parent components; still call for responsiveness
-    applyFilter(term, selectedTags);
+    applyFilterDebounced(term, selectedTags);
   };
 
   const handleSelectSuggestion = (sugg) => {

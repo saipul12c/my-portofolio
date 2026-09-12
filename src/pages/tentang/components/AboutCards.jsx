@@ -103,26 +103,28 @@ const imageVariants = {
   }
 };
 
-// Text Generate Effect Component
-const TextGenerateEffect = ({ words, className }) => {
+// Text Generate Effect Component - Smooth typing animation without state thrashing
+const TextGenerateEffect = ({ words = "", className = "" }) => {
   const [displayedText, setDisplayedText] = useState("");
-  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    if (currentIndex < words.length) {
-      const timer = setTimeout(() => {
-        setDisplayedText(prev => prev + words[currentIndex]);
-        setCurrentIndex(prev => prev + 1);
-      }, 30);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [currentIndex, words]);
+    if (!words) return;
+    let index = 0;
+    const interval = setInterval(() => {
+      index += 1;
+      setDisplayedText(words.slice(0, index));
+      if (index >= words.length) {
+        clearInterval(interval);
+      }
+    }, 25);
+
+    return () => clearInterval(interval);
+  }, [words]);
 
   return <span className={className}>{displayedText}</span>;
 };
 
-// Evervault Card Component
+// Evervault Card Component - 60 FPS GPU-accelerated glow without React re-render
 const EvervaultCard = ({ 
   children, 
   className = "", 
@@ -130,43 +132,41 @@ const EvervaultCard = ({
   showGradient = true 
 }) => {
   const cardRef = useRef(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
 
   const handleMouseMove = (e) => {
     if (!cardRef.current) return;
-    
     const rect = cardRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    setMousePosition({ x, y });
+    cardRef.current.style.setProperty("--mouse-x", `${x}px`);
+    cardRef.current.style.setProperty("--mouse-y", `${y}px`);
   };
 
   return (
     <div
       ref={cardRef}
-      className={`relative rounded-2xl border border-white/10 bg-black/20 backdrop-blur-xl overflow-hidden ${className}`}
+      className={`relative rounded-2xl border border-white/10 bg-black/20 backdrop-blur-xl overflow-hidden group/card ${className}`}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
+      style={{
+        "--mouse-x": "150px",
+        "--mouse-y": "150px",
+      }}
     >
       {/* Animated gradient border */}
       {showGradient && (
         <div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          className="absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 pointer-events-none"
           style={{
-            background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(120,119,198,0.15), transparent 40%)`,
+            background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(120,119,198,0.15), transparent 40%)`,
           }}
         />
       )}
       
       {/* Dynamic border gradient */}
       <div
-        className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 ${
-          isHovering ? 'blur-xl' : 'blur-0'
-        }`}
+        className="absolute inset-0 rounded-2xl opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 pointer-events-none"
         style={{
-          background: `radial-gradient(800px circle at ${mousePosition.x}px ${mousePosition.y}px, ${
+          background: `radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), ${
             colors ? `rgba(120,119,198,0.3)` : 'rgba(255,255,255,0.1)'
           }, transparent 40%)`,
         }}
@@ -179,65 +179,63 @@ const EvervaultCard = ({
       
       {/* Shine effect */}
       <div
-        className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
-          isHovering ? 'opacity-100' : 'opacity-0'
-        }`}
+        className="absolute inset-0 rounded-2xl opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 pointer-events-none"
         style={{
-          background: `radial-gradient(300px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255,255,255,0.1), transparent 40%)`,
+          background: `radial-gradient(300px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.1), transparent 40%)`,
         }}
       />
     </div>
   );
 };
 
-// Hover Effect Component
+// Hover Effect Component - GPU-accelerated 3D tilt without layout thrashing
 const HoverEffect = ({ 
   children, 
   className = "",
   intensity = 1 
 }) => {
-  const [transform, setTransform] = useState("translateX(0px) translateY(0px)");
-  const [opacity, setOpacity] = useState(0);
-  
+  const containerRef = useRef(null);
+  const rafRef = useRef(null);
+
   const handleMouseMove = (e) => {
-    const target = e.currentTarget;
-    const rect = target.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    const rotateY = (-1 / 5) * x + 20;
-    const rotateX = (4 / 30) * y - 20;
-    
-    setTransform(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1, 1, 1)`);
-    setOpacity(1);
+    if (rafRef.current) return;
+    const clientX = e.clientX;
+    const clientY = e.clientY;
+
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+      
+      const rotateY = ((-1 / 5) * x + 20) * intensity;
+      const rotateX = ((4 / 30) * y - 20) * intensity;
+      
+      containerRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+      containerRef.current.style.setProperty("--hover-x", `${x}px`);
+      containerRef.current.style.setProperty("--hover-y", `${y}px`);
+    });
   };
   
   const handleMouseLeave = () => {
-    setTransform("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
-    setOpacity(0);
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    if (containerRef.current) {
+      containerRef.current.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
+    }
   };
 
   return (
     <div
-      className={`transition-all duration-200 ease-out ${className}`}
-      style={{ 
-        transform,
-        opacity: 1
-      }}
+      ref={containerRef}
+      className={`transition-transform duration-200 ease-out will-change-transform ${className}`}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
       {children}
-      
-      {/* Glow effect */}
-      <div
-        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-        style={{
-          opacity,
-          background: `radial-gradient(500px circle at var(--mouse-x) var(--mouse-y), 
-            rgba(255,255,255,0.06), transparent 40%)`,
-        }}
-      />
     </div>
   );
 };

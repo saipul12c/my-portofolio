@@ -1,57 +1,44 @@
-import { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Film, Calendar, MapPin, Tag, Play, AlertCircle } from "lucide-react";
-import { filterMediaItems, shuffleArray } from "../utils/filterHelpers";
+import { filterMediaItems } from "../utils/filterHelpers";
 import { GALLERY_CONFIG } from "../utils/constants";
-import { validateVideoSource } from "../utils/sanitizers";
+import { sanitizeUrl } from "../utils/sanitizers";
+import { getMediaPoster } from "../utils/mediaEmbed";
 
-// load shorts data lazily to avoid bundling large json into main chunk
-
-// ⚙️ Cek apakah file lokal dengan proper validation
-function isLocalVideo(src) {
-  if (!src) return false;
-  const validation = validateVideoSource(src);
-  return validation.isValid;
-}
-
-export default function GalleryShorts({ onSelect, filterSettings = {}, onFilteredDataChange }) {
+function GalleryShortsComponent({ items, onSelect, filterSettings = {} }) {
   const ITEMS_PER_PAGE = GALLERY_CONFIG.ITEMS_PER_PAGE.SHORTS;
   const MAX_PAGES_DISPLAY = GALLERY_CONFIG.MAX_PAGES_DISPLAY;
   const [currentPage, setCurrentPage] = useState(1);
-  const [shortsData, setShortsData] = useState([]);
+  const [localData, setLocalData] = useState([]);
   
   const { searchTerm = "", tags: selectedTags = [] } = filterSettings;
 
+  // Fallback to local import only if items prop is not provided
   useEffect(() => {
+    if (items) return;
     let mounted = true;
     import("../../../data/gallery/shorts.json")
       .then((m) => {
         if (!mounted) return;
-        setShortsData(m.default || []);
+        setLocalData(m.default || []);
       })
       .catch((err) => console.error("Failed to load shorts.json", err));
     return () => { mounted = false; };
-  }, []);
+  }, [items]);
 
-  // 🔄 Filter hanya video lokal & bagi data per halaman
+  const rawData = items || localData;
+
+  // Filter data per halaman (stable order, no random re-shuffling on keystroke)
   const { pages, allFilteredData } = useMemo(() => {
-    const localVideos = (shortsData || []).filter((short) => isLocalVideo(short.src));
-    const filtered = filterMediaItems(localVideos, searchTerm, selectedTags);
-    const shuffled = shuffleArray(filtered);
-    const totalPages = Math.ceil(shuffled.length / ITEMS_PER_PAGE);
+    const filtered = filterMediaItems(rawData, searchTerm, selectedTags);
+    const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
     const chunks = [];
     for (let i = 0; i < totalPages; i++) {
-      chunks.push(shuffled.slice(i * ITEMS_PER_PAGE, (i + 1) * ITEMS_PER_PAGE));
+      chunks.push(filtered.slice(i * ITEMS_PER_PAGE, (i + 1) * ITEMS_PER_PAGE));
     }
     return { pages: chunks, allFilteredData: filtered };
-  }, [shortsData, searchTerm, selectedTags, ITEMS_PER_PAGE]);
-
-  // 📢 Notify parent of filtered data (use effect to avoid updates during render)
-  useEffect(() => {
-    if (onFilteredDataChange) {
-      onFilteredDataChange(allFilteredData);
-    }
-  }, [allFilteredData, onFilteredDataChange]);
+  }, [rawData, searchTerm, selectedTags, ITEMS_PER_PAGE]);
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -88,7 +75,7 @@ export default function GalleryShorts({ onSelect, filterSettings = {}, onFiltere
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.3 }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
             >
               {currentData.map((short, index) => (
@@ -96,23 +83,20 @@ export default function GalleryShorts({ onSelect, filterSettings = {}, onFiltere
                   key={short.id}
                   onClick={() => onSelect && onSelect(short, currentData, index)}
                   whileHover={{ scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 180, damping: 15 }}
-                  className="relative rounded-2xl overflow-hidden cursor-pointer group"
+                  transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                  className="relative rounded-2xl overflow-hidden cursor-pointer group bg-gray-900 border border-white/10 hover:border-cyan-400/50 transition-colors shadow-lg"
                 >
-                  {/* 🎬 Video Lokal */}
-                  <div className="relative aspect-[9/16] overflow-hidden">
-                    <video
-                      src={short.src}
-                      muted
-                      loop
-                      playsInline
-                      preload="none"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      aria-label={`Short video: ${short.title}`}
+                  {/* Poster Thumbnail */}
+                  <div className="relative aspect-[9/16] overflow-hidden bg-black">
+                    <img
+                      src={sanitizeUrl(getMediaPoster(short))}
+                      alt={short.title}
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-90 group-hover:opacity-100"
                     />
 
                     {/* Overlay Info */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4 text-white z-10 flex flex-col gap-2">
                       <h3 className="font-semibold text-base leading-tight line-clamp-2">
                         {short.title}
@@ -122,10 +106,10 @@ export default function GalleryShorts({ onSelect, filterSettings = {}, onFiltere
                       </p>
                       <div className="flex items-center gap-2 text-xs text-gray-300">
                         <Calendar size={13} className="text-cyan-400" />
-                        <span>{short.date || "Tanggal tidak diketahui"}</span>
+                        <span>{short.date || "2024"}</span>
                         <span className="text-gray-500">•</span>
                         <MapPin size={13} className="text-pink-400" />
-                        <span>{short.location || "Lokasi tidak diketahui"}</span>
+                        <span>{short.location || "Indonesia"}</span>
                       </div>
                       {short.tags && (
                         <div className="flex flex-wrap gap-2 mt-1">
@@ -141,9 +125,11 @@ export default function GalleryShorts({ onSelect, filterSettings = {}, onFiltere
                       )}
                     </div>
 
-                    {/* Play Icon Hover */}
+                    {/* Play Button Icon on Hover */}
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <Play className="w-16 h-16 text-white/70" />
+                      <div className="w-16 h-16 rounded-full bg-cyan-500/80 backdrop-blur-sm flex items-center justify-center text-black shadow-xl transform scale-90 group-hover:scale-100 transition-transform">
+                        <Play className="w-8 h-8 fill-current ml-1" />
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -160,9 +146,10 @@ export default function GalleryShorts({ onSelect, filterSettings = {}, onFiltere
                   onClick={() => setCurrentPage(index + 1)}
                   className={`w-9 h-9 rounded-md border text-sm font-medium transition-all duration-200 ${
                     currentPage === index + 1
-                      ? "bg-cyan-400 text-black border-cyan-400"
+                      ? "bg-cyan-400 text-black border-cyan-400 font-bold"
                       : "border-cyan-400/40 text-cyan-300 hover:bg-cyan-400/10"
                   }`}
+                  aria-label={`Go to page ${index + 1}`}
                 >
                   {index + 1}
                 </button>
@@ -174,3 +161,5 @@ export default function GalleryShorts({ onSelect, filterSettings = {}, onFiltere
     </section>
   );
 }
+
+export default React.memo(GalleryShortsComponent);

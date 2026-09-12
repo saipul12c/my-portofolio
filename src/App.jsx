@@ -30,7 +30,7 @@ const Zodiak = lazy(() => import("./pages/website/zodiak/Zodiak.jsx"));
 
 // 📄 Semua halaman utama
 import Home from "./pages/Home";
-import About from "./pages/tentang/About";
+const About = lazy(() => import("./pages/tentang/About"));
 const Contact = lazy(() => import("./pages/admin/Contact"));
 import Photography from "./pages/foto/Photography";
 import Projects from "./pages/projek/Projects";
@@ -148,10 +148,12 @@ const DefaultLayout = ({ children }) => {
     "/Live-Discussion"
   ];
 
-  // If the pathname begins with any of these, hide header/footer
-  const shouldHideAlways = hideLayoutPaths.some((p) =>
-    location.pathname === p || location.pathname.startsWith(`${p}/`)
-  );
+  // If the pathname begins with any of these, hide header/footer (case-insensitive)
+  const currentPath = location.pathname.toLowerCase();
+  const shouldHideAlways = hideLayoutPaths.some((p) => {
+    const target = p.toLowerCase();
+    return currentPath === target || currentPath.startsWith(`${target}/`);
+  });
 
   // Untuk /portal, hanya hide di mobile
   const isPortal = location.pathname === "/portal";
@@ -305,8 +307,10 @@ export default function App() {
                                     element={<Certificates />}
                                   />
                                   <Route path="/SoftSkills" element={<SoftSkills />} />
+                                  <Route path="/softskills" element={<SoftSkills />} />
                                   {/* 🧠 Detail Soft Skill */}
                                   <Route path="/SoftSkills/:id" element={<SoftSkills />} />
+                                  <Route path="/softskills/:id" element={<SoftSkills />} />
                                   <Route path="/education" element={<Education />} />
                                   <Route path="/cv-saya" element={<CVsaya />} />
                                   <Route path="/visi" element={<Visi />} />

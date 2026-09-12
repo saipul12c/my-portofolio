@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, Mail, Lock, User, AlertCircle, CheckCircle, Send, Plus, Smile, MessageCircle, LogOut, LayoutDashboard, UserCircle, Copy, Edit2, Trash2, Reply, ArrowLeft, ArrowDown } from 'lucide-react';
+import { Eye, Mail, Lock, User, AlertCircle, CheckCircle, Send, Plus, Smile, MessageCircle, LogOut, LayoutDashboard, UserCircle, Copy, Edit2, Trash2, Reply, ArrowLeft, ArrowDown, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabaseClient';
 import EmojiPicker from 'emoji-picker-react';
@@ -95,6 +95,9 @@ function Live() {
   const navigate = useNavigate();
   const pollingIntervalRef = useRef(null);
   const lastScrollY = useRef(0);
+  const isPrependingOlderRef = useRef(false);
+  const prevScrollHeightRef = useRef(0);
+  const isInitialLoadRef = useRef(true);
 
   // Header state
   const [scrolled, setScrolled] = useState(false);
@@ -257,6 +260,11 @@ function Live() {
 
     setFetchingMore(true);
     try {
+      const container = messagesContainerRef.current;
+      if (container) {
+        prevScrollHeightRef.current = container.scrollHeight;
+        isPrependingOlderRef.current = true;
+      }
       const oldestMessage = messages[messages.length - 1];
       const { data, error } = await supabase
         .from('messages')
@@ -392,6 +400,7 @@ function Live() {
       .subscribe(async (status) => {
           if (status === 'SUBSCRIBED') {
             await presenceChannel.track({
+              id: user.id,
               email: user.email,
               username: user.username,
               role: user.role,
@@ -471,10 +480,28 @@ function Live() {
     };
   }, [setupRealtime]);
 
-  // Auto scroll to latest message
+  // Auto scroll to latest message (preserve scroll if loading older)
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    const container = messagesContainerRef.current;
+    if (isPrependingOlderRef.current && container) {
+      const heightDiff = container.scrollHeight - prevScrollHeightRef.current;
+      container.scrollTop += heightDiff;
+      isPrependingOlderRef.current = false;
+      return;
+    }
+
+    if (isInitialLoadRef.current) {
+      if (messages.length > 0) {
+        scrollToBottom();
+        isInitialLoadRef.current = false;
+      }
+      return;
+    }
+
+    if (!showScrollToBottom) {
+      scrollToBottom();
+    }
+  }, [messages, showScrollToBottom]);
 
   // Click outside emoji picker
   useEffect(() => {
@@ -744,6 +771,23 @@ function Live() {
     }
   };
 
+  // Get date label for date dividers
+  const getMessageDateLabel = (dateVal) => {
+    if (!dateVal) return '';
+    const date = new Date(dateVal);
+    if (isNaN(date.getTime())) return '';
+    const now = new Date();
+    
+    const isToday = date.toDateString() === now.toDateString();
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    const isYesterday = date.toDateString() === yesterday.toDateString();
+    
+    if (isToday) return 'Hari Ini';
+    if (isYesterday) return 'Kemarin';
+    return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+  };
+
   // Get role badge
   const getRoleBadge = (role) => {
     const roleConfig = USER_ROLES[role] || USER_ROLES.USER;
@@ -798,12 +842,16 @@ function Live() {
   const fetchAllProfiles = async () => {
     try {
       const { data, error } = await supabase
-        .from('profiles')
+        .from('users')
         .select('*')
-        .order('username', { ascending: true });
+        .order('nama', { ascending: true });
 
       if (error) throw error;
-      setAllProfiles(data);
+      const mapped = (data || []).map(u => ({
+        ...u,
+        username: u.nama || u.email?.split('@')[0]
+      }));
+      setAllProfiles(mapped);
     } catch (err) {
       console.error('Error fetching all profiles:', err);
     }
@@ -1262,24 +1310,24 @@ function Live() {
                   </div>
                 )}
                 
-                <div className="hidden sm:flex items-center gap-1.5 p-1.5 bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] backdrop-blur-xl">
+                <div className="flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] backdrop-blur-xl">
                   {/* Theme Switcher */}
                   <button 
                     onClick={() => setTheme(prev => prev === 'default' ? 'light' : prev === 'light' ? 'dark' : 'default')}
-                    className="p-2 hover:bg-[var(--theme-surface-hover)] rounded-xl transition-all text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
+                    className="p-1.5 sm:p-2 hover:bg-[var(--theme-surface-hover)] rounded-xl transition-all text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
                     title={`Tema: ${theme}`}
                   >
-                     {theme === 'default' ? <Monitor className="w-5 h-5" /> : theme === 'dark' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+                     {theme === 'default' ? <Monitor className="w-4 h-4 sm:w-5 sm:h-5" /> : theme === 'dark' ? <Moon className="w-4 h-4 sm:w-5 sm:h-5" /> : <Sun className="w-4 h-4 sm:w-5 sm:h-5" />}
                   </button>
 
                   {user && (
-                    <div className="flex items-center gap-2 pr-2 border-r border-[var(--theme-border)] mr-2">
+                    <div className="flex items-center gap-1 sm:gap-2 pr-1 sm:pr-2 border-r border-[var(--theme-border)] mr-1 sm:mr-2">
                        <button 
                           onClick={() => setShowMembers(true)}
-                          className="p-2 hover:bg-[var(--theme-surface-hover)] rounded-xl transition-all text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
+                          className="p-1.5 sm:p-2 hover:bg-[var(--theme-surface-hover)] rounded-xl transition-all text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
                           title="Lihat Anggota"
                        >
-                          <UsersIcon className="w-5 h-5" />
+                          <UsersIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                        </button>
                        <NotificationCenter 
                           unreadCount={unreadMentions} 
@@ -1292,23 +1340,24 @@ function Live() {
                   )}
 
                   {user && ['SUPER_ADMIN', 'ADMIN', 'MODERATOR'].includes(user.role) && (
-                    <button onClick={goToDashboard} className="p-2 hover:bg-[var(--theme-surface-hover)] rounded-xl transition-all text-[var(--theme-accent)] hover:scale-110" title="Dashboard">
-                      <LayoutDashboard className="w-5 h-5" />
+                    <button onClick={goToDashboard} className="p-1.5 sm:p-2 hover:bg-[var(--theme-surface-hover)] rounded-xl transition-all text-[var(--theme-accent)] hover:scale-110" title="Dashboard">
+                      <LayoutDashboard className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                   )}
                   
                   {user && (
-                    <button onClick={() => openProfileEditor(user)} className="p-2 hover:bg-[var(--theme-surface-hover)] rounded-xl transition-all text-[var(--theme-accent)] hover:scale-110" title="Edit Profile">
-                      <UserCircle className="w-5 h-5" />
+                    <button onClick={() => openProfileEditor(user)} className="p-1.5 sm:p-2 hover:bg-[var(--theme-surface-hover)] rounded-xl transition-all text-[var(--theme-accent)] hover:scale-110" title="Edit Profile">
+                      <UserCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                   )}
 
                   <button 
                     onClick={handleAuthAction}
-                    className="flex items-center gap-2 pl-4 pr-5 py-2.5 bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-hover)] rounded-2xl transition-all border border-[var(--theme-border)] text-xs font-black uppercase tracking-widest text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
+                    className="flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-hover)] rounded-xl sm:rounded-2xl transition-all border border-[var(--theme-border)] text-[10px] sm:text-xs font-black uppercase tracking-widest text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
+                    title={user ? 'Keluar' : 'Masuk'}
                   >
-                    <LogOut className="w-4 h-4" />
-                    {user ? 'Exit' : 'Join'}
+                    <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <span className="hidden xs:inline">{user ? 'Exit' : 'Join'}</span>
                   </button>
                 </div>
               </div>
@@ -1317,7 +1366,7 @@ function Live() {
         </motion.header>
       </div>
 
-      <main className="flex-1 w-full max-w-6xl mx-auto flex flex-col pt-2 sm:pt-4 pb-24 sm:pb-8 px-2 sm:px-6 relative z-10 overflow-hidden">
+      <main className="flex-1 w-full max-w-6xl mx-auto flex flex-col pt-2 sm:pt-4 pb-3 sm:pb-6 px-2 sm:px-6 relative z-10 overflow-hidden">
         {/* Alerts Container */}
         <div className="fixed top-20 sm:top-24 right-4 z-[60] flex flex-col gap-2 max-w-xs pointer-events-none">
           <AnimatePresence>
@@ -1354,7 +1403,7 @@ function Live() {
 
 
         {/* Chat Section */}
-        <div className="flex-1 flex flex-col bg-white/[0.01] backdrop-blur-[30px] rounded-[3rem] border border-white/5 overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.5)]">
+        <div className="flex-1 flex flex-col bg-[var(--theme-surface)] backdrop-blur-[30px] rounded-[3rem] border border-[var(--theme-border)] overflow-hidden shadow-2xl">
           {/* Scrollable Message List */}
           <div 
             ref={messagesContainerRef}
@@ -1363,10 +1412,10 @@ function Live() {
             style={{ overflowAnchor: 'auto' }}
           >
             {messages.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center opacity-30">
-                <MessageCircle className="w-20 h-20 mb-4" />
-                <p className="text-lg font-medium tracking-tight">Belum ada diskusi</p>
-                <p className="text-sm">Jadilah yang pertama untuk memulai!</p>
+              <div className="h-full flex flex-col items-center justify-center opacity-40">
+                <MessageCircle className="w-20 h-20 mb-4 text-[var(--theme-text-muted)]" />
+                <p className="text-lg font-medium tracking-tight text-[var(--theme-text)]">Belum ada diskusi</p>
+                <p className="text-sm text-[var(--theme-text-muted)]">Jadilah yang pertama untuk memulai!</p>
               </div>
             ) : (
               <div className="flex flex-col justify-start gap-6 min-h-full">
@@ -1379,13 +1428,13 @@ function Live() {
                       exit={{ opacity: 0 }}
                       className="flex justify-start mb-4 h-10 items-center overflow-hidden"
                     >
-                      <div className="bg-white/5 backdrop-blur-xl border border-white/5 rounded-2xl px-4 py-2 flex items-center gap-3">
+                      <div className="bg-[var(--theme-surface)] backdrop-blur-xl border border-[var(--theme-border)] rounded-2xl px-4 py-2 flex items-center gap-3">
                         <div className="flex gap-1">
                           <motion.div animate={{ scale: [1, 1.5, 1] }} transition={{ repeat: Infinity, duration: 1 }} className="w-1 h-1 bg-cyan-400 rounded-full"/>
                           <motion.div animate={{ scale: [1, 1.5, 1] }} transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} className="w-1 h-1 bg-cyan-400 rounded-full"/>
                           <motion.div animate={{ scale: [1, 1.5, 1] }} transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} className="w-1 h-1 bg-cyan-400 rounded-full"/>
                         </div>
-                        <span className="text-[9px] font-black uppercase tracking-widest text-white/30 italic">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-[var(--theme-text-muted)] italic">
                           {Object.values(typingUsers).length === 1 
                             ? `${Object.values(typingUsers)[0].username} sedang mengetik...` 
                             : `${Object.values(typingUsers).length} orang sedang mengetik...`}
@@ -1394,147 +1443,158 @@ function Live() {
                     </motion.div>
                   )}
                   
-                  {[...messages].reverse().map((message, index) => {
-                    // Logic Kanan-Kiri Dinamis
-                    const isOwnMessage = message.user_id === user?.id;
-                    const isStaff = ['SUPER_ADMIN', 'ADMIN', 'MODERATOR'].includes(message.role);
-                    
-                    // Ketentuan User: Jika Guests, Admin di Kanan. Jika Login, Me di Kanan.
-                    const alignRight = user ? isOwnMessage : isStaff;
+                  {[...messages].reverse().map((message, index, array) => {
+                    // Standar Chat Universal:
+                    // 1. Pesan saya sendiri selalu di KANAN (alignRight = true)
+                    // 2. Pesan orang lain / admin / moderator selalu di KIRI (alignRight = false)
+                    // 3. Jika Guest (belum login), semua pesan tampil di KIRI secara konsisten
+                    const isOwnMessage = Boolean(
+                      user && (
+                        (message.user_id && user.id && String(message.user_id) === String(user.id)) ||
+                        (message.username && (message.username === user.username || message.username === user.nama))
+                      )
+                    );
+                    const alignRight = isOwnMessage;
                     const replyData = message.reply_to || null;
                     
+                    // Date Divider calculation
+                    const currentDate = getMessageDateLabel(message.created_at || message.timestamp);
+                    const prevMsg = array[index - 1];
+                    const prevDate = prevMsg ? getMessageDateLabel(prevMsg.created_at || prevMsg.timestamp) : null;
+                    const showDateDivider = currentDate && currentDate !== prevDate;
+                    
                     return (
-                      <motion.div
-                        key={message.id || message.timestamp}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className={`flex w-full ${alignRight ? 'justify-end' : 'justify-start'}`}
-                      >
-                        <div className={`group flex flex-col max-w-[85%] sm:max-w-md ${alignRight ? 'items-end' : 'items-start'}`}>
-                          {/* Sender Info (Only for others OR if alignLeft) */}
-                          {!alignRight && (
-                            <div className="flex items-center gap-2 mb-2 ml-2">
-                              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-[10px] font-black text-white">
-                                {message.username?.[0]?.toUpperCase()}
-                              </div>
-                              <span className="text-[11px] font-bold text-white/40 tracking-wider uppercase">
-                                {message.username} • {message.role}
-                              </span>
-                            </div>
-                          )}
+                      <React.Fragment key={message.id || message.timestamp || index}>
+                        {showDateDivider && (
+                          <div className="flex items-center justify-center my-3">
+                            <span className="px-4 py-1 rounded-full bg-[var(--theme-surface)] border border-[var(--theme-border)] text-[9px] font-black uppercase tracking-widest text-[var(--theme-text-muted)] shadow-sm backdrop-blur-md">
+                              {currentDate}
+                            </span>
+                          </div>
+                        )}
 
-                          {/* Sender Info for Admin on the Right (Optional/Guest mode) */}
-                          {alignRight && !isOwnMessage && (
-                            <div className="flex items-center gap-2 mb-2 mr-2">
-                               <span className="text-[11px] font-bold text-white/40 tracking-wider uppercase">
-                                {message.username} • {message.role}
-                              </span>
-                              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-[10px] font-black text-white">
-                                {message.username?.[0]?.toUpperCase()}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Bubble Container */}
-                          <div className="relative group/bubble flex items-center gap-3">
-                            {/* Actions Overlay (Hidden by default, shown on hover, visible on touch) */}
-                            {isOwnMessage && user && (
-                              <div className="opacity-100 sm:opacity-0 sm:group-hover/bubble:opacity-100 transition-opacity flex flex-wrap sm:flex-nowrap gap-1 mr-2 bg-white/5 backdrop-blur-md rounded-xl p-1 border border-white/5 order-last sm:order-first mt-2 sm:mt-0">
-                                <button onClick={() => copyToClipboard(message.content)} className="p-2 sm:p-1.5 hover:bg-white/10 rounded-lg text-white/60 hover:text-white transition-colors" title="Copy"><Copy className="w-4 h-4 sm:w-3.5 sm:h-3.5"/></button>
-                                <button onClick={() => startEditMessage(message)} className="p-2 sm:p-1.5 hover:bg-white/10 rounded-lg text-cyan-400/80 hover:text-cyan-400 transition-colors" title="Edit"><Edit2 className="w-4 h-4 sm:w-3.5 sm:h-3.5"/></button>
-                                <button onClick={() => handleDeleteMessage(message.id)} className="p-2 sm:p-1.5 hover:bg-red-500/20 rounded-lg text-red-400/80 hover:text-red-400 transition-colors" title="Delete"><Trash2 className="w-4 h-4 sm:w-3.5 sm:h-3.5"/></button>
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className={`flex w-full ${alignRight ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div className={`group flex flex-col max-w-[85%] sm:max-w-md ${alignRight ? 'items-end' : 'items-start'}`}>
+                            {/* Sender Info (Only for others) */}
+                            {!alignRight && (
+                              <div className="flex items-center gap-2 mb-1.5 ml-2">
+                                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-[10px] font-black text-white shadow-sm">
+                                  {message.username?.[0]?.toUpperCase()}
+                                </div>
+                                <span className="text-[11px] font-bold text-[var(--theme-text-muted)] tracking-wider uppercase">
+                                  {message.username}
+                                </span>
                               </div>
                             )}
 
-                            {/* Actual Bubble */}
-                            <div className="relative group/bubble-content">
-                              <div className={`px-6 py-4 rounded-[2.5rem] shadow-2xl transition-all duration-300 ${
-                                alignRight 
-                                  ? 'bg-gradient-to-br from-cyan-600 via-blue-600 to-indigo-700 text-white rounded-tr-none border border-white/10 shadow-[0_0_20_rgba(6,182,212,0.15)]' 
-                                  : `bg-gradient-to-br ${USER_ROLES[message.role || 'USER']?.color || 'from-slate-800 to-slate-900'} backdrop-blur-3xl border border-white/10 text-white shadow-lg rounded-tl-none`
-                                }`}>
-                                  {/* Role Indicator for Others (even if alignRight for guests) */}
-                                  {!isOwnMessage && (
-                                    <div className="flex items-center gap-1.5 mb-2 pb-2 border-b border-white/10">
-                                      <span className="text-[9px] font-black uppercase tracking-widest text-white/90">
-                                        {USER_ROLES[message.role || 'USER']?.badge} {USER_ROLES[message.role || 'USER']?.name}
-                                      </span>
+                            {/* Bubble Container */}
+                            <div className="relative group/bubble flex items-center gap-2">
+                              {/* Actions Overlay for Own Message */}
+                              {isOwnMessage && user && (
+                                <div className="opacity-0 group-hover/bubble:opacity-100 focus-within:opacity-100 transition-opacity flex items-center gap-1 mr-1 bg-[var(--theme-surface)] backdrop-blur-md rounded-xl p-1 border border-[var(--theme-border)] order-first">
+                                  <button onClick={() => copyToClipboard(message.content)} className="p-1.5 hover:bg-[var(--theme-surface-hover)] rounded-lg text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors" title="Copy"><Copy className="w-3.5 h-3.5"/></button>
+                                  <button onClick={() => startEditMessage(message)} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-cyan-400 transition-colors" title="Edit"><Edit2 className="w-3.5 h-3.5"/></button>
+                                  <button onClick={() => handleDeleteMessage(message.id)} className="p-1.5 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors" title="Delete"><Trash2 className="w-3.5 h-3.5"/></button>
+                                </div>
+                              )}
+
+                              {/* Actual Bubble */}
+                              <div className="relative group/bubble-content">
+                                <div className={`px-5 py-3.5 sm:px-6 sm:py-4 rounded-[2rem] shadow-xl transition-all duration-300 ${
+                                  alignRight 
+                                    ? 'bg-gradient-to-br from-cyan-600 via-blue-600 to-indigo-700 text-white rounded-tr-none border border-cyan-400/20 shadow-[0_4px_20px_rgba(6,182,212,0.2)]' 
+                                    : 'bg-[var(--theme-surface)] backdrop-blur-2xl border border-[var(--theme-border)] text-[var(--theme-text)] shadow-md rounded-tl-none hover:border-cyan-500/30'
+                                  }`}>
+                                    {/* Role Badge for Others */}
+                                    {!isOwnMessage && (
+                                      <div className="flex items-center gap-1.5 mb-2 pb-2 border-b border-[var(--theme-border)]">
+                                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-gradient-to-r ${USER_ROLES[message.role || 'USER']?.color || 'from-gray-500 to-gray-700'} text-white shadow-sm`}>
+                                          {USER_ROLES[message.role || 'USER']?.badge} {USER_ROLES[message.role || 'USER']?.name}
+                                        </span>
+                                      </div>
+                                    )}
+
+                                  {/* Media Display */}
+                                  {message.media_url && (
+                                    <div className="mb-3 rounded-2xl overflow-hidden border border-[var(--theme-border)] bg-black/20">
+                                      <img 
+                                        src={message.media_url} 
+                                        alt="Shared media" 
+                                        className="w-full h-auto max-h-[300px] object-contain cursor-pointer"
+                                        onClick={() => window.open(message.media_url, '_blank')}
+                                      />
                                     </div>
                                   )}
-                                {/* Media Display */}
-                                {message.media_url && (
-                                  <div className="mb-4 rounded-2xl overflow-hidden border border-white/10 bg-black/20">
-                                    <img 
-                                      src={message.media_url} 
-                                      alt="Shared media" 
-                                      className="w-full h-auto max-h-[300px] object-contain cursor-pointer"
-                                      onClick={() => window.open(message.media_url, '_blank')}
+
+                                  {/* Reply Context */}
+                                  {replyData && (
+                                    <div className={`mb-3 p-3 rounded-2xl border-l-4 text-xs ${
+                                      alignRight ? 'bg-black/20 border-white/40 text-white/80' : 'bg-[var(--theme-surface-hover)] border-cyan-500/60 text-[var(--theme-text-muted)]'
+                                    }`}>
+                                      <div className="flex items-center gap-2 mb-1">
+                                        <Reply className="w-3 h-3 text-cyan-400" />
+                                        <span className="font-black uppercase tracking-tighter">{replyData.username}</span>
+                                      </div>
+                                      <p className="italic line-clamp-1">{replyData.content}</p>
+                                    </div>
+                                  )}
+                                  
+                                  <div className="text-sm sm:text-base leading-relaxed break-words">
+                                    {renderMessageContent(message.content)}
+                                    {message.is_edited && <span className="text-[10px] italic opacity-50 ml-2">(edited)</span>}
+                                  </div>
+                                  
+                                  <div className={`mt-2 flex items-center gap-2 text-[10px] font-bold tracking-tighter uppercase ${alignRight ? 'text-white/60' : 'text-[var(--theme-text-muted)]'}`}>
+                                    {formatTime(message.timestamp || message.created_at)}
+                                    {message.status === 'sending' && <div className="w-2 h-2 border border-white/40 border-t-white rounded-full animate-spin" />}
+                                  </div>
+
+                                  {/* Reactions Display */}
+                                  <MessageReactions 
+                                    reactions={reactions[message.id]} 
+                                    onReact={(emoji) => toggleReaction(message.id, emoji)}
+                                    currentUser={user}
+                                  />
+                                </div>
+
+                                {/* Reaction Trigger Button (Floating on hover) */}
+                                {user && (
+                                  <div className={`absolute -bottom-2 ${isOwnMessage ? '-left-2' : '-right-2'} opacity-0 group-hover/bubble-content:opacity-100 transition-opacity z-10`}>
+                                    <button 
+                                      onClick={() => setActiveReactionPicker(message.id)}
+                                      className="p-1.5 bg-[#1e293b] border border-white/10 rounded-full text-white/40 hover:text-white hover:scale-110 shadow-lg"
+                                    >
+                                      <Smile className="w-3.5 h-3.5" />
+                                    </button>
+                                    <ReactionPicker 
+                                      isOpen={activeReactionPicker === message.id}
+                                      onClose={() => setActiveReactionPicker(null)}
+                                      onSelect={(emoji) => toggleReaction(message.id, emoji)}
+                                      position={isOwnMessage ? 'left' : 'right'}
                                     />
                                   </div>
                                 )}
-                                {/* Reply Context */}
-                              {replyData && (
-                                <div className={`mb-3 p-3 rounded-2xl border-l-4 text-xs ${
-                                  alignRight ? 'bg-black/20 border-white/30 text-white/70' : 'bg-white/5 border-cyan-500/50 text-white/50'
-                                }`}>
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <Reply className="w-3 h-3" />
-                                    <span className="font-black uppercase tracking-tighter">{replyData.username}</span>
-                                  </div>
-                                  <p className="italic line-clamp-1">{replyData.content}</p>
+                              </div>
+
+                              {/* Actions Overlay for Others */}
+                              {!isOwnMessage && user && (
+                                <div className="opacity-0 group-hover/bubble:opacity-100 focus-within:opacity-100 transition-opacity flex items-center gap-1 ml-1 bg-[var(--theme-surface)] backdrop-blur-md rounded-xl p-1 border border-[var(--theme-border)]">
+                                  <button onClick={() => handleReply(message)} className="p-1.5 hover:bg-[var(--theme-surface-hover)] rounded-lg text-cyan-400 hover:text-[var(--theme-text)] transition-colors" title="Reply"><Reply className="w-3.5 h-3.5"/></button>
+                                  <button onClick={() => copyToClipboard(message.content)} className="p-1.5 hover:bg-[var(--theme-surface-hover)] rounded-lg text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors" title="Copy"><Copy className="w-3.5 h-3.5"/></button>
+                                  <button onClick={() => handleReportMessage(message)} className="p-1.5 hover:bg-orange-500/20 rounded-lg text-orange-400 transition-colors" title="Report"><AlertTriangle className="w-3.5 h-3.5"/></button>
+                                  {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && (
+                                    <button onClick={() => handleDeleteMessage(message.id)} className="p-1.5 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors" title="Delete"><Trash2 className="w-3.5 h-3.5"/></button>
+                                  )}
                                 </div>
                               )}
-                              
-                              <div className="text-sm sm:text-base leading-relaxed break-words">
-                                {renderMessageContent(message.content)}
-                                {message.is_edited && <span className="text-[10px] italic opacity-40 ml-2">(edited)</span>}
-                              </div>
-                              
-                              <div className={`mt-2 flex items-center gap-2 text-[10px] font-bold tracking-tighter uppercase ${alignRight ? 'text-white/40' : 'text-white/20'}`}>
-                                {formatTime(message.timestamp || message.created_at)}
-                                {message.status === 'sending' && <div className="w-2 h-2 border border-white/40 border-t-white rounded-full animate-spin" />}
-                              </div>
-
-                              {/* Reactions Display */}
-                              <MessageReactions 
-                                reactions={reactions[message.id]} 
-                                onReact={(emoji) => toggleReaction(message.id, emoji)}
-                                currentUser={user}
-                              />
                             </div>
-
-                            {/* Reaction Trigger Button (Floating on hover) */}
-                            {user && (
-                              <div className={`absolute -bottom-2 ${isOwnMessage ? '-left-2' : '-right-2'} opacity-0 group-hover/bubble-content:opacity-100 transition-opacity z-10`}>
-                                <button 
-                                  onClick={() => setActiveReactionPicker(message.id)}
-                                  className="p-1.5 bg-[#1e293b] border border-white/10 rounded-full text-white/40 hover:text-white hover:scale-110 shadow-lg"
-                                >
-                                  <Smile className="w-3.5 h-3.5" />
-                                </button>
-                                <ReactionPicker 
-                                  isOpen={activeReactionPicker === message.id}
-                                  onClose={() => setActiveReactionPicker(null)}
-                                  onSelect={(emoji) => toggleReaction(message.id, emoji)}
-                                />
-                              </div>
-                            )}
                           </div>
-
-                            {/* Actions Overlay for Others */}
-                            {!isOwnMessage && user && (
-                              <div className="opacity-100 sm:opacity-0 sm:group-hover/bubble:opacity-100 transition-opacity flex flex-wrap sm:flex-nowrap gap-1 ml-2 bg-white/5 backdrop-blur-md rounded-xl p-1 border border-white/5 order-last sm:order-none mt-2 sm:mt-0">
-                                <button onClick={() => handleReply(message)} className="p-2 sm:p-1.5 hover:bg-[var(--theme-surface-hover)] rounded-lg text-[var(--theme-accent)] hover:text-[var(--theme-text)] transition-colors" title="Reply"><Reply className="w-4 h-4 sm:w-3.5 sm:h-3.5"/></button>
-                                <button onClick={() => copyToClipboard(message.content)} className="p-2 sm:p-1.5 hover:bg-[var(--theme-surface-hover)] rounded-lg text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors" title="Copy"><Copy className="w-4 h-4 sm:w-3.5 sm:h-3.5"/></button>
-                                <button onClick={() => handleReportMessage(message)} className="p-2 sm:p-1.5 hover:bg-orange-500/20 rounded-lg text-orange-400/80 hover:text-orange-400 transition-colors" title="Report"><AlertTriangle className="w-4 h-4 sm:w-3.5 sm:h-3.5"/></button>
-                                {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && (
-                                  <button onClick={() => handleDeleteMessage(message.id)} className="p-2 sm:p-1.5 hover:bg-red-500/20 rounded-lg text-red-400/80 hover:text-red-400 transition-colors" title="Delete"><Trash2 className="w-4 h-4 sm:w-3.5 sm:h-3.5"/></button>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </motion.div>
+                        </motion.div>
+                      </React.Fragment>
                     );
                   })}
                 </AnimatePresence>
@@ -1545,7 +1605,7 @@ function Live() {
 
           {/* Interaction Bar Container or Guest CTA (Stabilized Height) */}
           {user && (
-            <div className="p-6 bg-black/20 border-t border-white/5 backdrop-blur-xl relative min-h-[140px] sm:min-h-[120px] flex items-center justify-center">
+            <div className="p-4 sm:p-6 bg-[var(--theme-surface)] border-t border-[var(--theme-border)] backdrop-blur-xl relative min-h-[120px] sm:min-h-[110px] flex items-center justify-center">
               {/* Scroll to Bottom FAB */}
             <AnimatePresence>
               {showScrollToBottom && (
@@ -1652,7 +1712,7 @@ function Live() {
                             </button>
                             {showEmojiPicker && (
                               <div className="absolute bottom-16 left-0 z-50">
-                                <EmojiPicker onEmojiClick={handleEmojiClick} theme="dark" width={300} height={400} />
+                                <EmojiPicker onEmojiClick={handleEmojiClick} theme={theme === 'light' ? 'light' : 'dark'} width={300} height={400} />
                               </div>
                             )}
                           </div>
@@ -1721,15 +1781,15 @@ function Live() {
                           <div className="w-20 h-1.5 bg-white/5 rounded-full overflow-hidden">
                             <motion.div 
                               initial={{ width: 0 }}
-                              animate={{ width: `${(user?.messageCount / (MESSAGE_LIMITS[user?.role] || 5)) * 100}%` }}
+                              animate={{ width: `${(user?.messageCount / (systemConfig.message_limits[user?.role] || 5)) * 100}%` }}
                               className="h-full bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.5)]" 
                             />
                           </div>
-                          <span className="text-[10px] font-black text-cyan-400">{user?.messageCount}/{MESSAGE_LIMITS[user?.role] || 5}</span>
+                          <span className="text-[10px] font-black text-cyan-400">{user?.messageCount}/{systemConfig.message_limits[user?.role] || 5}</span>
                         </div>
                       </div>
                     </div>
-                    <div className="text-[10px] font-black uppercase tracking-tighter text-white/20">
+                    <div className="hidden sm:block text-[10px] font-black uppercase tracking-tighter text-white/20">
                       Pencet Shift + Enter untuk ganti baris
                     </div>
                   </div>
@@ -1740,49 +1800,13 @@ function Live() {
           )}
         </div>
 
-        {/* Guest CTA moved outside the chat container */}
+        {/* Guest CTA */}
         {!user && (
-          <div className="mt-6 mb-10">
+          <div className="mt-3 mb-2 flex-shrink-0">
             <GuestCTA />
           </div>
         )}
       </main>
-
-  {/* Mobile Bottom Navigation */}
-  <div className="sm:hidden fixed bottom-0 left-0 right-0 z-[60] bg-[var(--theme-surface)] backdrop-blur-3xl border-t border-[var(--theme-border)] px-6 py-3 flex justify-between items-center pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-    <button onClick={() => setShowMembers(true)} className="flex flex-col items-center gap-1 text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors">
-      <UsersIcon className="w-6 h-6" />
-      <span className="text-[9px] font-black uppercase">Anggota</span>
-    </button>
-    <button onClick={() => { setShowNotifications(true); setUnreadMentions(0); }} className="relative flex flex-col items-center gap-1 text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors">
-      <div className="relative">
-        <Bell className="w-6 h-6" />
-        {unreadMentions > 0 && <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 rounded-full border-2 border-[var(--theme-bg)]" />}
-      </div>
-      <span className="text-[9px] font-black uppercase">Notif</span>
-    </button>
-    
-    <button 
-      onClick={() => setTheme(prev => prev === 'default' ? 'light' : prev === 'light' ? 'dark' : 'default')}
-      className="flex flex-col items-center gap-1 text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors"
-    >
-      {theme === 'default' ? <Monitor className="w-6 h-6" /> : theme === 'dark' ? <Moon className="w-6 h-6" /> : <Sun className="w-6 h-6" />}
-      <span className="text-[9px] font-black uppercase">Tema</span>
-    </button>
-    
-    {user && ['SUPER_ADMIN', 'ADMIN', 'MODERATOR'].includes(user.role) && (
-      <button onClick={goToDashboard} className="flex flex-col items-center gap-1 text-[var(--theme-accent)] group">
-        <div className="p-1.5 bg-[var(--theme-accent)]/10 rounded-xl group-hover:bg-[var(--theme-accent)]/20 transition-colors">
-          <LayoutDashboard className="w-5 h-5" />
-        </div>
-      </button>
-    )}
-    
-    <button onClick={() => user ? openProfileEditor(user) : handleAuthAction()} className="flex flex-col items-center gap-1 text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors">
-      <UserCircle className="w-6 h-6" />
-      <span className="text-[9px] font-black uppercase">{user ? 'Profil' : 'Login'}</span>
-    </button>
-  </div>
 
   {/* Profile Modal */}
   <AnimatePresence>
@@ -1827,8 +1851,95 @@ function Live() {
     onClose={() => setShowMembers(false)}
     onlineUsers={Object.values(onlineUsers)}
     allProfiles={allProfiles}
+    messages={messages}
     currentUser={user}
   />
+
+  {/* Notification Drawer / Modal */}
+  <AnimatePresence>
+    {showNotifications && (
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+      >
+        <motion.div 
+          initial={{ scale: 0.9, y: 20 }}
+          animate={{ scale: 1, y: 0 }}
+          exit={{ scale: 0.9, y: 20 }}
+          className="bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-[2.5rem] w-full max-w-lg p-6 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-3xl"
+        >
+          <div className="flex items-center justify-between pb-4 border-b border-[var(--theme-border)] mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-cyan-500/20 text-cyan-400 rounded-2xl">
+                <Bell className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-[var(--theme-text)]">Pusat Notifikasi</h3>
+                <p className="text-[10px] uppercase font-black tracking-widest text-[var(--theme-text-muted)]">
+                  {mentions.length} Sinyal & Mention
+                </p>
+              </div>
+            </div>
+            <button 
+              onClick={() => setShowNotifications(false)} 
+              className="p-2 hover:bg-[var(--theme-surface-hover)] rounded-xl text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          <div className="max-h-[350px] overflow-y-auto space-y-3 custom-scrollbar pr-1">
+            {mentions.length === 0 ? (
+              <div className="text-center py-12">
+                <Bell className="w-12 h-12 mx-auto text-[var(--theme-text-muted)] opacity-30 mb-3" />
+                <p className="text-sm font-semibold text-[var(--theme-text)]">Belum ada notifikasi baru</p>
+                <p className="text-xs text-[var(--theme-text-muted)] mt-1">Anda akan diberitahu jika seseorang menyebut Anda dengan @nama.</p>
+              </div>
+            ) : (
+              mentions.map((mention, idx) => (
+                <div 
+                  key={idx} 
+                  className="p-4 rounded-2xl bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] flex items-start justify-between gap-3 transition-all"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-[var(--theme-text)]">
+                      <span className="text-cyan-400">@{mention.fromUser}</span> menyebut Anda dalam diskusi
+                    </p>
+                    <p className="text-xs text-[var(--theme-text-muted)] mt-1 italic line-clamp-2">
+                      "{mention.messagePreview}"
+                    </p>
+                    <span className="text-[9px] font-bold text-[var(--theme-text-muted)] opacity-60 mt-2 block">
+                      {mention.time}
+                    </span>
+                  </div>
+                  <button 
+                    onClick={() => setMentions(prev => prev.filter((_, i) => i !== idx))} 
+                    className="text-[var(--theme-text-muted)] hover:text-red-400 p-1"
+                    title="Hapus notifikasi"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+
+          {mentions.length > 0 && (
+            <div className="mt-6 pt-4 border-t border-[var(--theme-border)] flex justify-end">
+              <button
+                onClick={() => setMentions([])}
+                className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] rounded-xl transition-colors"
+              >
+                Hapus Semua
+              </button>
+            </div>
+          )}
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
 
   {/* Mention Notifications Overlay */}
   <MentionNotifications 

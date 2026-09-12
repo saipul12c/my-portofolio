@@ -18,8 +18,11 @@ const BAD_WORDS = [
  */
 export const containsProfanity = (text) => {
   if (!text) return false;
-  const lowerText = text.toLowerCase();
-  return BAD_WORDS.some(word => lowerText.includes(word));
+  return BAD_WORDS.some(word => {
+    // Gunakan word boundary regex agar tidak salah mendeteksi substring dalam kata legal (misal "asuransi" memuat "asu")
+    const regex = new RegExp(`\\b${word}\\b`, 'i');
+    return regex.test(text);
+  });
 };
 
 /**
@@ -31,7 +34,7 @@ export const cleanProfanity = (text) => {
   if (!text) return text;
   let cleaned = text;
   BAD_WORDS.forEach(word => {
-    const regex = new RegExp(word, 'gi');
+    const regex = new RegExp(`\\b${word}\\b`, 'gi');
     cleaned = cleaned.replace(regex, '*'.repeat(word.length));
   });
   return cleaned;

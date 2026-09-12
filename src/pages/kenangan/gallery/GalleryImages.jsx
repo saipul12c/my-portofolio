@@ -1,56 +1,44 @@
-import { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Image, UserCheck, Tag, AlertCircle } from "lucide-react";
-import { filterMediaItems, shuffleArray } from "../utils/filterHelpers";
+import { filterMediaItems } from "../utils/filterHelpers";
 import { GALLERY_CONFIG } from "../utils/constants";
 import { sanitizeUrl, generateAltText } from "../utils/sanitizers";
 
-// load images lazily to avoid large bundle and duplicate static imports
-
-export default function GalleryImages({ onSelect, filterSettings = {}, onFilteredDataChange }) {
+function GalleryImagesComponent({ items, onSelect, filterSettings = {} }) {
   const ITEMS_PER_PAGE = GALLERY_CONFIG.ITEMS_PER_PAGE.IMAGES;
   const [currentPage, setCurrentPage] = useState(1);
-  const [imagesData, setImagesData] = useState([]);
-  const [isShuffled, setIsShuffled] = useState(false);
+  const [localData, setLocalData] = useState([]);
   
   const { searchTerm = "", tags: selectedTags = [] } = filterSettings;
 
-  // load data lazily (code-splitting) to avoid large initial bundle
+  // Fallback to local import only if items prop is not provided
   useEffect(() => {
+    if (items) return;
     let mounted = true;
     import("../../../data/gallery/images.json")
       .then((m) => {
         if (!mounted) return;
-        setImagesData(m.default || []);
+        setLocalData(m.default || []);
       })
       .catch((err) => {
         console.error("Failed to load images.json", err);
       });
     return () => { mounted = false; };
-  }, []);
+  }, [items]);
 
-  // 🔄 Acak data & bagi ke halaman - only shuffle once on initial load
+  const rawData = items || localData;
+
+  // 🔄 Filter data & bagi ke halaman (stabil tanpa setState di useMemo)
   const { pages, allFilteredData } = useMemo(() => {
-    const filtered = filterMediaItems(imagesData, searchTerm, selectedTags);
-    // Only shuffle if not already shuffled (performance optimization)
-    const processedData = isShuffled ? filtered : shuffleArray(filtered);
-    if (!isShuffled && filtered.length > 0) {
-      setIsShuffled(true);
-    }
-    const totalPages = Math.ceil(processedData.length / ITEMS_PER_PAGE);
+    const filtered = filterMediaItems(rawData, searchTerm, selectedTags);
+    const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
     const chunks = [];
     for (let i = 0; i < totalPages; i++) {
-      chunks.push(processedData.slice(i * ITEMS_PER_PAGE, (i + 1) * ITEMS_PER_PAGE));
+      chunks.push(filtered.slice(i * ITEMS_PER_PAGE, (i + 1) * ITEMS_PER_PAGE));
     }
     return { pages: chunks, allFilteredData: filtered };
-  }, [imagesData, searchTerm, selectedTags, ITEMS_PER_PAGE]);
-
-  // 📢 Notify parent of filtered data (use effect to avoid updates during render)
-  useEffect(() => {
-    if (onFilteredDataChange) {
-      onFilteredDataChange(allFilteredData);
-    }
-  }, [allFilteredData, onFilteredDataChange]);
+  }, [rawData, searchTerm, selectedTags, ITEMS_PER_PAGE]);
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -96,71 +84,72 @@ export default function GalleryImages({ onSelect, filterSettings = {}, onFiltere
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.3 }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
             >
               {currentData.map((img) => (
-            <motion.div
-              key={img.id}
-              whileHover={{ scale: 1.03 }}
-              onClick={() => onSelect(img)}
-              className="relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 hover:border-cyan-400 transition-all cursor-pointer group"
-            >
-              {/* Gambar + Watermark */}
-              <div className="relative w-full h-64 overflow-hidden rounded-2xl">
-                <img
-                  src={sanitizeUrl(img.src)}
-                  alt={generateAltText(img)}
-                  loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                {/* Watermark */}
-                <div className="absolute bottom-2 right-2 text-white text-xs font-bold bg-black/30 px-2 py-1 rounded">
-                  MyGallery
-                </div>
-              </div>
-
-              {/* Overlay saat hover */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all p-5 flex flex-col justify-end">
-                <h3 className="text-lg font-semibold text-white">{img.title}</h3>
-                <p className="text-sm text-gray-300 mb-2">{img.category}</p>
-
-                {/* Creator */}
-                {img.creator && (
-                  <div className="flex items-center gap-2 mb-2">
+                <motion.div
+                  key={img.id}
+                  whileHover={{ scale: 1.02 }}
+                  onClick={() => onSelect && onSelect(img)}
+                  className="relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 hover:border-cyan-400 transition-all cursor-pointer group shadow-lg"
+                >
+                  {/* Gambar + Watermark */}
+                  <div className="relative w-full h-64 overflow-hidden rounded-2xl bg-black">
                     <img
-                      src={sanitizeUrl(img.creator.avatar, '/default-avatar.jpg')}
-                      alt={`${img.creator.display_name} avatar`}
-                      className="w-6 h-6 rounded-full border border-white/20"
+                      src={sanitizeUrl(img.src)}
+                      alt={generateAltText(img)}
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    <p className="text-xs text-cyan-300 flex items-center gap-1">
-                      {img.creator.display_name}
-                      {img.creator.verified && <UserCheck size={12} />}
-                    </p>
+                    {/* Watermark */}
+                    <div className="absolute bottom-2 right-2 text-white text-xs font-bold bg-black/40 backdrop-blur-sm px-2 py-1 rounded">
+                      MyGallery
+                    </div>
                   </div>
-                )}
 
-                {/* Tags */}
-                {img.tags && (
-                  <div className="flex flex-wrap gap-1">
-                    {img.tags.slice(0, 3).map((tag, i) => (
-                      <span
-                        key={i}
-                        className="text-xs bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 px-2 py-1 rounded-full flex items-center gap-1"
-                      >
-                        <Tag size={10} /> {tag}
-                      </span>
-                    ))}
-                    {img.tags.length > 3 && (
-                      <span className="text-xs bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 px-2 py-1 rounded-full">
-                        +{img.tags.length - 3} lainnya
-                      </span>
+                  {/* Overlay saat hover */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all p-5 flex flex-col justify-end">
+                    <h3 className="text-lg font-semibold text-white">{img.title}</h3>
+                    <p className="text-sm text-gray-300 mb-2">{img.category}</p>
+
+                    {/* Creator */}
+                    {img.creator && (
+                      <div className="flex items-center gap-2 mb-2">
+                        <img
+                          src={sanitizeUrl(img.creator.avatar, 'https://randomuser.me/api/portraits/lego/1.jpg')}
+                          alt={`${img.creator.display_name} avatar`}
+                          className="w-6 h-6 rounded-full border border-white/20"
+                          loading="lazy"
+                        />
+                        <p className="text-xs text-cyan-300 flex items-center gap-1">
+                          {img.creator.display_name}
+                          {img.creator.verified && <UserCheck size={12} />}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Tags */}
+                    {img.tags && (
+                      <div className="flex flex-wrap gap-1">
+                        {img.tags.slice(0, 3).map((tag, i) => (
+                          <span
+                            key={i}
+                            className="text-xs bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 px-2 py-1 rounded-full flex items-center gap-1"
+                          >
+                            <Tag size={10} /> {tag}
+                          </span>
+                        ))}
+                        {img.tags.length > 3 && (
+                          <span className="text-xs bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 px-2 py-1 rounded-full">
+                            +{img.tags.length - 3} lainnya
+                          </span>
+                        )}
+                      </div>
                     )}
                   </div>
-                )}
-              </div>
-            </motion.div>
-          ))}
+                </motion.div>
+              ))}
             </motion.div>
           </AnimatePresence>
 
@@ -203,3 +192,6 @@ export default function GalleryImages({ onSelect, filterSettings = {}, onFiltere
     </section>
   );
 }
+
+export default React.memo(GalleryImagesComponent);
+

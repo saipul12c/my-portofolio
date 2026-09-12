@@ -13,9 +13,9 @@ export const useMentions = () => {
 
     setLoading(true);
     try {
-      // Search in 'profiles' view to respect privacy
+      // Search in 'users' table
       const { data, error } = await supabase
-        .from('profiles')
+        .from('users')
         .select('id, nama, email')
         .ilike('nama', `%${query}%`)
         .limit(5);

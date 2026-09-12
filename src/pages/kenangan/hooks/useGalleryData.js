@@ -1,12 +1,19 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { getMediaRoute } from "../utils/routeHelpers";
 
 export function useGalleryData() {
-  const [allMedia, setAllMedia] = useState([]);
+  const [dataState, setDataState] = useState({
+    shorts: [],
+    images: [],
+    videos: [],
+    albums: [],
+    allMedia: []
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    let isMounted = true;
     const loadAllMedia = async () => {
       try {
         const [shortsRes, imagesRes, videosRes, albumsRes] = await Promise.all([
@@ -15,6 +22,8 @@ export function useGalleryData() {
           import("../../../data/gallery/videos.json"),
           import("../../../data/gallery/albums.json"),
         ]);
+
+        if (!isMounted) return;
 
         const shorts = (shortsRes.default || []).map((item) => ({
           ...item,
@@ -33,33 +42,41 @@ export function useGalleryData() {
           type: "album",
         }));
 
-        setAllMedia([...shorts, ...images, ...videos, ...albums]);
+        setDataState({
+          shorts,
+          images,
+          videos,
+          albums,
+          allMedia: [...shorts, ...images, ...videos, ...albums]
+        });
       } catch (err) {
+        if (!isMounted) return;
         console.error("Error loading gallery data:", err);
         setError(err);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     loadAllMedia();
+    return () => { isMounted = false; };
   }, []);
 
   const allTags = useMemo(() => {
     return [
       ...new Set(
-        allMedia
+        dataState.allMedia
           .flatMap((item) => item.tags || [])
           .filter(Boolean)
       ),
     ];
-  }, [allMedia]);
+  }, [dataState.allMedia]);
 
   // Provide internal suggestion helper for other components
-  const getInternalSuggestions = (searchTerm = "") => {
-    const term = (searchTerm || "").toLowerCase();
+  const getInternalSuggestions = useCallback((searchTerm = "") => {
+    const term = (searchTerm || "").toLowerCase().trim();
     if (!term) return [];
-    return allMedia
+    return dataState.allMedia
       .filter((item) => {
         return (
           item.title?.toLowerCase().includes(term) ||
@@ -74,16 +91,15 @@ export function useGalleryData() {
         id: item.id,
         title: item.title || item.desc || `${item.type} ${item.id}`,
         mediaType: item.type,
-        // Use shared route helper instead of duplicate mapping
-        url: `/gallery/${getMediaRoute(item.type)}/${item.id}`,
+        url: getMediaRoute(item.type, item.id),
       }));
-  };
+  }, [dataState.allMedia]);
 
-  const filterMedia = (searchTerm = "", tags = []) => {
-    let filtered = allMedia;
+  const filterMedia = useCallback((items, searchTerm = "", tags = []) => {
+    let filtered = items;
 
     if (searchTerm) {
-      const term = searchTerm.toLowerCase();
+      const term = searchTerm.toLowerCase().trim();
       filtered = filtered.filter(
         (item) =>
           item.title?.toLowerCase().includes(term) ||
@@ -95,17 +111,21 @@ export function useGalleryData() {
       );
     }
 
-    if (tags.length > 0) {
+    if (tags && tags.length > 0) {
       filtered = filtered.filter((item) =>
         tags.some((tag) => item.tags?.includes(tag))
       );
     }
 
     return filtered;
-  };
+  }, []);
 
   return {
-    allMedia,
+    shorts: dataState.shorts,
+    images: dataState.images,
+    videos: dataState.videos,
+    albums: dataState.albums,
+    allMedia: dataState.allMedia,
     loading,
     error,
     allTags,

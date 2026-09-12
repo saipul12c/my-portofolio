@@ -19,7 +19,7 @@ export const MentionInput = ({ value, onChange, onMention }) => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('profiles')
+        .from('users')
         .select('id, nama, role')
         .ilike('nama', `%${query}%`)
         .limit(5);
@@ -74,7 +74,7 @@ export const MentionInput = ({ value, onChange, onMention }) => {
         value={value}
         onChange={handleInputChange}
         placeholder="Tulis sinyal... gunakan @nama untuk mention"
-        className="w-full bg-white/[0.03] border border-white/10 rounded-3xl px-8 py-5 pr-16 text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500/30 transition-all resize-none min-h-[60px] custom-scrollbar backdrop-blur-xl"
+        className="w-full bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl px-8 py-5 pr-16 text-sm text-[var(--theme-text)] placeholder-[var(--theme-text-muted)] focus:outline-none focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500/30 transition-all resize-none min-h-[60px] custom-scrollbar backdrop-blur-xl"
         rows="2"
       />
 
@@ -85,12 +85,12 @@ export const MentionInput = ({ value, onChange, onMention }) => {
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            className="absolute bottom-full left-0 right-0 mb-4 bg-[#0f172a]/90 backdrop-blur-3xl border border-white/10 rounded-[2rem] shadow-2xl overflow-hidden z-[100]"
+            className="absolute bottom-full left-0 right-0 mb-4 bg-[#0f172a] border border-[var(--theme-border)] rounded-[2rem] shadow-2xl overflow-hidden z-[100]"
           >
-            <div className="p-4 border-b border-white/5 bg-white/5 flex items-center justify-between">
+            <div className="p-4 border-b border-[var(--theme-border)] bg-white/5 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <AtSign className="w-3 h-3 text-cyan-400" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Target Operative</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400">Target Operative</span>
               </div>
               {loading && <div className="w-3 h-3 border-2 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin" />}
             </div>
@@ -100,14 +100,14 @@ export const MentionInput = ({ value, onChange, onMention }) => {
                 <button
                   key={user.id}
                   onClick={() => handleSelectUser(user)}
-                  className="w-full p-3 flex items-center gap-4 hover:bg-white/5 rounded-2xl transition-all group/item text-left"
+                  className="w-full p-3 flex items-center gap-4 hover:bg-white/10 rounded-2xl transition-all group/item text-left"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center text-white/40 font-black text-sm border border-white/5 group-hover/item:scale-110 transition-all">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center text-cyan-300 font-black text-sm border border-white/5 group-hover/item:scale-110 transition-all">
                     {user.nama?.[0]?.toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-black text-white italic tracking-tight">{user.nama}</p>
-                    <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest mt-0.5">{user.role}</p>
+                    <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest mt-0.5">{user.role}</p>
                   </div>
                   <div className="opacity-0 group-hover/item:opacity-100 transition-opacity">
                     <Check className="w-4 h-4 text-cyan-400" />

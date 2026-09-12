@@ -110,7 +110,7 @@ const RESPONSE_TEMPLATES = {
 // --- CORE UTILITIES ---
 
   // --- INTERNAL UTILITIES ---
-  function handleJobMatching(query) {
+  function handleJobMatching(query, skillList = []) {
     const roleMatch = query.match(/(?:untuk|posisi|sebagai|cari|role|pekerjaan)\s+([a-zA-Z\s]+)/i);
     const targetRole = roleMatch ? roleMatch[1].trim() : "posisi yang Anda cari";
     
@@ -119,17 +119,19 @@ const RESPONSE_TEMPLATES = {
     let relevantSkills = [];
     let relevantBlogs = [];
 
-    skills.forEach(s => {
-       const isDirect = targetRole.toLowerCase().includes(s.name.toLowerCase());
+    (skillList || []).forEach(s => {
+       const sName = (s.name || '').toLowerCase();
+       const isDirect = targetRole.toLowerCase().includes(sName) || sName.includes(targetRole.toLowerCase());
        const isTagMatch = (s.tags || []).some(t => targetRole.toLowerCase().includes(t.toLowerCase()));
        if (isDirect || isTagMatch) {
-          matchScore += (s.experience / 2);
+          matchScore += ((s.experience || 50) / 2);
           relevantSkills.push(s);
        }
     });
 
-    blogData.forEach(b => {
-       if (b.title.toLowerCase().includes(targetRole.toLowerCase()) || (b.tags && b.tags.some(t => targetRole.toLowerCase().includes(t.toLowerCase())))) {
+    (blogData || []).forEach(b => {
+       const bTitle = (b.title || '').toLowerCase();
+       if (bTitle.includes(targetRole.toLowerCase()) || (b.tags && b.tags.some(t => targetRole.toLowerCase().includes(t.toLowerCase())))) {
           matchScore += 15;
           relevantBlogs.push(b);
        }
@@ -148,7 +150,7 @@ const RESPONSE_TEMPLATES = {
     if (relevantSkills.length > 0) {
        response += `**Kekuatan Utama:**\n`;
        relevantSkills.slice(0, 2).forEach(s => {
-          response += `* **${s.name}** (Penguasaan ${s.experience}%)\n`;
+          response += `* **${s.name}** (Penguasaan ${s.experience || 0}%)\n`;
        });
     }
 
@@ -336,7 +338,7 @@ export function useSoftSkillsAI(skills = []) {
 
     // --- NEW: PREDICTIVE CONTEXT (Lazy Trigger) ---
     let predictivePrefix = "";
-    if (context.history.length === 0) {
+    if (!context?.history || context.history.length === 0) {
        const lastTopicStr = localStorage.getItem('saipul_ai_last_topic');
        if (lastTopicStr) {
           try {
@@ -353,7 +355,7 @@ export function useSoftSkillsAI(skills = []) {
 
     // --- NEW: JOB MATCHING ENGINE ---
     if (bestIntent === 'jobMatching' && scores.jobMatching > 0.6) {
-       return predictivePrefix + handleJobMatching(normalizedQuery);
+       return predictivePrefix + handleJobMatching(normalizedQuery, skills);
     }
     
     // 1.1 Out-of-Scope (OOS) & Cross-Context Detection
@@ -404,7 +406,7 @@ export function useSoftSkillsAI(skills = []) {
     if (bestIntent === 'math' && targets.length >= 2) {
       const s1 = targets[0];
       const s2 = targets[1];
-      if (text.includes('selisih') || text.includes('beda') || text.includes('minus')) {
+      if (normalizedQuery.includes('selisih') || normalizedQuery.includes('beda') || normalizedQuery.includes('minus')) {
         const diff = Math.abs((s1.experience || 0) - (s2.experience || 0));
         return `Selisih pengalaman antara **${s1.name}** dan **${s2.name}** adalah **${diff}%**.`;
       }
@@ -429,13 +431,15 @@ export function useSoftSkillsAI(skills = []) {
 
     // STATS
     if (bestIntent === 'stats') {
+      const sourceData = skills || [];
       const activeData = targets.length > 2 ? targets : sourceData;
       if (activeData.length === 0) return "Tidak ditemukan data untuk statistik tersebut.";
       const sorted = [...activeData].sort((a, b) => (b.experience || 0) - (a.experience || 0));
       const avg = (activeData.reduce((acc, s) => acc + (s.experience || 0), 0) / activeData.length).toFixed(1);
+      const targetCategory = targets.length > 0 && targets[0].category ? targets[0].category : null;
       const loc = targetCategory ? `dalam kategori **${targetCategory}**` : "keseluruhan";
       
-      if (text.includes('tersulit') || text.includes('sulit')) {
+      if (normalizedQuery.includes('tersulit') || normalizedQuery.includes('sulit')) {
         const hardest = activeData.find(s => s.difficulty === 'Hard') || sorted[sorted.length-1];
         return `Berdasarkan data, skill paling menantang ${loc} adalah **${hardest.name}**.`;
       }
@@ -443,7 +447,7 @@ export function useSoftSkillsAI(skills = []) {
     }
 
     // COUNT & WHO
-    if (bestIntent === 'count') return `Saya mendeteksi terdapat **${sourceData.length}** skill yang relevan dalam kategori tersebut.`;
+    if (bestIntent === 'count') return `Saya mendeteksi terdapat **${(skills || []).length}** skill yang relevan dalam data portofolio ini.`;
     if (bestIntent === 'who') return `**Saipul** adalah pemilik portofolio ini. Ia mengintegrasikan keahlian teknis dengan soft skill yang solid.`;
 
     // INDIVIDUAL SKILL DETAILS
@@ -504,7 +508,7 @@ export function useSoftSkillsAI(skills = []) {
         targets = targets.filter(t => !excludedNames.some(name => t.name.toLowerCase().includes(name)));
       }
 
-      const res = getSingleResponse(segment, { entities: currentEntities });
+      const res = getSingleResponse(segment, { entities: currentEntities, history: sessionContext.historyLog || [] });
       if (res) {
         results.push(res);
         currentEntities = Array.from(new Set([...currentEntities, ...targets])).slice(-10);

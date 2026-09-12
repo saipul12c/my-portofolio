@@ -189,7 +189,7 @@ const Dashboard = () => {
       const from = page * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
       let query = supabase
-        .from('profiles')
+        .from('users')
         .select('*', { count: 'exact' });
 
       if (search) {

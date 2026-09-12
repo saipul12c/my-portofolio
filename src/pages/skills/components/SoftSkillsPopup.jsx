@@ -1,8 +1,41 @@
 // SoftSkillsPopup.jsx
+import { useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatYouTubeURL, levelToProgress } from "./SoftSkillsUtils";
 
 export default function SoftSkillsPopup({ selectedSkill, setSelectedSkill, navigate }) {
+  const handleClose = useCallback(() => {
+    setSelectedSkill(null);
+    if (window.history.state && window.history.state.idx > 0) {
+      navigate(-1);
+    } else {
+      navigate("/SoftSkills");
+    }
+  }, [setSelectedSkill, navigate]);
+
+  // Keyboard shortcut: Escape to close modal
+  useEffect(() => {
+    if (!selectedSkill) return;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        handleClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedSkill, handleClose]);
+
+  // Lock body scroll when popup is open
+  useEffect(() => {
+    if (selectedSkill) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [selectedSkill]);
+
   return (
     <AnimatePresence>
       {selectedSkill && (
@@ -11,15 +44,7 @@ export default function SoftSkillsPopup({ selectedSkill, setSelectedSkill, navig
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4"
-          onClick={() => {
-            setSelectedSkill(null);
-            // go back in history instead of hardcoded route
-            try {
-              navigate(-1);
-            } catch {
-              navigate("/");
-            }
-          }}
+          onClick={handleClose}
           role="presentation"
         >
           <motion.div
@@ -33,14 +58,7 @@ export default function SoftSkillsPopup({ selectedSkill, setSelectedSkill, navig
             aria-label={selectedSkill.name || "Detail skill"}
           >
             <button
-              onClick={() => {
-                setSelectedSkill(null);
-                try {
-                  navigate(-1);
-                } catch {
-                  navigate("/");
-                }
-              }}
+              onClick={handleClose}
               className="absolute top-2 right-2 sm:top-4 sm:right-4 p-2 bg-red-500 hover:bg-red-600 rounded-full text-white transition"
               aria-label="Tutup"
             >
@@ -98,13 +116,20 @@ export default function SoftSkillsPopup({ selectedSkill, setSelectedSkill, navig
                 {(() => {
                   const videoURL = selectedSkill.video;
                   const embedURL = formatYouTubeURL(videoURL);
-                  // ✅ Hapus escape karakter tidak perlu pada regex
                   const isShorts = /shorts[/?]/i.test(videoURL || "");
-                  // jika embedURL kosong (invalid), tampilkan pesan
+                  
                   if (!embedURL) {
                     return (
-                      <div className="p-4 bg-gray-800 rounded-xl text-sm text-gray-300">
-                        Video URL tidak valid atau tidak bisa ditampilkan.
+                      <div className="w-full p-6 bg-gray-800/80 border border-white/10 rounded-2xl text-center flex flex-col items-center justify-center min-h-[180px]">
+                        <div className="w-12 h-12 rounded-xl bg-pink-500/10 text-pink-400 flex items-center justify-center text-xl mb-3">
+                          🎬
+                        </div>
+                        <p className="text-sm font-semibold text-gray-200 mb-1">
+                          Video Praktik Belum Tersedia
+                        </p>
+                        <p className="text-xs text-gray-400 max-w-xs">
+                          Dokumentasi video implementasi untuk kemampuan ini akan segera diperbarui.
+                        </p>
                       </div>
                     );
                   }

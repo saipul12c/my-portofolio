@@ -4,7 +4,7 @@ import { Smile } from 'lucide-react';
 
 const COMMON_EMOJIS = ['👍', '❤️', '🔥', '😂', '😮', '😢', '🙏', '💯'];
 
-export const ReactionPicker = ({ onSelect, isOpen, onClose }) => {
+export const ReactionPicker = ({ onSelect, isOpen, onClose, position = 'left' }) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -17,7 +17,7 @@ export const ReactionPicker = ({ onSelect, isOpen, onClose }) => {
             initial={{ opacity: 0, scale: 0.9, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 10 }}
-            className="absolute bottom-full mb-2 left-0 z-[70] bg-[#1e293b] border border-white/10 rounded-2xl p-2 shadow-2xl flex items-center gap-1 backdrop-blur-xl"
+            className={`absolute bottom-full mb-2 ${position === 'right' ? 'right-0' : 'left-0'} z-[70] bg-[#1e293b] border border-white/10 rounded-2xl p-2 shadow-2xl flex items-center gap-1 backdrop-blur-xl max-w-[90vw]`}
           >
             {COMMON_EMOJIS.map((emoji) => (
               <button

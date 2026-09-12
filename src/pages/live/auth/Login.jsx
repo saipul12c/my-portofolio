@@ -103,9 +103,9 @@ const Login = () => {
       // 4. Role Config Mapping
       const userRole = user.role?.toUpperCase() || 'USER';
       const roleConfig = {
-        'SUPER_ADMIN': { level: 6, name: 'Super Admin', badge: '👑', color: 'from-purple-600 to-pink-600' },
-        'ADMIN': { level: 5, name: 'Admin', badge: '🛡️', color: 'from-red-500 to-orange-500' },
-        'MODERATOR': { level: 4, name: 'Moderator', badge: '⭐', color: 'from-blue-500 to-cyan-500' },
+        'SUPER_ADMIN': { level: 10, name: 'Super Admin', badge: '👑', color: 'from-purple-600 to-pink-600' },
+        'ADMIN': { level: 8, name: 'Admin', badge: '🛡️', color: 'from-red-500 to-orange-500' },
+        'MODERATOR': { level: 5, name: 'Moderator', badge: '⭐', color: 'from-blue-500 to-cyan-500' },
         'PREMIUM': { level: 3, name: 'Premium', badge: '💎', color: 'from-green-500 to-emerald-500' },
         'VERIFIED': { level: 2, name: 'Verified', badge: '✅', color: 'from-yellow-500 to-amber-500' },
         'USER': { level: 1, name: 'User', badge: '👤', color: 'from-gray-500 to-gray-700' }
@@ -192,7 +192,7 @@ const Login = () => {
             >
               <LogIn className="w-8 h-8 text-cyan-400" />
             </motion.div>
-            <h1 className="text-2xl sm:text-3xl font-black text-white mb-2 tracking-tight italic uppercase">DENTITAS LIVE</h1>
+            <h1 className="text-2xl sm:text-3xl font-black text-white mb-2 tracking-tight italic uppercase">IDENTITAS LIVE</h1>
             <p className="text-[10px] font-black uppercase tracking-[0.25em] text-white/30">Sinkronisasi Sesi Diskusi</p>
           </div>
 

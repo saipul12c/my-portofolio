@@ -53,7 +53,7 @@ export default function GalleryStats({ mediaList = [] }) {
       color: "from-red-500 to-pink-500",
     },
     {
-      label: "Komenter",
+      label: "Komentar",
       value: stats.totalComments.toLocaleString(),
       icon: MessageCircle,
       color: "from-green-500 to-emerald-500",

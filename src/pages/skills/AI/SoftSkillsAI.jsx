@@ -25,8 +25,16 @@ export default function SoftSkillsAI({ isOpen, onClose, skills = [], initialQuer
     suggestions
   } = useSoftSkillsAI(skills);
 
+  const [inputQuery, setInputQuery] = useState("");
   const containerRef = useRef(null);
   const lastSentQueryRef = useRef("");
+
+  const handleSend = (e) => {
+    e?.preventDefault();
+    if (!inputQuery.trim() || isTyping) return;
+    sendMessage(inputQuery.trim());
+    setInputQuery("");
+  };
 
   // Trigger search if initialQuery is provided, but only once per unique query
   useEffect(() => {
@@ -179,19 +187,53 @@ export default function SoftSkillsAI({ isOpen, onClose, skills = [], initialQuer
                   )}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-20 text-center">
-                  <div className="w-20 h-20 rounded-3xl bg-emerald-500/10 flex items-center justify-center mb-6 relative">
-                    <Bot className="w-10 h-10 text-emerald-500" />
+                <div className="flex flex-col items-center justify-center py-10 text-center">
+                  <div className="w-16 h-16 rounded-3xl bg-emerald-500/10 flex items-center justify-center mb-5 relative">
+                    <Bot className="w-8 h-8 text-emerald-500" />
                     <motion.div 
                       animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
                       transition={{ repeat: Infinity, duration: 2 }}
                       className="absolute inset-0 bg-emerald-500/20 rounded-3xl"
                     />
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Siap Menganalisis</h3>
-                  <p className="text-emerald-500/60 max-w-sm text-sm">Tanyakan apapun tentang soft skill, tips pengembangan diri, atau rekomendasi kemampuan.</p>
+                  <h3 className="text-xl font-bold text-white mb-2">Siap Menganalisis</h3>
+                  <p className="text-emerald-500/60 max-w-sm text-sm mb-6">Tanyakan apapun tentang soft skill, tips pengembangan diri, atau rekomendasi kemampuan.</p>
+
+                  {suggestions.length > 0 && (
+                    <div className="flex flex-wrap justify-center gap-2 max-w-xl">
+                      {suggestions.map((s, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => sendMessage(s)}
+                          className="px-4 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 text-xs font-medium border border-emerald-500/20 transition-all hover:scale-105 cursor-pointer"
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
+
+              {/* Interactive Input Form */}
+              <form onSubmit={handleSend} className="relative flex items-center w-full pt-4">
+                <input
+                  type="text"
+                  value={inputQuery}
+                  onChange={(e) => setInputQuery(e.target.value)}
+                  placeholder="Ketik pertanyaan atau diskusikan skill lebih lanjut..."
+                  disabled={isTyping}
+                  className="w-full bg-[#082a22] border border-emerald-500/20 rounded-2xl pl-5 pr-14 py-3.5 text-sm text-white placeholder-emerald-500/40 focus:border-emerald-400 focus:outline-none transition-all disabled:opacity-50"
+                />
+                <button
+                  type="submit"
+                  disabled={!inputQuery.trim() || isTyping}
+                  className="absolute right-2 p-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white disabled:opacity-30 disabled:hover:bg-emerald-500 transition-all shadow-md cursor-pointer"
+                  aria-label="Kirim pertanyaan"
+                >
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </form>
             </div>
 
             {/* Footer Bar */}

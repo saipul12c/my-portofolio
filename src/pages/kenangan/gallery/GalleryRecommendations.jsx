@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { Lightbulb, ChevronRight, Calendar, User } from "lucide-react";
 import { useMemo, memo } from "react";
+import { Link } from "react-router-dom";
+import { getMediaRoute } from "../utils/routeHelpers";
 
 const GalleryRecommendations = memo(function GalleryRecommendations({ allMedia = [], currentMedia = null }) {
   const recommendations = useMemo(() => {
@@ -8,7 +10,7 @@ const GalleryRecommendations = memo(function GalleryRecommendations({ allMedia =
 
     const currentTags = new Set(currentMedia.tags || []);
     const scored = allMedia
-      .filter((item) => item.id !== currentMedia.id) // Exclude current media
+      .filter((item) => String(item.id) !== String(currentMedia.id)) // Exclude current media
       .map((item) => {
         // Score berdasarkan tag match
         const tagMatches = (item.tags || []).filter((tag) =>
@@ -38,55 +40,63 @@ const GalleryRecommendations = memo(function GalleryRecommendations({ allMedia =
 
   return (
     <motion.aside
-      className="w-full bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-cyan-400/20 rounded-2xl p-6"
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
+      className="w-full bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-cyan-400/20 rounded-2xl p-6 mt-8"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
     >
       <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-        <Lightbulb className="w-5 h-5 text-yellow-400" /> Rekomendasi untuk Mu
+        <Lightbulb className="w-5 h-5 text-yellow-400" /> Rekomendasi Terkait untuk Anda
       </h3>
 
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {recommendations.map((item) => (
-          <motion.div
-            key={item.id}
-            whileHover={{ x: 5 }}
-            className="group bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-3 transition cursor-pointer"
+          <Link
+            key={`${item.type}-${item.id}`}
+            to={getMediaRoute(item.type, item.id)}
+            className="block"
           >
-            <div className="flex items-start gap-3">
-              {/* Thumbnail */}
-              <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-black/30">
-                <img
-                  src={
-                    item.type === "album" ? item.src?.[0] : item.src
-                  }
-                  alt={item.title}
-                  className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition"
-                />
-              </div>
-
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-medium text-white line-clamp-2 group-hover:text-cyan-300 transition">
-                  {item.title}
-                </h4>
-                <div className="flex items-center gap-2 text-xs text-gray-400 mt-1">
-                  <span className="inline-block px-2 py-0.5 bg-white/5 rounded text-cyan-300">
-                    {item.type}
-                  </span>
-                  {item.creator && (
-                    <span className="flex items-center gap-1">
-                      <User size={12} />
-                      {item.creator.display_name}
-                    </span>
-                  )}
+            <motion.div
+              whileHover={{ scale: 1.02, x: 2 }}
+              className="group bg-white/5 hover:bg-white/10 border border-white/10 hover:border-cyan-400/40 rounded-xl p-3 transition h-full"
+            >
+              <div className="flex items-start gap-3">
+                {/* Thumbnail */}
+                <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-black/40">
+                  <img
+                    src={
+                      item.type === "album"
+                        ? item.src?.[0]
+                        : item.thumbnail || item.poster || item.src
+                    }
+                    alt={item.title}
+                    className="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition"
+                    loading="lazy"
+                  />
                 </div>
-              </div>
 
-              {/* Arrow */}
-              <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-cyan-400 transition flex-shrink-0" />
-            </div>
-          </motion.div>
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-sm font-medium text-white line-clamp-1 group-hover:text-cyan-300 transition">
+                    {item.title}
+                  </h4>
+                  <div className="flex items-center gap-2 text-xs text-gray-400 mt-1">
+                    <span className="inline-block px-2 py-0.5 bg-cyan-500/10 border border-cyan-400/20 rounded text-cyan-300 capitalize text-[11px]">
+                      {item.type}
+                    </span>
+                    {item.creator && (
+                      <span className="flex items-center gap-1 truncate text-gray-300">
+                        <User size={12} className="text-gray-400" />
+                        <span className="truncate">{item.creator.display_name}</span>
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Arrow */}
+                <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-cyan-400 transition flex-shrink-0 self-center" />
+              </div>
+            </motion.div>
+          </Link>
         ))}
       </div>
 

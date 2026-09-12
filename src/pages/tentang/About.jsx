@@ -21,6 +21,12 @@ export default function About() {
   useEffect(() => {
     async function loadData() {
       try {
+        const fetchJson = async (url) => {
+          const res = await fetch(url.trim());
+          if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
+          return res.json();
+        };
+
         const [
           profileData,
           cardsData,
@@ -29,22 +35,29 @@ export default function About() {
           softData,
           interestsData,
         ] = await Promise.all([
-          fetch("/data/about/profile.json").then((r) => r.json()),
-          fetch("/data/about/cards.json").then((r) => r.json()),
-          fetch("/data/about/certificates.json\n").then((r) => r.json()),
-          fetch("/data/about/collaborations.json").then((r) => r.json()),
-          fetch("/data/about/softskills.json").then((r) => r.json()),
-          fetch("/data/about/interests.json").then((r) => r.json()),
+          fetchJson("/data/about/profile.json"),
+          fetchJson("/data/about/cards.json"),
+          fetchJson("/data/about/certificates.json"),
+          fetchJson("/data/about/collaborations.json"),
+          fetchJson("/data/about/softskills.json"),
+          fetchJson("/data/about/interests.json"),
         ]);
 
-        setProfile(profileData);
-        setCards(cardsData.cards);
-        setCertificates(certsData);
-        setCollabs(collabsData);
-        setSoftSkills(softData);
-        setInterests(interestsData);
+        setProfile(profileData || {});
+        setCards(cardsData?.cards || []);
+        setCertificates(certsData || { sectionTitle: "Sertifikat", certificates: [] });
+        setCollabs(collabsData || { partners: [] });
+        setSoftSkills(softData || { skills: [] });
+        setInterests(interestsData || {});
       } catch (error) {
         console.error("Gagal memuat data About:", error);
+        // Fallback agar halaman tidak stuck di LoadingScreen selamanya jika ada kendala jaringan
+        setProfile((prev) => prev || { name: "Muhammad Syaiful Mukmin" });
+        setCards((prev) => (prev.length > 0 ? prev : [{ id: 1, title: "Keahlian", content: "Pengembangan Web", icon: "Code2", color: "cyan", link: "/skills" }]));
+        setCertificates((prev) => prev || { sectionTitle: "Sertifikat", certificates: [] });
+        setCollabs((prev) => prev || { partners: [] });
+        setSoftSkills((prev) => prev || { skills: [] });
+        setInterests((prev) => prev || {});
       }
     }
 

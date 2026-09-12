@@ -1,24 +1,32 @@
 // SoftSkillsCardGrid.jsx
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function SoftSkillsCardGrid({ filteredSkills, search = "", highlightText, navigate }) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
+  // Reset page saat hasil filter atau kata kunci pencarian berubah
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredSkills.length, search]);
+
   // Hitung total halaman
   const totalPages = Math.ceil(filteredSkills.length / itemsPerPage);
 
+  // Pastikan currentPage valid
+  const safeCurrentPage = Math.min(Math.max(currentPage, 1), Math.max(totalPages, 1));
+
   // Batasi data yang ditampilkan hanya per halaman
   const currentData = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage;
+    const start = (safeCurrentPage - 1) * itemsPerPage;
     return filteredSkills.slice(start, start + itemsPerPage);
-  }, [filteredSkills, currentPage]);
+  }, [filteredSkills, safeCurrentPage]);
 
   // Fungsi pembuat range pagination
   const getPageNumbers = () => {
     const maxVisible = 10;
-    let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+    let start = Math.max(1, safeCurrentPage - Math.floor(maxVisible / 2));
     let end = Math.min(totalPages, start + maxVisible - 1);
 
     if (end - start < maxVisible - 1) {
@@ -34,8 +42,28 @@ export default function SoftSkillsCardGrid({ filteredSkills, search = "", highli
 
   return (
     <div className="w-full flex flex-col items-center">
+      {/* EMPTY STATE */}
+      {filteredSkills.length === 0 && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center justify-center p-10 text-center bg-gray-900/60 border border-white/10 rounded-3xl max-w-md w-full my-6 shadow-xl"
+        >
+          <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 mb-4 text-3xl">
+            🔍
+          </div>
+          <h3 className="text-xl font-bold text-white mb-2">Skill Tidak Ditemukan</h3>
+          <p className="text-gray-400 text-sm">
+            {search
+              ? `Tidak ditemukan hasil untuk "${search}". Silakan coba kata kunci lain atau pilih kategori lain.`
+              : "Belum ada skill yang terdaftar dalam filter ini."}
+          </p>
+        </motion.div>
+      )}
+
       {/* GRID */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 w-full max-w-6xl">
+      {filteredSkills.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 w-full max-w-6xl">
         <AnimatePresence>
           {currentData.map((skill, i) => (
             <motion.div
@@ -85,6 +113,7 @@ export default function SoftSkillsCardGrid({ filteredSkills, search = "", highli
           ))}
         </AnimatePresence>
       </div>
+      )}
 
       {/* PAGINATION */}
       {totalPages > 1 && (

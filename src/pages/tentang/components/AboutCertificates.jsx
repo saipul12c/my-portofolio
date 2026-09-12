@@ -4,14 +4,39 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Award } from "lucide-react";
 import { Link } from "react-router-dom"; 
 
+// Palet warna tags/skills dengan text yang sesuai
+const tagColors = [
+  { bg: "bg-white/90", text: "text-black" },
+  { bg: "bg-blue-400", text: "text-black" },
+  { bg: "bg-yellow-400", text: "text-black" },
+];
+
+const modalTagColors = [
+  "bg-pink-400/80",
+  "bg-purple-400/80",
+  "bg-green-400/80",
+  "bg-blue-400/80",
+  "bg-yellow-400/80",
+  "bg-orange-400/80",
+];
+
+// Palet warna level badge
+const levelColors = {
+  Pemula: "bg-green-400 text-black",
+  Menengah: "bg-yellow-400 text-black",
+  Lanjutan: "bg-red-400 text-white",
+};
+
 export default function AboutCertificates({ certificates }) {
   const [selectedCert, setSelectedCert] = useState(null);
 
+  const certList = certificates?.certificates || [];
+
   const navigateCert = (dir) => {
-    if (!selectedCert) return;
-    const idx = certificates.certificates.findIndex((c) => c.id === selectedCert.id);
-    const nextIdx = (idx + dir + certificates.certificates.length) % certificates.certificates.length;
-    setSelectedCert(certificates.certificates[nextIdx]);
+    if (!selectedCert || certList.length === 0) return;
+    const idx = certList.findIndex((c) => c.id === selectedCert.id);
+    const nextIdx = (idx + dir + certList.length) % certList.length;
+    setSelectedCert(certList[nextIdx]);
   };
 
   return (
@@ -38,25 +63,10 @@ export default function AboutCertificates({ certificates }) {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {certificates.certificates.map((cert, i) => {
-            // Palet warna tags/skills dengan text yang sesuai
-            const tagColors = [
-              { bg: "bg-white/90", text: "text-black" },
-              { bg: "bg-blue-400", text: "text-black" },
-              { bg: "bg-yellow-400", text: "text-black" },
-            ];
-            const getRandomTagColor = () => tagColors[Math.floor(Math.random() * tagColors.length)];
-
-            // Palet warna level badge
-            const levelColors = {
-              Pemula: "bg-green-400 text-black",
-              Menengah: "bg-yellow-400 text-black",
-              Lanjutan: "bg-red-400 text-white",
-            };
-
+          {certList.map((cert, i) => {
             return (
               <div
-                key={i}
+                key={cert.id || i}
                 onClick={() => setSelectedCert(cert)}
                 className="relative bg-gradient-to-tr from-pink-600/20 to-purple-600/20 backdrop-blur-2xl border border-white/20 rounded-3xl p-6 hover:scale-105 hover:shadow-xl transition-transform cursor-pointer group"
               >
@@ -75,8 +85,8 @@ export default function AboutCertificates({ certificates }) {
                 <p className="text-gray-200 text-sm mt-2 line-clamp-3">{cert.description}</p>
 
                 <div className="mt-3 flex flex-wrap gap-1">
-                  {cert.tags.map((tag, idx) => {
-                    const color = getRandomTagColor();
+                  {cert.tags?.map((tag, idx) => {
+                    const color = tagColors[(idx + i) % tagColors.length];
                     return (
                       <span
                         key={idx}
@@ -87,10 +97,10 @@ export default function AboutCertificates({ certificates }) {
                     );
                   })}
                   {cert.skills?.map((skill, idx) => {
-                    const color = getRandomTagColor();
+                    const color = tagColors[(idx + (cert.tags?.length || 0) + i) % tagColors.length];
                     return (
                       <span
-                        key={idx + cert.tags.length}
+                        key={idx + (cert.tags?.length || 0)}
                         className={`inline-block text-xs font-semibold px-2 py-1 rounded-full ${color.bg} ${color.text}`}
                       >
                         {skill}
@@ -132,17 +142,17 @@ export default function AboutCertificates({ certificates }) {
                 <X className="w-6 h-6" />
               </button>
 
-              {certificates.length > 1 && (
+              {certList.length > 1 && (
                 <>
                   <button
                     onClick={() => navigateCert(-1)}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-pink-300"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-pink-300 p-2 text-xl"
                   >
                     &#8592;
                   </button>
                   <button
                     onClick={() => navigateCert(1)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-pink-300"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-pink-300 p-2 text-xl"
                   >
                     &#8594;
                   </button>
@@ -188,38 +198,22 @@ export default function AboutCertificates({ certificates }) {
               <p className="text-white/90 mb-4">{selectedCert.description}</p>
 
               <div className="mb-4 flex flex-wrap gap-2">
-                {(() => {
-                  const tagColors = [
-                    "bg-pink-400/80",
-                    "bg-purple-400/80",
-                    "bg-green-400/80",
-                    "bg-blue-400/80",
-                    "bg-yellow-400/80",
-                    "bg-orange-400/80",
-                  ];
-                  const getRandomColor = () =>
-                    tagColors[Math.floor(Math.random() * tagColors.length)];
-                  return (
-                    <>
-                      {selectedCert.tags.map((tag, idx) => (
-                        <span
-                          key={idx}
-                          className={`inline-block text-black text-xs font-bold px-3 py-1 rounded-full ${getRandomColor()}`}
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                      {selectedCert.skills.map((skill, idx) => (
-                        <span
-                          key={idx + selectedCert.tags.length}
-                          className={`inline-block text-black text-xs font-bold px-3 py-1 rounded-full ${getRandomColor()}`}
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                    </>
-                  );
-                })()}
+                {selectedCert.tags?.map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className={`inline-block text-black text-xs font-bold px-3 py-1 rounded-full ${modalTagColors[idx % modalTagColors.length]}`}
+                  >
+                    #{tag}
+                  </span>
+                ))}
+                {selectedCert.skills?.map((skill, idx) => (
+                  <span
+                    key={idx + (selectedCert.tags?.length || 0)}
+                    className={`inline-block text-black text-xs font-bold px-3 py-1 rounded-full ${modalTagColors[(idx + (selectedCert.tags?.length || 0)) % modalTagColors.length]}`}
+                  >
+                    {skill}
+                  </span>
+                ))}
               </div>
 
               <div className="flex flex-wrap gap-2 mb-2">
