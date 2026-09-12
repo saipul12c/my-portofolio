@@ -1,6 +1,9 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import { filterSpamContacts } from "../utils/filterContacts";
+
+const CACHE_KEY = "cached_sheetdb_contacts_v1";
+const CACHE_TTL_MS = 3 * 60 * 1000; // 3 menit
 
 export const useContacts = () => {
   const [contacts, setContacts] = useState([]);
@@ -8,6 +11,7 @@ export const useContacts = () => {
   const [loadingContacts, setLoadingContacts] = useState(true);
   const [refreshLoading, setRefreshLoading] = useState(false);
   const [error, setError] = useState(null);
+  const abortControllerRef = useRef(null);
 
   const SHEETDB_URL = import.meta.env.VITE_SHEETDB_URL;
 
@@ -20,11 +24,53 @@ export const useContacts = () => {
     return isNaN(date.getTime()) ? 0 : date.getTime();
   };
 
-  // Enhanced fetch data dengan retry logic
-  const fetchContacts = useCallback(async (retryCount = 0) => {
+  // Helper untuk membaca cache
+  const getCachedData = () => {
+    try {
+      const raw = sessionStorage.getItem(CACHE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (Date.now() - parsed.timestamp < CACHE_TTL_MS) {
+        return parsed;
+      }
+    } catch {
+      // Ignore cache parse error
+    }
+    return null;
+  };
+
+  // Helper untuk menyimpan cache
+  const setCachedData = (sortedContacts, total) => {
+    try {
+      sessionStorage.setItem(
+        CACHE_KEY,
+        JSON.stringify({
+          contacts: sortedContacts,
+          totalContacts: total,
+          timestamp: Date.now(),
+        })
+      );
+    } catch {
+      // Storage quota or disabled
+    }
+  };
+
+  // Enhanced fetch data dengan caching dan abort handling
+  const fetchContacts = useCallback(async (retryCount = 0, forceRefresh = false) => {
     try {
       setError(null);
       
+      // Jika bukan force refresh, cek cache terlebih dahulu
+      if (!forceRefresh && retryCount === 0) {
+        const cached = getCachedData();
+        if (cached) {
+          setContacts(cached.contacts);
+          setTotalContacts(cached.totalContacts);
+          setLoadingContacts(false);
+          return;
+        }
+      }
+
       if (!SHEETDB_URL) {
         setContacts([]);
         setTotalContacts(0);
@@ -32,7 +78,14 @@ export const useContacts = () => {
         return;
       }
 
-      const res = await fetch(SHEETDB_URL);
+      // Abort controller untuk request yang aman
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
+      const res = await fetch(SHEETDB_URL, { signal: controller.signal });
       
       if (!res.ok) {
         throw new Error(`Gagal fetch data: ${res.status}`);
@@ -52,7 +105,8 @@ export const useContacts = () => {
       }
 
       // Set total contacts (including spam)
-      setTotalContacts(dataArray.length);
+      const total = dataArray.length;
+      setTotalContacts(total);
 
       // Filter spam emails (using 'lenient' mode untuk portfolio site)
       const filteredData = filterSpamContacts(dataArray, 'lenient');
@@ -63,21 +117,23 @@ export const useContacts = () => {
       });
       
       setContacts(sortedData);
+      setCachedData(sortedData, total);
       
       toast.dismiss();
-      if (retryCount > 0) {
+      if (forceRefresh || retryCount > 0) {
         toast.success("Data berhasil diperbarui! ✨", {
           position: "bottom-center",
         });
       }
     } catch (err) {
+      if (err.name === 'AbortError') {
+        return; // Request dibatalkan saat unmount, bukan error
+      }
+      
       setError(err.message);
       
-      if (retryCount < 3) {
-        toast.warning(`Mencoba lagi... (${retryCount + 1}/3)`, {
-          position: "bottom-center",
-        });
-        setTimeout(() => fetchContacts(retryCount + 1), 2000);
+      if (retryCount < 2) {
+        setTimeout(() => fetchContacts(retryCount + 1, forceRefresh), 2000);
       } else {
         toast.error("Gagal memuat pesan masuk", {
           position: "bottom-center",
@@ -91,6 +147,11 @@ export const useContacts = () => {
 
   useEffect(() => {
     fetchContacts();
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
   }, [fetchContacts]);
 
   const handleRefreshContacts = async () => {
@@ -98,7 +159,7 @@ export const useContacts = () => {
     toast.info("Memperbarui pesan...", {
       position: "bottom-center",
     });
-    await fetchContacts();
+    await fetchContacts(0, true);
   };
 
   return {

@@ -320,8 +320,10 @@ const ContactForm = () => {
     <motion.form
       onSubmit={handleSubmit}
       ref={messageRef}
-      className="relative bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 backdrop-blur-2xl border-2 border-white/40 dark:border-gray-700/50 shadow-3xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 w-full max-w-sm sm:max-w-lg md:max-w-xl mx-auto space-y-5 sm:space-y-6 md:space-y-8 hover:shadow-4xl transition-all duration-700"
+      className="relative bg-gradient-to-br from-white/95 via-blue-50/90 to-purple-50/95 dark:from-gray-800/95 dark:via-gray-700/90 dark:to-gray-800/95 backdrop-blur-xl border-2 border-white/40 dark:border-gray-700/50 shadow-3xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 w-full max-w-sm sm:max-w-lg md:max-w-xl mx-auto space-y-5 sm:space-y-6 md:space-y-8 hover:shadow-4xl transition-all duration-700"
       style={{
+        isolation: 'isolate',
+        transform: 'translateZ(0)',
         backgroundImage: 'radial-gradient(circle at top right, rgba(120, 119, 198, 0.1), transparent 50%), radial-gradient(circle at bottom left, rgba(255, 119, 198, 0.1), transparent 50%)'
       }}
     >
@@ -339,7 +341,7 @@ const ContactForm = () => {
           <label className="absolute -top-2 sm:-top-3 left-3 sm:left-4 bg-white dark:bg-gray-800 px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-bold text-purple-600 dark:text-purple-400 rounded-full border border-purple-200 dark:border-purple-800 shadow-sm z-10">
             {field.label}
           </label>
-          <div className="flex items-center border-2 border-gray-200 dark:border-gray-600 rounded-xl sm:rounded-2xl px-3 sm:px-5 py-3 sm:py-4 focus-within:border-purple-500 focus-within:ring-4 focus-within:ring-purple-500/20 transition-all duration-300 group-hover:border-purple-400 dark:group-hover:border-purple-500 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm">
+          <div className="flex items-center border-2 border-gray-200 dark:border-gray-600 rounded-xl sm:rounded-2xl px-3 sm:px-5 py-3 sm:py-4 focus-within:border-purple-500 focus-within:ring-4 focus-within:ring-purple-500/20 transition-all duration-300 group-hover:border-purple-400 dark:group-hover:border-purple-500 bg-white/70 dark:bg-gray-700/70">
             <span className="text-purple-500 mr-2 sm:mr-4 flex-shrink-0">{field.icon}</span>
             <input
               type={field.type}
@@ -396,7 +398,7 @@ const ContactForm = () => {
         <label className="absolute -top-2 sm:-top-3 left-3 sm:left-4 bg-white dark:bg-gray-800 px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-bold text-purple-600 dark:text-purple-400 rounded-full border border-purple-200 dark:border-purple-800 shadow-sm z-10">
           Pesan Anda
         </label>
-        <div className="flex items-start border-2 border-gray-200 dark:border-gray-600 rounded-xl sm:rounded-2xl px-3 sm:px-5 py-3 sm:py-4 focus-within:border-purple-500 focus-within:ring-4 focus-within:ring-purple-500/20 transition-all duration-300 group-hover:border-purple-400 dark:group-hover:border-purple-500 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm">
+        <div className="flex items-start border-2 border-gray-200 dark:border-gray-600 rounded-xl sm:rounded-2xl px-3 sm:px-5 py-3 sm:py-4 focus-within:border-purple-500 focus-within:ring-4 focus-within:ring-purple-500/20 transition-all duration-300 group-hover:border-purple-400 dark:group-hover:border-purple-500 bg-white/70 dark:bg-gray-700/70">
           <MessageSquare className="text-purple-500 mt-1 mr-2 sm:mr-4 flex-shrink-0" size={20} />
           <div className="flex-1">
             <textarea
@@ -441,7 +443,7 @@ const ContactForm = () => {
           layout
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`p-3 sm:p-4 rounded-xl border transition-all duration-300 backdrop-blur-sm ${
+          className={`p-3 sm:p-4 rounded-xl border transition-all duration-300 ${
             rateLimitStatus?.blocked 
               ? 'bg-red-50/80 dark:bg-red-900/20 border-red-200 dark:border-red-800' 
               : recaptchaVerifying 

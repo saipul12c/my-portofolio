@@ -14,7 +14,8 @@ import { SPARKLES_ICON } from "./utils/constants";
 export default function Contact() {
   const isMaintenance = false;
 
-  const titleAnim = useScrollReveal(0);
+  const badgeAnim = useScrollReveal(0);
+  const titleAnim = useScrollReveal(0.15);
   const descAnim = useScrollReveal(0.3);
   const statsAnim = useScrollReveal(0.5);
   const formAnim = useScrollReveal(0.4);
@@ -40,7 +41,7 @@ export default function Contact() {
       {/* 🌟 Enhanced Header Section */}
       <div className="text-center mb-8 sm:mb-12 lg:mb-16 max-w-6xl relative z-10 w-full px-2 sm:px-0">
         <motion.div
-          {...titleAnim}
+          {...badgeAnim}
           className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-4 sm:px-6 py-2 sm:py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-white/20 shadow-lg"
         >
           {SPARKLES_ICON}

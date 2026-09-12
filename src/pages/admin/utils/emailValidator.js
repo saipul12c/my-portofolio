@@ -1,4 +1,4 @@
-import { trustedEmailDomains, spamEmailDomains } from './emailDomains';
+import { trustedEmailDomains, spamEmailDomains, trustedDomainSet, spamDomainSet } from './emailDomains';
 
 /**
  * Comprehensive Email Validation Utility - Enhanced 5x
@@ -192,8 +192,8 @@ export const isSpamDomain = (email) => {
   const domain = email.toLowerCase().split('@')[1];
   if (!domain) return true;
   
-  // Direct match in spam list
-  if (spamEmailDomains.includes(domain)) return true;
+  // Direct match in spam list (O(1) lookup)
+  if (spamDomainSet.has(domain)) return true;
   
   // Check for subdomain matches
   if (spamEmailDomains.some(spamDomain => domain.endsWith('.' + spamDomain))) {
@@ -225,7 +225,7 @@ export const isSpamDomain = (email) => {
   const domainName = domain.split('.')[0];
   if (domainName.length < 3) {
     // If domain is in trusted list, it's legitimate (e.g., me.com)
-    if (trustedEmailDomains.includes(domain)) {
+    if (trustedDomainSet.has(domain)) {
       return false; // It's trusted, not spam
     }
     // If not trusted AND too short, suspect spam
@@ -249,8 +249,8 @@ export const isTrustedDomain = (email) => {
   const domain = email.toLowerCase().split('@')[1];
   if (!domain) return false;
   
-  // Direct match in comprehensive trusted list (500+ domains)
-  if (trustedEmailDomains.includes(domain)) return true;
+  // Direct match in comprehensive trusted list (500+ domains) - O(1) lookup
+  if (trustedDomainSet.has(domain)) return true;
   
     // Check for educational institutions worldwide
     const eduPatterns = [

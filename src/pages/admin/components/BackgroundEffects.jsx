@@ -18,32 +18,43 @@ const BackgroundEffects = () => {
   }, []);
 
   return (
-    <>
-      <div id="particles-container" className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div 
+      className="absolute inset-0 overflow-hidden pointer-events-none"
+      style={{ isolation: 'isolate', contain: 'paint layout' }}
+    >
+      <div id="particles-container" className="absolute inset-0">
         {particles.map((p) => (
           <div
             key={p.id}
-            className="absolute w-1 h-1 bg-purple-300 dark:bg-purple-600 rounded-full opacity-20"
+            className="absolute w-1.5 h-1.5 bg-purple-300 dark:bg-purple-600 rounded-full opacity-20"
             style={{
               left: `${p.left}vw`,
               top: `${p.top}vh`,
               animation: `float ${p.duration}s linear infinite`,
+              willChange: 'transform',
+              transform: 'translate3d(0,0,0)',
             }}
           />
         ))}
       </div>
       
-      {/* Animated Gradient Orbs */}
-      <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-purple-300/20 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-300/15 rounded-full blur-3xl animate-pulse delay-1000" />
+      {/* Animated Gradient Orbs with GPU acceleration */}
+      <div 
+        className="absolute top-1/4 left-1/4 w-72 h-72 bg-purple-300/20 rounded-full blur-3xl animate-pulse" 
+        style={{ willChange: 'opacity, transform', transform: 'translate3d(0,0,0)', backfaceVisibility: 'hidden' }}
+      />
+      <div 
+        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-300/15 rounded-full blur-3xl animate-pulse delay-1000" 
+        style={{ willChange: 'opacity, transform', transform: 'translate3d(0,0,0)', backfaceVisibility: 'hidden' }}
+      />
 
       <style>{`
         @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-20px) rotate(180deg); }
+          0%, 100% { transform: translate3d(0px, 0px, 0) rotate(0deg); }
+          50% { transform: translate3d(0px, -20px, 0) rotate(180deg); }
         }
       `}</style>
-    </>
+    </div>
   );
 };
 

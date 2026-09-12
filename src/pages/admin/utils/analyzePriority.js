@@ -23,6 +23,10 @@ const LOW_PRIORITY_KEYWORDS = [
   'suggestion', 'testing', 'test', 'coba'
 ];
 
+// Pre-compiled regexes for maximum performance (compiled once, not in loops)
+const URGENT_REGEX = new RegExp(`\\b(${URGENT_KEYWORDS.join('|')})\\b`, 'gi');
+const LOW_PRIORITY_REGEX = new RegExp(`\\b(${LOW_PRIORITY_KEYWORDS.join('|')})\\b`, 'gi');
+
 /**
  * Score pesan berdasarkan berbagai faktor
  * @param {string} message - Isi pesan
@@ -55,30 +59,18 @@ export const analyzePriority = (message = '', email = '') => {
     reasons.push('Pesan sangat singkat');
   }
 
-  // 2. Cek urgent keywords
-  let urgentCount = 0;
-  URGENT_KEYWORDS.forEach(keyword => {
-    const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
-    const matches = messageLower.match(regex);
-    if (matches) {
-      urgentCount += matches.length;
-    }
-  });
+  // 2. Cek urgent keywords (pre-compiled regex)
+  const urgentMatches = messageLower.match(URGENT_REGEX);
+  const urgentCount = urgentMatches ? urgentMatches.length : 0;
 
   if (urgentCount > 0) {
     score += Math.min(urgentCount * 15, 40); // Max +40 untuk urgent keywords
     reasons.push(`Ditemukan ${urgentCount} kata urgent`);
   }
 
-  // 3. Cek low priority keywords
-  let lowPriorityCount = 0;
-  LOW_PRIORITY_KEYWORDS.forEach(keyword => {
-    const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
-    const matches = messageLower.match(regex);
-    if (matches) {
-      lowPriorityCount += matches.length;
-    }
-  });
+  // 3. Cek low priority keywords (pre-compiled regex)
+  const lowPriorityMatches = messageLower.match(LOW_PRIORITY_REGEX);
+  const lowPriorityCount = lowPriorityMatches ? lowPriorityMatches.length : 0;
 
   if (lowPriorityCount > 0) {
     score -= Math.min(lowPriorityCount * 10, 30); // Max -30 untuk low priority keywords

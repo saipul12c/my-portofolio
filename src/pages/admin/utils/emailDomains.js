@@ -196,3 +196,7 @@ export const spamEmailDomains = [
   'ineec.net', 'info.tm', 'infocom.zp.ua', 'instant-mail.de',
   'ip6.li', 'irish2me.com', 'iwi.net', 'jamit.com.au',
 ];
+
+// O(1) Lookup Sets for fast validation
+export const trustedDomainSet = new Set(trustedEmailDomains);
+export const spamDomainSet = new Set(spamEmailDomains);

@@ -215,7 +215,10 @@ const ContactList = () => {
         </motion.button>
       </div>
 
-      <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border border-white/30 dark:border-gray-700/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-h-[700px] overflow-hidden flex flex-col shadow-2xl hover:shadow-3xl transition-all duration-500">
+      <div 
+        className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border border-white/30 dark:border-gray-700/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-h-[700px] overflow-hidden flex flex-col shadow-2xl hover:shadow-3xl transition-all duration-500"
+        style={{ isolation: 'isolate', transform: 'translateZ(0)' }}
+      >
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4 sm:mb-6">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 sm:gap-3 flex-wrap">

@@ -1,4 +1,4 @@
-import { spamEmailDomains } from './emailDomains';
+import { spamEmailDomains, spamDomainSet } from './emailDomains';
 import { verifyEmail, isValidEmailSyntax } from './emailValidator';
 
 /**
@@ -117,7 +117,7 @@ export const filterSpamContacts = (contacts, mode = 'lenient') => {
       
       // 3. Disposable email domains
       const domain = email.split('@')[1];
-      if (!domain || spamEmailDomains.includes(domain)) return false;
+      if (!domain || spamDomainSet.has(domain)) return false;
       if (domain.includes('temp') || domain.includes('trash') || domain.includes('disposable')) {
         return false;
       }
@@ -179,7 +179,7 @@ export const filterSpamContacts = (contacts, mode = 'lenient') => {
 
     // Check for spam domains
     const domain = email.split('@')[1];
-    if (!domain || spamEmailDomains.includes(domain)) {
+    if (!domain || spamDomainSet.has(domain)) {
       return false;
     }
 
