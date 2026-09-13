@@ -70,25 +70,35 @@ export default function SoftSkillsPopup({ selectedSkill, setSelectedSkill, navig
                 {selectedSkill.name}
               </h2>
 
-              <div className="flex flex-wrap gap-2">
-                <span className="text-xs px-3 py-1 rounded-2xl bg-white/20">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs px-3 py-1 rounded-2xl bg-white/20 font-medium">
                   {selectedSkill.category}
                 </span>
                 <span
-                  className={`text-xs px-3 py-1 rounded-2xl ${selectedSkill.levelColor}`}
+                  className={`text-xs px-3 py-1 rounded-2xl font-medium ${selectedSkill.levelColor || "bg-cyan-500 text-white"}`}
                 >
                   {selectedSkill.level}
                 </span>
+                {selectedSkill.labels?.map((label, idx) => (
+                  <span
+                    key={idx}
+                    className={`text-xs px-3 py-1 rounded-2xl font-semibold shadow-sm ${
+                      selectedSkill.labelColorMap?.[label] || "bg-emerald-500 text-white"
+                    }`}
+                  >
+                    {label}
+                  </span>
+                ))}
               </div>
 
-              <p className="text-gray-300">{selectedSkill.description}</p>
+              <p className="text-gray-300 leading-relaxed">{selectedSkill.description}</p>
 
               {selectedSkill.examples?.length > 0 && (
                 <div>
-                  <h3 className="text-emerald-400 font-semibold mb-2">
+                  <h3 className="text-emerald-400 font-semibold mb-2 text-sm">
                     Contoh Penerapan:
                   </h3>
-                  <ul className="list-disc list-inside text-gray-300 space-y-1">
+                  <ul className="list-disc list-inside text-gray-300 space-y-1 text-sm">
                     {selectedSkill.examples.map((ex, i) => (
                       <li key={i}>{ex}</li>
                     ))}
@@ -96,16 +106,37 @@ export default function SoftSkillsPopup({ selectedSkill, setSelectedSkill, navig
                 </div>
               )}
 
-              <div className="w-full bg-gray-700 rounded-full h-3 mt-4 overflow-hidden">
-                <motion.div
-                  className="h-3 bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400"
-                  initial={{ width: 0 }}
-                  animate={{
-                    width: `${levelToProgress(selectedSkill.level)}%`,
-                  }}
-                  transition={{ duration: 0.8 }}
-                />
+              {/* Progress Bar dengan label jelas */}
+              <div className="pt-2">
+                <div className="flex justify-between items-center text-xs mb-1.5 font-medium text-gray-300">
+                  <span>Tingkat Kemahiran ({selectedSkill.level})</span>
+                  <span className="text-cyan-400 font-semibold">{levelToProgress(selectedSkill.level)}%</span>
+                </div>
+                <div className="w-full bg-gray-700/60 rounded-full h-2.5 overflow-hidden">
+                  <motion.div
+                    className="h-2.5 bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{
+                      width: `${levelToProgress(selectedSkill.level)}%`,
+                    }}
+                    transition={{ duration: 0.8 }}
+                  />
+                </div>
               </div>
+
+              {/* Tags */}
+              {selectedSkill.tags?.length > 0 && (
+                <div className="pt-2 flex flex-wrap gap-1.5">
+                  {selectedSkill.tags.map((tag, i) => (
+                    <span
+                      key={i}
+                      className="text-[11px] px-2.5 py-0.5 rounded-lg bg-gray-800 border border-white/10 text-gray-400"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             {selectedSkill.video && (

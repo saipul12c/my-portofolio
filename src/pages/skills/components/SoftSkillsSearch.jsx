@@ -1,10 +1,11 @@
 // SoftSkillsSearch.jsx
-import { useState, useEffect, useRef, memo } from "react";
+import { useState, useEffect, useRef, useMemo, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Clock, Sparkles, ArrowRight, Bot, History } from "lucide-react";
+import { Search, Clock, Sparkles, ArrowRight, Bot, History, Trash2 } from "lucide-react";
 
 const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onOpenAI }) => {
   const searchRef = useRef(null);
+  const historyRef = useRef(null);
   const [search, setSearch] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
@@ -12,6 +13,7 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
   const [placeholderText, setPlaceholderText] = useState("");
   const [ghostText, setGhostText] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const [recentSearch, setRecentSearch] = useState(() => {
     try {
       const v = localStorage.getItem("ss_recent_search");
@@ -166,6 +168,19 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
     setTimeout(() => searchRef.current?.blur(), 40);
   };
 
+  // Tutup riwayat saat klik di luar
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (historyRef.current && !historyRef.current.contains(e.target)) {
+        setShowHistory(false);
+      }
+    };
+    if (showHistory) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showHistory]);
+
   // Keyboard navigation for suggestions
   const handleKeyDown = (e) => {
     if (e.key === "ArrowDown") {
@@ -182,9 +197,15 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
       }
     } else if (e.key === "Escape") {
       setShowSuggestions(false);
-    } else if (e.key === "Tab" && suggestions[0]) {
-      e.preventDefault();
-      handleSelectSuggestion(suggestions[0].name);
+      setShowHistory(false);
+    } else if (e.key === "Tab") {
+      if (ghostText && ghostText.toLowerCase().startsWith(search.toLowerCase())) {
+        e.preventDefault();
+        handleSelectSuggestion(ghostText);
+      } else if (suggestions[0]) {
+        e.preventDefault();
+        handleSelectSuggestion(suggestions[0].name);
+      }
     }
   };
 
@@ -205,17 +226,24 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
 
           {/* Main Input Container */}
           <div className="relative w-full">
+            {/* Ghost text overlay */}
+            {ghostText && search && ghostText.toLowerCase().startsWith(search.toLowerCase()) && (
+              <div className="absolute inset-0 pl-12 pr-[140px] py-3.5 text-sm pointer-events-none flex items-center overflow-hidden font-normal z-10 select-none">
+                <span className="invisible">{search}</span>
+                <span className="text-gray-500/50">{ghostText.slice(search.length)}</span>
+              </div>
+            )}
             <input
               ref={searchRef}
               type="text"
               placeholder={placeholderText || "Cari skill..."}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-[140px] py-3.5 text-sm text-white focus:border-cyan-400 outline-none z-10 transition-all"
+              className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-[140px] py-3.5 text-sm text-white focus:border-cyan-400 outline-none z-10 transition-all relative"
               style={{ caretColor: "#22d3ee" }}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={handleKeyDown}
               onFocus={() => setShowSuggestions(true)}
-              onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
               aria-label="Cari skill"
             />
 
@@ -260,6 +288,7 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
                   <motion.li
                     key={s.id || `${s.name}-${i}`}
                     layout
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => handleSelectSuggestion(s.name)}
                     onMouseEnter={() => setActiveSuggestion(i)}
                     className={`flex items-center justify-between px-4 py-2.5 cursor-pointer transition-all ${
@@ -339,17 +368,79 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
           </div>
         </div>
 
-        <button 
-          onClick={() => {
-            if (recentSearch.length > 0) {
-              setSearch(recentSearch[0]);
-            }
-          }}
-          className="flex items-center gap-2 text-gray-500 hover:text-gray-300 transition-colors"
-        >
-          <History className="w-4 h-4" />
-          <span className="text-[11px] font-bold uppercase tracking-wider">Riwayat</span>
-        </button>
+        {/* History Button & Popover */}
+        <div className="relative" ref={historyRef}>
+          <button 
+            type="button"
+            onClick={() => setShowHistory((prev) => !prev)}
+            className={`flex items-center gap-2 transition-colors py-1 px-2 rounded-lg ${
+              showHistory ? "text-cyan-400 bg-cyan-500/10" : "text-gray-500 hover:text-gray-300"
+            }`}
+            aria-expanded={showHistory}
+            aria-label="Riwayat pencarian"
+          >
+            <History className="w-4 h-4" />
+            <span className="text-[11px] font-bold uppercase tracking-wider">Riwayat</span>
+            {recentSearch.length > 0 && (
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+            )}
+          </button>
+
+          <AnimatePresence>
+            {showHistory && (
+              <motion.div
+                initial={{ opacity: 0, y: 5, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 5, scale: 0.95 }}
+                className="absolute right-0 bottom-full mb-2 sm:bottom-auto sm:top-full sm:mt-2 w-64 bg-gray-900/95 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-md p-3 z-40"
+              >
+                <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10 text-xs">
+                  <span className="font-semibold text-gray-300 flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-cyan-400" />
+                    Pencarian Terakhir
+                  </span>
+                  {recentSearch.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRecentSearch([]);
+                        localStorage.removeItem("ss_recent_search");
+                      }}
+                      className="text-[10px] text-red-400 hover:text-red-300 flex items-center gap-1"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      Hapus
+                    </button>
+                  )}
+                </div>
+
+                {recentSearch.length === 0 ? (
+                  <p className="text-xs text-gray-500 py-3 text-center">
+                    Belum ada riwayat pencarian
+                  </p>
+                ) : (
+                  <ul className="space-y-1">
+                    {recentSearch.map((item, idx) => (
+                      <li key={idx}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSearch(item);
+                            setShowHistory(false);
+                          }}
+                          className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs text-gray-300 hover:bg-cyan-500/20 hover:text-white transition-colors truncate flex items-center gap-2"
+                        >
+                          <Clock className="w-3 h-3 text-gray-500 shrink-0" />
+                          <span className="truncate">{item}</span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </motion.div>
     </div>
   );

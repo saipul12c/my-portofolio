@@ -59,6 +59,7 @@ export default function SoftSkillsAI({ isOpen, onClose, skills = [], initialQuer
   }, [isOpen]);
 
   const lastBotMessage = messages.filter(m => m.from === 'bot').pop();
+  const lastUserMessage = messages.filter(m => m.from === 'user').pop();
 
   return (
     <AnimatePresence>
@@ -110,7 +111,7 @@ export default function SoftSkillsAI({ isOpen, onClose, skills = [], initialQuer
                     </div>
                     <div className="bg-[#082a22]/50 border border-white/5 rounded-2xl p-6">
                       <p className="text-xl font-semibold text-white italic">
-                        "{messages[messages.length - 2]?.text}"
+                        "{lastUserMessage?.text || messages[messages.length - 1]?.text}"
                       </p>
                     </div>
                   </div>

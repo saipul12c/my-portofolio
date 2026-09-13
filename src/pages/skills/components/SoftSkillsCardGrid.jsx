@@ -9,7 +9,7 @@ export default function SoftSkillsCardGrid({ filteredSkills, search = "", highli
   // Reset page saat hasil filter atau kata kunci pencarian berubah
   useEffect(() => {
     setCurrentPage(1);
-  }, [filteredSkills.length, search]);
+  }, [filteredSkills, search]);
 
   // Hitung total halaman
   const totalPages = Math.ceil(filteredSkills.length / itemsPerPage);
@@ -23,20 +23,32 @@ export default function SoftSkillsCardGrid({ filteredSkills, search = "", highli
     return filteredSkills.slice(start, start + itemsPerPage);
   }, [filteredSkills, safeCurrentPage]);
 
-  // Fungsi pembuat range pagination
+  // Fungsi pembuat range pagination yang rapi tanpa ellipsis ganda/berdekatan
   const getPageNumbers = () => {
-    const maxVisible = 10;
-    let start = Math.max(1, safeCurrentPage - Math.floor(maxVisible / 2));
-    let end = Math.min(totalPages, start + maxVisible - 1);
-
-    if (end - start < maxVisible - 1) {
-      start = Math.max(1, end - maxVisible + 1);
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
     }
 
     const pages = [];
-    if (start > 1) pages.push(1, "...");
-    for (let i = start; i <= end; i++) pages.push(i);
-    if (end < totalPages) pages.push("...", totalPages);
+    pages.push(1);
+
+    if (safeCurrentPage > 3) {
+      pages.push("...");
+    }
+
+    const start = Math.max(2, safeCurrentPage - 1);
+    const end = Math.min(totalPages - 1, safeCurrentPage + 1);
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    if (safeCurrentPage < totalPages - 2) {
+      pages.push("...");
+    }
+
+    pages.push(totalPages);
+
     return pages;
   };
 

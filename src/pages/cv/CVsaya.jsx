@@ -16,6 +16,8 @@ import projectsData from '../../data/projects.json';
 import softSkillsData from '../../data/skills/softskills.json';
 import testimonialsData from '../../data/testimoni/testimonials.json';
 import certificatesData from '../../data/sertif/certificates.json';
+import dataBahasa from '../../data/bahasa/data.json';
+import educationData from '../../data/pendidikan/data.json';
 
 const CVsaya = () => {
   const { isCopied, copyEmail } = useCopyToClipboard();
@@ -32,11 +34,11 @@ const CVsaya = () => {
     .sort((a, b) => b.rating - a.rating)
     .slice(0, 3);
 
-  // Professional skills dari softskills.json
-  const professionalSkills = skills
+  // Professional skills dari softskills.json (seluruh daftar untuk rotasi dinamis)
+  const professionalSkills = (skills || [])
     .filter(skill => skill.category === "Professional Skill")
-    .slice(0, 6)
     .map(skill => ({
+      id: skill.id,
       name: skill.name,
       level: skill.experience,
       icon: '⚡'
@@ -81,8 +83,8 @@ const CVsaya = () => {
           {/* Right Column - Sidebar */}
           <div className="space-y-8">
             <TechnicalSkills skills={professionalSkills} />
-            <Education />
-            <Languages />
+            <Education data={educationData} />
+            <Languages data={dataBahasa} />
             <Certifications certificates={certificates} />
             <AdditionalInfo />
           </div>

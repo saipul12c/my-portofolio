@@ -338,9 +338,7 @@
       "examples": [
         "Menangani konflik dengan empati",
         "Menjaga kestabilan emosi di situasi tekanan"
-      ]
-    },
-    {
+      ],
       "icon": "Brain",
       "difficulty": "Medium",
       "tags": ["emosi", "empati", "hubungan"],
@@ -580,30 +578,6 @@
       "colorGradient": ["purple-500", "purple-700"],
       "popularityScore": 90
     },
-    [
-  {
-    "id": "25",
-    "name": "Etika Profesional",
-    "category": "Professional Skill",
-    "level": "Ahli",
-    "description": "Menjaga integritas, tanggung jawab, dan kejujuran dalam setiap aspek pekerjaan serta mematuhi standar etika profesi.",
-    "color": "slate",
-    "dateAdded": "2025-01-12",
-    "labels": [],
-    "experience": 90,
-    "examples": [
-      "Menolak tindakan tidak etis dalam proyek",
-      "Menjaga kerahasiaan data klien"
-    ],
-    "icon": "Scale",
-    "difficulty": "Medium",
-    "tags": ["etika", "integritas", "profesionalisme"],
-    "video": "https://youtu.be/example25",
-    "embedUrl": "https://www.youtube.com/embed/example25",
-    "lastUpdated": "2025-09-15",
-    "colorGradient": ["slate-500", "slate-700"],
-    "popularityScore": 82
-  },
   {
     "id": "26",
     "name": "Kepedulian Sosial",
@@ -950,6 +924,4 @@
     "popularityScore": 90
   }
 ]
-
-  ]
 }
