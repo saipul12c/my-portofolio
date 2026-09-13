@@ -2,14 +2,68 @@ import { useState, useEffect, useMemo, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, SlidersHorizontal, Grid3x3, Grid2x2 } from "lucide-react";
 
-function PhotoSearch({ onSearch, allPhotos = [], onFilterChange, onViewChange, currentView = "grid" }) {
-  const [query, setQuery] = useState("");
+// Subkomponen terisolasi untuk efek ketik agar TIDAK me-render ulang seluruh PhotoSearch
+const TypewriterPlaceholder = memo(function TypewriterPlaceholder({ phrases, active }) {
+  const [text, setText] = useState("");
+
+  useEffect(() => {
+    if (!active) return;
+    
+    let currentPhrase = 0;
+    let currentChar = 0;
+    let deleting = false;
+    let timeout;
+
+    const type = () => {
+      const fullText = phrases[currentPhrase];
+
+      if (!deleting) {
+        setText(fullText.slice(0, currentChar + 1));
+        currentChar++;
+        if (currentChar === fullText.length) {
+          deleting = true;
+          timeout = setTimeout(type, 2200);
+          return;
+        }
+      } else {
+        setText(fullText.slice(0, currentChar - 1));
+        currentChar--;
+        if (currentChar === 0) {
+          deleting = false;
+          currentPhrase = (currentPhrase + 1) % phrases.length;
+        }
+      }
+      timeout = setTimeout(type, deleting ? 35 : 70);
+    };
+
+    type();
+    return () => clearTimeout(timeout);
+  }, [phrases, active]);
+
+  if (!active) return null;
+
+  return (
+    <span className="pointer-events-none absolute left-10 top-2.5 text-sm text-gray-400 select-none flex items-center">
+      {text}
+      <span className="inline-block w-1 h-3.5 ml-0.5 bg-cyan-400 animate-pulse" />
+    </span>
+  );
+});
+
+function PhotoSearch({ onSearch, allPhotos = [], onFilterChange, onViewChange, currentView = "grid", externalSearchTerm = "" }) {
+  const [query, setQuery] = useState(externalSearchTerm);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [placeholderText, setPlaceholderText] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("date");
   const [isFocused, setIsFocused] = useState(false);
+
+  // Sync external search term jika diubah dari luar (misal saran kategori)
+  useEffect(() => {
+    if (externalSearchTerm !== undefined && externalSearchTerm !== query) {
+      setQuery(externalSearchTerm);
+    }
+  }, [externalSearchTerm]);
 
   const phrases = useMemo(
     () => [
@@ -21,61 +75,54 @@ function PhotoSearch({ onSearch, allPhotos = [], onFilterChange, onViewChange, c
     []
   );
 
-  // Extract unique categories
+  // Extract unique categories efficiently
   const categories = useMemo(() => {
-    const cats = ["all", ...new Set(allPhotos.map(p => p.category).filter(Boolean))];
-    return cats;
+    const cats = new Set(["all"]);
+    allPhotos.forEach(p => {
+      if (p.category) cats.add(p.category);
+    });
+    return Array.from(cats);
   }, [allPhotos]);
 
-  // Typing effect untuk placeholder
-  useEffect(() => {
-    if (isFocused || query) return; // Pause typing if focused or has query
-    
-    let currentPhrase = 0;
-    let currentChar = 0;
-    let deleting = false;
-    let timeout;
+  // Precompute unique search tokens once
+  const allTerms = useMemo(() => {
+    const terms = new Set();
+    allPhotos.forEach(p => {
+      if (p.title) terms.add(p.title);
+      if (p.category) terms.add(p.category);
+      if (p.mood) terms.add(p.mood);
+      if (p.location) terms.add(p.location);
+    });
+    return Array.from(terms);
+  }, [allPhotos]);
 
-    const type = () => {
-      const fullText = phrases[currentPhrase];
-
-      if (!deleting) {
-        setPlaceholderText(fullText.slice(0, currentChar + 1));
-        currentChar++;
-        if (currentChar === fullText.length) {
-          deleting = true;
-          timeout = setTimeout(type, 2000);
-          return;
-        }
-      } else {
-        setPlaceholderText(fullText.slice(0, currentChar - 1));
-        currentChar--;
-        if (currentChar === 0) {
-          deleting = false;
-          currentPhrase = (currentPhrase + 1) % phrases.length;
-        }
-      }
-      timeout = setTimeout(type, deleting ? 40 : 80);
-    };
-
-    type();
-    return () => clearTimeout(timeout);
-  }, [phrases, isFocused, query]);
-
+  // O(N) suggestions with early termination at 6 items
   const suggestions = useMemo(() => {
-    if (!query) return [];
-    return allPhotos
-      .flatMap((p) => [p.title, p.category, p.mood, p.location])
-      .filter((item, index, self) => item && self.indexOf(item) === index)
-      .filter((item) => item.toLowerCase().includes(query.toLowerCase()))
-      .slice(0, 6);
-  }, [allPhotos, query]);
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    const matches = [];
+    for (let i = 0; i < allTerms.length; i++) {
+      if (allTerms[i].toLowerCase().includes(q)) {
+        matches.push(allTerms[i]);
+        if (matches.length >= 6) break;
+      }
+    }
+    return matches;
+  }, [allTerms, query]);
+
+  // Debounced search trigger to avoid lag when typing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onSearch(query);
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [query, onSearch]);
 
   const handleChange = (e) => {
     const value = e.target.value;
     setQuery(value);
     setShowSuggestions(true);
-    onSearch(value);
   };
 
   const handleSelect = (value) => {
@@ -114,10 +161,10 @@ function PhotoSearch({ onSearch, allPhotos = [], onFilterChange, onViewChange, c
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+          <Search className="absolute left-3 top-3 text-gray-400 z-10" size={18} />
+          
           <input
             type="text"
-            placeholder={placeholderText || "Cari foto..."}
             value={query}
             onChange={handleChange}
             onFocus={() => {
@@ -128,45 +175,49 @@ function PhotoSearch({ onSearch, allPhotos = [], onFilterChange, onViewChange, c
               setTimeout(() => setShowSuggestions(false), 200);
               setIsFocused(false);
             }}
-            className="w-full bg-white/5 border border-white/10 rounded-full py-2.5 pl-10 pr-10 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder-gray-400 transition-all"
+            className="w-full bg-white/5 border border-white/10 rounded-full py-2.5 pl-10 pr-10 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder-transparent transition-all"
           />
+
+          {/* Typewriter placeholder terisolasi (hanya aktif saat kosong & tidak fokus) */}
+          <TypewriterPlaceholder phrases={phrases} active={!query && !isFocused} />
 
           {query && (
             <motion.button
               onClick={clearSearch}
               whileHover={{ scale: 1.1 }}
-              className="absolute right-3 top-2.5 text-gray-400 hover:text-white transition"
+              className="absolute right-3 top-2.5 text-gray-400 hover:text-white transition z-10"
+              title="Hapus pencarian"
             >
               <X size={16} />
             </motion.button>
           )}
 
-      <AnimatePresence>
-        {showSuggestions && suggestions.length > 0 && (
-          <motion.ul
-            className="absolute mt-2 w-full bg-[#0f172a]/95 border border-white/10 rounded-xl shadow-lg overflow-hidden z-50 backdrop-blur-md"
-            initial={{ opacity: 0, scale: 0.95, y: -5 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -5 }}
-            transition={{ duration: 0.2 }}
-          >
-            {suggestions.map((item, i) => (
-              <motion.li
-                key={i}
-                onClick={() => handleSelect(item)}
-                whileHover={{
-                  backgroundColor: "rgba(34,211,238,0.15)",
-                  transition: { duration: 0.1 },
-                }}
-                className="px-4 py-2 text-sm text-gray-300 hover:text-white cursor-pointer flex items-center gap-2"
+          <AnimatePresence>
+            {showSuggestions && suggestions.length > 0 && (
+              <motion.ul
+                className="absolute mt-2 w-full bg-[#0f172a]/95 border border-white/10 rounded-xl shadow-lg overflow-hidden z-50 backdrop-blur-md"
+                initial={{ opacity: 0, scale: 0.95, y: -5 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: -5 }}
+                transition={{ duration: 0.2 }}
               >
-                <Search size={14} className="text-cyan-400 flex-shrink-0" /> 
-                <span className="truncate">{item}</span>
-              </motion.li>
-            ))}
-          </motion.ul>
-        )}
-      </AnimatePresence>
+                {suggestions.map((item, i) => (
+                  <motion.li
+                    key={i}
+                    onClick={() => handleSelect(item)}
+                    whileHover={{
+                      backgroundColor: "rgba(34,211,238,0.15)",
+                      transition: { duration: 0.1 },
+                    }}
+                    className="px-4 py-2 text-sm text-gray-300 hover:text-white cursor-pointer flex items-center gap-2"
+                  >
+                    <Search size={14} className="text-cyan-400 flex-shrink-0" /> 
+                    <span className="truncate">{item}</span>
+                  </motion.li>
+                ))}
+              </motion.ul>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         {/* Filter Toggle */}
@@ -176,9 +227,10 @@ function PhotoSearch({ onSearch, allPhotos = [], onFilterChange, onViewChange, c
           onClick={() => setShowFilters(!showFilters)}
           className={`p-2.5 rounded-full border transition-all ${
             showFilters 
-              ? "bg-cyan-500/20 border-cyan-400/60 text-cyan-300" 
+              ? "bg-cyan-500/20 border-cyan-400/60 text-cyan-300 shadow-lg shadow-cyan-500/10" 
               : "bg-white/5 border-white/10 text-gray-400 hover:border-cyan-400/30"
           }`}
+          title="Filter & Urutkan"
         >
           <SlidersHorizontal size={18} />
         </motion.button>
@@ -190,7 +242,7 @@ function PhotoSearch({ onSearch, allPhotos = [], onFilterChange, onViewChange, c
             whileTap={{ scale: 0.95 }}
             onClick={() => onViewChange(currentView === "grid" ? "masonry" : "grid")}
             className="p-2.5 rounded-full border bg-white/5 border-white/10 text-gray-400 hover:border-cyan-400/30 transition-all"
-            title={currentView === "grid" ? "Switch to Masonry" : "Switch to Grid"}
+            title={currentView === "grid" ? "Ubah ke Masonry View" : "Ubah ke Grid View"}
           >
             {currentView === "grid" ? <Grid2x2 size={18} /> : <Grid3x3 size={18} />}
           </motion.button>
@@ -262,4 +314,4 @@ function PhotoSearch({ onSearch, allPhotos = [], onFilterChange, onViewChange, c
   );
 }
 
-export default memo(PhotoSearch);
+export default memo(PhotoSearch);

@@ -32,7 +32,7 @@ const Zodiak = lazy(() => import("./pages/website/zodiak/Zodiak.jsx"));
 import Home from "./pages/Home";
 const About = lazy(() => import("./pages/tentang/About"));
 const Contact = lazy(() => import("./pages/admin/Contact"));
-import Photography from "./pages/foto/Photography";
+const Photography = lazy(() => import("./pages/foto/Photography"));
 import Projects from "./pages/projek/Projects";
 const ProjectDetail = lazy(() => import("./pages/projek/detail/ProjectDetail"));
 const Gallery = lazy(() => import("./pages/kenangan/Gallery"));
@@ -160,11 +160,12 @@ const DefaultLayout = ({ children }) => {
   const shouldHidePortal = isPortal && isMobile;
 
   const shouldHide = shouldHideAlways || shouldHidePortal;
+  const isLiveDiscussion = currentPath === "/live-discussion" || currentPath.startsWith("/live-discussion/");
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className={`flex flex-col ${isLiveDiscussion ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : 'min-h-screen'}`}>
       {!shouldHide && <Navbar />}
-      <main className="flex-grow overflow-x-hidden">{children}</main>
+      <main className={`flex-grow overflow-x-hidden ${isLiveDiscussion ? 'h-full overflow-hidden' : ''}`}>{children}</main>
       {!shouldHide && <Footer />}
       {!shouldHide && <HelpButton />}
     </div>

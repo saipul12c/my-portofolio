@@ -1,13 +1,16 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { AlertCircle, Search } from "lucide-react";
+import { useMemo, memo } from "react";
 
-export default function PhotoSearchRelated({ searchTerm, filteredPhotos, allPhotos }) {
+function PhotoSearchRelated({ searchTerm, filteredPhotos, allPhotos, onSelectCategory }) {
   const navigate = useNavigate();
 
-  if (searchTerm && filteredPhotos.length === 0) {
-    const allCategories = [...new Set(allPhotos.map((p) => p.category))];
+  const allCategories = useMemo(() => {
+    return [...new Set(allPhotos.map((p) => p.category).filter(Boolean))];
+  }, [allPhotos]);
 
+  if (searchTerm && (!filteredPhotos || filteredPhotos.length === 0)) {
     return (
       <AnimatePresence>
         <motion.div
@@ -20,7 +23,7 @@ export default function PhotoSearchRelated({ searchTerm, filteredPhotos, allPhot
             <AlertCircle size={18} className="text-yellow-400 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
               <h3 className="text-sm font-semibold text-gray-100 mb-2">
-                Hmm, pencarian "{searchTerm}" tidak menemukan hasil...
+                Hmm, pencarian &quot;{searchTerm}&quot; tidak menemukan hasil...
               </h3>
               <p className="text-xs text-gray-400 mb-4">
                 Tapi jangan khawatir! Coba jelajahi kategori lain atau kunjungi halaman terkait untuk menemukan konten yang menarik.
@@ -34,14 +37,9 @@ export default function PhotoSearchRelated({ searchTerm, filteredPhotos, allPhot
                     <motion.button
                       key={category}
                       whileHover={{ scale: 1.05 }}
-                      className="px-2 sm:px-3 py-1 text-xs bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/30 hover:border-cyan-400/60 rounded-lg text-cyan-300 transition-all"
-                      onClick={() => {
-                        const searchInput = document.querySelector('input[placeholder*="Cari"]');
-                        if (searchInput) {
-                          searchInput.value = category;
-                          searchInput.dispatchEvent(new Event("input", { bubbles: true }));
-                        }
-                      }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-2 sm:px-3 py-1 text-xs bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/30 hover:border-cyan-400/60 rounded-lg text-cyan-300 transition-all cursor-pointer"
+                      onClick={() => onSelectCategory && onSelectCategory(category)}
                     >
                       {category}
                     </motion.button>
@@ -56,7 +54,7 @@ export default function PhotoSearchRelated({ searchTerm, filteredPhotos, allPhot
                   <motion.button
                     whileHover={{ x: 2 }}
                     onClick={() => navigate("/gallery")}
-                    className="px-2 sm:px-3 py-1.5 text-xs bg-blue-500/10 hover:bg-blue-500/20 border border-blue-400/30 rounded-lg text-blue-300 transition-all flex items-center gap-1 justify-center sm:justify-start"
+                    className="px-2 sm:px-3 py-1.5 text-xs bg-blue-500/10 hover:bg-blue-500/20 border border-blue-400/30 rounded-lg text-blue-300 transition-all flex items-center gap-1 justify-center sm:justify-start cursor-pointer"
                   >
                     <Search size={12} />
                     Galeri Kenangan
@@ -64,7 +62,7 @@ export default function PhotoSearchRelated({ searchTerm, filteredPhotos, allPhot
                   <motion.button
                     whileHover={{ x: 2 }}
                     onClick={() => navigate("/blog")}
-                    className="px-2 sm:px-3 py-1.5 text-xs bg-purple-500/10 hover:bg-purple-500/20 border border-purple-400/30 rounded-lg text-purple-300 transition-all flex items-center gap-1 justify-center sm:justify-start"
+                    className="px-2 sm:px-3 py-1.5 text-xs bg-purple-500/10 hover:bg-purple-500/20 border border-purple-400/30 rounded-lg text-purple-300 transition-all flex items-center gap-1 justify-center sm:justify-start cursor-pointer"
                   >
                     <Search size={12} />
                     Blog & Cerita
@@ -72,7 +70,7 @@ export default function PhotoSearchRelated({ searchTerm, filteredPhotos, allPhot
                   <motion.button
                     whileHover={{ x: 2 }}
                     onClick={() => navigate("/projects")}
-                    className="px-2 sm:px-3 py-1.5 text-xs bg-green-500/10 hover:bg-green-500/20 border border-green-400/30 rounded-lg text-green-300 transition-all flex items-center gap-1 justify-center sm:justify-start"
+                    className="px-2 sm:px-3 py-1.5 text-xs bg-green-500/10 hover:bg-green-500/20 border border-green-400/30 rounded-lg text-green-300 transition-all flex items-center gap-1 justify-center sm:justify-start cursor-pointer"
                   >
                     <Search size={12} />
                     Proyek & Portfolio
@@ -88,3 +86,5 @@ export default function PhotoSearchRelated({ searchTerm, filteredPhotos, allPhot
 
   return null;
 }
+
+export default memo(PhotoSearchRelated);

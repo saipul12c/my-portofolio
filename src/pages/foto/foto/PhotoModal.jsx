@@ -1,5 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X, MapPin, Calendar, FileText, Image, Zap, Share2, Download, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from "lucide-react";
+import { 
+  X, MapPin, Calendar, FileText, Image, Zap, Share2, 
+  Download, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Loader2 
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
@@ -7,6 +10,7 @@ export default function PhotoModal({ photo, onClose, onNavigate }) {
   const navigate = useNavigate();
   const [isZoomed, setIsZoomed] = useState(false);
   const [showCopied, setShowCopied] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   
   // Keyboard navigation
   useEffect(() => {
@@ -14,12 +18,12 @@ export default function PhotoModal({ photo, onClose, onNavigate }) {
       if (e.key === "Escape") onClose();
       if (e.key === "ArrowLeft" && onNavigate) onNavigate("prev");
       if (e.key === "ArrowRight" && onNavigate) onNavigate("next");
-      if (e.key === "z" || e.key === "Z") setIsZoomed(!isZoomed);
+      if (e.key === "z" || e.key === "Z") setIsZoomed(prev => !prev);
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose, onNavigate, isZoomed]);
+  }, [onClose, onNavigate]);
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -30,21 +34,48 @@ export default function PhotoModal({ photo, onClose, onNavigate }) {
           url: window.location.href,
         });
       } catch (err) {
-        console.log("Share cancelled");
+        // User cancelled share
       }
     } else {
       // Fallback: copy to clipboard
-      navigator.clipboard.writeText(window.location.href);
-      setShowCopied(true);
-      setTimeout(() => setShowCopied(false), 2000);
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        setShowCopied(true);
+        setTimeout(() => setShowCopied(false), 2000);
+      } catch (err) {
+        console.error("Clipboard error:", err);
+      }
     }
   };
 
-  const handleDownload = () => {
-    const link = document.createElement("a");
-    link.href = photo.img;
-    link.download = `${photo.title}.jpg`;
-    link.click();
+  // Unduh gambar asli via blob untuk mengatasi pembatasan cross-origin
+  const handleDownload = async () => {
+    if (isDownloading) return;
+    setIsDownloading(true);
+    try {
+      const response = await fetch(photo.img, { mode: "cors" });
+      if (!response.ok) throw new Error("Gagal mengambil data gambar");
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      const safeTitle = (photo.title || "foto")
+        .toLowerCase()
+        .replace(/[^a-z0-9-_]/g, "_");
+      link.download = `${safeTitle}.jpg`;
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+    } catch (err) {
+      console.warn("Blob download dibatasi oleh browser, membuka di tab baru:", err);
+      window.open(photo.img, "_blank", "noopener,noreferrer");
+    } finally {
+      setIsDownloading(false);
+    }
   };
   
   return (
@@ -57,10 +88,10 @@ export default function PhotoModal({ photo, onClose, onNavigate }) {
     >
       <motion.div
         className="relative flex flex-col md:flex-row bg-[#0b1120] rounded-xl sm:rounded-2xl overflow-hidden border border-white/10 max-w-6xl w-full max-h-[90vh] md:max-h-[80vh]"
-        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        initial={{ scale: 0.95, opacity: 0, y: 15 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        transition={{ type: "spring", damping: 25 }}
+        exit={{ scale: 0.95, opacity: 0, y: 15 }}
+        transition={{ type: "spring", damping: 25, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Action Buttons */}
@@ -70,34 +101,42 @@ export default function PhotoModal({ photo, onClose, onNavigate }) {
             whileTap={{ scale: 0.9 }}
             onClick={handleShare}
             className="text-white/70 hover:text-white transition bg-black/50 rounded-full p-2 backdrop-blur-sm"
-            title="Share"
+            title="Bagikan Foto"
           >
             <Share2 size={18} />
           </motion.button>
+
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={handleDownload}
-            className="text-white/70 hover:text-white transition bg-black/50 rounded-full p-2 backdrop-blur-sm"
-            title="Download"
+            disabled={isDownloading}
+            className="text-white/70 hover:text-white transition bg-black/50 rounded-full p-2 backdrop-blur-sm disabled:opacity-50"
+            title={isDownloading ? "Sedang Mengunduh..." : "Unduh Foto"}
           >
-            <Download size={18} />
+            {isDownloading ? (
+              <Loader2 size={18} className="animate-spin text-cyan-400" />
+            ) : (
+              <Download size={18} />
+            )}
           </motion.button>
+
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsZoomed(!isZoomed)}
             className="text-white/70 hover:text-white transition bg-black/50 rounded-full p-2 backdrop-blur-sm"
-            title={isZoomed ? "Zoom Out (Z)" : "Zoom In (Z)"}
+            title={isZoomed ? "Perkecil (Z)" : "Perbesar (Z)"}
           >
             {isZoomed ? <ZoomOut size={18} /> : <ZoomIn size={18} />}
           </motion.button>
+
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={onClose}
             className="text-white/70 hover:text-white transition bg-black/50 rounded-full p-2 backdrop-blur-sm"
-            title="Close (ESC)"
+            title="Tutup (ESC)"
           >
             <X size={20} />
           </motion.button>
@@ -111,7 +150,7 @@ export default function PhotoModal({ photo, onClose, onNavigate }) {
               whileTap={{ scale: 0.9 }}
               onClick={() => onNavigate("prev")}
               className="absolute left-2 top-1/2 -translate-y-1/2 z-50 text-white/70 hover:text-white transition bg-black/50 rounded-full p-2 backdrop-blur-sm"
-              title="Previous (←)"
+              title="Foto Sebelumnya (←)"
             >
               <ChevronLeft size={24} />
             </motion.button>
@@ -120,7 +159,7 @@ export default function PhotoModal({ photo, onClose, onNavigate }) {
               whileTap={{ scale: 0.9 }}
               onClick={() => onNavigate("next")}
               className="absolute right-2 top-1/2 -translate-y-1/2 z-50 text-white/70 hover:text-white transition bg-black/50 rounded-full p-2 backdrop-blur-sm md:right-[420px]"
-              title="Next (→)"
+              title="Foto Selanjutnya (→)"
             >
               <ChevronRight size={24} />
             </motion.button>
@@ -134,7 +173,7 @@ export default function PhotoModal({ photo, onClose, onNavigate }) {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="absolute top-16 right-2 z-50 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg text-sm"
+              className="absolute top-16 right-2 z-50 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg text-sm font-medium"
             >
               Link disalin! ✓
             </motion.div>
@@ -142,12 +181,13 @@ export default function PhotoModal({ photo, onClose, onNavigate }) {
         </AnimatePresence>
 
         {/* Image Section */}
-        <div className="flex-1 bg-black flex items-center justify-center overflow-hidden min-h-[40vh] md:min-h-auto relative">
+        <div className="flex-1 bg-black flex items-center justify-center overflow-hidden min-h-[40vh] md:min-h-auto relative select-none">
           <motion.img
             src={photo.img}
             alt={photo.title}
-            className="h-full w-full object-contain transition-transform duration-300"
+            className="h-full w-full object-contain transition-transform duration-300 pointer-events-auto"
             loading="eager"
+            decoding="async"
             animate={{ scale: isZoomed ? 1.5 : 1 }}
             transition={{ type: "spring", damping: 20 }}
             drag={isZoomed}
@@ -155,7 +195,7 @@ export default function PhotoModal({ photo, onClose, onNavigate }) {
             dragElastic={0.1}
           />
           {isZoomed && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-3 py-1.5 rounded-full text-xs backdrop-blur-sm">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-3 py-1.5 rounded-full text-xs backdrop-blur-sm pointer-events-none">
               Drag untuk menggeser gambar
             </div>
           )}
@@ -200,6 +240,7 @@ export default function PhotoModal({ photo, onClose, onNavigate }) {
                   key={i}
                   className="w-5 h-5 rounded-full border border-white/20 shadow-md flex-shrink-0"
                   style={{ backgroundColor: color }}
+                  title={color}
                 />
               ))}
             </div>

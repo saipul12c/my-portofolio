@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, User, AlertCircle, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Eye, EyeOff, Mail, Lock, User, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../../lib/supabaseClient';
+
 const Daftar = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -18,6 +19,21 @@ const Daftar = () => {
   const [message, setMessage] = useState({ type: '', text: '' });
   const [errors, setErrors] = useState({});
 
+  // Auto-redirect jika pengguna sudah memiliki sesi login aktif
+  useEffect(() => {
+    const checkActiveSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          navigate('/Live-Discussion', { replace: true });
+        }
+      } catch (err) {
+        console.warn('Session check failed', err);
+      }
+    };
+    checkActiveSession();
+  }, [navigate]);
+
   const validateForm = () => {
     const newErrors = {};
 
@@ -28,9 +44,10 @@ const Daftar = () => {
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email.trim()) {
+    const cleanEmail = formData.email.trim();
+    if (!cleanEmail) {
       newErrors.email = 'Email wajib diisi';
-    } else if (!emailRegex.test(formData.email)) {
+    } else if (!emailRegex.test(cleanEmail)) {
       newErrors.email = 'Format email tidak valid';
     }
 
@@ -95,16 +112,24 @@ const Daftar = () => {
         }
 
         if (error.message.includes('User already registered')) {
-          throw new Error('Email sudah terdaftar');
+          throw new Error('Email sudah terdaftar. Silakan masuk.');
         }
         throw new Error(error.message);
       }
 
       if (data.user) {
+        // Cek jika user sudah terdaftar (pada Supabase email confirm on, identities kosong jika akun sudah ada)
+        if (data.user.identities && data.user.identities.length === 0) {
+          throw new Error('Email ini sudah terdaftar. Silakan langsung masuk di halaman Login.');
+        }
+
         setMessage({
           type: 'success',
-          text: 'Pendaftaran berhasil! Cek email untuk verifikasi atau silakan login.'
+          text: 'Pendaftaran berhasil! Mengalihkan ke halaman login...'
         });
+
+        localStorage.setItem('rememberedEmail', cleanEmail);
+
         setFormData({
           nama: '',
           email: '',
@@ -112,9 +137,10 @@ const Daftar = () => {
           konfirmasiPassword: ''
         });
 
-        localStorage.setItem('rememberedEmail', formData.email);
-
-        navigate('/Live-Discussion/login');
+        // Beri jeda waktu agar pesan sukses terlihat oleh pengguna
+        setTimeout(() => {
+          navigate('/Live-Discussion/login');
+        }, 1800);
       } else {
         throw new Error('Gagal membuat akun');
       }
@@ -159,6 +185,17 @@ const Daftar = () => {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="w-full max-w-md relative z-10 my-4"
       >
+        {/* Tombol Navigasi Kembali ke Live Discussion */}
+        <div className="mb-4">
+          <Link
+            to="/Live-Discussion"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/5 text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-cyan-400 hover:border-cyan-500/20 hover:bg-white/[0.05] transition-all"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Kembali ke Diskusi
+          </Link>
+        </div>
+
         <div className="group bg-white/[0.01] backdrop-blur-3xl rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.6)] p-6 sm:p-8 border border-white/5 transition-all duration-500 hover:border-cyan-500/20">
           <div className="text-center mb-6">
             <h1 className="text-2xl sm:text-3xl font-black text-white mb-2 tracking-tight italic uppercase">BUAT IDENTITAS</h1>
@@ -307,12 +344,12 @@ const Daftar = () => {
             <div className="text-center pt-6 border-t border-white/5 mt-2">
               <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">
                 Encoded?{' '}
-                <a
-                  href="/Live-Discussion/login"
+                <Link
+                  to="/Live-Discussion/login"
                   className="text-cyan-400 hover:text-white font-black transition-colors ml-1"
                 >
                   Access Module
-                </a>
+                </Link>
               </p>
             </div>
           </form>

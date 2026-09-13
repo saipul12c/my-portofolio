@@ -24,14 +24,19 @@ export default function Photography() {
 
   const isMaintenance = false;
 
-  // 🔍 Filter dan sort
+  // 🔍 Filter dan sort optimal
   const filteredAndSortedPhotos = useMemo(() => {
-    let result = photos.filter((photo) =>
-      [photo.title, photo.category, photo.mood, photo.location]
-        .join(" ")
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
-    );
+    const term = searchTerm.trim().toLowerCase();
+    let result = photos;
+
+    if (term) {
+      result = result.filter((photo) =>
+        (photo.title && photo.title.toLowerCase().includes(term)) ||
+        (photo.category && photo.category.toLowerCase().includes(term)) ||
+        (photo.mood && photo.mood.toLowerCase().includes(term)) ||
+        (photo.location && photo.location.toLowerCase().includes(term))
+      );
+    }
 
     // Filter by category
     if (filterOptions.category !== "all") {
@@ -39,24 +44,25 @@ export default function Photography() {
     }
 
     // Sort
+    const sorted = [...result];
     switch (filterOptions.sortBy) {
       case "title":
-        result.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+        sorted.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
         break;
       case "category":
-        result.sort((a, b) => (a.category || "").localeCompare(b.category || ""));
+        sorted.sort((a, b) => (a.category || "").localeCompare(b.category || ""));
         break;
       case "date":
       default:
-        result.sort((a, b) => new Date(b.date_taken || 0) - new Date(a.date_taken || 0));
+        sorted.sort((a, b) => new Date(b.date_taken || 0) - new Date(a.date_taken || 0));
         break;
     }
 
-    return result;
+    return sorted;
   }, [searchTerm, filterOptions]);
 
   // 🧮 Hitung pagination
-  const totalPages = Math.ceil(filteredAndSortedPhotos.length / photosPerPage);
+  const totalPages = Math.max(1, Math.ceil(filteredAndSortedPhotos.length / photosPerPage));
   const startIndex = (currentPage - 1) * photosPerPage;
   const currentPhotos = useMemo(() => 
     filteredAndSortedPhotos.slice(startIndex, startIndex + photosPerPage),
@@ -84,12 +90,13 @@ export default function Photography() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  // Navigate between photos in modal
+  // Safe navigation between photos in modal
   const handlePhotoNavigate = useCallback((direction) => {
-    if (!selectedPhoto) return;
+    if (!selectedPhoto || !filteredAndSortedPhotos.length) return;
     const currentIndex = filteredAndSortedPhotos.findIndex(p => p.id === selectedPhoto.id);
-    let newIndex;
+    if (currentIndex === -1) return;
     
+    let newIndex;
     if (direction === "next") {
       newIndex = (currentIndex + 1) % filteredAndSortedPhotos.length;
     } else {
@@ -99,10 +106,17 @@ export default function Photography() {
     setSelectedPhoto(filteredAndSortedPhotos[newIndex]);
   }, [filteredAndSortedPhotos, selectedPhoto]);
 
+  // Pilih kategori dari related search saran secara clean lewat React state
+  const handleSelectCategoryFromRelated = useCallback((category) => {
+    setFilterOptions(prev => ({ ...prev, category }));
+    setSearchTerm("");
+    setCurrentPage(1);
+  }, []);
+
   if (isMaintenance) return <Maintenance />;
 
   return (
-    <main className="min-h-screen bg-[var(--color-gray-900)] text-white flex flex-col items-center px-4 sm:px-6 md:px-8 lg:px-20 py-8 md:py-12 lg:py-20 relative overflow-hidden">
+    <main className="min-h-screen bg-[var(--color-gray-900)] text-white flex flex-col items-center px-4 sm:px-6 md:px-8 lg:px-20 py-6 md:py-10 lg:py-16 relative overflow-hidden">
       <BackgroundGlow />
       
       <div className="w-full max-w-7xl">
@@ -119,15 +133,16 @@ export default function Photography() {
             onFilterChange={handleFilterChange}
             onViewChange={handleViewChange}
             currentView={viewMode}
+            externalSearchTerm={searchTerm}
           />
         </div>
 
-        {/* ✨ Grid foto */}
+        {/* ✨ Grid foto: searchTerm dihapus dari key agar DOM tidak remount setiap ketik 1 huruf */}
         <motion.div
-          key={`${searchTerm}-${currentPage}-${filterOptions.category}-${filterOptions.sortBy}-${viewMode}`}
-          initial={{ opacity: 0, y: 20 }}
+          key={`${currentPage}-${filterOptions.category}-${filterOptions.sortBy}-${viewMode}`}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.35 }}
           className="w-full flex flex-col items-center"
         >
           {currentPhotos.length > 0 ? (
@@ -163,6 +178,7 @@ export default function Photography() {
             searchTerm={searchTerm} 
             filteredPhotos={currentPhotos} 
             allPhotos={photos} 
+            onSelectCategory={handleSelectCategoryFromRelated}
           />
         )}
 

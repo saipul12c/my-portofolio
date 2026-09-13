@@ -28,7 +28,7 @@ export const ROLE_FEATURES = {
   VERIFIED: {
     features: ['verified_badge', 'more_messages'],
     description: 'Akun terverifikasi',
-    messageLimit: 10,
+    messageLimit: 25,
     permissions: ['verified']
   },
   USER: {

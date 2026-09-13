@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS public.users (
   message_count INTEGER DEFAULT 0 NOT NULL,
   last_reset DATE DEFAULT CURRENT_DATE NOT NULL,
   tanggal_daftar TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
   bio TEXT DEFAULT 'Halo! Saya pengguna baru di Live Discussion.',
   custom_status TEXT DEFAULT '',
@@ -29,6 +30,8 @@ CREATE TABLE IF NOT EXISTS public.users (
 -- Migrasi jika tabel sudah terbuat sebelumnya
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS ban_reason TEXT DEFAULT NULL;
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS last_message_at TIMESTAMP WITH TIME ZONE DEFAULT NULL;
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now());
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS tanggal_daftar TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now());
 
 -- 2. Buat Tabel Messages
 CREATE TABLE IF NOT EXISTS public.messages (
@@ -244,7 +247,7 @@ CREATE POLICY "Users can manage own messages" ON public.messages FOR ALL USING (
   auth.uid() = user_id OR EXISTS (
     SELECT 1 FROM public.users me 
     WHERE me.id = auth.uid() 
-    AND get_role_level(me.role) >= 4 -- MODERATOR atau lebih tinggi
+    AND get_role_level(me.role) >= 5 -- MODERATOR atau lebih tinggi
   )
 );
 
@@ -254,7 +257,7 @@ CREATE POLICY "View achievements" ON public.achievements FOR SELECT USING (true)
 
 DROP POLICY IF EXISTS "Users can unlock own achievements" ON public.achievements;
 CREATE POLICY "Users can unlock own achievements" ON public.achievements FOR INSERT WITH CHECK (
-  auth.uid() = user_id OR get_role_level((SELECT role FROM public.users WHERE id = auth.uid())) >= 4
+  auth.uid() = user_id OR get_role_level((SELECT role FROM public.users WHERE id = auth.uid())) >= 5
 );
 
 -- Tags Policies
@@ -317,7 +320,7 @@ CREATE POLICY "Admins can insert audit logs" ON public.audit_logs FOR INSERT WIT
 -- Appeals Policies
 DROP POLICY IF EXISTS "Users can view own appeals" ON public.appeals;
 CREATE POLICY "Users can view own appeals" ON public.appeals FOR SELECT USING (
-  auth.uid() = user_id OR EXISTS (SELECT 1 FROM public.users me WHERE me.id = auth.uid() AND get_role_level(me.role) >= 4)
+  auth.uid() = user_id OR EXISTS (SELECT 1 FROM public.users me WHERE me.id = auth.uid() AND get_role_level(me.role) >= 5)
 );
 
 DROP POLICY IF EXISTS "Users can submit appeals" ON public.appeals;
@@ -325,7 +328,7 @@ CREATE POLICY "Users can submit appeals" ON public.appeals FOR INSERT WITH CHECK
 
 DROP POLICY IF EXISTS "Admins can manage appeals" ON public.appeals;
 CREATE POLICY "Admins can manage appeals" ON public.appeals FOR ALL USING (
-  EXISTS (SELECT 1 FROM public.users me WHERE me.id = auth.uid() AND get_role_level(me.role) >= 4)
+  EXISTS (SELECT 1 FROM public.users me WHERE me.id = auth.uid() AND get_role_level(me.role) >= 5)
 );
 
 -- System Config Policies
@@ -353,12 +356,14 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  INSERT INTO public.users (id, email, nama, role)
+  INSERT INTO public.users (id, email, nama, role, tanggal_daftar, created_at)
   VALUES (
     new.id,
     new.email,
     COALESCE(new.raw_user_meta_data->>'nama', split_part(new.email, '@', 1)),
-    'USER'
+    COALESCE(new.raw_user_meta_data->>'role', new.raw_app_meta_data->>'role', 'USER'),
+    COALESCE(new.created_at, timezone('utc'::text, now())),
+    COALESCE(new.created_at, timezone('utc'::text, now()))
   )
   ON CONFLICT (id) DO UPDATE SET
     email = EXCLUDED.email,
@@ -377,6 +382,7 @@ CREATE OR REPLACE FUNCTION public.handle_message_security()
 RETURNS trigger 
 LANGUAGE plpgsql 
 SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
     user_role TEXT;
@@ -390,6 +396,11 @@ DECLARE
 BEGIN
     IF auth.uid() IS NULL THEN
         RETURN new;
+    END IF;
+
+    -- Profanity Filter (Dual-Layer Server-Side Defense)
+    IF new.content ~* '\y(anjing|babi|monyet|bangsat|memek|kontol|jembut|asu|perek|lonte|bajingan|pelacur|pukimak|tolol|goblok|fuck|shit|asshole|bitch|cunt|dick|pussy|bastard)\y' THEN
+        RAISE EXCEPTION 'Pesan Anda mengandung kata-kata yang tidak diperbolehkan. Mohon jaga kesopanan.';
     END IF;
 
     -- Ambil data asli dari tabel users
@@ -509,6 +520,7 @@ CREATE OR REPLACE FUNCTION public.handle_user_moderation_audit()
 RETURNS trigger 
 LANGUAGE plpgsql 
 SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
     admin_id UUID;
@@ -553,6 +565,7 @@ CREATE OR REPLACE FUNCTION public.handle_user_deletion_audit()
 RETURNS trigger 
 LANGUAGE plpgsql 
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
     INSERT INTO public.audit_logs (admin_id, target_id, action, reason)
@@ -756,21 +769,46 @@ CREATE INDEX IF NOT EXISTS idx_messages_brin_time ON public.messages USING BRIN 
 CREATE INDEX IF NOT EXISTS idx_messages_brin_timestamp ON public.messages USING BRIN (timestamp);
 
 -- ==============================================================================
--- 12. DATA CONTOH UNTUK PENGETESAN (OPSIONAL)
+-- 12. DATA CONTOH UNTUK PENGETESAN 
 -- ==============================================================================
 -- Jalankan bagian ini jika Anda ingin mengisi database dengan akun contoh.
 -- Akun: superadmin@test.com, admin@test.com, mod@test.com, user@test.com
 -- Password Default: LiveTest123! (Semua akun menggunakan password ini)
 
-INSERT INTO auth.users (id, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at, role, instance_id)
+INSERT INTO auth.users (
+  id, 
+  instance_id, 
+  aud, 
+  role, 
+  email, 
+  encrypted_password, 
+  email_confirmed_at, 
+  raw_app_meta_data, 
+  raw_user_meta_data, 
+  created_at, 
+  updated_at
+)
 VALUES 
-  ('00000000-0000-0000-0000-000000000001', 'superadmin@test.com', '$2a$10$7EqIF5sPH6z62cv0wS1h7.t7.nZ2X9m3sW8UpxuY4m3Y5v6/5r7qG', now(), '{"provider":"email","providers":["email"]}', '{"nama":"Sang Arsitek"}', now(), now(), 'authenticated', '00000000-0000-0000-0000-000000000000'),
-  ('00000000-0000-0000-0000-000000000002', 'admin@test.com', '$2a$10$7EqIF5sPH6z62cv0wS1h7.t7.nZ2X9m3sW8UpxuY4m3Y5v6/5r7qG', now(), '{"provider":"email","providers":["email"]}', '{"nama":"Penjaga Gerbang"}', now(), now(), 'authenticated', '00000000-0000-0000-0000-000000000000'),
-  ('00000000-0000-0000-0000-000000000003', 'mod@test.com', '$2a$10$7EqIF5sPH6z62cv0wS1h7.t7.nZ2X9m3sW8UpxuY4m3Y5v6/5r7qG', now(), '{"provider":"email","providers":["email"]}', '{"nama":"Moderator Alpha"}', now(), now(), 'authenticated', '00000000-0000-0000-0000-000000000000'),
-  ('00000000-0000-0000-0000-000000000004', 'premium@test.com', '$2a$10$7EqIF5sPH6z62cv0wS1h7.t7.nZ2X9m3sW8UpxuY4m3Y5v6/5r7qG', now(), '{"provider":"email","providers":["email"]}', '{"nama":"Sultan Diskusi"}', now(), now(), 'authenticated', '00000000-0000-0000-0000-000000000000'),
-  ('00000000-0000-0000-0000-000000000005', 'verified@test.com', '$2a$10$7EqIF5sPH6z62cv0wS1h7.t7.nZ2X9m3sW8UpxuY4m3Y5v6/5r7qG', now(), '{"provider":"email","providers":["email"]}', '{"nama":"Warga Terverifikasi"}', now(), now(), 'authenticated', '00000000-0000-0000-0000-000000000000'),
-  ('00000000-0000-0000-0000-000000000006', 'user@test.com', '$2a$10$7EqIF5sPH6z62cv0wS1h7.t7.nZ2X9m3sW8UpxuY4m3Y5v6/5r7qG', now(), '{"provider":"email","providers":["email"]}', '{"nama":"Pengunjung Baru"}', now(), now(), 'authenticated', '00000000-0000-0000-0000-000000000000')
+  ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'superadmin@test.com', '$2a$10$7EqIF5sPH6z62cv0wS1h7.t7.nZ2X9m3sW8UpxuY4m3Y5v6/5r7qG', now(), '{"provider":"email","providers":["email"]}', '{"nama":"Sang Arsitek"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'admin@test.com', '$2a$10$7EqIF5sPH6z62cv0wS1h7.t7.nZ2X9m3sW8UpxuY4m3Y5v6/5r7qG', now(), '{"provider":"email","providers":["email"]}', '{"nama":"Penjaga Gerbang"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'mod@test.com', '$2a$10$7EqIF5sPH6z62cv0wS1h7.t7.nZ2X9m3sW8UpxuY4m3Y5v6/5r7qG', now(), '{"provider":"email","providers":["email"]}', '{"nama":"Moderator Alpha"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'premium@test.com', '$2a$10$7EqIF5sPH6z62cv0wS1h7.t7.nZ2X9m3sW8UpxuY4m3Y5v6/5r7qG', now(), '{"provider":"email","providers":["email"]}', '{"nama":"Sultan Diskusi"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'verified@test.com', '$2a$10$7EqIF5sPH6z62cv0wS1h7.t7.nZ2X9m3sW8UpxuY4m3Y5v6/5r7qG', now(), '{"provider":"email","providers":["email"]}', '{"nama":"Warga Terverifikasi"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'user@test.com', '$2a$10$7EqIF5sPH6z62cv0wS1h7.t7.nZ2X9m3sW8UpxuY4m3Y5v6/5r7qG', now(), '{"provider":"email","providers":["email"]}', '{"nama":"Pengunjung Baru"}', now(), now())
 ON CONFLICT (id) DO NOTHING;
+
+-- Sinkronisasi / Insert ke public.users
+INSERT INTO public.users (id, email, nama, role)
+VALUES
+  ('00000000-0000-0000-0000-000000000001', 'superadmin@test.com', 'Sang Arsitek', 'SUPER_ADMIN'),
+  ('00000000-0000-0000-0000-000000000002', 'admin@test.com', 'Penjaga Gerbang', 'ADMIN'),
+  ('00000000-0000-0000-0000-000000000003', 'mod@test.com', 'Moderator Alpha', 'MODERATOR'),
+  ('00000000-0000-0000-0000-000000000004', 'premium@test.com', 'Sultan Diskusi', 'PREMIUM'),
+  ('00000000-0000-0000-0000-000000000005', 'verified@test.com', 'Warga Terverifikasi', 'VERIFIED'),
+  ('00000000-0000-0000-0000-000000000006', 'user@test.com', 'Pengunjung Baru', 'USER')
+ON CONFLICT (id) DO UPDATE SET
+  nama = EXCLUDED.nama,
+  role = EXCLUDED.role;
 
 -- Update Role di public.users
 UPDATE public.users SET role = 'SUPER_ADMIN' WHERE id = '00000000-0000-0000-0000-000000000001';

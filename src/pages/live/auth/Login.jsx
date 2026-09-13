@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, AlertCircle, LogIn } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Eye, EyeOff, Mail, Lock, AlertCircle, LogIn, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../../lib/supabaseClient';
+
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -14,6 +15,26 @@ const Login = () => {
   const [message, setMessage] = useState({ type: '', text: '' });
   const [errors, setErrors] = useState({});
   const [rememberMe, setRememberMe] = useState(false);
+
+  // Auto-redirect jika pengguna sudah memiliki sesi login aktif
+  useEffect(() => {
+    const checkActiveSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          const localUser = JSON.parse(localStorage.getItem('local_user') || '{}');
+          if (['SUPER_ADMIN', 'ADMIN', 'MODERATOR'].includes(localUser.role)) {
+            navigate('/Live-Discussion/dashboard', { replace: true });
+          } else {
+            navigate('/Live-Discussion', { replace: true });
+          }
+        }
+      } catch (err) {
+        console.warn('Session check failed', err);
+      }
+    };
+    checkActiveSession();
+  }, [navigate]);
 
   // Cek jika ada data login yang diingat
   useEffect(() => {
@@ -28,9 +49,10 @@ const Login = () => {
     const newErrors = {};
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email.trim()) {
+    const cleanEmail = formData.email.trim();
+    if (!cleanEmail) {
       newErrors.email = 'Email wajib diisi';
-    } else if (!emailRegex.test(formData.email)) {
+    } else if (!emailRegex.test(cleanEmail)) {
       newErrors.email = 'Format email tidak valid';
     }
 
@@ -62,20 +84,22 @@ const Login = () => {
     setMessage({ type: '', text: '' });
 
     try {
+      const cleanEmail = formData.email.trim().toLowerCase();
+
       // 1. Auth Login
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email: formData.email.toLowerCase(),
+        email: cleanEmail,
         password: formData.password
       });
 
       if (authError) throw new Error('Email atau password salah');
 
-      // 2. Profile Fetch with Retry (Antisipasi delay trigger database)
+      // 2. Profile Fetch with Retry & Fallback (Antisipasi delay trigger database)
       let user = null;
       let retries = 3;
-      
+
       while (retries > 0 && !user) {
-        const { data: users, error: dbError } = await supabase
+        const { data: users } = await supabase
           .from('users')
           .select('*')
           .eq('id', authData.user.id)
@@ -85,23 +109,19 @@ const Login = () => {
           user = users;
         } else {
           retries--;
-          if (retries > 0) await new Promise(res => setTimeout(res, 1000));
+          if (retries > 0) await new Promise(res => setTimeout(res, 800));
         }
       }
 
-      if (!user) {
-        throw new Error('Sinkronisasi profil sedang berlangsung. Silakan coba masuk kembali dalam hitungan detik.');
-      }
-
-      // 3. Status Check
-      const userStatus = user.status?.toLowerCase();
+      // 3. Status Check (hanya jika data profil sudah ada)
+      const userStatus = user?.status?.toLowerCase();
       if (userStatus === 'nonaktif' || userStatus === 'banned') {
         await supabase.auth.signOut();
         throw new Error('Akun Anda tidak aktif atau diblokir. Hubungi administrator.');
       }
 
       // 4. Role Config Mapping
-      const userRole = user.role?.toUpperCase() || 'USER';
+      const userRole = (user?.role || 'USER').toUpperCase();
       const roleConfig = {
         'SUPER_ADMIN': { level: 10, name: 'Super Admin', badge: '👑', color: 'from-purple-600 to-pink-600' },
         'ADMIN': { level: 8, name: 'Admin', badge: '🛡️', color: 'from-red-500 to-orange-500' },
@@ -113,24 +133,24 @@ const Login = () => {
 
       const config = roleConfig[userRole] || roleConfig.USER;
 
-      // 5. Save Session Data
+      // 5. Save Session Data (Fallback ke user_metadata jika trigger Supabase belum selesai)
       const localUser = {
         id: authData.user.id,
-        username: user.nama || formData.email.split('@')[0],
-        email: user.email,
+        username: user?.nama || authData.user.user_metadata?.nama || cleanEmail.split('@')[0],
+        email: user?.email || authData.user.email,
         role: userRole,
         roleName: config.name,
         roleLevel: config.level,
         roleBadge: config.badge,
         roleColor: config.color,
-        messageCount: parseInt(user.message_count) || 0,
-        lastReset: user.last_reset || new Date().toISOString().split('T')[0],
-        joinDate: user.tanggal_daftar || new Date().toISOString(),
+        messageCount: parseInt(user?.message_count) || 0,
+        lastReset: user?.last_reset || new Date().toISOString().split('T')[0],
+        joinDate: user?.tanggal_daftar || authData.user.created_at || new Date().toISOString(),
         loginTime: new Date().toISOString()
       };
 
       localStorage.setItem('local_user', JSON.stringify(localUser));
-      if (rememberMe) localStorage.setItem('rememberedEmail', formData.email);
+      if (rememberMe) localStorage.setItem('rememberedEmail', cleanEmail);
       else localStorage.removeItem('rememberedEmail');
 
       setMessage({ type: 'success', text: 'Sinyal terhubung! Mengarahkan...' });
@@ -155,8 +175,8 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4 sm:p-8 relative overflow-hidden">
       {/* Immersive Background Orbs */}
-      <motion.div 
-        animate={{ 
+      <motion.div
+        animate={{
           scale: [1, 1.2, 1],
           opacity: [0.3, 0.5, 0.3],
           x: [0, 50, 0],
@@ -165,8 +185,8 @@ const Login = () => {
         transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
         className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-500/10 rounded-full mix-blend-screen filter blur-[120px] pointer-events-none"
       />
-      <motion.div 
-        animate={{ 
+      <motion.div
+        animate={{
           scale: [1, 1.3, 1],
           opacity: [0.2, 0.4, 0.2],
           x: [0, -40, 0],
@@ -176,15 +196,26 @@ const Login = () => {
         className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-blue-600/10 rounded-full mix-blend-screen filter blur-[120px] pointer-events-none"
       />
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="w-full max-w-md relative z-10"
       >
+        {/* Tombol Navigasi Kembali ke Live Discussion */}
+        <div className="mb-4">
+          <Link
+            to="/Live-Discussion"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/5 text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-cyan-400 hover:border-cyan-500/20 hover:bg-white/[0.05] transition-all"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Kembali ke Diskusi
+          </Link>
+        </div>
+
         <div className="group bg-white/[0.01] backdrop-blur-3xl rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.6)] p-6 sm:p-8 border border-white/5 transition-all duration-500 hover:border-cyan-500/20">
           <div className="text-center mb-8">
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.5 }}
@@ -198,14 +229,14 @@ const Login = () => {
 
           <AnimatePresence mode="wait">
             {message.text && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 className={`mb-4 p-3 rounded-xl flex items-center gap-2 backdrop-blur-md ${message.type === 'success'
                   ? 'bg-green-500/10 text-green-300 border border-green-500/20'
                   : 'bg-red-500/20 text-red-200 border border-red-500/20'
-                }`}
+                  }`}
               >
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span className="text-[11px] font-bold tracking-tight">{message.text}</span>
@@ -264,7 +295,6 @@ const Login = () => {
                   Remember Node
                 </label>
               </div>
-              <a href="#" className="text-[10px] font-bold text-cyan-400/50 hover:text-cyan-400 uppercase tracking-widest transition-colors">Forgot Hash?</a>
             </div>
 
             <motion.button
@@ -291,12 +321,12 @@ const Login = () => {
             <div className="text-center pt-6 border-t border-white/5 mt-2">
               <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">
                 New Signal?{' '}
-                <a
-                  href="/Live-Discussion/daftar"
+                <Link
+                  to="/Live-Discussion/daftar"
                   className="text-cyan-400 hover:text-white font-black transition-colors ml-1"
                 >
                   Create Identity
-                </a>
+                </Link>
               </p>
             </div>
           </form>

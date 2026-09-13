@@ -12,6 +12,9 @@ import { NotificationCenter, MentionNotifications } from './components/Notificat
 import { useMentions } from './hooks/useMentions';
 import { ReactionPicker, MessageReactions } from './components/ReactionPicker';
 import { MemberSidebar } from './components/MemberSidebar';
+import { ChatHeader } from './components/ChatHeader';
+import { ChatInputArea } from './components/ChatInputArea';
+import { AppealModal } from './components/AppealModal';
 import { Paperclip, Image as ImageIcon, Users as UsersIcon, AlertTriangle, Bell, Sun, Moon, Monitor, ShieldAlert } from 'lucide-react';
 import { containsProfanity } from './utils/profanityFilter';
 
@@ -146,8 +149,11 @@ function Live() {
     const el = messagesContainerRef.current;
     if (!el) return;
     
-    const onScroll = () => setScrolled(el.scrollTop > 20);
-    el.addEventListener('scroll', onScroll);
+    const onScroll = () => {
+      const isScrolled = el.scrollTop > 20;
+      setScrolled(prev => (prev !== isScrolled ? isScrolled : prev));
+    };
+    el.addEventListener('scroll', onScroll, { passive: true });
     return () => el.removeEventListener('scroll', onScroll);
   }, []);
 
@@ -202,7 +208,21 @@ function Live() {
          muteReason: data?.mute_reason
       };
 
-      setUser(userData);
+      setUser(prev => {
+        if (
+          prev &&
+          prev.id === userData.id &&
+          prev.role === userData.role &&
+          prev.messageCount === userData.messageCount &&
+          prev.username === userData.username &&
+          prev.muteUntil === userData.muteUntil &&
+          prev.isShadowbanned === userData.isShadowbanned &&
+          prev.banReason === userData.banReason
+        ) {
+          return prev;
+        }
+        return userData;
+      });
       localStorage.setItem('local_user', JSON.stringify(userData));
       
       if (data?.id) {
@@ -235,13 +255,6 @@ function Live() {
         
         // Fetch reactions for these messages
         fetchReactionsForMessages(data.map(m => m.id));
-
-        // Update message stats
-        if (user) {
-          const limit = systemConfig.message_limits[user.role] || 5;
-          const remaining = Math.max(0, limit - user.messageCount);
-          setMessageStats({ sent: user.messageCount, remaining });
-        }
         
         // Fetch all profiles for member sidebar
         fetchAllProfiles();
@@ -252,7 +265,16 @@ function Live() {
       console.error('Error fetching messages:', err);
       setError('Gagal memuat pesan. Silakan refresh halaman.');
     }
-  }, [user]);
+  }, []);
+
+  // Update message stats whenever user or systemConfig changes
+  useEffect(() => {
+    if (user) {
+      const limit = systemConfig?.message_limits?.[user.role] || 5;
+      const remaining = Math.max(0, limit - (user.messageCount || 0));
+      setMessageStats({ sent: user.messageCount || 0, remaining });
+    }
+  }, [user, systemConfig]);
 
   // Load more messages (Cursor-based pagination with Tie-Breaker)
   const loadMoreMessages = useCallback(async () => {
@@ -410,9 +432,62 @@ function Live() {
         });
     }
 
+    // 3. Setup subscription for current user profile changes (Instant Kick / Mute / Role Update)
+    let userProfileSubscription = null;
+    if (user?.id) {
+      userProfileSubscription = supabase
+        .channel(`public:user-profile-${user.id}`)
+        .on('postgres_changes', { 
+          event: 'UPDATE', 
+          schema: 'public', 
+          table: 'users', 
+          filter: `id=eq.${user.id}` 
+        }, (payload) => {
+          const updated = payload.new;
+          if (!updated) return;
+
+          // Handle Banned / Nonaktif in Realtime
+          if (['nonaktif', 'banned'].includes(updated.status?.toLowerCase())) {
+            setError('Akun Anda dinonaktifkan atau diblokir.');
+            setTimeout(() => {
+              supabase.auth.signOut();
+              setUser(null);
+              localStorage.removeItem('local_user');
+              navigate('/Live-Discussion/login');
+            }, 2000);
+            return;
+          }
+
+          const userRole = (updated.role || 'USER').toUpperCase();
+          const roleConfig = USER_ROLES[userRole] || USER_ROLES.USER;
+
+          setUser(prev => {
+            if (!prev) return prev;
+            const nextUser = {
+              ...prev,
+              username: updated.nama || prev.username,
+              role: userRole,
+              roleName: roleConfig.name,
+              roleLevel: roleConfig.level,
+              roleBadge: roleConfig.badge,
+              roleColor: roleConfig.color,
+              messageCount: parseInt(updated.message_count) || 0,
+              muteUntil: updated.mute_until,
+              muteReason: updated.mute_reason,
+              banReason: updated.ban_reason,
+              isShadowbanned: updated.is_shadowbanned || false
+            };
+            localStorage.setItem('local_user', JSON.stringify(nextUser));
+            return nextUser;
+          });
+        })
+        .subscribe();
+    }
+
     return () => {
       supabase.removeChannel(messageSubscription);
       if (presenceChannel) supabase.removeChannel(presenceChannel);
+      if (userProfileSubscription) supabase.removeChannel(userProfileSubscription);
     };
   }, [user]);
 
@@ -442,9 +517,9 @@ function Live() {
     };
     initData();
 
-    // Fallback polling: Fetch messages every 30 seconds in case Realtime fails
+    // Fallback polling: Fetch messages every 30 seconds only if connection is offline
     pollingIntervalRef.current = setInterval(() => {
-      if (document.visibilityState === 'visible') {
+      if (document.visibilityState === 'visible' && connectionStatus === 'offline') {
         fetchMessagesFromDatabase();
       }
     }, 30000);
@@ -454,7 +529,8 @@ function Live() {
     return () => {
       if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
     };
-  }, [checkUserStatus, fetchMessagesFromDatabase]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Fetch Dynamic System Config
   const fetchSystemConfig = async () => {
@@ -480,29 +556,6 @@ function Live() {
     };
   }, [setupRealtime]);
 
-  // Auto scroll to latest message (preserve scroll if loading older)
-  useEffect(() => {
-    const container = messagesContainerRef.current;
-    if (isPrependingOlderRef.current && container) {
-      const heightDiff = container.scrollHeight - prevScrollHeightRef.current;
-      container.scrollTop += heightDiff;
-      isPrependingOlderRef.current = false;
-      return;
-    }
-
-    if (isInitialLoadRef.current) {
-      if (messages.length > 0) {
-        scrollToBottom();
-        isInitialLoadRef.current = false;
-      }
-      return;
-    }
-
-    if (!showScrollToBottom) {
-      scrollToBottom();
-    }
-  }, [messages, showScrollToBottom]);
-
   // Click outside emoji picker
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -515,10 +568,59 @@ function Live() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Scroll to bottom
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  // Lock body and html scroll so only the chat container can scroll
+  useEffect(() => {
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalBodyHeight = document.body.style.height;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
+    
+    document.body.style.overflow = 'hidden';
+    document.body.style.height = '100dvh';
+    document.documentElement.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = originalBodyOverflow;
+      document.body.style.height = originalBodyHeight;
+      document.documentElement.style.overflow = originalHtmlOverflow;
+    };
+  }, []);
+
+  // Scroll to bottom: only scroll messagesContainerRef directly, never scroll the page/window
+  const scrollToBottom = useCallback((behavior = 'smooth') => {
+    if (messagesContainerRef.current) {
+      requestAnimationFrame(() => {
+        if (messagesContainerRef.current) {
+          messagesContainerRef.current.scrollTo({
+            top: messagesContainerRef.current.scrollHeight,
+            behavior
+          });
+        }
+      });
+    }
+  }, []);
+
+  // Auto scroll to latest message (preserve scroll if loading older)
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (isPrependingOlderRef.current && container) {
+      const heightDiff = container.scrollHeight - prevScrollHeightRef.current;
+      container.scrollTop += heightDiff;
+      isPrependingOlderRef.current = false;
+      return;
+    }
+
+    if (isInitialLoadRef.current) {
+      if (messages.length > 0) {
+        scrollToBottom('auto');
+        isInitialLoadRef.current = false;
+      }
+      return;
+    }
+
+    if (!showScrollToBottom) {
+      scrollToBottom('smooth');
+    }
+  }, [messages, showScrollToBottom, scrollToBottom]);
 
   // Handle typing indicator broadcast
   const handleTyping = useCallback(() => {
@@ -538,19 +640,19 @@ function Live() {
   }, [isTyping, user]);
 
   // Handle scroll detection for Scroll to Bottom FAB & Infinite Scroll
-  const handleScroll = (e) => {
+  const handleScroll = useCallback((e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
     
     // 1. Show "Scroll to Bottom" button if we are scrolled up
     const isUp = scrollHeight - scrollTop - clientHeight > 300;
-    setShowScrollToBottom(isUp);
+    setShowScrollToBottom(prev => (prev !== isUp ? isUp : prev));
 
     // 2. Infinite Scroll: Fetch more when reaching the TOP (scrollTop near 0)
     // We use a small threshold like 100px
     if (scrollTop < 100 && !fetchingMore && hasMore) {
       loadMoreMessages();
     }
-  };
+  }, [fetchingMore, hasMore, loadMoreMessages]);
 
   // Cleanup effect for stale typing indicators
   useEffect(() => {
@@ -722,9 +824,15 @@ function Live() {
   };
 
   // Handle logout/login
-  const handleAuthAction = () => {
+  const handleAuthAction = async () => {
     if (user) {
+      try {
+        await supabase.auth.signOut();
+      } catch (err) {
+        console.warn('SignOut error:', err);
+      }
       localStorage.removeItem('local_user');
+      setUser(null);
       navigate('/Live-Discussion/login');
     } else {
       navigate('/Live-Discussion/login');
@@ -736,9 +844,9 @@ function Live() {
     navigate('/Live-Discussion/profile');
   };
 
-  // Navigate to dashboard (for admins)
+  // Navigate to dashboard (for admins and moderators)
   const goToDashboard = () => {
-    if (user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') {
+    if (user && ['SUPER_ADMIN', 'ADMIN', 'MODERATOR'].includes(user.role)) {
       navigate('/Live-Discussion/dashboard');
     }
   };
@@ -1189,45 +1297,14 @@ function Live() {
         </motion.div>
 
         {/* Appeal Modal */}
-        <AnimatePresence>
-          {showAppealModal && (
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md"
-            >
-              <motion.div 
-                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
-                className="bg-[#0f172a] border border-white/10 rounded-[2.5rem] w-full max-w-lg p-8 shadow-2xl overflow-hidden"
-              >
-                <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter mb-2">Sirkuit Banding</h3>
-                <p className="text-xs font-bold text-white/40 uppercase tracking-widest mb-6">Ajukan alasan kenapa restriksi Anda harus dicabut</p>
-                
-                <textarea 
-                  value={appealReason}
-                  onChange={(e) => setAppealReason(e.target.value)}
-                  placeholder="Ceritakan alasan Anda..."
-                  className="w-full h-40 bg-white/5 border border-white/10 rounded-2xl p-4 text-sm text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/50 transition-all mb-6 resize-none"
-                />
-
-                <div className="flex gap-4">
-                  <button 
-                    onClick={() => setShowAppealModal(false)}
-                    className="flex-1 py-4 bg-white/5 rounded-2xl font-black text-xs uppercase tracking-widest text-white/40 hover:text-white"
-                  >
-                    Batal
-                  </button>
-                  <button 
-                    onClick={handleSumbitAppeal}
-                    disabled={isSubmittingAppeal || !appealReason.trim()}
-                    className="flex-1 py-4 bg-cyan-600 hover:bg-cyan-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-cyan-600/20 disabled:opacity-20"
-                  >
-                    {isSubmittingAppeal ? 'Mengirim...' : 'Kirim Banding'}
-                  </button>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <AppealModal 
+          showAppealModal={showAppealModal}
+          setShowAppealModal={setShowAppealModal}
+          appealReason={appealReason}
+          setAppealReason={setAppealReason}
+          handleSumbitAppeal={handleSumbitAppeal}
+          isSubmittingAppeal={isSubmittingAppeal}
+        />
       </div>
     );
   }
@@ -1256,117 +1333,24 @@ function Live() {
         />
       </div>
 
-      {/* Modern Floating Header (Integrated into Flex Flow) */}
-      <div className="z-50 p-2 sm:p-4 w-full">
-        <motion.header 
-          initial={{ y: -50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className={`max-w-6xl mx-auto w-full transition-all duration-500 rounded-3xl border border-[var(--theme-border)] bg-[var(--theme-surface)] backdrop-blur-2xl py-4 px-4 sm:px-8 shadow-xl`}
-        >
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
-                <MessageCircle className="w-6 h-6 text-white" />
-              </div>
-              <div className="flex flex-col">
-                <h1 className="text-lg sm:text-xl font-bold text-[var(--theme-text)] tracking-tight leading-tight">Sinyal Live</h1>
-                <div className="flex items-center gap-2">
-                  <div className={`w-1.5 h-1.5 rounded-full ${connectionStatus === 'online' ? 'bg-[var(--theme-accent)] animate-pulse shadow-[0_0_10px_var(--theme-accent)]' : 'bg-red-500'}`} />
-                  <span className="text-[9px] uppercase tracking-[0.2em] font-black text-[var(--theme-text-muted)]">
-                    {Object.keys(onlineUsers).length} <span className="hidden sm:inline">Signals</span> Online
-                  </span>
-                </div>
-              </div>
-            </div>
+      {/* Modern Floating Header (Modularized) */}
+      <ChatHeader
+        connectionStatus={connectionStatus}
+        onlineUsers={onlineUsers}
+        user={user}
+        getRoleBadge={getRoleBadge}
+        theme={theme}
+        setTheme={setTheme}
+        setShowMembers={setShowMembers}
+        unreadMentions={unreadMentions}
+        setShowNotifications={setShowNotifications}
+        setUnreadMentions={setUnreadMentions}
+        goToDashboard={goToDashboard}
+        openProfileEditor={openProfileEditor}
+        handleAuthAction={handleAuthAction}
+      />
 
-            <div className="flex items-center gap-6">
-              {/* Online Users Avatar Stack */}
-              <div className="hidden lg:flex items-center -space-x-3">
-                {Object.values(onlineUsers).slice(0, 4).map((u, i) => (
-                  <motion.div 
-                    key={u.email || i}
-                    initial={{ scale: 0, x: 10 }}
-                    animate={{ scale: 1, x: 0 }}
-                    className="w-8 h-8 rounded-full border-2 border-[#020617] bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-[10px] font-black text-white ring-2 ring-white/5" 
-                    title={u.username}
-                  >
-                    {u.username?.[0]?.toUpperCase()}
-                  </motion.div>
-                ))}
-                {Object.keys(onlineUsers).length > 4 && (
-                  <div className="w-8 h-8 rounded-full border-2 border-[var(--theme-bg)] bg-[var(--theme-surface)] backdrop-blur-md flex items-center justify-center text-[9px] font-black text-[var(--theme-text-muted)] ring-1 ring-[var(--theme-border)] uppercase">
-                    +{Object.keys(onlineUsers).length - 4}
-                  </div>
-                )}
-              </div>
-
-              <div className="flex items-center gap-2 sm:gap-4">
-                {user && (
-                  <div className="hidden md:flex flex-col items-end mr-2">
-                    <span className="text-xs font-black text-[var(--theme-text)] italic uppercase tracking-tighter">{user.username}</span>
-                    <div className="flex items-center gap-1 opacity-70">
-                      {getRoleBadge(user.role)}
-                    </div>
-                  </div>
-                )}
-                
-                <div className="flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] backdrop-blur-xl">
-                  {/* Theme Switcher */}
-                  <button 
-                    onClick={() => setTheme(prev => prev === 'default' ? 'light' : prev === 'light' ? 'dark' : 'default')}
-                    className="p-1.5 sm:p-2 hover:bg-[var(--theme-surface-hover)] rounded-xl transition-all text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
-                    title={`Tema: ${theme}`}
-                  >
-                     {theme === 'default' ? <Monitor className="w-4 h-4 sm:w-5 sm:h-5" /> : theme === 'dark' ? <Moon className="w-4 h-4 sm:w-5 sm:h-5" /> : <Sun className="w-4 h-4 sm:w-5 sm:h-5" />}
-                  </button>
-
-                  {user && (
-                    <div className="flex items-center gap-1 sm:gap-2 pr-1 sm:pr-2 border-r border-[var(--theme-border)] mr-1 sm:mr-2">
-                       <button 
-                          onClick={() => setShowMembers(true)}
-                          className="p-1.5 sm:p-2 hover:bg-[var(--theme-surface-hover)] rounded-xl transition-all text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
-                          title="Lihat Anggota"
-                       >
-                          <UsersIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                       </button>
-                       <NotificationCenter 
-                          unreadCount={unreadMentions} 
-                          onOpen={() => {
-                            setShowNotifications(true);
-                            setUnreadMentions(0);
-                          }} 
-                       />
-                    </div>
-                  )}
-
-                  {user && ['SUPER_ADMIN', 'ADMIN', 'MODERATOR'].includes(user.role) && (
-                    <button onClick={goToDashboard} className="p-1.5 sm:p-2 hover:bg-[var(--theme-surface-hover)] rounded-xl transition-all text-[var(--theme-accent)] hover:scale-110" title="Dashboard">
-                      <LayoutDashboard className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </button>
-                  )}
-                  
-                  {user && (
-                    <button onClick={() => openProfileEditor(user)} className="p-1.5 sm:p-2 hover:bg-[var(--theme-surface-hover)] rounded-xl transition-all text-[var(--theme-accent)] hover:scale-110" title="Edit Profile">
-                      <UserCircle className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </button>
-                  )}
-
-                  <button 
-                    onClick={handleAuthAction}
-                    className="flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-hover)] rounded-xl sm:rounded-2xl transition-all border border-[var(--theme-border)] text-[10px] sm:text-xs font-black uppercase tracking-widest text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
-                    title={user ? 'Keluar' : 'Masuk'}
-                  >
-                    <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                    <span className="hidden xs:inline">{user ? 'Exit' : 'Join'}</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.header>
-      </div>
-
-      <main className="flex-1 w-full max-w-6xl mx-auto flex flex-col pt-2 sm:pt-4 pb-3 sm:pb-6 px-2 sm:px-6 relative z-10 overflow-hidden">
+      <main className="flex-1 min-h-0 w-full max-w-6xl mx-auto flex flex-col pt-2 sm:pt-4 pb-3 sm:pb-6 px-2 sm:px-6 relative z-10 overflow-hidden">
         {/* Alerts Container */}
         <div className="fixed top-20 sm:top-24 right-4 z-[60] flex flex-col gap-2 max-w-xs pointer-events-none">
           <AnimatePresence>
@@ -1403,13 +1387,13 @@ function Live() {
 
 
         {/* Chat Section */}
-        <div className="flex-1 flex flex-col bg-[var(--theme-surface)] backdrop-blur-[30px] rounded-[3rem] border border-[var(--theme-border)] overflow-hidden shadow-2xl">
+        <div className="flex-1 min-h-0 flex flex-col bg-[var(--theme-surface)] backdrop-blur-[30px] rounded-[3rem] border border-[var(--theme-border)] overflow-hidden shadow-2xl">
           {/* Scrollable Message List */}
           <div 
             ref={messagesContainerRef}
             onScroll={handleScroll}
-            className="flex-1 overflow-y-auto px-6 py-8 space-y-6 custom-scrollbar scroll-smooth"
-            style={{ overflowAnchor: 'auto' }}
+            className="flex-1 min-h-0 overflow-y-auto px-6 py-8 space-y-6 custom-scrollbar"
+            style={{ overflowAnchor: 'auto', WebkitOverflowScrolling: 'touch' }}
           >
             {messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center opacity-40">
@@ -1476,7 +1460,8 @@ function Live() {
                         <motion.div
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className={`flex w-full ${alignRight ? 'justify-end' : 'justify-start'}`}
+                          transition={{ duration: 0.2 }}
+                          className={`flex w-full ${alignRight ? 'justify-end' : 'justify-start'} [transform:translateZ(0)]`}
                         >
                           <div className={`group flex flex-col max-w-[85%] sm:max-w-md ${alignRight ? 'items-end' : 'items-start'}`}>
                             {/* Sender Info (Only for others) */}
@@ -1504,11 +1489,11 @@ function Live() {
 
                               {/* Actual Bubble */}
                               <div className="relative group/bubble-content">
-                                <div className={`px-5 py-3.5 sm:px-6 sm:py-4 rounded-[2rem] shadow-xl transition-all duration-300 ${
+                                <div className={`px-5 py-3.5 sm:px-6 sm:py-4 rounded-[2rem] shadow-xl transition-colors duration-150 ${
                                   alignRight 
                                     ? 'bg-gradient-to-br from-cyan-600 via-blue-600 to-indigo-700 text-white rounded-tr-none border border-cyan-400/20 shadow-[0_4px_20px_rgba(6,182,212,0.2)]' 
-                                    : 'bg-[var(--theme-surface)] backdrop-blur-2xl border border-[var(--theme-border)] text-[var(--theme-text)] shadow-md rounded-tl-none hover:border-cyan-500/30'
-                                  }`}>
+                                    : 'bg-[var(--theme-surface)]/90 backdrop-blur-md border border-[var(--theme-border)] text-[var(--theme-text)] shadow-md rounded-tl-none hover:border-cyan-500/30'
+                                }`}>
                                     {/* Role Badge for Others */}
                                     {!isOwnMessage && (
                                       <div className="flex items-center gap-1.5 mb-2 pb-2 border-b border-[var(--theme-border)]">
@@ -1622,180 +1607,30 @@ function Live() {
               )}
             </AnimatePresence>
 
-            {user ? (
-              (user.muteUntil && new Date(user.muteUntil) > new Date()) ? (
-                <motion.div 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="p-8 bg-orange-500/10 border border-orange-500/20 rounded-[2rem] text-center"
-                >
-                  <div className="w-12 h-12 bg-orange-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <AlertTriangle className="w-6 h-6 text-orange-500" />
-                  </div>
-                  <h3 className="text-lg font-black text-white italic uppercase tracking-tighter mb-2">Sesi Terbatas</h3>
-                  <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-4">
-                    Sinyal Anda dihentikan sementara hingga {new Date(user.muteUntil).toLocaleString()}
-                  </p>
-                  <div className="bg-black/20 p-4 rounded-xl border border-white/5 inline-block text-left max-w-md mx-auto">
-                     <span className="text-[9px] font-black uppercase text-white/20 italic block mb-1">Alasan Moderator:</span>
-                     <p className="text-xs text-orange-200/70 italic">"{user.muteReason || 'Peringatan standar komunitas.'}"</p>
-                  </div>
-                </motion.div>
-              ) : (
-                <>
-                  {/* Reply / Edit Context Bar */}
-                  <AnimatePresence>
-                    {(replyTo || editingMessage) && (
-                      <motion.div 
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        className="mb-4"
-                      >
-                        <div className="flex items-center justify-between p-4 bg-white/5 rounded-3xl border border-white/10">
-                          <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-xl ${editingMessage ? 'bg-blue-500/20 text-blue-400' : 'bg-cyan-500/20 text-cyan-400'}`}>
-                              {editingMessage ? <Edit2 className="w-4 h-4" /> : <Reply className="w-4 h-4" />}
-                            </div>
-                            <div>
-                              <p className="text-[10px] font-black uppercase tracking-widest text-white/40">
-                                {editingMessage ? 'Mengubah Pesan' : `Membalas ${replyTo.username}`}
-                              </p>
-                              <p className="text-sm text-white/70 line-clamp-1 italic">
-                                {editingMessage ? editingMessage.content : replyTo.content}
-                              </p>
-                            </div>
-                          </div>
-                          <button onClick={editingMessage ? cancelEdit : cancelReply} className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/40">
-                            <Plus className="w-5 h-5 rotate-45" />
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                   {/* Input Form */}
-                   <form onSubmit={editingMessage ? (e) => { e.preventDefault(); handleSaveEdit(); } : handleSendMessage} className="flex items-end gap-3 max-w-4xl mx-auto w-full">
-                     <div className="flex flex-col gap-2 relative">
-                        <button 
-                          type="button" 
-                          onClick={() => fileInputRef.current?.click()}
-                          disabled={uploadingMedia}
-                          className="p-3 bg-white/5 hover:bg-white/10 rounded-2xl transition-colors text-white/30 hover:text-white flex items-center justify-center"
-                        >
-                          {uploadingMedia ? <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <Paperclip className="w-5 h-5" />}
-                        </button>
-                        <input 
-                          type="file" 
-                          ref={fileInputRef} 
-                          className="hidden" 
-                          accept="image/*" 
-                          onChange={handleFileSelect}
-                        />
-                     </div>
-
-                                <div className="relative group/input flex-1">
-                      {systemConfig.maintenance_mode && !['SUPER_ADMIN', 'ADMIN'].includes(user.role) ? (
-                        <div className="w-full bg-white/[0.05] border border-white/10 rounded-3xl px-8 py-5 flex items-center justify-center gap-3 backdrop-blur-xl">
-                          <Lock className="w-4 h-4 text-white/30" />
-                          <span className="text-[10px] font-black uppercase tracking-widest text-white/30 italic">Papan Sinyal Dikunci Sementara</span>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="absolute left-4 bottom-3 z-10" ref={emojiPickerRef}>
-                            <button 
-                              type="button" 
-                              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                              className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/30 hover:text-white"
-                            >
-                              <Smile className="w-6 h-6" />
-                            </button>
-                            {showEmojiPicker && (
-                              <div className="absolute bottom-16 left-0 z-50">
-                                <EmojiPicker onEmojiClick={handleEmojiClick} theme={theme === 'light' ? 'light' : 'dark'} width={300} height={400} />
-                              </div>
-                            )}
-                          </div>
-
-                          <MentionInput
-                            value={newMessage}
-                            onChange={(v) => {
-                              setNewMessage(v);
-                              handleTyping();
-                            }}
-                            onMention={(u) => {
-                              console.log('Mentioned user:', u);
-                            }}
-                          />
-                        </>
-                      )}
-
-                      <div className={`absolute right-6 bottom-4 text-[10px] font-black tracking-tighter ${newMessage.length > 500 ? 'text-red-500' : 'text-white/20'}`}>
-                        {newMessage.length}/500
-                      </div>
-                    </div>
-
-                    <motion.button
-                      whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(6, 182, 212, 0.4)' }}
-                      whileTap={{ scale: 0.95 }}
-                      type="submit"
-                      disabled={sending || (!newMessage.trim() && !systemConfig.maintenance_mode) || 
-                                (!editingMessage && user && user.messageCount >= (systemConfig.message_limits[user.role] || 5)) ||
-                                (systemConfig.maintenance_mode && !['SUPER_ADMIN', 'ADMIN'].includes(user.role))}
-                      className={`flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all ${
-                        sending || !newMessage.trim() || (systemConfig.maintenance_mode && !['SUPER_ADMIN', 'ADMIN'].includes(user.role))
-                          ? 'bg-white/[0.05] text-white/20' 
-                          : 'bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600 text-white shadow-cyan-500/30'
-                      }`}
-                    >
-                      {sending ? (
-                        <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                      ) : systemConfig.maintenance_mode && !['SUPER_ADMIN', 'ADMIN'].includes(user.role) ? (
-                        <Lock className="w-5 h-5" />
-                      ) : (
-                        <Send className="w-6 h-6" />
-                      )}
-                    </motion.button>
-                  </form>
-
-                  <AnimatePresence>
-                    {error && (
-                      <motion.div 
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="mb-4 bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-center gap-3"
-                      >
-                        <ShieldAlert className="w-5 h-5 text-red-500" />
-                        <span className="text-[10px] font-black uppercase text-red-200/70 tracking-widest">{error}</span>
-                        <button onClick={() => setError('')} className="ml-auto text-white/20 hover:text-white"><X className="w-4 h-4" /></button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  <div className="mt-4 flex justify-between items-center px-6">
-                    <div className="flex items-center gap-4">
-                      <div className="flex flex-col">
-                        <span className="text-[10px] uppercase font-black tracking-widest text-white/30">Limit Pesan</span>
-                        <div className="flex items-center gap-2">
-                          <div className="w-20 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                            <motion.div 
-                              initial={{ width: 0 }}
-                              animate={{ width: `${(user?.messageCount / (systemConfig.message_limits[user?.role] || 5)) * 100}%` }}
-                              className="h-full bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.5)]" 
-                            />
-                          </div>
-                          <span className="text-[10px] font-black text-cyan-400">{user?.messageCount}/{systemConfig.message_limits[user?.role] || 5}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="hidden sm:block text-[10px] font-black uppercase tracking-tighter text-white/20">
-                      Pencet Shift + Enter untuk ganti baris
-                    </div>
-                  </div>
-                </>
-              )
-            ) : null}
+            <ChatInputArea
+              user={user}
+              systemConfig={systemConfig}
+              replyTo={replyTo}
+              editingMessage={editingMessage}
+              cancelEdit={cancelEdit}
+              cancelReply={cancelReply}
+              handleSaveEdit={handleSaveEdit}
+              handleSendMessage={handleSendMessage}
+              newMessage={newMessage}
+              setNewMessage={setNewMessage}
+              handleTyping={handleTyping}
+              fileInputRef={fileInputRef}
+              uploadingMedia={uploadingMedia}
+              handleFileSelect={handleFileSelect}
+              showEmojiPicker={showEmojiPicker}
+              setShowEmojiPicker={setShowEmojiPicker}
+              emojiPickerRef={emojiPickerRef}
+              handleEmojiClick={handleEmojiClick}
+              theme={theme}
+              sending={sending}
+              error={error}
+              setError={setError}
+            />
             </div>
           )}
         </div>
