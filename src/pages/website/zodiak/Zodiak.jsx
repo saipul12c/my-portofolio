@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 // ...existing code...
-import zodiakData from "./data/data.json";
+import zodiakData from "../../../data/zodiak/data.json";
 
 export default function Zodiak() {
   const [input, setInput] = useState("");

@@ -13,7 +13,7 @@ const BusinessImpact = ({ businessImpact, innovationContributions }) => {
         >
           {/* Background Accent */}
           <motion.div
-            className="absolute -top-20 -right-20 w-40 h-40 bg-green-500/10 rounded-full blur-3xl"
+            className="absolute -top-20 -right-20 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl"
             animate={{ scale: [1, 1.1, 1] }}
             transition={{ duration: 4, repeat: Infinity }}
             style={{ pointerEvents: 'none' }}
@@ -23,9 +23,9 @@ const BusinessImpact = ({ businessImpact, innovationContributions }) => {
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8 relative z-10">
             <motion.div 
               whileHover={{ scale: 1.1, rotate: 10 }}
-              className="p-2 sm:p-3 bg-gradient-to-br from-green-500/20 to-emerald-500/10 rounded-xl sm:rounded-2xl border border-green-500/30 flex-shrink-0"
+              className="p-2 sm:p-3 bg-gradient-to-br from-cyan-500/20 to-blue-500/10 rounded-xl sm:rounded-2xl border border-cyan-500/30 flex-shrink-0"
             >
-              <TrendingUp size={20} className="sm:w-6 sm:h-6 text-green-400" />
+              <TrendingUp size={20} className="sm:w-6 sm:h-6 text-cyan-400" />
             </motion.div>
             <div>
               <h3 className="text-xl sm:text-2xl font-bold text-white">Business Impact</h3>
@@ -43,15 +43,15 @@ const BusinessImpact = ({ businessImpact, innovationContributions }) => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.1)' }}
-                className="bg-white/6 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-white/10 hover:border-green-500/40 transition-all duration-300 group/item"
+                className="bg-white/6 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-white/10 hover:border-cyan-500/40 transition-all duration-300 group/item"
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div className="flex-1">
-                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-400 mb-1 group-hover/item:text-green-300 transition-colors duration-300">
+                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-cyan-400 mb-1 group-hover/item:text-cyan-300 transition-colors duration-300">
                       {typeof value === 'number' ? `${value}%` : value}
                     </div>
                   </div>
-                  <Zap size={16} className="sm:w-5 sm:h-5 text-green-400/50 mt-1 flex-shrink-0" />
+                  <Zap size={16} className="sm:w-5 sm:h-5 text-cyan-400/50 mt-1 flex-shrink-0" />
                 </div>
                 <div className="text-gray-300 capitalize text-xs sm:text-sm font-semibold">
                   {key.replace(/_/g, ' ')}

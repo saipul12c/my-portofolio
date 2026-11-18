@@ -1,27 +1,6 @@
-export const experiences = [
-  {
-    position: 'Full Stack Developer & EduTech Specialist',
-    company: 'Various Clients & Organizations',
-    period: '2022 - Present',
-    achievements: [
-      'Mengembangkan platform pembelajaran digital yang digunakan oleh ribuan pengguna',
-      'Memimpin tim dalam proyek-proyek transformasi digital pendidikan',
-      'Menerapkan teknologi AI dan machine learning dalam solusi edukasi',
-      'Berhasil menyelesaikan 20+ proyek dengan rating kepuasan di atas 4.8/5'
-    ]
-  },
-  {
-    position: 'Digital Learning Consultant',
-    company: 'Multiple Educational Institutions',
-    period: '2020 - 2022',
-    achievements: [
-      'Konsultan transformasi digital untuk sekolah dan lembaga pendidikan',
-      'Mengembangkan kurikulum pembelajaran berbasis teknologi',
-      'Melatih 500+ guru dalam literasi digital dan teknologi pendidikan',
-      'Membuat konten edukasi digital yang engaging dan efektif'
-    ]
-  }
-];
+import experiencesData from '../../../data/pengalaman/experiences.json';
+
+export const experiences = experiencesData.experiences || experiencesData;
 
 export const educations = [
   {

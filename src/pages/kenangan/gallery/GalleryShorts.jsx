@@ -6,6 +6,80 @@ import { GALLERY_CONFIG } from "../utils/constants";
 import { sanitizeUrl } from "../utils/sanitizers";
 import { getMediaPoster } from "../utils/mediaEmbed";
 
+function ShortCardItem({ short, index, currentData, onSelect }) {
+  const [imgError, setImgError] = useState(false);
+  const posterUrl = getMediaPoster(short);
+  const isVideoPoster = /\.(mp4|webm|ogg|mov)$/i.test(posterUrl);
+
+  return (
+    <motion.div
+      key={short.id}
+      onClick={() => onSelect && onSelect(short, currentData, index)}
+      whileHover={{ scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 200, damping: 20 }}
+      className="relative rounded-2xl overflow-hidden cursor-pointer group bg-gray-900 border border-white/10 hover:border-cyan-400/50 transition-colors shadow-lg"
+    >
+      {/* Poster Thumbnail */}
+      <div className="relative aspect-[9/16] overflow-hidden bg-black">
+        {isVideoPoster || imgError ? (
+          <video
+            src={`${sanitizeUrl(short.src)}#t=0.5`}
+            preload="metadata"
+            muted
+            playsInline
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-90 group-hover:opacity-100 pointer-events-none"
+          />
+        ) : (
+          <img
+            src={sanitizeUrl(posterUrl)}
+            alt={short.title}
+            loading="lazy"
+            onError={() => setImgError(true)}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-90 group-hover:opacity-100"
+          />
+        )}
+
+        {/* Overlay Info */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 p-4 text-white z-10 flex flex-col gap-2">
+          <h3 className="font-semibold text-base leading-tight line-clamp-2">
+            {short.title}
+          </h3>
+          <p className="text-sm text-cyan-300 font-medium">
+            @{short.creator?.username || "anonim"}
+          </p>
+          <div className="flex items-center gap-2 text-xs text-gray-300">
+            <Calendar size={13} className="text-cyan-400" />
+            <span>{short.date || "2024"}</span>
+            <span className="text-gray-500">•</span>
+            <MapPin size={13} className="text-pink-400" />
+            <span>{short.location || "Indonesia"}</span>
+          </div>
+          {short.tags && (
+            <div className="flex flex-wrap gap-2 mt-1">
+              {short.tags.slice(0, 3).map((tag, idx) => (
+                <span
+                  key={idx}
+                  className="text-xs bg-white/10 border border-white/20 rounded-full px-2 py-0.5 text-cyan-300 flex items-center gap-1"
+                >
+                  <Tag size={12} /> {tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Play Button Icon on Hover */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="w-16 h-16 rounded-full bg-cyan-500/80 backdrop-blur-sm flex items-center justify-center text-black shadow-xl transform scale-90 group-hover:scale-100 transition-transform">
+            <Play className="w-8 h-8 fill-current ml-1" />
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 function GalleryShortsComponent({ items, onSelect, filterSettings = {} }) {
   const ITEMS_PER_PAGE = GALLERY_CONFIG.ITEMS_PER_PAGE.SHORTS;
   const MAX_PAGES_DISPLAY = GALLERY_CONFIG.MAX_PAGES_DISPLAY;
@@ -79,61 +153,14 @@ function GalleryShortsComponent({ items, onSelect, filterSettings = {} }) {
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
             >
               {currentData.map((short, index) => (
-                <motion.div
-                  key={short.id}
-                  onClick={() => onSelect && onSelect(short, currentData, index)}
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                  className="relative rounded-2xl overflow-hidden cursor-pointer group bg-gray-900 border border-white/10 hover:border-cyan-400/50 transition-colors shadow-lg"
-                >
-                  {/* Poster Thumbnail */}
-                  <div className="relative aspect-[9/16] overflow-hidden bg-black">
-                    <img
-                      src={sanitizeUrl(getMediaPoster(short))}
-                      alt={short.title}
-                      loading="lazy"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-90 group-hover:opacity-100"
-                    />
-
-                    {/* Overlay Info */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white z-10 flex flex-col gap-2">
-                      <h3 className="font-semibold text-base leading-tight line-clamp-2">
-                        {short.title}
-                      </h3>
-                      <p className="text-sm text-cyan-300 font-medium">
-                        @{short.creator?.username || "anonim"}
-                      </p>
-                      <div className="flex items-center gap-2 text-xs text-gray-300">
-                        <Calendar size={13} className="text-cyan-400" />
-                        <span>{short.date || "2024"}</span>
-                        <span className="text-gray-500">•</span>
-                        <MapPin size={13} className="text-pink-400" />
-                        <span>{short.location || "Indonesia"}</span>
-                      </div>
-                      {short.tags && (
-                        <div className="flex flex-wrap gap-2 mt-1">
-                          {short.tags.slice(0, 3).map((tag, idx) => (
-                            <span
-                              key={idx}
-                              className="text-xs bg-white/10 border border-white/20 rounded-full px-2 py-0.5 text-cyan-300 flex items-center gap-1"
-                            >
-                              <Tag size={12} /> {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Play Button Icon on Hover */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="w-16 h-16 rounded-full bg-cyan-500/80 backdrop-blur-sm flex items-center justify-center text-black shadow-xl transform scale-90 group-hover:scale-100 transition-transform">
-                        <Play className="w-8 h-8 fill-current ml-1" />
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+              <ShortCardItem
+                key={short.id}
+                short={short}
+                index={index}
+                currentData={currentData}
+                onSelect={onSelect}
+              />
+            ))}
             </motion.div>
           </AnimatePresence>
 

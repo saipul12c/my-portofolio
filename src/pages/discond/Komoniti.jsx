@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import './discond-theme.css';
 import { motion, AnimatePresence } from "framer-motion";
 import { Routes, Route, useLocation } from 'react-router-dom';
 // ✅ PERBAIKAN: Import langsung dari contexts, bukan dari hooks
@@ -221,7 +220,7 @@ const Komoniti = () => {
   }
 
   const MainLayout = () => (
-    <div className="discond-root h-screen bg-[var(--color-gray-900)] flex text-white overflow-hidden">
+    <div className="h-screen bg-[#36393f] flex text-[#e6edf3] overflow-hidden font-sans">
       {/* Background effects */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-10 left-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />

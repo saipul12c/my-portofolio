@@ -33,7 +33,7 @@ export default function TestimoniModal({ selected, onClose }) {
   };
 
   const handleNavigateToCompany = () => {
-    navigate(`/testimoni/perusahan/${createSlug(selected.company)}`);
+    navigate(`/testimoni/perusahaan/${createSlug(selected.company)}`);
   };
   return (
     <motion.div
@@ -103,7 +103,7 @@ export default function TestimoniModal({ selected, onClose }) {
           {selected.company && (
             <button
               onClick={handleNavigateToCompany}
-              className="flex items-center justify-center gap-2 bg-emerald-600/20 border border-emerald-500/30 hover:border-emerald-400/60 text-emerald-300 hover:text-emerald-200 py-2 px-3 rounded-lg transition-all text-sm sm:text-base flex-1"
+              className="flex items-center justify-center gap-2 bg-cyan-600/20 border border-cyan-500/30 hover:border-cyan-400/60 text-cyan-300 hover:text-cyan-200 py-2 px-3 rounded-lg transition-all text-sm sm:text-base flex-1"
             >
               <Building2 size={16} className="flex-shrink-0" />
               <span className="font-medium">Perusahaan</span>

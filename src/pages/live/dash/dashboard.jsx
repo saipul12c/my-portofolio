@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
   Users, 
+  User, 
   MessageSquare, 
   BarChart3, 
   Settings, 
@@ -117,9 +118,10 @@ const Dashboard = () => {
     const checkAccess = async () => {
       try {
         // 1. Get real user session from Supabase Auth (Anti-Spoofing)
-        const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+        const authRes = await supabase.auth.getUser().catch(() => null);
+        const authUser = authRes?.data?.user;
         
-        if (authError || !authUser) {
+        if (!authUser) {
           navigate('/Live-Discussion/login');
           return;
         }
@@ -156,6 +158,51 @@ const Dashboard = () => {
     checkAccess();
     return () => { isMounted.current = false; };
   }, [navigate]);
+
+  // System Config Handlers
+  const fetchSystemConfigs = async () => {
+    try {
+      const { data, error } = await supabase.from('system_config').select('*');
+      if (error) throw error;
+      if (data && data.length > 0) {
+        const configObj = { ...systemConfigs };
+        data.forEach(item => {
+          configObj[item.key] = item.value;
+        });
+        setSystemConfigs(configObj);
+      }
+    } catch (err) {
+      console.warn('System config fetch failed, using defaults', err);
+    }
+  };
+
+  const handleLimitChange = (role, val) => {
+    const parsed = parseInt(val, 10);
+    setSystemConfigs(prev => ({
+      ...prev,
+      message_limits: {
+        ...prev.message_limits,
+        [role]: isNaN(parsed) ? 0 : parsed
+      }
+    }));
+  };
+
+  const updateSystemConfigs = async (key, val) => {
+    try {
+      setIsUpdatingConfig(true);
+      const { error } = await supabase
+        .from('system_config')
+        .upsert({ key, value: val, updated_at: new Date().toISOString() });
+      if (error) throw error;
+      setSystemConfigs(prev => ({ ...prev, [key]: val }));
+      alert(`Konfigurasi "${key}" berhasil diperbarui!`);
+    } catch (err) {
+      console.error('Failed to update system config:', err);
+      alert('Gagal memperbarui konfigurasi sistem: ' + (err.message || 'Error'));
+    } finally {
+      setIsUpdatingConfig(false);
+    }
+  };
 
   // Load dashboard data (Lightweight Server-Side Stats)
   const loadDashboardData = async () => {
@@ -439,7 +486,7 @@ const Dashboard = () => {
         .select(`
           *,
           message:messages(*),
-          reporter:users!reports_reporter_id_fkey(nama, username)
+          reporter:users!reports_reporter_id_fkey(id, nama)
         `)
         .order('created_at', { ascending: false });
 
@@ -457,7 +504,7 @@ const Dashboard = () => {
     try {
       const { data, error } = await supabase
         .from('appeals')
-        .select(`*, user:users(nama, username, ban_reason)`)
+        .select(`*, user:users(id, nama, ban_reason)`)
         .order('created_at', { ascending: false });
       if (error) throw error;
       setAppeals(data || []);
@@ -1201,7 +1248,16 @@ const Dashboard = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {[
-                  { label: 'Flush Cache', desc: 'Clear all signal buffers', color: 'yellow', action: null },
+                  { 
+                    label: 'Flush Cache', 
+                    desc: 'Clear all signal buffers', 
+                    color: 'yellow', 
+                    action: () => {
+                      localStorage.removeItem('local_user');
+                      loadDashboardData();
+                      alert('Cache sesi lokal dibersihkan & data disinkronkan kembali.');
+                    }
+                  },
                   { label: 'System Archive', desc: 'Move 30d+ signals to cold storage', color: 'blue', action: handleArchiveMessages },
                   { label: 'Reset Pulse', desc: 'Zero all message counters', color: 'green', action: handleResetMessageCounts },
                   { 
@@ -1267,7 +1323,7 @@ const Dashboard = () => {
                             </div>
                             <div>
                               <span className="text-[10px] font-black uppercase tracking-widest text-white/20 italic block">Reporter Information</span>
-                              <p className="text-sm font-black text-white">{r.reporter?.nama || 'Anonymous Operator'} (@{r.reporter?.username || 'unknown'})</p>
+                              <p className="text-sm font-black text-white">{r.reporter?.nama || 'Anonymous Operator'}</p>
                             </div>
                           </div>
 
@@ -1373,10 +1429,10 @@ const Dashboard = () => {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-4">
                         <div className="w-10 h-10 bg-cyan-500/10 rounded-full flex items-center justify-center text-cyan-400 font-bold uppercase tracking-tighter">
-                          {a.user?.username?.[0] || 'U'}
+                          {a.user?.nama?.[0] || 'U'}
                         </div>
                         <div>
-                          <h4 className="text-lg font-black text-white italic uppercase tracking-tighter">@{a.user?.username}</h4>
+                          <h4 className="text-lg font-black text-white italic uppercase tracking-tighter">@{a.user?.nama || 'Anonymous'}</h4>
                           <span className="text-[9px] font-black uppercase text-red-500/60 font-mono">Ban Reason: {a.user?.ban_reason || 'N/A'}</span>
                         </div>
                       </div>

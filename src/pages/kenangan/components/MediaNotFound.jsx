@@ -15,7 +15,7 @@ export default function MediaNotFound({
   message 
 }) {
   return (
-    <main className="min-h-screen flex items-center justify-center p-4 sm:p-8 bg-gradient-to-b from-[var(--color-gray-900)] via-[#111827] to-[#020617]">
+    <main className="min-h-screen flex items-center justify-center p-4 sm:p-8 bg-gradient-to-b from-[var(--color-gray-900)] via-[#111827] to-[var(--color-gray-900)]">
       <motion.div 
         className="max-w-xl w-full bg-[#0f1724] p-6 sm:p-8 rounded-2xl text-center border border-white/10 shadow-2xl"
         initial={{ opacity: 0, y: 20 }}

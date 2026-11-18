@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Rocket, Star, BookOpen, Award } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import data from "../../data/projects.json";
-import coursesData from "../../data/pendidikan/data.json";
+import certificatesData from "../../data/sertif/certificates.json";
 import { useErrorAuth } from "../../context/useErrorAuth";
 import ProjectPopup from "./ProjectPopup";
 import CoursePopup from "./CoursePopup";
@@ -23,11 +23,11 @@ const CourseCard = ({ course, index, onSelect }) => (
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1">
           <h3 className="text-base sm:text-lg font-bold text-white line-clamp-2 group-hover:text-cyan-300 transition-colors">
-            {course.title}
+            {course.title || course.name}
           </h3>
-          <p className="text-xs sm:text-sm text-cyan-300 mt-1">{course.provider}</p>
+          <p className="text-xs sm:text-sm text-cyan-300 mt-1">{course.provider || course.issuer}</p>
         </div>
-        <div className="text-2xl sm:text-3xl flex-shrink-0">{course.logo}</div>
+        <div className="text-2xl sm:text-3xl flex-shrink-0">{course.logo || "🎓"}</div>
       </div>
     </div>
 
@@ -69,7 +69,7 @@ const CourseCard = ({ course, index, onSelect }) => (
       </div>
 
       {/* Certificate Badge */}
-      {course.certificate && (
+      {(course.certificate || course.verified) && (
         <div className="flex items-center gap-2 pt-2 border-t border-white/10">
           <Award className="w-4 h-4 text-yellow-400" />
           <span className="text-xs sm:text-sm text-yellow-300 font-semibold">Bersertifikat</span>
@@ -138,6 +138,7 @@ export default function Projects() {
   const { id } = useParams();
   const { setAuthorizedError } = useErrorAuth();
   const { projects = [], categories = [], labelColors = {} } = data;
+  const coursesList = useMemo(() => certificatesData.certificates || [], []);
 
   const isMaintenance = false;
 
@@ -394,7 +395,7 @@ export default function Projects() {
         </motion.div>
 
         {/* Grid Kursus */}
-        {coursesData.courses && coursesData.courses.length > 0 ? (
+        {coursesList && coursesList.length > 0 ? (
           <motion.div
             className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 w-full max-w-7xl mx-auto"
             initial={{ opacity: 0 }}
@@ -402,8 +403,8 @@ export default function Projects() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            {coursesData.courses.map((course, index) => (
-              <CourseCard key={index} course={course} index={index} onSelect={setSelectedCourse} />
+            {coursesList.map((course, index) => (
+              <CourseCard key={course.id || index} course={course} index={index} onSelect={setSelectedCourse} />
             ))}
           </motion.div>
         ) : (
@@ -413,7 +414,7 @@ export default function Projects() {
         )}
 
         {/* Stats Cards */}
-        {coursesData.courses && coursesData.courses.length > 0 && (
+        {coursesList && coursesList.length > 0 && (
           <motion.div
             className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mt-10 sm:mt-12 md:mt-16 max-w-7xl mx-auto"
             initial={{ opacity: 0, y: 30 }}
@@ -426,7 +427,7 @@ export default function Projects() {
               whileHover={{ scale: 1.05 }}
             >
               <div className="text-2xl sm:text-3xl font-bold text-blue-300">
-                {coursesData.courses.length}
+                {coursesList.length}
               </div>
               <p className="text-xs sm:text-sm text-gray-300 mt-2">Total Kursus</p>
             </motion.div>
@@ -436,7 +437,7 @@ export default function Projects() {
               whileHover={{ scale: 1.05 }}
             >
               <div className="text-2xl sm:text-3xl font-bold text-cyan-300">
-                {coursesData.courses.filter(c => c.certificate).length}
+                {coursesList.filter(c => c.certificate || c.verified).length}
               </div>
               <p className="text-xs sm:text-sm text-gray-300 mt-2">Bersertifikat</p>
             </motion.div>
@@ -446,7 +447,7 @@ export default function Projects() {
               whileHover={{ scale: 1.05 }}
             >
               <div className="text-2xl sm:text-3xl font-bold text-purple-300">
-                {new Set(coursesData.courses.flatMap(c => c.skills_learned)).size}
+                {new Set(coursesList.flatMap(c => c.skills_learned || c.tags || [])).size}
               </div>
               <p className="text-xs sm:text-sm text-gray-300 mt-2">Keahlian Dipelajari</p>
             </motion.div>
@@ -456,7 +457,7 @@ export default function Projects() {
               whileHover={{ scale: 1.05 }}
             >
               <div className="text-2xl sm:text-3xl font-bold text-emerald-300">
-                {Math.ceil(coursesData.courses.reduce((sum, c) => sum + parseInt(c.duration), 0) / 10)}0h
+                {Math.ceil(coursesList.reduce((sum, c) => sum + (parseInt(c.duration) || 0), 0) / 10)}0h
               </div>
               <p className="text-xs sm:text-sm text-gray-300 mt-2">Total Jam Pelatihan</p>
             </motion.div>

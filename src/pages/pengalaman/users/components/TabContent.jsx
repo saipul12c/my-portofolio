@@ -21,7 +21,7 @@ const TabContent = ({ activeTab, userInfo, filteredTestimonials, sortBy, setSort
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
         <div className="min-w-0">
-          <h3 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-transparent break-words">
+          <h3 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent break-words">
             Testimoni Klien
           </h3>
           <p className="text-xs sm:text-sm text-gray-400 mt-1 sm:mt-2">Ulasan dari berbagai proyek kolaborasi</p>
@@ -41,7 +41,7 @@ const TabContent = ({ activeTab, userInfo, filteredTestimonials, sortBy, setSort
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-transparent border-none text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs sm:text-sm flex-1"
+              className="bg-transparent border-none text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 text-xs sm:text-sm flex-1"
             >
               <option value="latest">Terbaru</option>
               <option value="oldest">Terlama</option>
@@ -65,7 +65,7 @@ const TabContent = ({ activeTab, userInfo, filteredTestimonials, sortBy, setSort
       <div>
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
-          <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-transparent mb-2 sm:mb-4">
+          <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-2 sm:mb-4">
             Technology Stack
           </h3>
           <p className="text-xs sm:text-sm lg:text-base text-gray-400">Teknologi yang dikuasai dan diterapkan dalam proyek</p>
@@ -83,18 +83,18 @@ const TabContent = ({ activeTab, userInfo, filteredTestimonials, sortBy, setSort
               whileHover={{ scale: 1.08, rotate: 3 }}
               className="group text-center"
             >
-              <div className="bg-gradient-to-br from-blue-500/15 to-purple-500/15 p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl lg:rounded-3xl border border-white/15 hover:border-blue-500/40 hover:from-blue-500/25 hover:to-purple-500/25 transition-all duration-300 shadow-md hover:shadow-lg h-full flex flex-col items-center justify-center relative overflow-hidden">
+              <div className="bg-gradient-to-br from-cyan-500/15 to-purple-500/15 p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl lg:rounded-3xl border border-white/15 hover:border-cyan-500/40 hover:from-cyan-500/25 hover:to-purple-500/25 transition-all duration-300 shadow-md hover:shadow-lg h-full flex flex-col items-center justify-center relative overflow-hidden">
                 {/* Background Glow */}
                 <motion.div
-                  className="absolute -inset-4 bg-gradient-to-r from-blue-500/0 to-purple-500/0 group-hover:from-blue-500/10 group-hover:to-purple-500/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"
+                  className="absolute -inset-4 bg-gradient-to-r from-cyan-500/0 to-purple-500/0 group-hover:from-cyan-500/10 group-hover:to-purple-500/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"
                   animate={{ scale: [1, 1.1, 1] }}
                   transition={{ duration: 3, repeat: Infinity }}
                 />
                 
-                <div className="w-10 sm:w-12 lg:w-16 h-10 sm:h-12 lg:h-16 mx-auto mb-2 sm:mb-3 lg:mb-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg flex-shrink-0">
+                <div className="w-10 sm:w-12 lg:w-16 h-10 sm:h-12 lg:h-16 mx-auto mb-2 sm:mb-3 lg:mb-4 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg flex-shrink-0">
                   <Code size={18} className="sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-white" />
                 </div>
-                <div className="font-semibold text-white text-xs sm:text-sm group-hover:text-blue-300 transition-colors line-clamp-2">
+                <div className="font-semibold text-white text-xs sm:text-sm group-hover:text-cyan-300 transition-colors line-clamp-2">
                   {tech}
                 </div>
               </div>
@@ -110,7 +110,7 @@ const TabContent = ({ activeTab, userInfo, filteredTestimonials, sortBy, setSort
       <div className="space-y-6 sm:space-y-8">
         {/* Header */}
         <div className="text-center mb-6 sm:mb-12">
-          <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-green-300 to-cyan-300 bg-clip-text text-transparent mb-2 sm:mb-4">
+          <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-2 sm:mb-4">
             Performance Metrics
           </h3>
           <p className="text-xs sm:text-sm lg:text-base text-gray-400">Indikator kinerja dan pencapaian proyek</p>
@@ -123,7 +123,7 @@ const TabContent = ({ activeTab, userInfo, filteredTestimonials, sortBy, setSort
         >
           {/* Background Accent */}
           <motion.div
-            className="absolute -top-20 -right-20 w-40 h-40 bg-green-500/10 rounded-full blur-3xl"
+            className="absolute -top-20 -right-20 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl"
             animate={{ scale: [1, 1.1, 1] }}
             transition={{ duration: 4, repeat: Infinity }}
             style={{ pointerEvents: 'none' }}
@@ -145,7 +145,7 @@ const TabContent = ({ activeTab, userInfo, filteredTestimonials, sortBy, setSort
                   </span>
                   <motion.span 
                     whileHover={{ scale: 1.05 }}
-                    className="font-bold text-green-400 text-xs sm:text-sm lg:text-base bg-gradient-to-r from-green-500/20 to-cyan-500/20 border border-green-500/30 px-2.5 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2 rounded-lg sm:rounded-xl whitespace-nowrap transition-all duration-300 hover:border-green-500/50"
+                    className="font-bold text-cyan-300 text-xs sm:text-sm lg:text-base bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 px-2.5 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2 rounded-lg sm:rounded-xl whitespace-nowrap transition-all duration-300 hover:border-cyan-500/50"
                   >
                     {value}%
                   </motion.span>
@@ -158,7 +158,7 @@ const TabContent = ({ activeTab, userInfo, filteredTestimonials, sortBy, setSort
                     whileInView={{ width: `${value}%` }}
                     viewport={{ once: false }}
                     transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
-                    className="bg-gradient-to-r from-green-500 to-cyan-500 h-full rounded-full shadow-lg shadow-green-500/25 group-hover/metric:shadow-green-500/40 transition-shadow relative"
+                    className="bg-gradient-to-r from-cyan-500 to-blue-600 h-full rounded-full shadow-lg shadow-cyan-500/25 group-hover/metric:shadow-cyan-500/40 transition-shadow relative"
                   >
                     <motion.div 
                       className="absolute inset-0 bg-gradient-to-r from-transparent to-white/20 rounded-full"

@@ -320,11 +320,11 @@ const ContactForm = () => {
     <motion.form
       onSubmit={handleSubmit}
       ref={messageRef}
-      className="relative bg-gradient-to-br from-white/95 via-blue-50/90 to-purple-50/95 dark:from-gray-800/95 dark:via-gray-700/90 dark:to-gray-800/95 backdrop-blur-xl border-2 border-white/40 dark:border-gray-700/50 shadow-3xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 w-full max-w-sm sm:max-w-lg md:max-w-xl mx-auto space-y-5 sm:space-y-6 md:space-y-8 hover:shadow-4xl transition-all duration-700"
+      className="relative bg-slate-900/80 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 w-full max-w-sm sm:max-w-lg md:max-w-xl mx-auto space-y-5 sm:space-y-6 md:space-y-8 hover:border-cyan-500/40 transition-all duration-500"
       style={{
         isolation: 'isolate',
         transform: 'translateZ(0)',
-        backgroundImage: 'radial-gradient(circle at top right, rgba(120, 119, 198, 0.1), transparent 50%), radial-gradient(circle at bottom left, rgba(255, 119, 198, 0.1), transparent 50%)'
+        backgroundImage: 'radial-gradient(circle at top right, rgba(6, 182, 212, 0.08), transparent 50%), radial-gradient(circle at bottom left, rgba(168, 85, 247, 0.08), transparent 50%)'
       }}
     >
       {[
@@ -338,11 +338,11 @@ const ContactForm = () => {
           transition={{ delay: 0.8 + index * 0.1 }}
           className="relative group"
         >
-          <label className="absolute -top-2 sm:-top-3 left-3 sm:left-4 bg-white dark:bg-gray-800 px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-bold text-purple-600 dark:text-purple-400 rounded-full border border-purple-200 dark:border-purple-800 shadow-sm z-10">
+          <label className="absolute -top-2 sm:-top-3 left-3 sm:left-4 bg-slate-800 px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-bold text-cyan-300 rounded-full border border-cyan-500/30 shadow-sm z-10">
             {field.label}
           </label>
-          <div className="flex items-center border-2 border-gray-200 dark:border-gray-600 rounded-xl sm:rounded-2xl px-3 sm:px-5 py-3 sm:py-4 focus-within:border-purple-500 focus-within:ring-4 focus-within:ring-purple-500/20 transition-all duration-300 group-hover:border-purple-400 dark:group-hover:border-purple-500 bg-white/70 dark:bg-gray-700/70">
-            <span className="text-purple-500 mr-2 sm:mr-4 flex-shrink-0">{field.icon}</span>
+          <div className="flex items-center border border-white/10 rounded-xl sm:rounded-2xl px-3 sm:px-5 py-3 sm:py-4 focus-within:border-cyan-400 focus-within:ring-4 focus-within:ring-cyan-500/20 transition-all duration-300 group-hover:border-cyan-500/30 bg-white/5">
+            <span className="text-cyan-400 mr-2 sm:mr-4 flex-shrink-0">{field.icon}</span>
             <input
               type={field.type}
               name={field.name}
@@ -350,7 +350,7 @@ const ContactForm = () => {
               value={formData[field.name]}
               onChange={handleChange}
               required
-              className="w-full bg-transparent outline-none text-sm sm:text-base text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 font-medium"
+              className="w-full bg-transparent outline-none text-sm sm:text-base text-white placeholder-gray-400 font-medium"
             />
           </div>
           
@@ -395,11 +395,11 @@ const ContactForm = () => {
         transition={{ delay: 1.0 }}
         className="relative group"
       >
-        <label className="absolute -top-2 sm:-top-3 left-3 sm:left-4 bg-white dark:bg-gray-800 px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-bold text-purple-600 dark:text-purple-400 rounded-full border border-purple-200 dark:border-purple-800 shadow-sm z-10">
+        <label className="absolute -top-2 sm:-top-3 left-3 sm:left-4 bg-slate-800 px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-bold text-cyan-300 rounded-full border border-cyan-500/30 shadow-sm z-10">
           Pesan Anda
         </label>
-        <div className="flex items-start border-2 border-gray-200 dark:border-gray-600 rounded-xl sm:rounded-2xl px-3 sm:px-5 py-3 sm:py-4 focus-within:border-purple-500 focus-within:ring-4 focus-within:ring-purple-500/20 transition-all duration-300 group-hover:border-purple-400 dark:group-hover:border-purple-500 bg-white/70 dark:bg-gray-700/70">
-          <MessageSquare className="text-purple-500 mt-1 mr-2 sm:mr-4 flex-shrink-0" size={20} />
+        <div className="flex items-start border border-white/10 rounded-xl sm:rounded-2xl px-3 sm:px-5 py-3 sm:py-4 focus-within:border-cyan-400 focus-within:ring-4 focus-within:ring-cyan-500/20 transition-all duration-300 group-hover:border-cyan-500/30 bg-white/5">
+          <MessageSquare className="text-cyan-400 mt-1 mr-2 sm:mr-4 flex-shrink-0" size={20} />
           <div className="flex-1">
             <textarea
               name="message"
@@ -408,27 +408,27 @@ const ContactForm = () => {
               onChange={handleChange}
               required
               rows={5}
-              className="w-full bg-transparent outline-none resize-none text-sm sm:text-base text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 font-medium"
+              className="w-full bg-transparent outline-none resize-none text-sm sm:text-base text-white placeholder-gray-400 font-medium"
             />
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-gray-600 gap-2 sm:gap-0">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-3 pt-3 border-t border-white/10 gap-2 sm:gap-0">
               <div className="flex items-center gap-2 text-xs">
                 {isTyping && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="flex items-center gap-1 text-purple-500"
+                    className="flex items-center gap-1 text-cyan-400"
                   >
                     <div className="flex gap-1">
-                      <div className="w-1 h-1 bg-purple-500 rounded-full animate-bounce" />
-                      <div className="w-1 h-1 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                      <div className="w-1 h-1 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                      <div className="w-1 h-1 bg-cyan-400 rounded-full animate-bounce" />
+                      <div className="w-1 h-1 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                      <div className="w-1 h-1 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
                     </div>
                     <span className="text-xs">Mengetik...</span>
                   </motion.div>
                 )}
               </div>
               <div className={`text-xs font-medium ${
-                charCount > 500 ? 'text-green-500' : 'text-gray-400'
+                charCount > 500 ? 'text-emerald-400' : 'text-gray-400'
               }`}>
                 {charCount}/500 karakter
               </div>
@@ -494,8 +494,8 @@ const ContactForm = () => {
         disabled={loading || (rateLimitStatus && rateLimitStatus.blocked) || (RECAPTCHA_SITE_KEY && !recaptchaLoaded)}
         whileHover={{ scale: 1.02, y: -2 }}
         whileTap={{ scale: 0.98 }}
-        className={`w-full py-4 sm:py-5 rounded-xl sm:rounded-2xl font-bold text-white shadow-2xl transition-all duration-500 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 flex justify-center items-center gap-2 sm:gap-3 relative overflow-hidden text-sm sm:text-base ${
-          loading || (rateLimitStatus && rateLimitStatus.blocked) || (RECAPTCHA_SITE_KEY && !recaptchaLoaded) ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-3xl'
+        className={`w-full py-4 sm:py-5 rounded-xl sm:rounded-2xl font-bold text-white shadow-xl transition-all duration-300 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 hover:shadow-cyan-500/30 flex justify-center items-center gap-2 sm:gap-3 relative overflow-hidden text-sm sm:text-base ${
+          loading || (rateLimitStatus && rateLimitStatus.blocked) || (RECAPTCHA_SITE_KEY && !recaptchaLoaded) ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.01]'
         }`}
         title={RECAPTCHA_SITE_KEY && !recaptchaLoaded ? 'Menunggu verifikasi keamanan...' : recaptchaVerifying ? 'Sedang memverifikasi keamanan...' : ''}
       >

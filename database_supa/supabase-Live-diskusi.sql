@@ -65,12 +65,15 @@ CREATE TABLE IF NOT EXISTS public.achievements (
     achievement_id TEXT,
     name TEXT,
     icon TEXT,
+    description TEXT,
     points INTEGER DEFAULT 0,
     category TEXT,
     date_unlocked TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
     UNIQUE(user_id, achievement_id)
 );
+
+ALTER TABLE public.achievements ADD COLUMN IF NOT EXISTS description TEXT;
 
 -- 4. Tabel Tags
 CREATE TABLE IF NOT EXISTS public.tags (
@@ -212,6 +215,12 @@ USING (auth.uid() = id OR EXISTS (
   WHERE me.id = auth.uid() 
   AND get_role_level(me.role) > get_role_level(public.users.role)
   AND me.role IN ('ADMIN', 'SUPER_ADMIN', 'MODERATOR')
+))
+WITH CHECK (auth.uid() = id OR EXISTS (
+  SELECT 1 FROM public.users me 
+  WHERE me.id = auth.uid() 
+  AND get_role_level(me.role) > get_role_level(public.users.role)
+  AND me.role IN ('ADMIN', 'SUPER_ADMIN', 'MODERATOR')
 ));
 
 DROP POLICY IF EXISTS "Users can delete own profile" ON public.users;
@@ -293,6 +302,12 @@ CREATE POLICY "Admins can update reports" ON public.reports FOR UPDATE USING (EX
   WHERE me.id = auth.uid() AND me.role IN ('ADMIN', 'SUPER_ADMIN', 'MODERATOR')
 ));
 
+DROP POLICY IF EXISTS "Admins can delete reports" ON public.reports;
+CREATE POLICY "Admins can delete reports" ON public.reports FOR DELETE USING (EXISTS (
+  SELECT 1 FROM public.users me 
+  WHERE me.id = auth.uid() AND me.role IN ('ADMIN', 'SUPER_ADMIN', 'MODERATOR')
+));
+
 -- Mentions Policies
 DROP POLICY IF EXISTS "Users can view own mentions" ON public.mentions;
 CREATE POLICY "Users can view own mentions" ON public.mentions FOR SELECT USING (auth.uid() = target_id);
@@ -348,7 +363,7 @@ WITH CHECK (
 -- Fungsi & Triggers Otomatis
 -- ==============================================================================
 
--- A. Sinkronisasi User Baru dari Auth ke Public Users
+-- A. Sinkronisasi User Baru dari Auth ke Public Users (Anti Injeksi Role)
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger 
 LANGUAGE plpgsql 
@@ -361,7 +376,9 @@ BEGIN
     new.id,
     new.email,
     COALESCE(new.raw_user_meta_data->>'nama', split_part(new.email, '@', 1)),
-    COALESCE(new.raw_user_meta_data->>'role', new.raw_app_meta_data->>'role', 'USER'),
+    -- Keamanan: Cegah injeksi role dari client metadata (raw_user_meta_data).
+    -- Hanya izinkan role khusus jika ditetapkan melalui raw_app_meta_data (service_role / Supabase Admin Console)
+    COALESCE(new.raw_app_meta_data->>'role', 'USER'),
     COALESCE(new.created_at, timezone('utc'::text, now())),
     COALESCE(new.created_at, timezone('utc'::text, now()))
   )
@@ -391,6 +408,7 @@ DECLARE
     user_limit INTEGER;
     current_count INTEGER;
     last_msg TIMESTAMP WITH TIME ZONE;
+    user_last_reset DATE;
     is_maintenance BOOLEAN;
     role_limits JSONB;
 BEGIN
@@ -403,10 +421,23 @@ BEGIN
         RAISE EXCEPTION 'Pesan Anda mengandung kata-kata yang tidak diperbolehkan. Mohon jaga kesopanan.';
     END IF;
 
+    -- Validasi Keamanan Media URL
+    IF new.media_url IS NOT NULL AND (new.media_url !~* '^https?://' OR new.media_url ~* 'javascript:') THEN
+        RAISE EXCEPTION 'URL media tidak valid atau tidak aman.';
+    END IF;
+
     -- Ambil data asli dari tabel users
-    SELECT role, nama, message_count, status, mute_until, last_message_at 
-    INTO user_role, new.username, current_count, user_status, user_mute_until, last_msg
+    SELECT role, nama, message_count, status, mute_until, last_message_at, last_reset 
+    INTO user_role, new.username, current_count, user_status, user_mute_until, last_msg, user_last_reset
     FROM public.users WHERE id = auth.uid();
+
+    -- Auto-reset harian jika tanggal sudah berganti
+    IF user_last_reset IS NULL OR user_last_reset < CURRENT_DATE THEN
+        UPDATE public.users 
+        SET message_count = 0, last_reset = CURRENT_DATE 
+        WHERE id = auth.uid();
+        current_count := 0;
+    END IF;
 
     -- Cek Maintenance Mode
     SELECT (value::BOOLEAN) INTO is_maintenance FROM public.system_config WHERE key = 'maintenance_mode';
@@ -446,7 +477,7 @@ BEGIN
     IF user_limit IS NULL THEN user_limit := 5; END IF;
 
     IF current_count >= user_limit THEN
-        RAISE EXCEPTION 'Limit tercapai (%/%). Upgrade akun untuk mengirim lebih banyak pesan.', current_count, user_limit;
+        RAISE EXCEPTION 'Limit harian tercapai (%/%). Upgrade akun atau tunggu besok untuk mengirim lebih banyak pesan.', current_count, user_limit;
     END IF;
 
     -- Tetapkan timestamp
@@ -463,6 +494,61 @@ DROP TRIGGER IF EXISTS on_message_before_insert ON public.messages;
 CREATE TRIGGER on_message_before_insert
   BEFORE INSERT ON public.messages
   FOR EACH ROW EXECUTE PROCEDURE public.handle_message_security();
+
+-- B2. Proteksi Saat Edit Pesan (Anti Profanity & Bypass Mute pada Update)
+CREATE OR REPLACE FUNCTION public.handle_message_update_security()
+RETURNS trigger 
+LANGUAGE plpgsql 
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    user_status TEXT;
+    user_mute_until TIMESTAMP WITH TIME ZONE;
+    caller_role TEXT;
+BEGIN
+    IF auth.uid() IS NULL THEN
+        RETURN new;
+    END IF;
+
+    -- Kunci metadata agar tidak di-spoof
+    new.id := old.id;
+    new.user_id := old.user_id;
+    new.timestamp := old.timestamp;
+    new.created_at := old.created_at;
+
+    -- Profanity Filter saat update
+    IF new.content ~* '\y(anjing|babi|monyet|bangsat|memek|kontol|jembut|asu|perek|lonte|bajingan|pelacur|pukimak|tolol|goblok|fuck|shit|asshole|bitch|cunt|dick|pussy|bastard)\y' THEN
+        RAISE EXCEPTION 'Pesan Anda mengandung kata-kata yang tidak diperbolehkan. Mohon jaga kesopanan.';
+    END IF;
+
+    -- Validasi Keamanan Media URL
+    IF new.media_url IS NOT NULL AND (new.media_url !~* '^https?://' OR new.media_url ~* 'javascript:') THEN
+        RAISE EXCEPTION 'URL media tidak valid atau tidak aman.';
+    END IF;
+
+    -- Cek Status Akun & Mute
+    SELECT role, status, mute_until 
+    INTO caller_role, user_status, user_mute_until
+    FROM public.users WHERE id = auth.uid();
+
+    IF user_status = 'nonaktif' OR user_status = 'banned' THEN
+        RAISE EXCEPTION 'Akun Anda dinonaktifkan atau dibanned.';
+    END IF;
+
+    IF user_mute_until IS NOT NULL AND user_mute_until > now() THEN
+        RAISE EXCEPTION 'Muted: Anda sedang di-mute dan tidak dapat mengubah pesan.';
+    END IF;
+
+    new.is_edited := true;
+    RETURN new;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_message_before_update ON public.messages;
+CREATE TRIGGER on_message_before_update
+  BEFORE UPDATE ON public.messages
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_message_update_security();
 
 -- C. Hitung Pesan & Unlock Achievement & Parse Mentions Otomatis
 CREATE OR REPLACE FUNCTION public.handle_message_inserted_logic()
@@ -481,28 +567,27 @@ BEGIN
 
   -- 2. Unlock Achievements Otomatis
   IF new_count = 1 THEN
-    INSERT INTO public.achievements (user_id, achievement_id, name, icon, points, category)
-    VALUES (new.user_id, 'first_message', 'Peserta Baru', '🚀', 10, 'global')
+    INSERT INTO public.achievements (user_id, achievement_id, name, icon, description, points, category)
+    VALUES (new.user_id, 'first_message', 'Peserta Baru', '🚀', 'Kirim pesan pertama Anda', 10, 'global')
     ON CONFLICT (user_id, achievement_id) DO NOTHING;
   END IF;
 
   IF new_count = 10 THEN
-    INSERT INTO public.achievements (user_id, achievement_id, name, icon, points, category)
-    VALUES (new.user_id, 'tenth_message', 'Pengamat Handal', '🧐', 25, 'global')
+    INSERT INTO public.achievements (user_id, achievement_id, name, icon, description, points, category)
+    VALUES (new.user_id, 'tenth_message', 'Pengamat Handal', '🧐', 'Kirim 10 sinyal diskusi', 25, 'global')
     ON CONFLICT (user_id, achievement_id) DO NOTHING;
   END IF;
 
-  -- 3. Parse Mentions (@username) secara aman
-  IF new.content ~ '@[a-zA-Z0-9_]+' THEN
+  -- 3. Parse Mentions (@nama atau @nama_lengkap) secara dinamis & aman
+  IF new.content ~ '@' AND new.user_id IS NOT NULL THEN
     INSERT INTO public.mentions (message_id, sender_id, target_id)
-    SELECT 
-      new.id, 
-      new.user_id, 
+    SELECT DISTINCT
+      new.id,
+      new.user_id,
       u.id
-    FROM (
-      SELECT DISTINCT (regexp_matches(new.content, '@([a-zA-Z0-9_]+)', 'g'))[1] as mentioned_name
-    ) m
-    JOIN public.users u ON LOWER(u.nama) = LOWER(m.mentioned_name)
+    FROM public.users u
+    WHERE u.id != new.user_id
+      AND new.content ~* ('@' || replace(regexp_replace(u.nama, '([.*+?^=!:${}()|\[\]\/\\])', '\\\1', 'g'), ' ', '\s+'))
     ON CONFLICT (message_id, target_id) DO NOTHING;
   END IF;
 
@@ -515,7 +600,75 @@ CREATE TRIGGER on_message_inserted
   AFTER INSERT ON public.messages
   FOR EACH ROW EXECUTE PROCEDURE public.handle_message_inserted_logic();
 
--- D. Audit Moderasi User Otomatis
+-- D1. Proteksi Sebelum Update Profil & Cegah Eskalasi Hak Akses (Anti Privilege Escalation & Self-Unban)
+CREATE OR REPLACE FUNCTION public.handle_user_before_update()
+RETURNS trigger 
+LANGUAGE plpgsql 
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    caller_role TEXT;
+    caller_level INTEGER;
+    target_current_level INTEGER;
+BEGIN
+    -- Izinkan operasi jika berasal dari service_role / internal Supabase maintenance
+    IF auth.role() = 'service_role' THEN
+        RETURN NEW;
+    END IF;
+
+    -- Ambil role dan level pemanggil
+    SELECT role INTO caller_role FROM public.users WHERE id = auth.uid();
+    caller_level := get_role_level(caller_role);
+    target_current_level := get_role_level(OLD.role);
+
+    -- 1. Proteksi Perubahan Role: Cegah pengguna biasa mengubah role sendiri atau orang lain
+    IF (OLD.role IS DISTINCT FROM NEW.role) THEN
+        IF caller_role NOT IN ('SUPER_ADMIN', 'ADMIN') OR caller_level <= target_current_level THEN
+            RAISE EXCEPTION 'Pelanggaran Keamanan: Anda tidak memiliki wewenang untuk mengubah role.';
+        END IF;
+
+        -- Admin biasa tidak boleh membuat SUPER_ADMIN (hanya SUPER_ADMIN yang boleh)
+        IF NEW.role = 'SUPER_ADMIN' AND caller_role != 'SUPER_ADMIN' THEN
+            RAISE EXCEPTION 'Pelanggaran Keamanan: Hanya SUPER_ADMIN yang berhak menetapkan role SUPER_ADMIN.';
+        END IF;
+    END IF;
+
+    -- 2. Proteksi Status: Cegah unban / un-mute mandiri oleh user yang disanksi
+    IF (OLD.status IS DISTINCT FROM NEW.status) THEN
+        IF caller_role NOT IN ('SUPER_ADMIN', 'ADMIN', 'MODERATOR') OR caller_level <= target_current_level THEN
+            RAISE EXCEPTION 'Pelanggaran Keamanan: Anda tidak memiliki wewenang untuk mengubah status akun ini.';
+        END IF;
+    END IF;
+
+    -- 3. Proteksi Hukuman Mute dan Shadowban
+    IF (OLD.mute_until IS DISTINCT FROM NEW.mute_until) OR 
+       (OLD.is_shadowbanned IS DISTINCT FROM NEW.is_shadowbanned) THEN
+        IF caller_role NOT IN ('SUPER_ADMIN', 'ADMIN', 'MODERATOR') OR caller_level <= target_current_level THEN
+            RAISE EXCEPTION 'Pelanggaran Keamanan: Anda tidak memiliki wewenang untuk memodifikasi sanksi moderasi.';
+        END IF;
+    END IF;
+
+    -- 4. Cegah manipulasi hitungan pesan mandiri oleh pengguna biasa
+    IF (OLD.message_count IS DISTINCT FROM NEW.message_count) AND 
+       caller_role NOT IN ('SUPER_ADMIN', 'ADMIN') AND 
+       auth.uid() = OLD.id THEN
+        NEW.message_count := OLD.message_count;
+    END IF;
+
+    -- Update timestamp updated_at otomatis
+    NEW.updated_at := timezone('utc'::text, now());
+
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_user_before_update ON public.users;
+CREATE TRIGGER on_user_before_update
+  BEFORE UPDATE ON public.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_user_before_update();
+
+-- D2. Audit Moderasi User Otomatis
 CREATE OR REPLACE FUNCTION public.handle_user_moderation_audit()
 RETURNS trigger 
 LANGUAGE plpgsql 
@@ -637,6 +790,31 @@ EXCEPTION WHEN OTHERS THEN
   RAISE NOTICE 'Catatan: pg_cron tidak aktif pada instance ini: %', SQLERRM;
 END $$;
 
+-- H. Pengarsipan Pesan Lama
+CREATE OR REPLACE FUNCTION public.archive_old_messages(days_to_keep INTEGER DEFAULT 30)
+RETURNS INTEGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    caller_role TEXT;
+    deleted_rows INTEGER;
+BEGIN
+    SELECT role INTO caller_role FROM public.users WHERE id = auth.uid();
+    IF get_role_level(caller_role) < 8 OR caller_role IS NULL THEN
+        RAISE EXCEPTION 'Akses ditolak: Operasi pengarsipan hanya untuk Administrator.';
+    END IF;
+
+    DELETE FROM public.messages
+    WHERE created_at < (now() - (days_to_keep || ' days')::INTERVAL)
+      AND is_pinned = false;
+
+    GET DIAGNOSTICS deleted_rows = ROW_COUNT;
+    RETURN deleted_rows;
+END;
+$$;
+
 -- ==============================================================================
 -- 8. Izin Akses Lengkap (Grants - Principle of Least Privilege + CRUD Lengkap)
 -- ==============================================================================
@@ -665,9 +843,9 @@ GRANT INSERT, DELETE ON public.tags TO authenticated;
 GRANT SELECT ON public.reactions TO authenticated, anon;
 GRANT INSERT, DELETE ON public.reactions TO authenticated;
 
--- Reports & Appeals
-GRANT SELECT, INSERT, UPDATE ON public.reports TO authenticated;
-GRANT SELECT, INSERT, UPDATE ON public.appeals TO authenticated;
+-- Reports & Appeals (Termasuk DELETE untuk admin/moderator)
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.reports TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.appeals TO authenticated;
 
 -- Mentions
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.mentions TO authenticated;
@@ -682,6 +860,7 @@ GRANT INSERT, UPDATE, DELETE ON public.system_config TO authenticated;
 -- RPC Functions
 GRANT EXECUTE ON FUNCTION public.get_dashboard_stats TO authenticated, anon;
 GRANT EXECUTE ON FUNCTION public.get_role_level TO authenticated, anon;
+GRANT EXECUTE ON FUNCTION public.archive_old_messages TO authenticated;
 
 -- ==============================================================================
 -- 9. View Profiles (Email Privacy)
@@ -828,11 +1007,12 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- Tambahkan Achievement Contoh
-INSERT INTO public.achievements (user_id, achievement_id, name, icon, points, category)
+INSERT INTO public.achievements (user_id, achievement_id, name, icon, description, points, category)
 VALUES 
-  ('00000000-0000-0000-0000-000000000006', 'first_message', 'Peserta Baru', '🚀', 10, 'global'),
-  ('00000000-0000-0000-0000-000000000001', 'admin_community_builder', 'Pembangun Komunitas', '🏢', 100, 'admin')
-ON CONFLICT DO NOTHING;
+  ('00000000-0000-0000-0000-000000000006', 'first_message', 'Peserta Baru', '🚀', 'Kirim sinyal pertama Anda di diskusi', 10, 'global'),
+  ('00000000-0000-0000-0000-000000000001', 'admin_community_builder', 'Pembangun Komunitas', '🏢', 'Kelola komunitas selama 30 hari', 100, 'admin')
+ON CONFLICT (user_id, achievement_id) DO UPDATE SET
+  description = EXCLUDED.description;
 
 -- Tambahkan Tag Contoh
 INSERT INTO public.tags (user_id, tag_name, color)
@@ -841,6 +1021,105 @@ VALUES
   ('00000000-0000-0000-0000-000000000002', 'Staff', 'red'),
   ('00000000-0000-0000-0000-000000000004', 'VIP', 'gold')
 ON CONFLICT DO NOTHING;
+
+-- ==============================================================================
+-- 13. Supabase Storage Setup (live_discussion_media)
+-- ==============================================================================
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('live_discussion_media', 'live_discussion_media', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+-- Policy agar siapapun bisa melihat media yang diunggah
+DROP POLICY IF EXISTS "Public can view live discussion media" ON storage.objects;
+CREATE POLICY "Public can view live discussion media" ON storage.objects FOR SELECT
+USING (bucket_id = 'live_discussion_media');
+
+-- Policy agar user terautentikasi bisa upload media ke folder milik mereka (user_id/*)
+DROP POLICY IF EXISTS "Authenticated users can upload live discussion media" ON storage.objects;
+CREATE POLICY "Authenticated users can upload live discussion media" ON storage.objects FOR INSERT
+WITH CHECK (
+  bucket_id = 'live_discussion_media' 
+  AND auth.role() = 'authenticated'
+  AND (storage.foldername(name))[1] = auth.uid()::text
+);
+
+-- Policy agar pemilik media atau moderator/admin bisa menghapus media
+DROP POLICY IF EXISTS "Users or admins can delete live discussion media" ON storage.objects;
+CREATE POLICY "Users or admins can delete live discussion media" ON storage.objects FOR DELETE
+USING (
+  bucket_id = 'live_discussion_media' 
+  AND (
+    (storage.foldername(name))[1] = auth.uid()::text
+    OR EXISTS (
+      SELECT 1 FROM public.users me 
+      WHERE me.id = auth.uid() AND get_role_level(me.role) >= 5
+    )
+  )
+);
+
+-- ==============================================================================
+-- 14. FITUR BARU: CHANNELS, BEST ANSWER, POLLING & SEARCH
+-- ==============================================================================
+
+-- 14.1 Kolom Tambahan di Tabel Messages
+ALTER TABLE public.messages ADD COLUMN IF NOT EXISTS channel TEXT DEFAULT 'umum';
+ALTER TABLE public.messages ADD COLUMN IF NOT EXISTS is_best_answer BOOLEAN DEFAULT false;
+ALTER TABLE public.messages ADD COLUMN IF NOT EXISTS poll_data JSONB DEFAULT NULL;
+
+-- Indeks Performa untuk Channel & Best Answer
+CREATE INDEX IF NOT EXISTS idx_messages_channel ON public.messages(channel);
+CREATE INDEX IF NOT EXISTS idx_messages_is_best_answer ON public.messages(is_best_answer) WHERE is_best_answer = true;
+
+-- 14.2 Tabel Polls (Untuk Manajemen Polling Terpisah & Realtime)
+CREATE TABLE IF NOT EXISTS public.polls (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    creator_id UUID REFERENCES public.users(id) ON DELETE SET NULL,
+    creator_name TEXT NOT NULL,
+    channel TEXT DEFAULT 'umum' NOT NULL,
+    question TEXT NOT NULL,
+    options JSONB NOT NULL,
+    is_closed BOOLEAN DEFAULT false NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 14.3 Tabel Poll Votes (Pencegahan Double Voting)
+CREATE TABLE IF NOT EXISTS public.poll_votes (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    poll_id UUID REFERENCES public.polls(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
+    option_id TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    UNIQUE(poll_id, user_id)
+);
+
+ALTER TABLE public.polls ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.poll_votes ENABLE ROW LEVEL SECURITY;
+
+-- Policy Polls: Semua orang bisa baca
+DROP POLICY IF EXISTS "Public can view polls" ON public.polls;
+CREATE POLICY "Public can view polls" ON public.polls FOR SELECT USING (true);
+
+-- Policy Polls: User authenticated bisa buat polling
+DROP POLICY IF EXISTS "Authenticated can insert polls" ON public.polls;
+CREATE POLICY "Authenticated can insert polls" ON public.polls FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+-- Policy Poll Votes: Semua orang bisa baca hasil
+DROP POLICY IF EXISTS "Public can view poll votes" ON public.poll_votes;
+CREATE POLICY "Public can view poll votes" ON public.poll_votes FOR SELECT USING (true);
+
+-- Policy Poll Votes: User bisa insert voting miliknya sendiri
+DROP POLICY IF EXISTS "Users can vote once" ON public.poll_votes;
+CREATE POLICY "Users can vote once" ON public.poll_votes FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- Realtime Publication untuk Polls
+DO $$ 
+BEGIN
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.polls;
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.poll_votes;
+  EXCEPTION WHEN duplicate_object THEN NULL;
+  END;
+END $$;
 
 -- ==============================================================================
 -- SELESAI

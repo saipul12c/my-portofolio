@@ -1,5 +1,526 @@
 [
   {
+    "id": 2001,
+    "type": "album",
+    "title": "Koleksi Poster Pagelaran Seni 2024 (Lokal A - D)",
+    "desc": "Album kompilasi poster resmi pagelaran seni mahasiswa Angkatan 22 UIN Antasari Banjarmasin, mencakup karya visual dari Lokal A, Lokal B, Lokal C, dan Lokal D.",
+    "category": "Pagelaran Seni",
+    "src": [
+      "/assets/pageran/Poster/lokala.jpg",
+      "/assets/pageran/Poster/lokalb%20poster.jpg",
+      "/assets/pageran/Poster/lokalc.jpg",
+      "/assets/pageran/Poster/lokald.jpg"
+    ],
+    "uploaded_at": "2024-05-18T12:00:00Z",
+    "creator": {
+      "username": "pagelaranseni22",
+      "display_name": "Pagelaran Seni Angkatan 22",
+      "avatar": "https://randomuser.me/api/portraits/men/42.jpg",
+      "verified": true,
+      "followers": 7800
+    },
+    "details": {
+      "location": {
+        "name": "Kampus UIN Antasari Banjarmasin",
+        "city": "Banjarmasin",
+        "country": "Indonesia"
+      },
+      "mood": [
+        "artistic",
+        "theatrical",
+        "cultural",
+        "festive"
+      ]
+    },
+    "tags": [
+      "pagelaranseni",
+      "poster",
+      "angkatan22",
+      "uinantasari",
+      "album",
+      "seni",
+      "banjarmasin"
+    ],
+    "engagement": {
+      "views": 22400,
+      "likes": 5120,
+      "shares": 180,
+      "comments": 105
+    }
+  },
+  {
+    "id": 2002,
+    "type": "album",
+    "title": "Potret Pemain & Pengisi Acara Pagelaran Seni 2024",
+    "desc": "Album kompilasi 34 potret pemain teater, musisi, penyanyi, dan penari Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin.",
+    "category": "Pagelaran Seni",
+    "src": [
+      "/assets/pageran/pemain/penyanyi/laras.jpg",
+      "/assets/pageran/pemain/penari/adaw.JPG",
+      "/assets/pageran/pemain/penari/danti.JPG",
+      "/assets/pageran/pemain/penari/helda.JPG",
+      "/assets/pageran/pemain/penari/nida.JPG",
+      "/assets/pageran/pemain/penari/yulia.JPG",
+      "/assets/pageran/pemain/alfatia.jpg",
+      "/assets/pageran/pemain/alfi.jpg",
+      "/assets/pageran/pemain/amel.jpg",
+      "/assets/pageran/pemain/amin.jpg",
+      "/assets/pageran/pemain/arlin.jpg",
+      "/assets/pageran/pemain/baihaqi.jpg",
+      "/assets/pageran/pemain/eliyana.jpg",
+      "/assets/pageran/pemain/fikri.jpg",
+      "/assets/pageran/pemain/gina.jpg",
+      "/assets/pageran/pemain/hafizah.jpg",
+      "/assets/pageran/pemain/halimatus.jpg",
+      "/assets/pageran/pemain/hasbi.jpg",
+      "/assets/pageran/pemain/IMG-20250622-WA0072.jpg",
+      "/assets/pageran/pemain/IMG-20250622-WA0074.jpg",
+      "/assets/pageran/pemain/IMG-20250622-WA0075.jpg",
+      "/assets/pageran/pemain/IMG-20250622-WA0079.jpg",
+      "/assets/pageran/pemain/lulu.jpg",
+      "/assets/pageran/pemain/mahriani.jpg",
+      "/assets/pageran/pemain/mukaramah.jpg",
+      "/assets/pageran/pemain/nabila.jpg",
+      "/assets/pageran/pemain/najmiatus.jpg",
+      "/assets/pageran/pemain/penari.jpg",
+      "/assets/pageran/pemain/rifa.jpg",
+      "/assets/pageran/pemain/ririn.jpg",
+      "/assets/pageran/pemain/risma.jpg",
+      "/assets/pageran/pemain/safii.jpg",
+      "/assets/pageran/pemain/silahudin.jpg",
+      "/assets/pageran/pemain/yasmin.jpg"
+    ],
+    "uploaded_at": "2024-05-18T13:00:00Z",
+    "creator": {
+      "username": "pagelaranseni22",
+      "display_name": "Pagelaran Seni Angkatan 22",
+      "avatar": "https://randomuser.me/api/portraits/men/42.jpg",
+      "verified": true,
+      "followers": 7800
+    },
+    "details": {
+      "location": {
+        "name": "Kampus UIN Antasari Banjarmasin",
+        "city": "Banjarmasin",
+        "country": "Indonesia"
+      },
+      "mood": [
+        "pemain",
+        "performer",
+        "theatrical",
+        "expressive"
+      ]
+    },
+    "tags": [
+      "pemain",
+      "penari",
+      "penyanyi",
+      "pagelaranseni",
+      "angkatan22",
+      "uinantasari",
+      "album"
+    ],
+    "engagement": {
+      "views": 31200,
+      "likes": 6450,
+      "shares": 240,
+      "comments": 135
+    }
+  },
+  {
+    "id": 2003,
+    "type": "album",
+    "title": "Di Balik Layar (Behind The Scenes) Pagelaran Seni 2024",
+    "desc": "Koleksi lengkap 78 dokumentasi momen seru, kebersamaan, persiapan gladi, dan cerita penuh canda tawa di balik layar kepanitiaan Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin.",
+    "category": "Behind The Scenes",
+    "src": [
+      "/assets/pageran/momens/1.jpg",
+      "/assets/pageran/momens/2.jpg",
+      "/assets/pageran/momens/3.jpg",
+      "/assets/pageran/momens/4.jpg",
+      "/assets/pageran/momens/5.jpg",
+      "/assets/pageran/momens/6.jpg",
+      "/assets/pageran/momens/7.jpg",
+      "/assets/pageran/momens/8.jpg",
+      "/assets/pageran/momens/9.jpg",
+      "/assets/pageran/momens/10.jpg",
+      "/assets/pageran/momens/11.jpg",
+      "/assets/pageran/momens/12.jpg",
+      "/assets/pageran/momens/13.jpg",
+      "/assets/pageran/momens/14.jpg",
+      "/assets/pageran/momens/15.jpg",
+      "/assets/pageran/momens/16.jpg",
+      "/assets/pageran/momens/17.jpg",
+      "/assets/pageran/momens/18.jpg",
+      "/assets/pageran/momens/19.jpg",
+      "/assets/pageran/momens/20.jpg",
+      "/assets/pageran/momens/21.jpg",
+      "/assets/pageran/momens/22.jpg",
+      "/assets/pageran/momens/23.jpg",
+      "/assets/pageran/momens/24.jpg",
+      "/assets/pageran/momens/25.jpg",
+      "/assets/pageran/momens/26.jpg",
+      "/assets/pageran/momens/27.jpg",
+      "/assets/pageran/momens/28.jpg",
+      "/assets/pageran/momens/29.jpg",
+      "/assets/pageran/momens/30.jpg",
+      "/assets/pageran/momens/31.jpg",
+      "/assets/pageran/momens/32.jpg",
+      "/assets/pageran/momens/33.jpg",
+      "/assets/pageran/momens/34.jpg",
+      "/assets/pageran/momens/35.jpg",
+      "/assets/pageran/momens/36.jpg",
+      "/assets/pageran/momens/37.jpg",
+      "/assets/pageran/momens/38.jpg",
+      "/assets/pageran/momens/39.jpg",
+      "/assets/pageran/momens/40.jpg",
+      "/assets/pageran/momens/41.jpg",
+      "/assets/pageran/momens/42.JPG",
+      "/assets/pageran/momens/43.JPG",
+      "/assets/pageran/momens/44.JPG",
+      "/assets/pageran/momens/45.JPG",
+      "/assets/pageran/momens/46.JPG",
+      "/assets/pageran/momens/47.JPG",
+      "/assets/pageran/momens/48.JPG",
+      "/assets/pageran/momens/49.JPG",
+      "/assets/pageran/momens/50.JPG",
+      "/assets/pageran/momens/51.JPG",
+      "/assets/pageran/momens/52.JPG",
+      "/assets/pageran/momens/53.JPG",
+      "/assets/pageran/momens/54.JPG",
+      "/assets/pageran/momens/55.JPG",
+      "/assets/pageran/momens/56.JPG",
+      "/assets/pageran/momens/57.JPG",
+      "/assets/pageran/momens/58.JPG",
+      "/assets/pageran/momens/59.JPG",
+      "/assets/pageran/momens/60.JPG",
+      "/assets/pageran/momens/61.JPG",
+      "/assets/pageran/momens/62.JPG",
+      "/assets/pageran/momens/63.JPG",
+      "/assets/pageran/momens/64.JPG",
+      "/assets/pageran/momens/65.JPG",
+      "/assets/pageran/momens/66.JPG",
+      "/assets/pageran/momens/67.JPG",
+      "/assets/pageran/momens/68.JPG",
+      "/assets/pageran/momens/69.JPG",
+      "/assets/pageran/momens/70.JPG",
+      "/assets/pageran/momens/71.JPG",
+      "/assets/pageran/momens/73.JPG",
+      "/assets/pageran/momens/74.JPG",
+      "/assets/pageran/momens/75.JPG",
+      "/assets/pageran/momens/76.JPG",
+      "/assets/pageran/momens/77.JPG",
+      "/assets/pageran/momens/78.JPG",
+      "/assets/pageran/momens/79.JPG"
+    ],
+    "uploaded_at": "2024-05-18T13:30:00Z",
+    "creator": {
+      "username": "pagelaranseni22",
+      "display_name": "Pagelaran Seni Angkatan 22",
+      "avatar": "https://randomuser.me/api/portraits/men/42.jpg",
+      "verified": true,
+      "followers": 7800
+    },
+    "details": {
+      "location": {
+        "name": "Kampus UIN Antasari Banjarmasin",
+        "city": "Banjarmasin",
+        "country": "Indonesia"
+      },
+      "mood": [
+        "behind-the-scenes",
+        "kebersamaan",
+        "candid",
+        "dibelakanglayar"
+      ]
+    },
+    "tags": [
+      "momens",
+      "dibelakanglayar",
+      "behindthescenes",
+      "pagelaranseni",
+      "angkatan22",
+      "uinantasari",
+      "album"
+    ],
+    "engagement": {
+      "views": 38900,
+      "likes": 7820,
+      "shares": 310,
+      "comments": 180
+    }
+  },
+  {
+    "id": 2004,
+    "type": "album",
+    "title": "Pesona Penari Pagelaran Seni 2024",
+    "desc": "Koleksi potret ekspresif dan keanggunan tarian para penari Pagelaran Seni Angkatan 22 UIN Antasari (Adaw, Danti, Helda, Nida, Yulia).",
+    "category": "Pagelaran Seni",
+    "src": [
+      "/assets/pageran/pemain/penari/adaw.JPG",
+      "/assets/pageran/pemain/penari/danti.JPG",
+      "/assets/pageran/pemain/penari/helda.JPG",
+      "/assets/pageran/pemain/penari/nida.JPG",
+      "/assets/pageran/pemain/penari/yulia.JPG"
+    ],
+    "uploaded_at": "2024-05-18T13:15:00Z",
+    "creator": {
+      "username": "pagelaranseni22",
+      "display_name": "Pagelaran Seni Angkatan 22",
+      "avatar": "https://randomuser.me/api/portraits/men/42.jpg",
+      "verified": true,
+      "followers": 7800
+    },
+    "details": {
+      "location": {
+        "name": "Kampus UIN Antasari Banjarmasin",
+        "city": "Banjarmasin",
+        "country": "Indonesia"
+      },
+      "mood": [
+        "penari",
+        "tari",
+        "kultural",
+        "anggun"
+      ]
+    },
+    "tags": [
+      "penari",
+      "tari",
+      "pagelaranseni",
+      "angkatan22",
+      "uinantasari",
+      "album"
+    ],
+    "engagement": {
+      "views": 26800,
+      "likes": 5890,
+      "shares": 195,
+      "comments": 112
+    }
+  },
+  {
+    "id": 1001,
+    "type": "album",
+    "title": "Koleksi Studio Eksklusif (SimpleEdit Edition)",
+    "desc": "Koleksi pilihan 57 potret studio versi color-graded dengan nuansa hangat, elegan, dan penuh ekspresi tawa sahabat.",
+    "category": "Studio Portrait",
+    "src": [
+      "/assets/images/5R%20x12.jpg",
+      "/assets/images/IMG_5532%20SimpleEdit.JPG",
+      "/assets/images/IMG_5533%20SimpleEdit.JPG",
+      "/assets/images/IMG_5535%20SimpleEdit.JPG",
+      "/assets/images/IMG_5536%20SimpleEdit.JPG",
+      "/assets/images/IMG_5537%20SimpleEdit.JPG",
+      "/assets/images/IMG_5538%20SimpleEdit.JPG",
+      "/assets/images/IMG_5539%20SimpleEdit.JPG",
+      "/assets/images/IMG_5540%20SimpleEdit.JPG",
+      "/assets/images/IMG_5541%20SimpleEdit.JPG",
+      "/assets/images/IMG_5542%20SimpleEdit.JPG",
+      "/assets/images/IMG_5543%20SimpleEdit.JPG",
+      "/assets/images/IMG_5544%20SimpleEdit.JPG",
+      "/assets/images/IMG_5545%20SimpleEdit.JPG",
+      "/assets/images/IMG_5546%20SimpleEdit.JPG",
+      "/assets/images/IMG_5547%20SimpleEdit.JPG",
+      "/assets/images/IMG_5548%20SimpleEdit.JPG",
+      "/assets/images/IMG_5549%20SimpleEdit.JPG",
+      "/assets/images/IMG_5550%20SimpleEdit.JPG",
+      "/assets/images/IMG_5551%20SimpleEdit.JPG",
+      "/assets/images/IMG_5552%20SimpleEdit.JPG",
+      "/assets/images/IMG_5553%20SimpleEdit.JPG",
+      "/assets/images/IMG_5554%20SimpleEdit.JPG",
+      "/assets/images/IMG_5555%20SimpleEdit.JPG",
+      "/assets/images/IMG_5556%20SimpleEdit.JPG",
+      "/assets/images/IMG_5557%20SimpleEdit.JPG",
+      "/assets/images/IMG_5558%20SimpleEdit.JPG",
+      "/assets/images/IMG_5560%20SimpleEdit.JPG",
+      "/assets/images/IMG_5561%20SimpleEdit.JPG",
+      "/assets/images/IMG_5562%20SimpleEdit.JPG",
+      "/assets/images/IMG_5563%20SimpleEdit.JPG",
+      "/assets/images/IMG_5564%20SimpleEdit.JPG",
+      "/assets/images/IMG_5565%20SimpleEdit.JPG",
+      "/assets/images/IMG_5566%20SimpleEdit.JPG",
+      "/assets/images/IMG_5567%20SimpleEdit.JPG",
+      "/assets/images/IMG_5568%20SimpleEdit.JPG",
+      "/assets/images/IMG_5569%20SimpleEdit.JPG",
+      "/assets/images/IMG_5570%20SimpleEdit.JPG",
+      "/assets/images/IMG_5571%20SimpleEdit.JPG",
+      "/assets/images/IMG_5572%20SimpleEdit.JPG",
+      "/assets/images/IMG_5573%20SimpleEdit.JPG",
+      "/assets/images/IMG_5574%20SimpleEdit.JPG",
+      "/assets/images/IMG_5575%20SimpleEdit.JPG",
+      "/assets/images/IMG_5576%20SimpleEdit.JPG",
+      "/assets/images/IMG_5577%20SimpleEdit.JPG",
+      "/assets/images/IMG_5578%20SimpleEdit.JPG",
+      "/assets/images/IMG_5579%20SimpleEdit.JPG",
+      "/assets/images/IMG_5580%20SimpleEdit.JPG",
+      "/assets/images/IMG_5581%20SimpleEdit.JPG",
+      "/assets/images/IMG_5582%20SimpleEdit.JPG",
+      "/assets/images/IMG_5583%20SimpleEdit.JPG",
+      "/assets/images/IMG_5584%20SimpleEdit.JPG",
+      "/assets/images/IMG_5585%20SimpleEdit.JPG",
+      "/assets/images/IMG_5586%20SimpleEdit.JPG",
+      "/assets/images/IMG_5587%20SimpleEdit.JPG",
+      "/assets/images/IMG_5588%20SimpleEdit.JPG",
+      "/assets/images/IMG_5589%20SimpleEdit.JPG"
+    ],
+    "tags": [
+      "studio",
+      "portrait",
+      "sahabat",
+      "kebersamaan",
+      "album",
+      "simpleedit"
+    ],
+    "uploaded_at": "2026-11-07T16:00:00Z",
+    "creator": {
+      "username": "syaiful_m",
+      "display_name": "Muhammad Syaiful Mukmin",
+      "avatar": "https://randomuser.me/api/portraits/men/32.jpg",
+      "verified": true,
+      "followers": 8720,
+      "bio": "Fotografer & Full Stack Developer 📸",
+      "joined_at": "2020-06-20T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/saipul16_",
+        "facebook": "https://facebook.com/syaiful.mukmin"
+      }
+    },
+    "details": {
+      "camera": "Canon EOS RP",
+      "lens": "RF24-105mm F4-7.1 IS STM",
+      "location": {
+        "name": "Studio Foto",
+        "city": "Jakarta",
+        "country": "Indonesia"
+      },
+      "aspect_ratio": "3:2",
+      "mood": [
+        "ceria",
+        "hangat",
+        "kebersamaan",
+        "elegan"
+      ]
+    },
+    "engagement": {
+      "views": 18450,
+      "likes": 4210,
+      "comments": 68,
+      "shares": 34,
+      "saves": 152
+    }
+  },
+  {
+    "id": 1002,
+    "type": "album",
+    "title": "Dokumentasi Lengkap Photoshoot Canon EOS RP",
+    "desc": "Dokumentasi lengkap seluruh 56 bidikan orisinal resolusi tinggi dari sesi photoshoot studio bersama sahabat.",
+    "category": "Group Portrait",
+    "src": [
+      "/assets/images/IMG_5532.JPG",
+      "/assets/images/IMG_5533.JPG",
+      "/assets/images/IMG_5535.JPG",
+      "/assets/images/IMG_5536.JPG",
+      "/assets/images/IMG_5537.JPG",
+      "/assets/images/IMG_5538.JPG",
+      "/assets/images/IMG_5539.JPG",
+      "/assets/images/IMG_5540.JPG",
+      "/assets/images/IMG_5541.JPG",
+      "/assets/images/IMG_5542.JPG",
+      "/assets/images/IMG_5543.JPG",
+      "/assets/images/IMG_5544.JPG",
+      "/assets/images/IMG_5545.JPG",
+      "/assets/images/IMG_5546.JPG",
+      "/assets/images/IMG_5547.JPG",
+      "/assets/images/IMG_5548.JPG",
+      "/assets/images/IMG_5549.JPG",
+      "/assets/images/IMG_5550.JPG",
+      "/assets/images/IMG_5551.JPG",
+      "/assets/images/IMG_5552.JPG",
+      "/assets/images/IMG_5553.JPG",
+      "/assets/images/IMG_5554.JPG",
+      "/assets/images/IMG_5555.JPG",
+      "/assets/images/IMG_5556.JPG",
+      "/assets/images/IMG_5557.JPG",
+      "/assets/images/IMG_5558.JPG",
+      "/assets/images/IMG_5560.JPG",
+      "/assets/images/IMG_5561.JPG",
+      "/assets/images/IMG_5562.JPG",
+      "/assets/images/IMG_5563.JPG",
+      "/assets/images/IMG_5564.JPG",
+      "/assets/images/IMG_5565.JPG",
+      "/assets/images/IMG_5566.JPG",
+      "/assets/images/IMG_5567.JPG",
+      "/assets/images/IMG_5568.JPG",
+      "/assets/images/IMG_5569.JPG",
+      "/assets/images/IMG_5570.JPG",
+      "/assets/images/IMG_5571.JPG",
+      "/assets/images/IMG_5572.JPG",
+      "/assets/images/IMG_5573.JPG",
+      "/assets/images/IMG_5574.JPG",
+      "/assets/images/IMG_5575.JPG",
+      "/assets/images/IMG_5576.JPG",
+      "/assets/images/IMG_5577.JPG",
+      "/assets/images/IMG_5578.JPG",
+      "/assets/images/IMG_5579.JPG",
+      "/assets/images/IMG_5580%20copy.jpg",
+      "/assets/images/IMG_5580.JPG",
+      "/assets/images/IMG_5581.JPG",
+      "/assets/images/IMG_5582.JPG",
+      "/assets/images/IMG_5583.JPG",
+      "/assets/images/IMG_5584.JPG",
+      "/assets/images/IMG_5585.JPG",
+      "/assets/images/IMG_5586.JPG",
+      "/assets/images/IMG_5587.JPG",
+      "/assets/images/IMG_5588.JPG",
+      "/assets/images/IMG_5589.JPG"
+    ],
+    "tags": [
+      "studio",
+      "group",
+      "canon",
+      "original",
+      "photoshoot",
+      "memories"
+    ],
+    "uploaded_at": "2026-11-07T15:45:00Z",
+    "creator": {
+      "username": "syaiful_m",
+      "display_name": "Muhammad Syaiful Mukmin",
+      "avatar": "https://randomuser.me/api/portraits/men/32.jpg",
+      "verified": true,
+      "followers": 8720,
+      "bio": "Fotografer & Full Stack Developer 📸",
+      "joined_at": "2020-06-20T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/saipul16_",
+        "facebook": "https://facebook.com/syaiful.mukmin"
+      }
+    },
+    "details": {
+      "camera": "Canon EOS RP",
+      "lens": "RF24-105mm F4-7.1 IS STM",
+      "location": {
+        "name": "Studio Foto",
+        "city": "Jakarta",
+        "country": "Indonesia"
+      },
+      "aspect_ratio": "3:2",
+      "mood": [
+        "akrab",
+        "alami",
+        "sinematik"
+      ]
+    },
+    "engagement": {
+      "views": 14200,
+      "likes": 3580,
+      "comments": 42,
+      "shares": 28,
+      "saves": 118
+    }
+  },
+  {
     "id": 1,
     "type": "album",
     "title": "Koleksi Potret Bahagia",
@@ -10,7 +531,13 @@
       "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80",
       "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["portrait", "happiness", "album", "smile", "lifestyle"],
+    "tags": [
+      "portrait",
+      "happiness",
+      "album",
+      "smile",
+      "lifestyle"
+    ],
     "uploaded_at": "2024-05-10T14:30:00Z",
     "creator": {
       "username": "syaiful_m",
@@ -30,12 +557,19 @@
       "location": {
         "city": "Bandung",
         "country": "Indonesia",
-        "geo": { "lat": -6.9175, "lon": 107.6191 }
+        "geo": {
+          "lat": -6.9175,
+          "lon": 107.6191
+        }
       },
       "language": "id",
       "aspect_ratio": "4:3",
       "resolution": "1080x1080",
-      "mood": ["happy", "bright", "inspiring"]
+      "mood": [
+        "happy",
+        "bright",
+        "inspiring"
+      ]
     },
     "music": {
       "title": "Sunny Day",
@@ -84,7 +618,12 @@
     "src": [
       "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["sunset", "beach", "timelapse", "nature"],
+    "tags": [
+      "sunset",
+      "beach",
+      "timelapse",
+      "nature"
+    ],
     "uploaded_at": "2024-05-15T09:20:00Z",
     "creator": {
       "username": "dian_photography",
@@ -104,12 +643,19 @@
       "location": {
         "city": "Denpasar",
         "country": "Indonesia",
-        "geo": { "lat": -8.6705, "lon": 115.2126 }
+        "geo": {
+          "lat": -8.6705,
+          "lon": 115.2126
+        }
       },
       "language": "id",
       "aspect_ratio": "9:16",
       "resolution": "1080x1920",
-      "mood": ["calm", "peaceful", "aesthetic"]
+      "mood": [
+        "calm",
+        "peaceful",
+        "aesthetic"
+      ]
     },
     "music": {
       "title": "Ocean Breeze",
@@ -152,7 +698,12 @@
       "https://images.unsplash.com/photo-1552564433-f5dc17b9d6a4?auto=format&fit=crop&w=900&q=80",
       "https://images.unsplash.com/photo-1552564433-21b7e4ec31e1?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["street", "urban", "city", "jakarta"],
+    "tags": [
+      "street",
+      "urban",
+      "city",
+      "jakarta"
+    ],
     "uploaded_at": "2024-05-12T11:15:00Z",
     "creator": {
       "username": "jakarta_eye",
@@ -171,12 +722,19 @@
       "location": {
         "city": "Jakarta",
         "country": "Indonesia",
-        "geo": { "lat": -6.2088, "lon": 106.8456 }
+        "geo": {
+          "lat": -6.2088,
+          "lon": 106.8456
+        }
       },
       "language": "id",
       "aspect_ratio": "1:1",
       "resolution": "1080x1080",
-      "mood": ["urban", "dynamic", "gritty"]
+      "mood": [
+        "urban",
+        "dynamic",
+        "gritty"
+      ]
     },
     "music": null,
     "engagement": {
@@ -202,7 +760,12 @@
     "src": [
       "https://images.unsplash.com/photo-1554048612-b6a482bc67e5?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["tutorial", "lightroom", "editing", "photography"],
+    "tags": [
+      "tutorial",
+      "lightroom",
+      "editing",
+      "photography"
+    ],
     "uploaded_at": "2024-05-18T14:00:00Z",
     "creator": {
       "username": "photo_master",
@@ -223,12 +786,19 @@
       "location": {
         "city": "Surabaya",
         "country": "Indonesia",
-        "geo": { "lat": -7.2504, "lon": 112.7688 }
+        "geo": {
+          "lat": -7.2504,
+          "lon": 112.7688
+        }
       },
       "language": "id",
       "aspect_ratio": "16:9",
       "resolution": "1920x1080",
-      "mood": ["educational", "professional", "clear"]
+      "mood": [
+        "educational",
+        "professional",
+        "clear"
+      ]
     },
     "music": {
       "title": "Background Vibe",
@@ -271,7 +841,12 @@
       "https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=900&q=80",
       "https://images.unsplash.com/photo-1531494399776-4cec4d1a4a90?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["wildlife", "safari", "africa", "animals"],
+    "tags": [
+      "wildlife",
+      "safari",
+      "africa",
+      "animals"
+    ],
     "uploaded_at": "2024-05-20T08:45:00Z",
     "creator": {
       "username": "wildlife_explorer",
@@ -291,12 +866,19 @@
       "location": {
         "city": "Kruger National Park",
         "country": "South Africa",
-        "geo": { "lat": -24.3675, "lon": 31.3369 }
+        "geo": {
+          "lat": -24.3675,
+          "lon": 31.3369
+        }
       },
       "language": "en",
       "aspect_ratio": "3:2",
       "resolution": "1200x800",
-      "mood": ["adventure", "wild", "awe-inspiring"]
+      "mood": [
+        "adventure",
+        "wild",
+        "awe-inspiring"
+      ]
     },
     "music": null,
     "engagement": {
@@ -330,7 +912,12 @@
     "src": [
       "https://images.unsplash.com/photo-1561047029-3000c68339ca?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["coffee", "asmr", "morning", "ritual"],
+    "tags": [
+      "coffee",
+      "asmr",
+      "morning",
+      "ritual"
+    ],
     "uploaded_at": "2024-05-14T07:30:00Z",
     "creator": {
       "username": "coffee_crafter",
@@ -349,12 +936,19 @@
       "location": {
         "city": "Yogyakarta",
         "country": "Indonesia",
-        "geo": { "lat": -7.7971, "lon": 110.3705 }
+        "geo": {
+          "lat": -7.7971,
+          "lon": 110.3705
+        }
       },
       "language": "id",
       "aspect_ratio": "9:16",
       "resolution": "720x1280",
-      "mood": ["relaxing", "satisfying", "cozy"]
+      "mood": [
+        "relaxing",
+        "satisfying",
+        "cozy"
+      ]
     },
     "music": {
       "title": "Morning Brew",
@@ -397,7 +991,12 @@
       "https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=900&q=80",
       "https://images.unsplash.com/photo-1487958449943-2429e8be8626?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["architecture", "modern", "minimalist", "building"],
+    "tags": [
+      "architecture",
+      "modern",
+      "minimalist",
+      "building"
+    ],
     "uploaded_at": "2024-05-16T13:20:00Z",
     "creator": {
       "username": "archi_vision",
@@ -417,12 +1016,19 @@
       "location": {
         "city": "Singapore",
         "country": "Singapore",
-        "geo": { "lat": 1.3521, "lon": 103.8198 }
+        "geo": {
+          "lat": 1.3521,
+          "lon": 103.8198
+        }
       },
       "language": "en",
       "aspect_ratio": "4:5",
       "resolution": "1080x1350",
-      "mood": ["clean", "modern", "geometric"]
+      "mood": [
+        "clean",
+        "modern",
+        "geometric"
+      ]
     },
     "music": null,
     "engagement": {
@@ -448,7 +1054,12 @@
     "src": [
       "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["fashion", "bts", "studio", "photoshoot"],
+    "tags": [
+      "fashion",
+      "bts",
+      "studio",
+      "photoshoot"
+    ],
     "uploaded_at": "2024-05-19T16:45:00Z",
     "creator": {
       "username": "fashion_glam",
@@ -468,12 +1079,19 @@
       "location": {
         "city": "Jakarta",
         "country": "Indonesia",
-        "geo": { "lat": -6.2088, "lon": 106.8456 }
+        "geo": {
+          "lat": -6.2088,
+          "lon": 106.8456
+        }
       },
       "language": "id",
       "aspect_ratio": "16:9",
       "resolution": "1920x1080",
-      "mood": ["creative", "professional", "glamorous"]
+      "mood": [
+        "creative",
+        "professional",
+        "glamorous"
+      ]
     },
     "music": {
       "title": "Runway Beat",
@@ -516,7 +1134,12 @@
       "https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=900&q=80",
       "https://images.unsplash.com/photo-1578662996442-48f60103fc97?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["macro", "insects", "nature", "closeup"],
+    "tags": [
+      "macro",
+      "insects",
+      "nature",
+      "closeup"
+    ],
     "uploaded_at": "2024-05-13T10:10:00Z",
     "creator": {
       "username": "macro_world",
@@ -535,12 +1158,19 @@
       "location": {
         "city": "Bogor",
         "country": "Indonesia",
-        "geo": { "lat": -6.5971, "lon": 106.8060 }
+        "geo": {
+          "lat": -6.5971,
+          "lon": 106.806
+        }
       },
       "language": "en",
       "aspect_ratio": "1:1",
       "resolution": "1080x1080",
-      "mood": ["detailed", "fascinating", "microscopic"]
+      "mood": [
+        "detailed",
+        "fascinating",
+        "microscopic"
+      ]
     },
     "music": null,
     "engagement": {
@@ -566,7 +1196,12 @@
     "src": [
       "https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["drone", "aerial", "bali", "landscape"],
+    "tags": [
+      "drone",
+      "aerial",
+      "bali",
+      "landscape"
+    ],
     "uploaded_at": "2024-05-17T11:30:00Z",
     "creator": {
       "username": "sky_capturer",
@@ -586,12 +1221,19 @@
       "location": {
         "city": "Ubud",
         "country": "Indonesia",
-        "geo": { "lat": -8.5193, "lon": 115.2633 }
+        "geo": {
+          "lat": -8.5193,
+          "lon": 115.2633
+        }
       },
       "language": "id",
       "aspect_ratio": "9:16",
       "resolution": "1080x1920",
-      "mood": ["epic", "breathtaking", "aerial"]
+      "mood": [
+        "epic",
+        "breathtaking",
+        "aerial"
+      ]
     },
     "music": {
       "title": "Island Dreams",
@@ -634,7 +1276,12 @@
       "https://images.unsplash.com/photo-1516726817505-f5ed825624d8?auto=format&fit=crop&w=900&q=80",
       "https://images.unsplash.com/photo-1516726817505-f5ed825624d9?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["blackwhite", "portrait", "emotion", "monochrome"],
+    "tags": [
+      "blackwhite",
+      "portrait",
+      "emotion",
+      "monochrome"
+    ],
     "uploaded_at": "2024-05-21T14:20:00Z",
     "creator": {
       "username": "bw_artist",
@@ -653,12 +1300,19 @@
       "location": {
         "city": "Semarang",
         "country": "Indonesia",
-        "geo": { "lat": -6.9667, "lon": 110.4167 }
+        "geo": {
+          "lat": -6.9667,
+          "lon": 110.4167
+        }
       },
       "language": "id",
       "aspect_ratio": "4:5",
       "resolution": "1080x1350",
-      "mood": ["dramatic", "emotional", "timeless"]
+      "mood": [
+        "dramatic",
+        "emotional",
+        "timeless"
+      ]
     },
     "music": null,
     "engagement": {
@@ -684,7 +1338,12 @@
     "src": [
       "https://images.unsplash.com/photo-1519996529932-87cdbf1c0a4b?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["night", "urban", "tutorial", "longexposure"],
+    "tags": [
+      "night",
+      "urban",
+      "tutorial",
+      "longexposure"
+    ],
     "uploaded_at": "2024-05-22T20:15:00Z",
     "creator": {
       "username": "night_shooter",
@@ -704,12 +1363,19 @@
       "location": {
         "city": "Kuala Lumpur",
         "country": "Malaysia",
-        "geo": { "lat": 3.1390, "lon": 101.6869 }
+        "geo": {
+          "lat": 3.139,
+          "lon": 101.6869
+        }
       },
       "language": "en",
       "aspect_ratio": "16:9",
       "resolution": "1920x1080",
-      "mood": ["mysterious", "urban", "educational"]
+      "mood": [
+        "mysterious",
+        "urban",
+        "educational"
+      ]
     },
     "music": {
       "title": "Night Drive",
@@ -744,7 +1410,12 @@
       "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=900&q=80",
       "https://images.unsplash.com/photo-1542838132-92c53300491f?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["market", "traditional", "colors", "documentary"],
+    "tags": [
+      "market",
+      "traditional",
+      "colors",
+      "documentary"
+    ],
     "uploaded_at": "2024-05-23T06:45:00Z",
     "creator": {
       "username": "cultural_eye",
@@ -763,12 +1434,19 @@
       "location": {
         "city": "Surakarta",
         "country": "Indonesia",
-        "geo": { "lat": -7.5755, "lon": 110.8243 }
+        "geo": {
+          "lat": -7.5755,
+          "lon": 110.8243
+        }
       },
       "language": "id",
       "aspect_ratio": "3:2",
       "resolution": "1200x800",
-      "mood": ["vibrant", "cultural", "authentic"]
+      "mood": [
+        "vibrant",
+        "cultural",
+        "authentic"
+      ]
     },
     "music": null,
     "engagement": {
@@ -802,7 +1480,12 @@
     "src": [
       "https://images.unsplash.com/photo-1506905925346-21bda4d32df5?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["mountain", "hiking", "sunrise", "adventure"],
+    "tags": [
+      "mountain",
+      "hiking",
+      "sunrise",
+      "adventure"
+    ],
     "uploaded_at": "2024-05-24T05:30:00Z",
     "creator": {
       "username": "mountain_seeker",
@@ -822,12 +1505,19 @@
       "location": {
         "city": "Mount Bromo",
         "country": "Indonesia",
-        "geo": { "lat": -7.9425, "lon": 112.9530 }
+        "geo": {
+          "lat": -7.9425,
+          "lon": 112.953
+        }
       },
       "language": "id",
       "aspect_ratio": "16:9",
       "resolution": "1920x1080",
-      "mood": ["adventurous", "inspiring", "peaceful"]
+      "mood": [
+        "adventurous",
+        "inspiring",
+        "peaceful"
+      ]
     },
     "music": {
       "title": "Mountain Dawn",
@@ -870,7 +1560,12 @@
       "https://images.unsplash.com/photo-1535732820275-9ffd998cac22?auto=format&fit=crop&w=900&q=80",
       "https://images.unsplash.com/photo-1535732820275-9ffd998cac23?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["vintage", "cars", "classic", "automotive"],
+    "tags": [
+      "vintage",
+      "cars",
+      "classic",
+      "automotive"
+    ],
     "uploaded_at": "2024-05-25T12:00:00Z",
     "creator": {
       "username": "classic_car_lens",
@@ -890,12 +1585,19 @@
       "location": {
         "city": "Jakarta",
         "country": "Indonesia",
-        "geo": { "lat": -6.2088, "lon": 106.8456 }
+        "geo": {
+          "lat": -6.2088,
+          "lon": 106.8456
+        }
       },
       "language": "en",
       "aspect_ratio": "16:9",
       "resolution": "1920x1080",
-      "mood": ["nostalgic", "classic", "elegant"]
+      "mood": [
+        "nostalgic",
+        "classic",
+        "elegant"
+      ]
     },
     "music": null,
     "engagement": {
@@ -921,7 +1623,12 @@
     "src": [
       "https://images.unsplash.com/photo-1578662996442-48f60103fc98?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["underwater", "rajaampat", "marine", "diving"],
+    "tags": [
+      "underwater",
+      "rajaampat",
+      "marine",
+      "diving"
+    ],
     "uploaded_at": "2024-05-26T09:20:00Z",
     "creator": {
       "username": "ocean_explorer",
@@ -941,12 +1648,19 @@
       "location": {
         "city": "Raja Ampat",
         "country": "Indonesia",
-        "geo": { "lat": -0.6135, "lon": 130.6200 }
+        "geo": {
+          "lat": -0.6135,
+          "lon": 130.62
+        }
       },
       "language": "en",
       "aspect_ratio": "16:9",
       "resolution": "1920x1080",
-      "mood": ["magical", "colorful", "peaceful"]
+      "mood": [
+        "magical",
+        "colorful",
+        "peaceful"
+      ]
     },
     "music": {
       "title": "Deep Blue",
@@ -989,7 +1703,12 @@
       "https://images.unsplash.com/photo-1517697471339-4aa32003c11a?auto=format&fit=crop&w=900&q=80",
       "https://images.unsplash.com/photo-1517697471339-4aa32003c11b?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["streetart", "graffiti", "urban", "art"],
+    "tags": [
+      "streetart",
+      "graffiti",
+      "urban",
+      "art"
+    ],
     "uploaded_at": "2024-05-27T15:45:00Z",
     "creator": {
       "username": "urban_art_hunter",
@@ -1008,12 +1727,19 @@
       "location": {
         "city": "Bandung",
         "country": "Indonesia",
-        "geo": { "lat": -6.9175, "lon": 107.6191 }
+        "geo": {
+          "lat": -6.9175,
+          "lon": 107.6191
+        }
       },
       "language": "id",
       "aspect_ratio": "1:1",
       "resolution": "1080x1080",
-      "mood": ["creative", "urban", "artistic"]
+      "mood": [
+        "creative",
+        "urban",
+        "artistic"
+      ]
     },
     "music": null,
     "engagement": {
@@ -1039,7 +1765,12 @@
     "src": [
       "https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["food", "tutorial", "photography", "basics"],
+    "tags": [
+      "food",
+      "tutorial",
+      "photography",
+      "basics"
+    ],
     "uploaded_at": "2024-05-28T13:10:00Z",
     "creator": {
       "username": "foodie_lens",
@@ -1059,12 +1790,19 @@
       "location": {
         "city": "Jakarta",
         "country": "Indonesia",
-        "geo": { "lat": -6.2088, "lon": 106.8456 }
+        "geo": {
+          "lat": -6.2088,
+          "lon": 106.8456
+        }
       },
       "language": "id",
       "aspect_ratio": "16:9",
       "resolution": "1920x1080",
-      "mood": ["educational", "appetizing", "professional"]
+      "mood": [
+        "educational",
+        "appetizing",
+        "professional"
+      ]
     },
     "music": {
       "title": "Kitchen Rhythm",
@@ -1107,7 +1845,12 @@
       "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=900&q=80",
       "https://images.unsplash.com/photo-1513694203232-719a280e022g?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["interior", "minimalist", "home", "design"],
+    "tags": [
+      "interior",
+      "minimalist",
+      "home",
+      "design"
+    ],
     "uploaded_at": "2024-05-29T10:30:00Z",
     "creator": {
       "username": "minimal_space",
@@ -1127,12 +1870,19 @@
       "location": {
         "city": "Singapore",
         "country": "Singapore",
-        "geo": { "lat": 1.3521, "lon": 103.8198 }
+        "geo": {
+          "lat": 1.3521,
+          "lon": 103.8198
+        }
       },
       "language": "en",
       "aspect_ratio": "4:3",
       "resolution": "1200x900",
-      "mood": ["calm", "clean", "minimalist"]
+      "mood": [
+        "calm",
+        "clean",
+        "minimalist"
+      ]
     },
     "music": null,
     "engagement": {
@@ -1158,7 +1908,12 @@
     "src": [
       "https://images.unsplash.com/photo-1549399542-7c3baf6d1b32?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["festival", "cultural", "tradition", "celebration"],
+    "tags": [
+      "festival",
+      "cultural",
+      "tradition",
+      "celebration"
+    ],
     "uploaded_at": "2024-05-30T18:20:00Z",
     "creator": {
       "username": "cultural_journey",
@@ -1178,12 +1933,19 @@
       "location": {
         "city": "Denpasar",
         "country": "Indonesia",
-        "geo": { "lat": -8.6705, "lon": 115.2126 }
+        "geo": {
+          "lat": -8.6705,
+          "lon": 115.2126
+        }
       },
       "language": "id",
       "aspect_ratio": "9:16",
       "resolution": "1080x1920",
-      "mood": ["vibrant", "cultural", "festive"]
+      "mood": [
+        "vibrant",
+        "cultural",
+        "festive"
+      ]
     },
     "music": {
       "title": "Traditional Beat",

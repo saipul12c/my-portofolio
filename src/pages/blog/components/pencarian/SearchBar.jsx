@@ -123,7 +123,7 @@ export default function SearchBar({
         return a.text.localeCompare(b.text);
       })
       .slice(0, 8);
-  }, [searchTerm, blogs]);
+  }, [localSearchValue, blogs]);
 
   // === ✨ Predictive typing ===
   useEffect(() => {

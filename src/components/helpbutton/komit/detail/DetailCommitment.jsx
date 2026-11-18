@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import commitmentsData from "../data/commitments.json";
+import commitmentsData from "../../../../data/helpbutton/komit/commitments.json";
 import {
   Heart, Sparkles, HandHeart, Users, Globe, Lightbulb, Star, 
   ArrowRight, CheckCircle2, ChevronLeft, ChevronRight,
@@ -129,7 +129,7 @@ export default function DetailCommitment() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-950 dark:to-black flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--color-gray-900)] text-white flex items-center justify-center">
         <div className="text-center">
           <motion.div
             animate={{ rotate: 360, scale: [1, 1.1, 1] }}
@@ -150,7 +150,7 @@ export default function DetailCommitment() {
 
   if (!commitment) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-950 dark:to-black flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--color-gray-900)] text-white flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -181,7 +181,7 @@ export default function DetailCommitment() {
   const shareUrl = `${window.location.origin}/help/commitment/${commitment.slug}`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-950 dark:to-black py-8 px-4">
+    <div className="min-h-screen bg-[var(--color-gray-900)] text-white py-8 px-4">
       {/* Back Button */}
       <div className="max-w-6xl mx-auto mb-8">
         <motion.div

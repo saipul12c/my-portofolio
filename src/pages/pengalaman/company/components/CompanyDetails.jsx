@@ -25,7 +25,7 @@ const CompanyDetails = ({ info, expandedSection, toggleSection, relatedCompanies
               <motion.span
                 key={idx}
                 whileHover={{ scale: 1.05 }}
-                className="px-3 py-2 bg-blue-600/20 text-blue-300 rounded-lg text-sm font-medium border border-blue-500/30"
+                className="px-3 py-1.5 bg-cyan-500/15 text-cyan-300 rounded-lg text-xs sm:text-sm font-medium border border-cyan-500/30"
               >
                 {tech}
               </motion.span>
@@ -97,10 +97,10 @@ const CompanyDetails = ({ info, expandedSection, toggleSection, relatedCompanies
                 key={idx}
                 whileHover={{ scale: 1.02 }}
                 className="flex items-center gap-3 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
-                onClick={() => navigate(`/testimoni/companies/${createCompanySlug(company.company)}`)}
+                onClick={() => navigate(`/testimoni/perusahaan/${createCompanySlug(company.company)}`)}
               >
-                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
-                  <Building2 size={20} className="text-white/80" />
+                <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Building2 size={20} className="text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">{company.company}</p>

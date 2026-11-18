@@ -57,7 +57,7 @@ const PortfolioTab = ({ portfolio }) => {
                     {project.technologies.map((tech, i) => (
                       <span 
                         key={i}
-                        className="px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-sm"
+                        className="px-3 py-1 bg-cyan-500/20 text-cyan-300 rounded-full text-xs font-medium border border-cyan-500/30"
                       >
                         {tech}
                       </span>

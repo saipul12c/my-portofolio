@@ -70,6 +70,7 @@ export const formatDate = (dateString, options = {}) => {
 export const STATS_CONFIG = [
   { icon: FiEye, valueKey: 'views', label: 'Views', color: 'cyan' },
   { icon: FiHeart, valueKey: 'likes', label: 'Likes', color: 'red' },
+  { icon: FiShare2, valueKey: 'shares', label: 'Shares', color: 'purple' },
   { icon: FiMessageSquare, valueKey: 'commentCount', label: 'Comments', color: 'green' },
   { icon: FiStar, valueKey: 'rating', label: 'Rating', color: 'yellow' }
 ];

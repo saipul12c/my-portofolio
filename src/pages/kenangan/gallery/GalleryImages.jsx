@@ -9,7 +9,7 @@ function GalleryImagesComponent({ items, onSelect, filterSettings = {} }) {
   const ITEMS_PER_PAGE = GALLERY_CONFIG.ITEMS_PER_PAGE.IMAGES;
   const [currentPage, setCurrentPage] = useState(1);
   const [localData, setLocalData] = useState([]);
-  
+
   const { searchTerm = "", tags: selectedTags = [] } = filterSettings;
 
   // Fallback to local import only if items prop is not provided
@@ -60,7 +60,7 @@ function GalleryImagesComponent({ items, onSelect, filterSettings = {} }) {
     <section className="w-full max-w-7xl mb-24">
       {/* 🖼️ Header */}
       <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2 text-cyan-300">
-        <Image className="w-6 h-6" /> Foto Kece 📸
+        <Image className="w-6 h-6" /> Foto Kece
       </h2>
 
       {hasNoData ? (
@@ -159,11 +159,10 @@ function GalleryImagesComponent({ items, onSelect, filterSettings = {} }) {
               <button
                 onClick={prevPage}
                 disabled={currentPage === 1}
-                className={`px-4 py-2 rounded-lg border text-sm transition ${
-                  currentPage === 1
+                className={`px-4 py-2 rounded-lg border text-sm transition ${currentPage === 1
                     ? "opacity-50 cursor-not-allowed border-gray-700 text-gray-400"
                     : "border-cyan-400 text-cyan-300 hover:bg-cyan-400/10"
-                }`}
+                  }`}
                 aria-label="Go to previous page"
                 aria-disabled={currentPage === 1}
               >
@@ -175,11 +174,10 @@ function GalleryImagesComponent({ items, onSelect, filterSettings = {} }) {
               <button
                 onClick={nextPage}
                 disabled={currentPage === pages.length}
-                className={`px-4 py-2 rounded-lg border text-sm transition ${
-                  currentPage === pages.length
+                className={`px-4 py-2 rounded-lg border text-sm transition ${currentPage === pages.length
                     ? "opacity-50 cursor-not-allowed border-gray-700 text-gray-400"
                     : "border-cyan-400 text-cyan-300 hover:bg-cyan-400/10"
-                }`}
+                  }`}
                 aria-label="Go to next page"
                 aria-disabled={currentPage === pages.length}
               >

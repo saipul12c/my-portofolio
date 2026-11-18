@@ -1,5 +1,5 @@
 // Central config for chatbot small metadata
-export const CHATBOT_VERSION = "7.1.0";
+export const CHATBOT_VERSION = "8.0.0";
 export const AI_DOCS_PATH = "/help/docs/ai";
 export const LIVE_CS_PATH = "/Live-Discussion";
 

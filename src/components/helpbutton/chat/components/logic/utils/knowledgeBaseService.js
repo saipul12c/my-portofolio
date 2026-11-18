@@ -144,23 +144,16 @@ class KnowledgeBaseService {
    */
   async loadFromRemote() {
     const localFiles = [
-      { path: '/src/components/helpbutton/chat/data/cards.json', key: 'cards' },
-      { path: '/src/components/helpbutton/chat/data/certificates.json', key: 'certificates' },
-      { path: '/src/components/helpbutton/chat/data/collaborations.json', key: 'collaborations' },
-      { path: '/src/components/helpbutton/chat/data/interests.json', key: 'interests' },
-      { path: '/src/components/helpbutton/chat/data/profile.json', key: 'profile' },
-      { path: '/src/components/helpbutton/chat/data/softskills.json', key: 'softskills' },
-      { path: '/src/components/helpbutton/chat/data/AI-base.json', key: 'AI' }
+      { path: '/src/data/about/cards.json', key: 'cards' },
+      { path: '/src/data/sertif/certificates.json', key: 'certificates' },
+      { path: '/src/data/about/collaborations.json', key: 'collaborations' },
+      { path: '/src/data/about/interests.json', key: 'interests' },
+      { path: '/src/data/about/profile.json', key: 'profile' },
+      { path: '/src/data/skills/softskills.json', key: 'softskills' },
+      { path: '/src/data/helpbutton/chat/AI-base.json', key: 'AI' }
     ];
 
-    const publicFiles = [
-      { path: 'public/data/about/cards.json', key: 'cards' },
-      { path: 'public/data/about/certificates.json', key: 'certificates' },
-      { path: 'public/data/about/collaborations.json', key: 'collaborations' },
-      { path: 'public/data/about/interests.json', key: 'interests' },
-      { path: 'public/data/about/profile.json', key: 'profile' },
-      { path: 'public/data/about/softskills.json', key: 'softskills' }
-    ];
+    const publicFiles = [];
 
     const loaded = { ...DEFAULT_KB };
     const errors = [];

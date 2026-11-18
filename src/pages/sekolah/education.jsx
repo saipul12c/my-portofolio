@@ -2,14 +2,16 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { GraduationCap, Award, BookOpen, Star, Calendar, MapPin, Clock, Users } from "lucide-react";
 import { useRef } from "react";
 import educationData from "../../data/pendidikan/data.json";
+import certificatesData from "../../data/sertif/certificates.json";
 
 export default function Education() {
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref });
   const lineHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
-  // Destructure data untuk memisahkan education dan courses
-  const { education, courses } = educationData;
+  // Destructure data: education formal dari pendidikan.json, courses dari certificates.json
+  const { education } = educationData;
+  const courses = certificatesData.certificates || [];
 
   // Hitung statistik
   const totalAchievements = education.reduce((acc, edu) => acc + (edu.achievements?.length || 0), 0);
@@ -221,10 +223,10 @@ export default function Education() {
             >
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-cyan-300 mb-2">{course.title}</h3>
-                  <p className="text-gray-400 text-sm">{course.provider}</p>
+                  <h3 className="text-lg font-semibold text-cyan-300 mb-2">{course.title || course.name}</h3>
+                  <p className="text-gray-400 text-sm">{course.provider || course.issuer}</p>
                 </div>
-                <div className="text-2xl">{course.logo}</div>
+                <div className="text-2xl">{course.logo || "🎓"}</div>
               </div>
               
               <div className="flex items-center gap-4 text-sm text-gray-400 mb-4">
@@ -241,7 +243,7 @@ export default function Education() {
                   course.level === 'Intermediate' ? 'bg-yellow-500/20 text-yellow-300' :
                   'bg-green-500/20 text-green-300'
                 }`}>
-                  {course.level}
+                  {course.level || course.difficulty}
                 </div>
               </div>
 
@@ -250,7 +252,7 @@ export default function Education() {
               <div className="mb-4">
                 <h4 className="text-sm font-semibold text-gray-400 mb-2">Keterampilan:</h4>
                 <div className="flex flex-wrap gap-2">
-                  {course.skills_learned.map((skill, skillIndex) => (
+                  {(course.skills_learned || course.tags || []).map((skill, skillIndex) => (
                     <span
                       key={skillIndex}
                       className="px-2 py-1 text-xs bg-purple-500/20 text-purple-300 rounded-full border border-purple-500/30"
@@ -261,7 +263,7 @@ export default function Education() {
                 </div>
               </div>
 
-              {course.certificate && (
+              {(course.certificate || course.verified) && (
                 <div className="flex items-center gap-2 text-sm text-cyan-300">
                   <Award size={16} />
                   <span>Bersertifikat</span>

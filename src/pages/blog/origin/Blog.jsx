@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import blogs from "../../data/blog/data.json";
-import SearchBar from "./components/pencarian/SearchBar";
-import AiOverview from "./components/pencarian/AI/AiOverview";
+const blogs = [];
+import SearchBar from "../components/pencarian/SearchBar";
+import AiOverview from "../components/pencarian/AI/AiOverview";
 import { 
   FiCalendar,
   FiEye,

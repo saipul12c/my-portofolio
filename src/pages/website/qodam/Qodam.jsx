@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import qodamData from "./data/data.json";
+import qodamData from "../../../data/qodam/data.json";
 
 export default function Qodam() {
   const [nama, setNama] = useState("");

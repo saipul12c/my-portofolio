@@ -62,10 +62,10 @@ export default function DetailPenggunaPage() {
             transition={{ duration: 0.6 }}
             className="text-center max-w-2xl"
           >
-            <div className="w-20 sm:w-24 h-20 sm:h-24 mx-auto mb-4 sm:mb-6 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-2xl">
-              <Award size={32} className="sm:w-10 sm:h-10 text-white" />
+            <div className="w-20 sm:w-24 h-20 sm:h-24 mx-auto mb-4 sm:mb-6 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center shadow-2xl">
+              <Award size={36} className="text-white" />
             </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
               Pengguna Tidak Ditemukan
             </h2>
             <p className="text-gray-400 mb-6 sm:mb-8 text-sm sm:text-base lg:text-lg">
@@ -73,9 +73,9 @@ export default function DetailPenggunaPage() {
             </p>
             <Link
               to="/testimoni"
-              className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-8 py-2.5 sm:py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg sm:rounded-2xl transition-all duration-300 font-semibold shadow-2xl hover:shadow-3xl hover:scale-105 transform text-sm sm:text-base"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl transition-all duration-300 font-semibold shadow-lg shadow-cyan-500/25"
             >
-              <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
+              <ArrowLeft size={18} />
               Kembali ke Testimoni
             </Link>
           </motion.div>
@@ -110,7 +110,7 @@ export default function DetailPenggunaPage() {
         />
 
         {/* Main Content */}
-        <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 py-6 sm:py-8 lg:py-10 relative z-10">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 relative z-10">
           <StatsGrid userInfo={userInfo} />
 
           <NavigationTabs activeTab={activeTab} setActiveTab={setActiveTab} />

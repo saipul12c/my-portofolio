@@ -1,5 +1,629 @@
 [
   {
+    "id": 101,
+    "type": "short",
+    "title": "Rapat Perdana Pagelaran Seni 2024",
+    "desc": "Keseruan dan antusiasme rapat perdana kepanitiaan Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin dalam merumuskan konsep pentas akbar 🎭✨",
+    "src": "/assets/pageran/rapat/rapatperdana.mp4",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "category": "Behind The Scenes",
+    "duration": "00:00:45",
+    "date": "2024",
+    "location": "UIN Antasari Banjarmasin",
+    "tags": ["pagelaranseni", "angkatan22", "uinantasari", "rapat", "behindthescenes", "banjarmasin"],
+    "uploaded_at": "2024-03-10T14:00:00Z",
+    "creator": {
+      "username": "pagelaranseni22",
+      "display_name": "Pagelaran Seni Angkatan 22",
+      "avatar": "https://randomuser.me/api/portraits/men/42.jpg"
+    },
+    "details": {
+      "location": {
+        "name": "Kampus UIN Antasari Banjarmasin",
+        "city": "Banjarmasin",
+        "country": "Indonesia"
+      }
+    },
+    "engagement": {
+      "views": 25400,
+      "likes": 3210,
+      "comments": 68,
+      "shares": 45,
+      "saves": 110
+    },
+    "comments_preview": [
+      {
+        "user": "mhs_antasari",
+        "avatar": "https://randomuser.me/api/portraits/women/30.jpg",
+        "comment": "Semangat kawan-kawan Angkatan 22! 🔥",
+        "likes": 14,
+        "posted_at": "2024-03-10T15:00:00Z"
+      }
+    ],
+    "user_behavior": {
+      "liked_by_user": false,
+      "watched_percentage": 0,
+      "interacted": []
+    }
+  },
+  {
+    "id": 102,
+    "type": "short",
+    "title": "Koordinasi Divisi Acara & Panggung",
+    "desc": "Rapat koordinasi divisi teknis, panggung, tata lampu, dan perlengkapan demi kelancaran malam pagelaran seni 2024.",
+    "src": "/assets/pageran/rapat/rapat1.mp4",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "category": "Behind The Scenes",
+    "duration": "00:00:50",
+    "date": "2024",
+    "location": "UIN Antasari Banjarmasin",
+    "tags": ["pagelaranseni", "angkatan22", "uinantasari", "koordinasi", "panitia", "rapat"],
+    "uploaded_at": "2024-03-18T16:30:00Z",
+    "creator": {
+      "username": "pagelaranseni22",
+      "display_name": "Pagelaran Seni Angkatan 22",
+      "avatar": "https://randomuser.me/api/portraits/men/42.jpg"
+    },
+    "details": {
+      "location": {
+        "name": "Kampus UIN Antasari Banjarmasin",
+        "city": "Banjarmasin",
+        "country": "Indonesia"
+      }
+    },
+    "engagement": {
+      "views": 19800,
+      "likes": 2650,
+      "comments": 42,
+      "shares": 31,
+      "saves": 88
+    },
+    "comments_preview": [
+      {
+        "user": "panitia_dekor",
+        "avatar": "https://randomuser.me/api/portraits/men/32.jpg",
+        "comment": "Konsep panggungnya bakal gokil banget sih ini!",
+        "likes": 12,
+        "posted_at": "2024-03-18T17:00:00Z"
+      }
+    ],
+    "user_behavior": {
+      "liked_by_user": false,
+      "watched_percentage": 0,
+      "interacted": []
+    }
+  },
+  {
+    "id": 103,
+    "type": "short",
+    "title": "Evaluasi & Progres Acara Pagelaran",
+    "desc": "Sesi sharing dan evaluasi perkembangan latihan tiap lokal menjelang penampilan pentas seni akbar mahasiswa 2024.",
+    "src": "/assets/pageran/rapat/rapat2.mp4",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "category": "Behind The Scenes",
+    "duration": "00:01:10",
+    "date": "2024",
+    "location": "UIN Antasari Banjarmasin",
+    "tags": ["pagelaranseni", "angkatan22", "uinantasari", "evaluasi", "rapat"],
+    "uploaded_at": "2024-03-25T15:00:00Z",
+    "creator": {
+      "username": "pagelaranseni22",
+      "display_name": "Pagelaran Seni Angkatan 22",
+      "avatar": "https://randomuser.me/api/portraits/men/42.jpg"
+    },
+    "details": {
+      "location": {
+        "name": "Kampus UIN Antasari Banjarmasin",
+        "city": "Banjarmasin",
+        "country": "Indonesia"
+      }
+    },
+    "engagement": {
+      "views": 18200,
+      "likes": 2410,
+      "comments": 39,
+      "shares": 27,
+      "saves": 76
+    },
+    "comments_preview": [
+      {
+        "user": "andi_seni",
+        "avatar": "https://randomuser.me/api/portraits/men/35.jpg",
+        "comment": "Makin matang persiapannya, gas pol!",
+        "likes": 9,
+        "posted_at": "2024-03-25T16:00:00Z"
+      }
+    ],
+    "user_behavior": {
+      "liked_by_user": false,
+      "watched_percentage": 0,
+      "interacted": []
+    }
+  },
+  {
+    "id": 104,
+    "type": "short",
+    "title": "Rapat Pemantapan Rundown Pagelaran",
+    "desc": "Pemantapan final rundown pagelaran seni, alur lighting, audio, dan kesiapan pengisi acara angkatan 22.",
+    "src": "/assets/pageran/rapat/rapatpemantapan.mp4",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "category": "Behind The Scenes",
+    "duration": "00:00:40",
+    "date": "2024",
+    "location": "UIN Antasari Banjarmasin",
+    "tags": ["pagelaranseni", "angkatan22", "uinantasari", "pemantapan", "rundown", "panitia"],
+    "uploaded_at": "2024-04-05T17:00:00Z",
+    "creator": {
+      "username": "pagelaranseni22",
+      "display_name": "Pagelaran Seni Angkatan 22",
+      "avatar": "https://randomuser.me/api/portraits/men/42.jpg"
+    },
+    "details": {
+      "location": {
+        "name": "Kampus UIN Antasari Banjarmasin",
+        "city": "Banjarmasin",
+        "country": "Indonesia"
+      }
+    },
+    "engagement": {
+      "views": 21300,
+      "likes": 2980,
+      "comments": 54,
+      "shares": 38,
+      "saves": 95
+    },
+    "comments_preview": [
+      {
+        "user": "siti_fathia",
+        "avatar": "https://randomuser.me/api/portraits/women/24.jpg",
+        "comment": "Rundown rapi banget, gak sabar lihat hasilnya!",
+        "likes": 15,
+        "posted_at": "2024-04-05T18:00:00Z"
+      }
+    ],
+    "user_behavior": {
+      "liked_by_user": false,
+      "watched_percentage": 0,
+      "interacted": []
+    }
+  },
+  {
+    "id": 105,
+    "type": "short",
+    "title": "Gladi Resik Pagelaran Seni 2024",
+    "desc": "Persiapan gladi kotor dan gladi resik panggung, memastikan kesiapan tata suara, pencahayaan, dan blocking para talent.",
+    "src": "/assets/pageran/rapat/rapatgladi.mp4",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "category": "Behind The Scenes",
+    "duration": "00:00:35",
+    "date": "2024",
+    "location": "Auditorium UIN Antasari",
+    "tags": ["pagelaranseni", "gladiresik", "angkatan22", "uinantasari", "panggung", "gladi"],
+    "uploaded_at": "2024-04-12T19:30:00Z",
+    "creator": {
+      "username": "pagelaranseni22",
+      "display_name": "Pagelaran Seni Angkatan 22",
+      "avatar": "https://randomuser.me/api/portraits/men/42.jpg"
+    },
+    "details": {
+      "location": {
+        "name": "Auditorium UIN Antasari",
+        "city": "Banjarmasin",
+        "country": "Indonesia"
+      }
+    },
+    "engagement": {
+      "views": 28900,
+      "likes": 4120,
+      "comments": 87,
+      "shares": 65,
+      "saves": 140
+    },
+    "comments_preview": [
+      {
+        "user": "ahmad_stage",
+        "avatar": "https://randomuser.me/api/portraits/men/29.jpg",
+        "comment": "Lightingnya keren parah pas gladi tadi malam!",
+        "likes": 20,
+        "posted_at": "2024-04-12T20:30:00Z"
+      }
+    ],
+    "user_behavior": {
+      "liked_by_user": false,
+      "watched_percentage": 0,
+      "interacted": []
+    }
+  },
+  {
+    "id": 106,
+    "type": "short",
+    "title": "Promo Seru: Pagelaran Seni Angkatan 22",
+    "desc": "Teaser video promosi penuh energi dan keceriaan dari angkatan 22 UIN Antasari Banjarmasin. Ayo ramaikan!",
+    "src": "/assets/pageran/Promosi/abcd.mp4",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "category": "Promosi",
+    "duration": "00:00:30",
+    "date": "2024",
+    "location": "UIN Antasari Banjarmasin",
+    "tags": ["pagelaranseni", "promosi", "teaser", "angkatan22", "uinantasari"],
+    "uploaded_at": "2024-04-15T11:00:00Z",
+    "creator": {
+      "username": "pagelaranseni22",
+      "display_name": "Pagelaran Seni Angkatan 22",
+      "avatar": "https://randomuser.me/api/portraits/men/42.jpg"
+    },
+    "details": {
+      "location": {
+        "name": "Kampus UIN Antasari",
+        "city": "Banjarmasin",
+        "country": "Indonesia"
+      }
+    },
+    "engagement": {
+      "views": 33400,
+      "likes": 4820,
+      "comments": 95,
+      "shares": 82,
+      "saves": 165
+    },
+    "comments_preview": [
+      {
+        "user": "nadia_art",
+        "avatar": "https://randomuser.me/api/portraits/women/26.jpg",
+        "comment": "Videonya estetik dan bikin penasaran banget 😍",
+        "likes": 18,
+        "posted_at": "2024-04-15T12:00:00Z"
+      }
+    ],
+    "user_behavior": {
+      "liked_by_user": false,
+      "watched_percentage": 0,
+      "interacted": []
+    }
+  },
+  {
+    "id": 107,
+    "type": "short",
+    "title": "Vibes Ceria Promosi Pagelaran",
+    "desc": "Keseruan di balik layar panitia dan mahasiswa memeriahkan pra-event Pagelaran Seni 2024.",
+    "src": "/assets/pageran/Promosi/akumanis.mp4",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "category": "Promosi",
+    "duration": "00:00:28",
+    "date": "2024",
+    "location": "UIN Antasari Banjarmasin",
+    "tags": ["pagelaranseni", "promosi", "vibes", "angkatan22", "uinantasari"],
+    "uploaded_at": "2024-04-18T13:30:00Z",
+    "creator": {
+      "username": "pagelaranseni22",
+      "display_name": "Pagelaran Seni Angkatan 22",
+      "avatar": "https://randomuser.me/api/portraits/men/42.jpg"
+    },
+    "details": {
+      "location": {
+        "name": "Kampus UIN Antasari",
+        "city": "Banjarmasin",
+        "country": "Indonesia"
+      }
+    },
+    "engagement": {
+      "views": 31200,
+      "likes": 4350,
+      "comments": 81,
+      "shares": 74,
+      "saves": 150
+    },
+    "comments_preview": [
+      {
+        "user": "fajar_creative",
+        "avatar": "https://randomuser.me/api/portraits/men/38.jpg",
+        "comment": "Ngakak sekaligus seru! Wajib nonton nih!",
+        "likes": 22,
+        "posted_at": "2024-04-18T14:00:00Z"
+      }
+    ],
+    "user_behavior": {
+      "liked_by_user": false,
+      "watched_percentage": 0,
+      "interacted": []
+    }
+  },
+  {
+    "id": 108,
+    "type": "short",
+    "title": "Countdown: H-1 Pagelaran Seni Angkatan 22",
+    "desc": "Ajakan seru menjelang hari puncak pagelaran seni, siap menyuguhkan karya terbaik mahasiswa angkatan 22.",
+    "src": "/assets/pageran/Promosi/isuk.mp4",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "category": "Promosi",
+    "duration": "00:00:32",
+    "date": "2024",
+    "location": "UIN Antasari Banjarmasin",
+    "tags": ["pagelaranseni", "countdown", "promosi", "angkatan22", "uinantasari"],
+    "uploaded_at": "2024-04-22T08:00:00Z",
+    "creator": {
+      "username": "pagelaranseni22",
+      "display_name": "Pagelaran Seni Angkatan 22",
+      "avatar": "https://randomuser.me/api/portraits/men/42.jpg"
+    },
+    "details": {
+      "location": {
+        "name": "Kampus UIN Antasari",
+        "city": "Banjarmasin",
+        "country": "Indonesia"
+      }
+    },
+    "engagement": {
+      "views": 37800,
+      "likes": 5120,
+      "comments": 110,
+      "shares": 105,
+      "saves": 190
+    },
+    "comments_preview": [
+      {
+        "user": "dewi_lestari",
+        "avatar": "https://randomuser.me/api/portraits/women/33.jpg",
+        "comment": "Besok banget! Sampe ketemu di auditorium ya teman-teman!",
+        "likes": 30,
+        "posted_at": "2024-04-22T09:00:00Z"
+      }
+    ],
+    "user_behavior": {
+      "liked_by_user": false,
+      "watched_percentage": 0,
+      "interacted": []
+    }
+  },
+  {
+    "id": 109,
+    "type": "short",
+    "title": "Penampilan Memukau - Lokal A",
+    "desc": "Koreografi dan pertunjukan panggung spektakuler persembahan mahasiswa Lokal A dalam Pagelaran Seni 2024.",
+    "src": "/assets/pageran/penampilan/lokala.mp4",
+    "thumbnail": "/assets/pageran/Poster/lokala.jpg",
+    "poster": "/assets/pageran/Poster/lokala.jpg",
+    "category": "Performance",
+    "duration": "00:00:55",
+    "date": "2024",
+    "location": "Auditorium UIN Antasari",
+    "tags": ["pagelaranseni", "penampilan", "lokala", "seni", "angkatan22", "uinantasari"],
+    "uploaded_at": "2024-04-23T20:00:00Z",
+    "creator": {
+      "username": "pagelaranseni22",
+      "display_name": "Pagelaran Seni Angkatan 22",
+      "avatar": "https://randomuser.me/api/portraits/men/42.jpg"
+    },
+    "details": {
+      "location": {
+        "name": "Panggung Utama UIN Antasari",
+        "city": "Banjarmasin",
+        "country": "Indonesia"
+      }
+    },
+    "engagement": {
+      "views": 42100,
+      "likes": 5600,
+      "comments": 128,
+      "shares": 142,
+      "saves": 280
+    },
+    "comments_preview": [
+      {
+        "user": "raihan_banjar",
+        "avatar": "https://randomuser.me/api/portraits/men/45.jpg",
+        "comment": "Lokal A keren banget! Gerakannya kompak abis 👏",
+        "likes": 25,
+        "posted_at": "2024-04-23T20:45:00Z"
+      }
+    ],
+    "user_behavior": {
+      "liked_by_user": false,
+      "watched_percentage": 0,
+      "interacted": []
+    }
+  },
+  {
+    "id": 110,
+    "type": "short",
+    "title": "Pentas Seni Teater & Musik - Lokal B",
+    "desc": "Drama panggung mendalam dan pertunjukan artistik dari kawan-kawan Lokal B pada Pagelaran Seni Angkatan 22.",
+    "src": "/assets/pageran/penampilan/lokalb.mp4",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "category": "Performance",
+    "duration": "00:01:05",
+    "date": "2024",
+    "location": "Auditorium UIN Antasari",
+    "tags": ["pagelaranseni", "penampilan", "lokalb", "teater", "angkatan22", "uinantasari"],
+    "uploaded_at": "2024-04-23T20:30:00Z",
+    "creator": {
+      "username": "pagelaranseni22",
+      "display_name": "Pagelaran Seni Angkatan 22",
+      "avatar": "https://randomuser.me/api/portraits/men/42.jpg"
+    },
+    "details": {
+      "location": {
+        "name": "Panggung Utama UIN Antasari",
+        "city": "Banjarmasin",
+        "country": "Indonesia"
+      }
+    },
+    "engagement": {
+      "views": 45300,
+      "likes": 6120,
+      "comments": 145,
+      "shares": 178,
+      "saves": 310
+    },
+    "comments_preview": [
+      {
+        "user": "teater_mania",
+        "avatar": "https://randomuser.me/api/portraits/women/40.jpg",
+        "comment": "Aktingnya dapet banget, merinding pas adegan puncak!",
+        "likes": 38,
+        "posted_at": "2024-04-23T21:15:00Z"
+      }
+    ],
+    "user_behavior": {
+      "liked_by_user": false,
+      "watched_percentage": 0,
+      "interacted": []
+    }
+  },
+  {
+    "id": 111,
+    "type": "short",
+    "title": "Alunan Nada & Harmoni - Lokal C",
+    "desc": "Kombinasi atraksi musikal dan penampilan kreatif mahasiswa Lokal C yang menghipnotis seluruh penonton.",
+    "src": "/assets/pageran/penampilan/lokalc.mp4",
+    "thumbnail": "/assets/pageran/Poster/lokalc.jpg",
+    "poster": "/assets/pageran/Poster/lokalc.jpg",
+    "category": "Performance",
+    "duration": "00:00:58",
+    "date": "2024",
+    "location": "Auditorium UIN Antasari",
+    "tags": ["pagelaranseni", "penampilan", "lokalc", "musik", "angkatan22", "uinantasari"],
+    "uploaded_at": "2024-04-23T21:00:00Z",
+    "creator": {
+      "username": "pagelaranseni22",
+      "display_name": "Pagelaran Seni Angkatan 22",
+      "avatar": "https://randomuser.me/api/portraits/men/42.jpg"
+    },
+    "details": {
+      "location": {
+        "name": "Panggung Utama UIN Antasari",
+        "city": "Banjarmasin",
+        "country": "Indonesia"
+      }
+    },
+    "engagement": {
+      "views": 39800,
+      "likes": 5340,
+      "comments": 115,
+      "shares": 120,
+      "saves": 240
+    },
+    "comments_preview": [
+      {
+        "user": "musik_antasari",
+        "avatar": "https://randomuser.me/api/portraits/men/48.jpg",
+        "comment": "Harmonisasinya mantap abis, aransemen lagunya juara!",
+        "likes": 26,
+        "posted_at": "2024-04-23T21:40:00Z"
+      }
+    ],
+    "user_behavior": {
+      "liked_by_user": false,
+      "watched_percentage": 0,
+      "interacted": []
+    }
+  },
+  {
+    "id": 112,
+    "type": "short",
+    "title": "Ekspresi Budaya & Tari - Lokal D",
+    "desc": "Pertunjukan energik tarian kolosal dan kreasi seni tradisi kontemporer dari Lokal D di malam pagelaran.",
+    "src": "/assets/pageran/penampilan/lokald.mp4",
+    "thumbnail": "/assets/pageran/Poster/lokald.jpg",
+    "poster": "/assets/pageran/Poster/lokald.jpg",
+    "category": "Performance",
+    "duration": "00:01:00",
+    "date": "2024",
+    "location": "Auditorium UIN Antasari",
+    "tags": ["pagelaranseni", "penampilan", "lokald", "tari", "angkatan22", "uinantasari"],
+    "uploaded_at": "2024-04-23T21:30:00Z",
+    "creator": {
+      "username": "pagelaranseni22",
+      "display_name": "Pagelaran Seni Angkatan 22",
+      "avatar": "https://randomuser.me/api/portraits/men/42.jpg"
+    },
+    "details": {
+      "location": {
+        "name": "Panggung Utama UIN Antasari",
+        "city": "Banjarmasin",
+        "country": "Indonesia"
+      }
+    },
+    "engagement": {
+      "views": 41500,
+      "likes": 5480,
+      "comments": 122,
+      "shares": 135,
+      "saves": 265
+    },
+    "comments_preview": [
+      {
+        "user": "ayu_penari",
+        "avatar": "https://randomuser.me/api/portraits/women/36.jpg",
+        "comment": "Kostum dan koreonya megah banget! Proud of Lokal D!",
+        "likes": 31,
+        "posted_at": "2024-04-23T22:00:00Z"
+      }
+    ],
+    "user_behavior": {
+      "liked_by_user": false,
+      "watched_percentage": 0,
+      "interacted": []
+    }
+  },
+  {
+    "id": 113,
+    "type": "short",
+    "title": "Panduan Jalur & Akses Venue Pagelaran",
+    "desc": "Informasi rute jalan, titik masuk kampus UIN Antasari Banjarmasin, dan petunjuk arah ke gedung pagelaran seni.",
+    "src": "/assets/pageran/lokasi/jalur.mp4",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "category": "Info Event",
+    "duration": "00:01:15",
+    "date": "2024",
+    "location": "Kampus UIN Antasari Banjarmasin",
+    "tags": ["pagelaranseni", "lokasi", "jalur", "uinantasari", "banjarmasin", "venue"],
+    "uploaded_at": "2024-04-20T10:00:00Z",
+    "creator": {
+      "username": "pagelaranseni22",
+      "display_name": "Pagelaran Seni Angkatan 22",
+      "avatar": "https://randomuser.me/api/portraits/men/42.jpg"
+    },
+    "details": {
+      "location": {
+        "name": "Kampus UIN Antasari",
+        "city": "Banjarmasin",
+        "country": "Indonesia"
+      }
+    },
+    "engagement": {
+      "views": 27600,
+      "likes": 3490,
+      "comments": 58,
+      "shares": 67,
+      "saves": 115
+    },
+    "comments_preview": [
+      {
+        "user": "tamu_undangan",
+        "avatar": "https://randomuser.me/api/portraits/men/50.jpg",
+        "comment": "Sangat membantu buat yang baru pertama kali ke auditorium kampus!",
+        "likes": 16,
+        "posted_at": "2024-04-20T11:00:00Z"
+      }
+    ],
+    "user_behavior": {
+      "liked_by_user": false,
+      "watched_percentage": 0,
+      "interacted": []
+    }
+  },
+  {
     "id": 1,
     "type": "short",
     "title": "Ngoding 10 Detik",
@@ -116,7 +740,7 @@
     ],
     "user_behavior": {
       "liked_by_user": false,
-      "watched_percentage": 0.70,
+      "watched_percentage": 0.7,
       "interacted": ["paused"]
     }
   },
@@ -154,7 +778,7 @@
     ],
     "user_behavior": {
       "liked_by_user": true,
-      "watched_percentage": 0.90,
+      "watched_percentage": 0.9,
       "interacted": ["liked", "paused"]
     }
   }

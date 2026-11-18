@@ -1,13 +1,14 @@
 import React, { memo, useState, useEffect, useCallback, useMemo } from 'react';
-import { 
-  MdEmail, MdShare, MdHome, MdInfo, MdFolderOpen, MdMailOutline, 
-  MdStar, MdQrCode, MdContentCopy, MdDownload, MdClose, MdForum, MdChat, MdOpenInNew, MdVerified 
+import {
+  MdEmail, MdShare, MdHome, MdInfo, MdFolderOpen, MdMailOutline,
+  MdStar, MdQrCode, MdContentCopy, MdDownload, MdClose, MdForum, MdChat, MdOpenInNew, MdVerified
 } from 'react-icons/md';
 import { HiClipboardCheck, HiOutlineClipboardCopy } from 'react-icons/hi';
-import { FaLanguage } from 'react-icons/fa';
-import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, 
-  Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell 
+import { FaLanguage, FaGithub } from 'react-icons/fa';
+import { GitHubCalendar } from 'react-github-calendar';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell
 } from 'recharts';
 import QRCode from 'qrcode';
 import Avatar from '../ui/Avatar';
@@ -128,7 +129,7 @@ const DesktopLayout = memo(({
           .select('username, content, role, timestamp')
           .order('timestamp', { ascending: false })
           .limit(10);
-        
+
         if (error) throw error;
         if (data) setRecentChats(data);
       } catch (err) {
@@ -141,24 +142,24 @@ const DesktopLayout = memo(({
     // Realtime Subscription for Desktop Preview
     const channel = supabase
       .channel('portal-desktop-chat-preview')
-      .on('postgres_changes', { 
-        event: 'INSERT', 
-        schema: 'public', 
-        table: 'messages' 
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages'
       }, (payload) => {
         setRecentChats(prev => [payload.new, ...prev].slice(0, 10));
       })
-      .on('postgres_changes', { 
-        event: 'UPDATE', 
-        schema: 'public', 
-        table: 'messages' 
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'messages'
       }, (payload) => {
         setRecentChats(prev => prev.map(msg => msg.id === payload.new.id ? payload.new : msg));
       })
-      .on('postgres_changes', { 
-        event: 'DELETE', 
-        schema: 'public', 
-        table: 'messages' 
+      .on('postgres_changes', {
+        event: 'DELETE',
+        schema: 'public',
+        table: 'messages'
       }, (payload) => {
         setRecentChats(prev => prev.filter(msg => msg.id !== payload.old.id));
       })
@@ -183,14 +184,14 @@ const DesktopLayout = memo(({
   useEffect(() => {
     const interval = setInterval(() => {
       const indexToReplace = Math.floor(Math.random() * 6);
-      
-      const availableHobbies = hobbiesWithSlugs.filter(h => 
+
+      const availableHobbies = hobbiesWithSlugs.filter(h =>
         !displayedHobbies.some(dh => dh.id === h.id)
       );
-      
+
       if (availableHobbies.length > 0) {
         const newHobby = availableHobbies[Math.floor(Math.random() * availableHobbies.length)];
-        
+
         setDisplayedHobbies(prev => {
           const next = [...prev];
           next[indexToReplace] = newHobby;
@@ -198,7 +199,7 @@ const DesktopLayout = memo(({
         });
       }
     }, 3000);
-    
+
     return () => clearInterval(interval);
   }, [displayedHobbies, hobbiesWithSlugs]);
 
@@ -218,16 +219,16 @@ const DesktopLayout = memo(({
       setDisplayedCerts(prev => {
         const newCerts = [...prev];
         const indexToReplace = Math.floor(Math.random() * Math.min(prev.length, 6));
-        
+
         // Find a certificate that is not currently displayed
         const displayedIds = new Set(prev.map(c => c.id));
         const availableCerts = certificates.filter(c => !displayedIds.has(c.id));
-        
+
         if (availableCerts.length > 0) {
           const randomNewCert = availableCerts[Math.floor(Math.random() * availableCerts.length)];
           newCerts[indexToReplace] = randomNewCert;
         }
-        
+
         return newCerts;
       });
     }, 4000);
@@ -238,11 +239,11 @@ const DesktopLayout = memo(({
   // Generate QR Code ketika modal dibuka
   useEffect(() => {
     const portalUrl = 'https://syaiful-mukmin.netlify.app/portal';
-    
+
     if (showQRModal && !qrCodeUrl) {
       generateQRCode(portalUrl);
     }
-    
+
     if (!showQRModal) {
       setQrCopied(false);
       setDownloadSuccess(false);
@@ -271,14 +272,14 @@ const DesktopLayout = memo(({
 
   const downloadQRCode = useCallback(() => {
     if (!qrCodeUrl) return;
-    
+
     const link = document.createElement('a');
     link.href = qrCodeUrl;
     link.download = `syaiful-mukmin-portal-qrcode-${new Date().toISOString().slice(0, 10)}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
+
     setDownloadSuccess(true);
     setTimeout(() => setDownloadSuccess(false), 2000);
   }, [qrCodeUrl]);
@@ -323,10 +324,10 @@ const DesktopLayout = memo(({
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black p-8">
+      <div className="min-h-screen bg-gradient-to-br from-[var(--color-gray-900)] via-[#0f1d32] to-[var(--color-gray-900)] p-8">
         {/* Background grid */}
         <div className="fixed inset-0 bg-grid-white/5 bg-grid-16" />
-        
+
         {/* Glow effects */}
         <div className="fixed top-1/4 -left-40 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
         <div className="fixed bottom-1/4 -right-40 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
@@ -365,21 +366,21 @@ const DesktopLayout = memo(({
                 <p className="text-gray-500 text-sm">Manage all your social connections in one place</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-4">
               <button
                 onClick={handleCopyEmail}
                 className="flex items-center gap-2 px-4 py-2 bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 hover:border-purple-500 transition-colors group"
               >
                 <MdEmail className="w-4 h-4 text-purple-400 group-hover:animate-pulse" />
-                <span className="text-white">hello@yourworld.com</span>
+                <span className="text-white">uju355@gmail.com</span>
                 {copied ? (
                   <HiClipboardCheck className="w-4 h-4 text-green-400 animate-bounce" />
                 ) : (
                   <HiOutlineClipboardCopy className="w-4 h-4 text-gray-400" />
                 )}
               </button>
-              
+
               <button
                 onClick={() => setShowQRModal(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 to-green-600 rounded-lg border border-emerald-500/50 font-medium text-white hover:opacity-90 transition-opacity hover:scale-105 active:scale-95"
@@ -388,7 +389,7 @@ const DesktopLayout = memo(({
                 <MdQrCode className="w-4 h-4" />
                 QR Code
               </button>
-              
+
               <button
                 onClick={handleShare}
                 className="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg font-medium text-white hover:opacity-90 transition-opacity hover:scale-105 active:scale-95"
@@ -420,7 +421,7 @@ const DesktopLayout = memo(({
                     <span className="text-white font-semibold">1.2K</span>
                   </div>
                 </div>
-                
+
                 {/* Quick actions */}
                 <div className="mt-6 space-y-3">
                   <button
@@ -429,7 +430,7 @@ const DesktopLayout = memo(({
                   >
                     Liat CV saya
                   </button>
-                            
+
                   <button
                     onClick={() => navigate("/testimoni")}
                     className="w-full py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white font-medium hover:border-gray-600 transition-all hover:scale-[1.02] active:scale-[0.98]"
@@ -446,7 +447,7 @@ const DesktopLayout = memo(({
                   </button>
                 </div>
               </div>
-              
+
               {/* Connection Status */}
               <div className="bg-gray-900/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
                 <h3 className="text-lg font-semibold text-white mb-4">Connection Status</h3>
@@ -456,7 +457,7 @@ const DesktopLayout = memo(({
                     <span className="text-green-400 font-medium">Excellent</span>
                   </div>
                   <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
-                    <div 
+                    <div
                       className="bg-gradient-to-r from-green-500 to-emerald-400 h-2 rounded-full w-3/4 transition-all duration-1000 ease-out"
                       style={{ width: `${(Object.values(checkedItems).filter(Boolean).length / Object.keys(checkedItems).length) * 100}%` }}
                     />
@@ -584,7 +585,7 @@ const DesktopLayout = memo(({
                 </h3>
                 <div className="space-y-2">
                   {displayedCerts.map((cert) => (
-                    <div 
+                    <div
                       key={cert.id}
                       onClick={() => openCertModal(cert)}
                       className="text-xs flex items-center justify-between hover:bg-gray-800/50 p-2.5 rounded-xl transition-all cursor-pointer border border-transparent hover:border-gray-700 active:scale-95 group"
@@ -593,9 +594,8 @@ const DesktopLayout = memo(({
                         <span className="text-gray-300 font-medium group-hover:text-white transition-colors">{cert.title}</span>
                         <span className="text-[10px] text-gray-500">{cert.issuer}</span>
                       </div>
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                        cert.themeColor ? '' : 'bg-blue-500/10 text-blue-400'
-                      }`} style={cert.themeColor ? { backgroundColor: `${cert.themeColor}20`, color: cert.themeColor } : {}}>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full ${cert.themeColor ? '' : 'bg-blue-500/10 text-blue-400'
+                        }`} style={cert.themeColor ? { backgroundColor: `${cert.themeColor}20`, color: cert.themeColor } : {}}>
                         {cert.year}
                       </span>
                     </div>
@@ -619,8 +619,8 @@ const DesktopLayout = memo(({
                   {displayedHobbies.map((hobby) => {
                     const IconComponent = iconMap[hobby.icon];
                     return (
-                      <div 
-                        key={hobby.id} 
+                      <div
+                        key={hobby.id}
                         onClick={() => navigate(`/hobbies/${hobby.slug}`)}
                         className="group text-xs hover:bg-gray-800/50 p-2.5 rounded-xl transition-all cursor-pointer border border-transparent hover:border-gray-700 active:scale-95"
                       >
@@ -635,8 +635,8 @@ const DesktopLayout = memo(({
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
-                            <div 
-                              className={`h-1.5 rounded-full bg-gradient-to-r ${hobby.color || 'from-blue-500 to-cyan-400'} transition-all duration-1000 ease-in-out`} 
+                            <div
+                              className={`h-1.5 rounded-full bg-gradient-to-r ${hobby.color || 'from-blue-500 to-cyan-400'} transition-all duration-1000 ease-in-out`}
                               style={{ width: `${hobby.stats?.completion || 0}%` }}
                             />
                           </div>
@@ -678,7 +678,7 @@ const DesktopLayout = memo(({
                     <div className="text-center py-6 space-y-2">
                       <MdForum className="w-8 h-8 text-cyan-500/30 mx-auto" />
                       <p className="text-sm text-gray-400 font-medium">Belum ada percakapan</p>
-                      <p className="text-[11px] text-gray-500 leading-relaxed">Jadilah yang pertama memulai diskusi!<br/>Bergabung dan bagikan pemikiranmu bersama komunitas.</p>
+                      <p className="text-[11px] text-gray-500 leading-relaxed">Jadilah yang pertama memulai diskusi!<br />Bergabung dan bagikan pemikiranmu bersama komunitas.</p>
                     </div>
                   )}
                 </div>
@@ -720,7 +720,7 @@ const DesktopLayout = memo(({
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   {Object.entries(platformData).map(([key, data]) => (
                     <DesktopPlatformCard
@@ -733,7 +733,7 @@ const DesktopLayout = memo(({
                     />
                   ))}
                 </div>
-                
+
                 {/* Website Navigation Section */}
                 <div className="mt-6 pt-6 border-t border-gray-800">
                   <div className="mb-4">
@@ -746,9 +746,8 @@ const DesktopLayout = memo(({
                           onMouseEnter={() => setHoveredWebNav(item.id)}
                           onMouseLeave={() => setHoveredWebNav(null)}
                           onClick={() => navigate(`/${item.id === 'home' ? '' : item.id}`)}
-                          className={`w-full px-4 py-3 ${item.color} border ${
-                            item.id === 'home' ? 'border-cyan-500/30 hover:border-cyan-500/50' : 'border-gray-700 hover:border-gray-600'
-                          } rounded-lg text-white font-medium transition-all hover:scale-[1.02] active:scale-[0.98] text-sm flex items-center justify-center gap-2`}
+                          className={`w-full px-4 py-3 ${item.color} border ${item.id === 'home' ? 'border-cyan-500/30 hover:border-cyan-500/50' : 'border-gray-700 hover:border-gray-600'
+                            } rounded-lg text-white font-medium transition-all hover:scale-[1.02] active:scale-[0.98] text-sm flex items-center justify-center gap-2`}
                         >
                           <item.icon className="w-4 h-4 group-hover:animate-bounce" />
                           {item.label}
@@ -762,7 +761,7 @@ const DesktopLayout = memo(({
                     ))}
                   </div>
                 </div>
-                
+
                 {/* About Syaiful Mukmin Section */}
                 <div className="mt-6 pt-6 border-t border-gray-800">
                   <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/30 hover:border-purple-500/60 transition-colors">
@@ -778,7 +777,7 @@ const DesktopLayout = memo(({
                     </button>
                   </div>
                 </div>
-                
+
                 {/* Uses & Setup Section */}
                 <div className="mt-6 pt-6 border-t border-gray-800">
                   <div className="mb-6">
@@ -787,7 +786,7 @@ const DesktopLayout = memo(({
                     </h3>
                     <p className="text-gray-400 text-xs mt-1">Sistem, perangkat, dan software yang saya gunakan sehari-hari.</p>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {usesData.map((category, idx) => (
                       <div key={idx} className={`bg-gray-900/50 backdrop-blur-sm rounded-2xl p-5 border border-gray-800 hover:border-${category.color}-500/30 transition-all group`}>
@@ -797,10 +796,10 @@ const DesktopLayout = memo(({
                           </div>
                           <h4 className="font-bold text-white text-sm uppercase tracking-wider">{category.category}</h4>
                         </div>
-                        
+
                         <div className="space-y-4">
                           {category.items.map((item, iIdx) => (
-                            <a 
+                            <a
                               key={iIdx}
                               href={item.url}
                               target="_blank"
@@ -826,7 +825,55 @@ const DesktopLayout = memo(({
                 {/* Stats overview */}
                 <div className="mt-6 pt-6 border-t border-gray-800">
                   <h3 className="text-lg font-bold text-white mb-6">📊 Statistics Overview</h3>
-                                    
+
+                  {/* GitHub Contribution Graph */}
+                  <div className="bg-gray-900/30 backdrop-blur-sm rounded-2xl p-6 border border-gray-800 mb-6 hover:border-cyan-500/30 transition-all duration-300">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-gray-800">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2.5 rounded-xl bg-gray-800/80 border border-gray-700 text-white flex-shrink-0">
+                          <FaGithub className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h4 className="text-white font-semibold text-base flex items-center gap-2">
+                            GitHub Contribution Graph
+                            <span className="text-xs font-medium text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-0.5 rounded-full">
+                              @saipul12c
+                            </span>
+                          </h4>
+                          <p className="text-gray-400 text-xs mt-0.5">
+                            Grafik aktivitas komit & kontribusi kode terbuka di GitHub dalam 1 tahun terakhir
+                          </p>
+                        </div>
+                      </div>
+
+                      <a
+                        href="https://github.com/saipul12c"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs text-cyan-300 hover:text-cyan-200 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 px-3 py-1.5 rounded-lg transition-all duration-200 self-start sm:self-auto"
+                      >
+                        Buka GitHub
+                        <MdOpenInNew className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+
+                    <div className="w-full overflow-x-auto pb-2 flex justify-center custom-scrollbar">
+                      <GitHubCalendar
+                        username="saipul12c"
+                        colorScheme="dark"
+                        blockSize={13}
+                        blockMargin={4}
+                        fontSize={12}
+                        theme={{
+                          dark: ['#1e293b', '#065f46', '#059669', '#10b981', '#34d399'],
+                        }}
+                        labels={{
+                          totalCount: '{{count}} kontribusi di GitHub dalam setahun terakhir',
+                        }}
+                      />
+                    </div>
+                  </div>
+
                   {/* Bar Chart - Monthly Growth */}
                   <div className="bg-gray-900/30 backdrop-blur-sm rounded-2xl p-6 border border-gray-800 mb-6 hover:border-gray-700 transition-colors">
                     <h4 className="text-white font-semibold mb-4 text-sm">Monthly Growth (Trend year to year)</h4>
@@ -835,10 +882,10 @@ const DesktopLayout = memo(({
                         <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                         <XAxis dataKey="month" stroke="#9CA3AF" />
                         <YAxis stroke="#9CA3AF" />
-                        <Tooltip 
-                          contentStyle={{ 
-                            backgroundColor: '#1F2937', 
-                            border: '1px solid #4B5563', 
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: '#1F2937',
+                            border: '1px solid #4B5563',
                             borderRadius: '8px',
                             padding: '12px'
                           }}
@@ -857,7 +904,7 @@ const DesktopLayout = memo(({
                         <Bar dataKey="posts" fill="#F59E0B" radius={[8, 8, 0, 0]} name="Posts" />
                       </BarChart>
                     </ResponsiveContainer>
-                        
+
                     {/* Additional Stats Grid */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
                       <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
@@ -870,7 +917,7 @@ const DesktopLayout = memo(({
                           +12.5% from last year
                         </div>
                       </div>
-                        
+
                       <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
                         <div className="text-gray-400 text-sm mb-1">Avg. Engagement</div>
                         <div className="text-2xl font-bold text-white">4.8%</div>
@@ -881,13 +928,13 @@ const DesktopLayout = memo(({
                           +1.2% from last month
                         </div>
                       </div>
-                        
+
                       <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
                         <div className="text-gray-400 text-sm mb-1">Best Month</div>
                         <div className="text-2xl font-bold text-white">December</div>
                         <div className="text-gray-400 text-xs mt-1">920K engagements</div>
                       </div>
-                        
+
                       <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
                         <div className="text-gray-400 text-sm mb-1">Total Posts</div>
                         <div className="text-2xl font-bold text-white">271</div>
@@ -920,14 +967,14 @@ const DesktopLayout = memo(({
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Engagement Pie Chart - Enhanced */}
                   <div className="bg-gray-900/30 backdrop-blur-sm rounded-2xl p-6 border border-gray-800 hover:border-gray-700 transition-all duration-300 group hover:scale-[1.02]">
                     <div className="flex justify-between items-center mb-6">
                       <div>
                         <h4 className="text-white font-semibold text-lg group-hover:text-white flex items-center gap-2">
                           <svg className="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                           </svg>
                           Engagement Distribution
                           <span className="text-xs font-normal text-gray-400 ml-2">Last 30 days</span>
@@ -954,7 +1001,7 @@ const DesktopLayout = memo(({
                           <PieChart>
                             <defs>
                               <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                                <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="rgba(167, 139, 250, 0.3)"/>
+                                <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="rgba(167, 139, 250, 0.3)" />
                               </filter>
                             </defs>
 
@@ -968,14 +1015,14 @@ const DesktopLayout = memo(({
                                 const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
                                 const x = cx + radius * Math.cos(-midAngle * RADIAN);
                                 const y = cy + radius * Math.sin(-midAngle * RADIAN);
-                              
+
                                 if (value > 15) {
                                   return (
-                                    <text 
-                                      x={x} 
-                                      y={y} 
-                                      fill="white" 
-                                      textAnchor={x > cx ? 'start' : 'end'} 
+                                    <text
+                                      x={x}
+                                      y={y}
+                                      fill="white"
+                                      textAnchor={x > cx ? 'start' : 'end'}
                                       dominantBaseline="central"
                                       className="font-bold text-sm"
                                     >
@@ -996,8 +1043,8 @@ const DesktopLayout = memo(({
                               filter="url(#shadow)"
                             >
                               {platformStats.map((entry, index) => (
-                                <Cell 
-                                  key={`cell-${index}`} 
+                                <Cell
+                                  key={`cell-${index}`}
                                   fill={entry.color}
                                   stroke="#1F2937"
                                   strokeWidth={2}
@@ -1005,36 +1052,36 @@ const DesktopLayout = memo(({
                                 />
                               ))}
                             </Pie>
-                            
+
                             {/* Center text */}
-                            <text 
-                              x="50%" 
-                              y="45%" 
-                              textAnchor="middle" 
-                              dominantBaseline="middle" 
+                            <text
+                              x="50%"
+                              y="45%"
+                              textAnchor="middle"
+                              dominantBaseline="middle"
                               className="text-2xl font-bold fill-white"
                             >
                               100%
                             </text>
-                            <text 
-                              x="50%" 
-                              y="55%" 
-                              textAnchor="middle" 
-                              dominantBaseline="middle" 
+                            <text
+                              x="50%"
+                              y="55%"
+                              textAnchor="middle"
+                              dominantBaseline="middle"
                               className="text-sm fill-gray-400"
                             >
                               Total Engagement
                             </text>
-                            
-                            <Tooltip 
+
+                            <Tooltip
                               content={({ active, payload }) => {
                                 if (active && payload && payload.length) {
                                   const data = payload[0].payload;
                                   return (
                                     <div className="bg-gray-900 border border-gray-700 rounded-xl p-4 shadow-2xl">
                                       <div className="flex items-center gap-3 mb-2">
-                                        <div 
-                                          className="w-4 h-4 rounded-full" 
+                                        <div
+                                          className="w-4 h-4 rounded-full"
                                           style={{ backgroundColor: data.color }}
                                         />
                                         <span className="font-bold text-white">{data.name}</span>
@@ -1059,7 +1106,7 @@ const DesktopLayout = memo(({
                               }}
                             />
 
-                            <Legend 
+                            <Legend
                               verticalAlign="bottom"
                               height={36}
                               formatter={(value) => (
@@ -1071,11 +1118,11 @@ const DesktopLayout = memo(({
                           </PieChart>
                         </ResponsiveContainer>
                       </div>
-                            
+
                       {/* Platform Stats List */}
                       <div className="space-y-4">
                         {platformStats.map((platform) => (
-                          <div 
+                          <div
                             key={platform.name}
                             className="flex items-center justify-between p-3 rounded-lg bg-gray-800/50 hover:bg-gray-800 transition-colors cursor-pointer group/item"
                           >
@@ -1084,7 +1131,7 @@ const DesktopLayout = memo(({
                               <div>
                                 <div className="flex items-center gap-2">
                                   <span className="font-medium text-white">{platform.name}</span>
-                                  <span 
+                                  <span
                                     className={`text-xs px-2 py-1 rounded-full ${platform.change.startsWith('+') ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}
                                   >
                                     {platform.change}
@@ -1098,7 +1145,7 @@ const DesktopLayout = memo(({
                                 <div className="text-2xl font-bold text-white">{platform.value}%</div>
                                 <div className="text-xs text-gray-400">share</div>
                               </div>
-                              <div 
+                              <div
                                 className="w-3 h-3 rounded-full transition-transform group-hover/item:scale-125"
                                 style={{ backgroundColor: platform.color }}
                               />
@@ -1107,7 +1154,7 @@ const DesktopLayout = memo(({
                         ))}
                       </div>
                     </div>
-                      
+
                     {/* Footer Stats */}
                     <div className="mt-6 pt-6 border-t border-gray-800 flex flex-wrap gap-6 text-sm">
                       <div className="flex items-center gap-2">
@@ -1143,14 +1190,14 @@ const DesktopLayout = memo(({
                 <h3 className="text-xl font-bold text-white">Portal Profile QR Code</h3>
                 <p className="text-gray-400 text-sm">Scan untuk mengunjungi portal di perangkat mobile</p>
               </div>
-              <button 
+              <button
                 onClick={() => setShowQRModal(false)}
                 className="text-gray-400 hover:text-white p-2 hover:bg-gray-800 rounded-lg transition-colors"
               >
                 <MdClose className="w-6 h-6" />
               </button>
             </div>
-            
+
             {/* Content - Landscape Layout */}
             <div className="flex flex-col md:flex-row">
               {/* Left Side - QR Code */}
@@ -1163,8 +1210,8 @@ const DesktopLayout = memo(({
                     </div>
                   ) : qrCodeUrl ? (
                     <>
-                      <img 
-                        src={qrCodeUrl} 
+                      <img
+                        src={qrCodeUrl}
                         alt="QR Code Portal Muhammad Syaiful Mukmin"
                         className="w-full h-full"
                       />
@@ -1186,14 +1233,14 @@ const DesktopLayout = memo(({
                     </div>
                   )}
                 </div>
-                
+
                 {/* Title under QR Code */}
                 <div className="text-center mb-2">
                   <div className="text-2xl font-bold text-white mb-1">SM</div>
                   <div className="text-gray-400 text-sm">Portal Muhammad Syaiful Mukmin</div>
                 </div>
               </div>
-              
+
               {/* Right Side - Info and Actions */}
               <div className="md:w-1/2 p-8">
                 {/* Link Display */}
@@ -1221,17 +1268,16 @@ const DesktopLayout = memo(({
                     </button>
                   </div>
                 </div>
-                
+
                 {/* Action Buttons */}
                 <div className="space-y-4">
                   <button
                     onClick={downloadQRCode}
                     disabled={!qrCodeUrl}
-                    className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${
-                      qrCodeUrl 
-                        ? 'bg-gradient-to-r from-emerald-600/20 to-green-600/20 border-emerald-500/30 hover:border-emerald-500/60 hover:bg-emerald-600/30 cursor-pointer' 
+                    className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${qrCodeUrl
+                        ? 'bg-gradient-to-r from-emerald-600/20 to-green-600/20 border-emerald-500/30 hover:border-emerald-500/60 hover:bg-emerald-600/30 cursor-pointer'
                         : 'bg-gray-800/50 border-gray-700 cursor-not-allowed'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className={`p-2 rounded-lg ${qrCodeUrl ? 'bg-emerald-500/20' : 'bg-gray-700'}`}>
@@ -1248,7 +1294,7 @@ const DesktopLayout = memo(({
                       <div className="text-emerald-400 text-sm font-medium">→</div>
                     )}
                   </button>
-                  
+
                   <button
                     onClick={handleShare}
                     className="w-full flex items-center justify-between p-4 rounded-xl border border-purple-500/30 bg-gradient-to-r from-purple-600/20 to-blue-600/20 hover:border-purple-500/60 hover:bg-purple-600/30 transition-all cursor-pointer"
@@ -1265,7 +1311,7 @@ const DesktopLayout = memo(({
                     <div className="text-purple-400 text-sm font-medium">→</div>
                   </button>
                 </div>
-                
+
                 {/* Instructions */}
                 <div className="mt-8 pt-6 border-t border-gray-800">
                   <div className="text-gray-400 text-sm font-medium mb-3">📱 Cara Menggunakan:</div>
@@ -1286,7 +1332,7 @@ const DesktopLayout = memo(({
                 </div>
               </div>
             </div>
-            
+
             {/* Footer */}
             <div className="p-4 bg-gray-900/50 border-t border-gray-800">
               <p className="text-gray-500 text-xs text-center">

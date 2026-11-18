@@ -216,7 +216,7 @@ const Tubs = () => {
 
   return (
     <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
-      <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white flex">
+      <div className="min-h-screen bg-[var(--color-gray-900)] text-white flex">
         <Sidebar 
           isCollapsed={isSidebarCollapsed}
           toggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}

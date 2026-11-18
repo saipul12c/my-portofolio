@@ -15,9 +15,16 @@ export default function GalleryRelatedContent() {
         const projectsRes = await import("../../../data/projects.json");
         setProjectsData(projectsRes.default?.projects?.slice(0, 3) || []);
 
-        // Load blog data
-        const blogRes = await import("../../../data/blog/data.json");
-        setBlogData(blogRes.default?.slice(0, 3) || []);
+        // Load blog data from Supabase
+        try {
+          const { fetchAllPosts } = await import("../../../pages/blog/services/blogSupabase");
+          const posts = await fetchAllPosts();
+          if (Array.isArray(posts) && posts.length > 0) {
+            setBlogData(posts.slice(0, 3));
+          }
+        } catch {
+          // ignore or fallback to empty
+        }
       } catch (err) {
         console.log("Data tidak tersedia:", err);
       } finally {

@@ -11,13 +11,13 @@ import { FileTree, TerminalWrap, FormattedResponse, SmartText } from "../Shared/
 
 const Examples = ({ aiDocData }) => {
   const typeFileMapping = {
-    "lookup_sederhana": ["data/AI-base.json"],
+    "lookup_sederhana": ["logic/utils/enhancedKnowledgeBase.js", "logic/utils/smartKBQuery.js"],
     "kalkulator": ["logic/utils/mathCalculator.js"],
-    "quick_action": ["data/softskills.json"],
-    "upload_lookup": ["logic/utils/fileProcessor.js", "logic/utils/dataLoader.js"],
+    "quick_action": ["logic/utils/enhancedKnowledgeBase.js"],
+    "upload_lookup": ["logic/utils/fileProcessor.js"],
     "nlp_pipeline": ["logic/utils/nluDataset.js", "logic/utils/enhancedKnowledgeBase.js", "logic/utils/nluProcessing.js"],
     "clarification": ["logic/utils/clarificationSystem.js"],
-    "bilingual_interaction": ["logic/utils/translationEngine.js", "logic/utils/languageCorpus.js"],
+    "bilingual_interaction": ["logic/utils/responseGenerator.js", "logic/utils/languageCorpus.js"],
     "sentiment_analysis": ["logic/utils/nluProcessing.js", "logic/utils/lexicalDatabase.js"]
   };
 

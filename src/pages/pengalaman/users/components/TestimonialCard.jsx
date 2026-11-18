@@ -25,14 +25,14 @@ const TestimonialCard = ({ testimonial }) => {
     <motion.div
       variants={cardVariants}
       whileHover="hover"
-      className="group bg-gradient-to-br from-white/8 to-white/3 backdrop-blur-md border border-white/15 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 hover:border-blue-500/40 hover:from-white/12 hover:to-white/5 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-2xl relative overflow-hidden"
+      className="group bg-gradient-to-br from-white/8 to-white/3 backdrop-blur-md border border-white/15 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 hover:border-cyan-500/40 hover:from-white/12 hover:to-white/5 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-2xl relative overflow-hidden"
     >
       {/* Animated Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-purple-500/0 to-indigo-500/0 group-hover:from-blue-500/8 group-hover:via-purple-500/4 group-hover:to-indigo-500/8 transition-all duration-500 rounded-2xl sm:rounded-3xl" />
+      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-blue-500/0 to-purple-500/0 group-hover:from-cyan-500/8 group-hover:via-blue-500/4 group-hover:to-purple-500/8 transition-all duration-500 rounded-2xl sm:rounded-3xl" />
       
       {/* Background Accent Glow */}
       <motion.div
-        className="absolute -top-20 -right-20 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl"
+        className="absolute -top-20 -right-20 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl"
         animate={{ scale: [1, 1.1, 1] }}
         transition={{ duration: 4, repeat: Infinity }}
         style={{ pointerEvents: 'none' }}
@@ -44,7 +44,7 @@ const TestimonialCard = ({ testimonial }) => {
           {/* Title and Meta */}
           <div className="flex-1 min-w-0">
             <div className="flex items-start gap-2 sm:gap-3 mb-3 sm:mb-4">
-              <h4 className="font-bold text-xl sm:text-2xl text-white group-hover:text-blue-300 transition-colors break-words">
+              <h4 className="font-bold text-xl sm:text-2xl text-white group-hover:text-cyan-300 transition-colors break-words">
                 {testimonial.title || "Project Review"}
               </h4>
               {testimonial.verified && (

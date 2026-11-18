@@ -1,0 +1,59 @@
+{
+  "sectionTitle": "Pengalaman & Pencapaian",
+  "experiences": [
+    {
+      "id": 1,
+      "title": "Full-Stack Developer",
+      "position": "Full Stack Developer & EduTech Specialist",
+      "company": "Personal Projects & Freelance",
+      "period": "2023 - Sekarang",
+      "description": "Mengembangkan aplikasi web modern menggunakan React, Node.js, dan teknologi terkini dengan standar arsitektur dan clean code terbaik.",
+      "metricKey": "projects",
+      "metricSuffix": "+ Project",
+      "tags": ["22+ Project", "Clean Code", "Modern Stack"],
+      "achievements": [
+        "Mengembangkan platform pembelajaran digital dan aplikasi interaktif yang digunakan secara luas",
+        "Menyelesaikan 20+ proyek aplikasi web dengan standar clean code dan arsitektur modern",
+        "Menerapkan teknologi AI, integrasi API, dan database real-time dalam solusi portofolio",
+        "Mendapatkan rating kepuasan di atas 4.8/5 dari berbagai kolaborasi klien dan komunitas"
+      ],
+      "link": "/projects"
+    },
+    {
+      "id": 2,
+      "title": "Content Creator & Educator",
+      "position": "Digital Learning Consultant & Educator",
+      "company": "Digital Learning Platform",
+      "period": "2023 - Sekarang",
+      "description": "Membuat konten edukatif, modul interaktif, dan tutorial berkualitas untuk mendorong literasi digital dan pembelajaran modern.",
+      "metricKey": "blogs",
+      "metricSuffix": "+ Articles",
+      "tags": ["20+ Articles", "Active Community", "Knowledge Sharing"],
+      "achievements": [
+        "Konsultan transformasi digital untuk sekolah dan berbagai lembaga pendidikan",
+        "Mengembangkan kurikulum pembelajaran berbasis teknologi dan materi edukasi interaktif",
+        "Melatih ratusan tenaga pendidik dalam literasi digital dan pemanfaatan media pembelajaran modern",
+        "Membangun komunitas pembelajar aktif dan mempublikasikan artikel teknologi secara berkala"
+      ],
+      "link": "/blog"
+    },
+    {
+      "id": 3,
+      "title": "Fotografer Dokumentasi",
+      "position": "Visual Storyteller & Photographer",
+      "company": "Freelance",
+      "period": "2022 - Sekarang",
+      "description": "Menangkap momen berharga melalui fotografi artistik, peliputan event formal maupun kreatif, serta kurasi visual portofolio.",
+      "metricKey": "photos",
+      "metricSuffix": "+ Photos",
+      "tags": ["100+ Photos", "Event Coverage", "Portfolio Gallery"],
+      "achievements": [
+        "Mendokumentasikan ratusan foto dan momen penting dengan estetika dan komposisi profesional",
+        "Berpengalaman dalam liputan berbagai event akademik, seremonial wisuda, seminar, dan acara publik",
+        "Mengelola kurasi galeri fotografi digital dan visual storytelling di platform portofolio",
+        "Menghasilkan dokumentasi foto beresolusi tinggi dengan editing warna yang harmonis"
+      ],
+      "link": "/albums"
+    }
+  ]
+}

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { motion } from "framer-motion";
+import { ArrowLeft, Building2 } from "lucide-react";
 
 import { useCompanyData } from "./hooks/useCompanyData";
 import { useDebounce } from "./hooks/useDebounce";
@@ -68,17 +69,29 @@ export default function DetailPerusahaanPage() {
 
   if (state.error || !state.companyData) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex items-center justify-center px-4">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
           className="text-center max-w-2xl"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Perusahaan Tidak Ditemukan</h2>
-          <p className="text-gray-400 mb-8">
+          <div className="w-20 sm:w-24 h-20 sm:h-24 mx-auto mb-4 sm:mb-6 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center shadow-2xl">
+            <Building2 size={36} className="text-white" />
+          </div>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+            Perusahaan Tidak Ditemukan
+          </h2>
+          <p className="text-gray-400 mb-6 sm:mb-8 text-sm sm:text-base lg:text-lg">
             {state.error || 'Maaf, data perusahaan yang Anda cari tidak tersedia.'}
           </p>
+          <Link
+            to="/testimoni"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl transition-all duration-300 font-semibold shadow-lg shadow-cyan-500/25"
+          >
+            <ArrowLeft size={18} />
+            Kembali ke Testimoni
+          </Link>
         </motion.div>
       </div>
     );
@@ -95,12 +108,15 @@ export default function DetailPerusahaanPage() {
         <meta property="og:title" content={`${info.name} - Portfolio & Testimoni`} />
         <meta property="og:description" content={`Jelajahi proyek-proyek dan testimoni dari ${info.name}. Rating ${info.avgRating}/5 dari ${info.totalTestimonials} testimoni.`} />
         <meta property="og:type" content="website" />
-        <link rel="canonical" href={`https://syaiful.dev/testimoni/companies/${slug}`} />
+        <link rel="canonical" href={`https://syaiful.dev/testimoni/perusahaan/${slug}`} />
       </Helmet>
 
-      <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-        {/* Background Pattern */}
-        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800/50 via-slate-900/50 to-slate-900/50 pointer-events-none"></div>
+      <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-x-hidden">
+        {/* Ambient Background Glows */}
+        <div className="fixed inset-0 pointer-events-none opacity-20">
+          <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+        </div>
         
         <CompanyHeader.Navigation 
           companyData={state.companyData}

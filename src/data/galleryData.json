@@ -1,12 +1,130 @@
 [
   {
+    "id": 1001,
+    "type": "image",
+    "title": "Koleksi Cetak 5R Kenangan Bersama (12 Frame)",
+    "desc": "Kompilasi frame cetak 5R momen seru dan penuh kehangatan bersama sahabat di studio foto.",
+    "src": "/assets/images/5R%20x12.jpg",
+    "category": "Studio Portrait",
+    "tags": [
+      "studio",
+      "portrait",
+      "sahabat"
+    ],
+    "uploaded_at": "2026-11-07",
+    "creator": "Muhammad Syaiful Mukmin",
+    "details": {
+      "camera": "Canon EOS RP",
+      "location": "Studio Foto, Indonesia"
+    }
+  },
+  {
+    "id": 1002,
+    "type": "image",
+    "title": "Tawa Hangat Studio #5532 (Edit)",
+    "desc": "Potret studio sahabat #5532 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "src": "/assets/images/IMG_5532%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "tags": [
+      "studio",
+      "portrait",
+      "sahabat"
+    ],
+    "uploaded_at": "2026-11-07",
+    "creator": "Muhammad Syaiful Mukmin",
+    "details": {
+      "camera": "Canon EOS RP",
+      "location": "Studio Foto, Indonesia"
+    }
+  },
+  {
+    "id": 1003,
+    "type": "image",
+    "title": "Sahabat Seirama #5533 (Edit)",
+    "desc": "Potret studio sahabat #5533 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "src": "/assets/images/IMG_5533%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "tags": [
+      "studio",
+      "portrait",
+      "sahabat"
+    ],
+    "uploaded_at": "2026-11-07",
+    "creator": "Muhammad Syaiful Mukmin",
+    "details": {
+      "camera": "Canon EOS RP",
+      "location": "Studio Foto, Indonesia"
+    }
+  },
+  {
+    "id": 1004,
+    "type": "image",
+    "title": "Momen Penuh Cerita #5535 (Edit)",
+    "desc": "Potret studio sahabat #5535 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "src": "/assets/images/IMG_5535%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "tags": [
+      "studio",
+      "portrait",
+      "sahabat"
+    ],
+    "uploaded_at": "2026-11-07",
+    "creator": "Muhammad Syaiful Mukmin",
+    "details": {
+      "camera": "Canon EOS RP",
+      "location": "Studio Foto, Indonesia"
+    }
+  },
+  {
+    "id": 1005,
+    "type": "image",
+    "title": "Energi & Senyuman #5536 (Edit)",
+    "desc": "Potret studio sahabat #5536 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "src": "/assets/images/IMG_5536%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "tags": [
+      "studio",
+      "portrait",
+      "sahabat"
+    ],
+    "uploaded_at": "2026-11-07",
+    "creator": "Muhammad Syaiful Mukmin",
+    "details": {
+      "camera": "Canon EOS RP",
+      "location": "Studio Foto, Indonesia"
+    }
+  },
+  {
+    "id": 1006,
+    "type": "image",
+    "title": "Karakter & Chemistry #5537 (Edit)",
+    "desc": "Potret studio sahabat #5537 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "src": "/assets/images/IMG_5537%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "tags": [
+      "studio",
+      "portrait",
+      "sahabat"
+    ],
+    "uploaded_at": "2026-11-07",
+    "creator": "Muhammad Syaiful Mukmin",
+    "details": {
+      "camera": "Canon EOS RP",
+      "location": "Studio Foto, Indonesia"
+    }
+  },
+  {
     "id": 1,
     "type": "image",
     "title": "Senja di Pelabuhan",
     "desc": "Langit jingga memantul di permukaan air, menghadirkan suasana damai dan nostalgia.",
     "src": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80",
     "category": "Landscape",
-    "tags": ["senja", "laut", "sunset"],
+    "tags": [
+      "senja",
+      "laut",
+      "sunset"
+    ],
     "uploaded_at": "2024-03-15",
     "creator": "Syaiful Mukmin",
     "details": {
@@ -22,7 +140,11 @@
     "src": "https://www.w3schools.com/html/mov_bbb.mp4",
     "category": "Education",
     "duration": "00:02:45",
-    "tags": ["kampus", "edukasi", "mahasiswa"],
+    "tags": [
+      "kampus",
+      "edukasi",
+      "mahasiswa"
+    ],
     "uploaded_at": "2024-04-02",
     "creator": "Tim Media Edukasi",
     "details": {
@@ -38,7 +160,11 @@
     "src": "https://www.w3schools.com/html/mov_bbb.mp4",
     "category": "Tutorial",
     "duration": "00:00:10",
-    "tags": ["coding", "react", "shorts"],
+    "tags": [
+      "coding",
+      "react",
+      "shorts"
+    ],
     "uploaded_at": "2024-04-20",
     "creator": "DevShort Indonesia",
     "details": {
@@ -57,7 +183,11 @@
       "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80",
       "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?auto=format&fit=crop&w=900&q=80"
     ],
-    "tags": ["portrait", "happiness", "album"],
+    "tags": [
+      "portrait",
+      "happiness",
+      "album"
+    ],
     "uploaded_at": "2024-05-10",
     "creator": "Syaiful Mukmin"
   },
@@ -68,7 +198,11 @@
     "desc": "Bidikan sederhana dedaunan hijau yang menyimbolkan ketenangan dan kehidupan.",
     "src": "https://images.unsplash.com/photo-1521207418485-99c705420785?auto=format&fit=crop&w=900&q=80",
     "category": "Nature",
-    "tags": ["alam", "daun", "hijau"],
+    "tags": [
+      "alam",
+      "daun",
+      "hijau"
+    ],
     "uploaded_at": "2024-06-12",
     "creator": "Syaiful Mukmin",
     "details": {
@@ -84,7 +218,11 @@
     "src": "https://www.w3schools.com/html/movie.mp4",
     "category": "Project",
     "duration": "00:03:10",
-    "tags": ["project", "digital", "education"],
+    "tags": [
+      "project",
+      "digital",
+      "education"
+    ],
     "uploaded_at": "2024-07-01",
     "creator": "Media EduTech",
     "details": {

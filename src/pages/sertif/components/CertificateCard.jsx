@@ -25,7 +25,7 @@ const CertificateCard = ({
       {cert.tags?.[0] && (
         <span
           className={`absolute top-4 left-4 px-3 py-1 text-xs font-medium border rounded-full ${
-            tagColors[cert.tags[0]] ||
+            (Array.isArray(tagColors) ? tagColors[(cert.id || 0) % tagColors.length] : tagColors?.[cert.tags[0]]) ||
             "bg-cyan-500/20 text-cyan-300 border-cyan-400/30"
           }`}
         >

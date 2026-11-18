@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Image, UserCheck, Tag, ChevronLeft, ChevronRight, AlertCircle, Layers } from "lucide-react";
+import { Image, UserCheck, Tag, ChevronLeft, ChevronRight, AlertCircle, Layers, MoreHorizontal } from "lucide-react";
 import { filterMediaItems } from "../utils/filterHelpers";
 import { GALLERY_CONFIG } from "../utils/constants";
 import { sanitizeUrl } from "../utils/sanitizers";
@@ -58,6 +58,19 @@ function GalleryAlbumsComponent({ items, onSelect, filterSettings = {} }) {
   const goToPage = (page) => {
     setCurrentPage(page);
   };
+
+  const visiblePages = useMemo(() => {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    if (currentPage <= 4) {
+      return [1, 2, 3, 4, 5, "ellipsis", totalPages];
+    }
+    if (currentPage >= totalPages - 3) {
+      return [1, "ellipsis", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    }
+    return [1, "ellipsis", currentPage - 1, currentPage, currentPage + 1, "ellipsis", totalPages];
+  }, [currentPage, totalPages]);
 
   const hasNoData = filteredAlbums.length === 0;
 
@@ -181,23 +194,34 @@ function GalleryAlbumsComponent({ items, onSelect, filterSettings = {} }) {
                 <ChevronLeft className="w-4 h-4" />
               </button>
 
-              {/* Page Numbers */}
-              <div className="flex gap-1 flex-wrap justify-center">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => goToPage(page)}
-                    className={`w-8 h-8 rounded-lg text-sm font-medium transition-all ${
-                      currentPage === page
-                        ? "bg-pink-500 text-white border border-pink-400 font-bold"
-                        : "bg-white/5 border border-white/10 text-gray-300 hover:bg-pink-500/20 hover:border-pink-400/30"
-                    }`}
-                    aria-label={`Go to page ${page}`}
-                    aria-current={currentPage === page ? 'page' : undefined}
-                  >
-                    {page}
-                  </button>
-                ))}
+              {/* Page Numbers with Ellipsis */}
+              <div className="flex gap-1 flex-wrap justify-center items-center">
+                {visiblePages.map((page, idx) => {
+                  if (page === "ellipsis") {
+                    return (
+                      <span key={`ellipsis-${idx}`} className="w-8 h-8 flex items-center justify-center text-gray-500">
+                        <MoreHorizontal size={14} />
+                      </span>
+                    );
+                  }
+
+                  const isCurrent = currentPage === page;
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => goToPage(page)}
+                      className={`w-8 h-8 rounded-lg text-sm font-medium transition-all ${
+                        isCurrent
+                          ? "bg-pink-500 text-white border border-pink-400 font-bold"
+                          : "bg-white/5 border border-white/10 text-gray-300 hover:bg-pink-500/20 hover:border-pink-400/30"
+                      }`}
+                      aria-label={`Go to page ${page}`}
+                      aria-current={isCurrent ? "page" : undefined}
+                    >
+                      {page}
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Next Button */}

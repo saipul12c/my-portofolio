@@ -7,6 +7,8 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedErrorPage from "./components/ProtectedErrorPage";
 import { ErrorProvider } from "./context/ErrorContext";
+import UpdateNotification from "./components/UpdateNotification";
+import GlobalErrorBoundary from "./components/GlobalErrorBoundary";
 
 // 🎬 Loader animasi
 import Loader from "./pages/loader/loader";
@@ -71,14 +73,18 @@ const Portal = lazy(() => import("./pages/portal/Portal"));
 
 const Hobbies = lazy(() => import("./pages/hub/Hobbies"));
 const HobbiesDetail = lazy(() => import("./pages/hub/HobbyDetail.jsx"));
-const S1PGMI = lazy(() => import("./pages/akademik/S1"));
-const Sidang = lazy(() => import("./pages/akademik/sidang/Sidang"));
-const Sempro = lazy(() => import("./pages/akademik/sempro/Sempro"));
-const Wisuda = lazy(() => import("./pages/akademik/wisuda/Wisuda"));
+const S1PGMI = lazy(() => import("./pages/akademik/sarjana/S1"));
+const KKN = lazy(() => import("./pages/akademik/sarjana/kkn/KKN"));
+const Sidang = lazy(() => import("./pages/akademik/sarjana/sidang/Sidang"));
+const Sempro = lazy(() => import("./pages/akademik/sarjana/sempro/Sempro"));
+const Wisuda = lazy(() => import("./pages/akademik/sarjana/wisuda/Wisuda"));
 
 const Blog = lazy(() => import("./pages/blog/Blog"));
 const BlogDetail = lazy(() => import("./pages/blog/detail/BlogDetail"));
 const Detailusers = lazy(() => import("./pages/blog/users/DetailProfile"));
+const BlogAdminLogin = lazy(() => import("./pages/blog/admin/BlogAdminLogin"));
+const BlogAdminDashboard = lazy(() => import("./pages/blog/admin/BlogAdminDashboard"));
+import BlogAdminProtectedRoute from "./pages/blog/admin/BlogAdminProtectedRoute";
 const Bahasa = lazy(() => import("./pages/bahasa/Bahasa"));
 const DetailBahasa = lazy(() => import("./pages/bahasa/detailbahasa/detail"));
 const Komunitas = lazy(() => import("./pages/Komunitas/Komo"));
@@ -145,7 +151,10 @@ const DefaultLayout = ({ children }) => {
     "/discord",
     "/komunitas",
     "/discord/profile",
-    "/Live-Discussion"
+    "/Live-Discussion",
+    "/blog-admin",
+    "/blog/secret-login",
+    "/blog/admin"
   ];
 
   // If the pathname begins with any of these, hide header/footer (case-insensitive)
@@ -232,12 +241,15 @@ export default function App() {
                   >
                     {/* Pindahkan usePageTracker ke dalam Router */}
                     <PageTracker />
-                    <Suspense fallback={
-                      <div className="min-h-screen flex items-center justify-center bg-[var(--color-gray-900)]">
-                        <div className="w-10 h-10 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin"></div>
-                      </div>
-                    }>
-                      <Routes>
+                    {/* Notifikasi pembaruan versi website */}
+                    <UpdateNotification />
+                    <GlobalErrorBoundary>
+                      <Suspense fallback={
+                        <div className="min-h-screen flex items-center justify-center bg-[var(--color-gray-900)]">
+                          <div className="w-10 h-10 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin"></div>
+                        </div>
+                      }>
+                        <Routes>
                         {/* Redirects: direct certain paths to /coming-soon
                   Disabled temporarily to re-enable development for these routes.
                   Previous redirect lines are kept here (commented) so nothing is deleted. */}
@@ -274,7 +286,7 @@ export default function App() {
                                   <Route path="/testimoni" element={<Testimoni />} />
                                   <Route path="/testimoni/:id" element={<Testimoni />} />
                                   <Route path="/testimoni/authors/:slug" element={<DetailPenggunaPage />} />
-                                  <Route path="/testimoni/perusahan/:slug" element={<DetailPerusahaanPage />} />
+                                  <Route path="/testimoni/perusahaan/:slug" element={<DetailPerusahaanPage />} />
 
                                   {/* ❓ Halaman bantuan */}
                                   <Route path="/help/version" element={<Info />} />
@@ -323,11 +335,36 @@ export default function App() {
                                   <Route path="/blog/:slug" element={<BlogDetail />} />
                                   <Route path="/blog/authors/:slug" element={<Detailusers />} />
 
+                                  {/* 🛡️ Halaman Rahasia: Login & Dashboard Khusus Manajemen Blog */}
+                                  <Route path="/blog-admin/login" element={<BlogAdminLogin />} />
+                                  <Route path="/blog/secret-login" element={<BlogAdminLogin />} />
+                                  <Route path="/blog/admin/login" element={<BlogAdminLogin />} />
+                                  <Route
+                                    path="/blog-admin/dashboard"
+                                    element={
+                                      <BlogAdminProtectedRoute>
+                                        <BlogAdminDashboard />
+                                      </BlogAdminProtectedRoute>
+                                    }
+                                  />
+                                  <Route
+                                    path="/blog/admin/dashboard"
+                                    element={
+                                      <BlogAdminProtectedRoute>
+                                        <BlogAdminDashboard />
+                                      </BlogAdminProtectedRoute>
+                                    }
+                                  />
+                                  <Route path="/blog-admin" element={<Navigate to="/blog-admin/dashboard" replace />} />
+                                  <Route path="/blog/admin" element={<Navigate to="/blog-admin/dashboard" replace />} />
+
                                   <Route path="/bahasa" element={<Bahasa />} />
                                   <Route path="/bahasa/detail/:slug" element={<DetailBahasa />} />
                                   <Route path="/owner" element={<Owner />} />
 
                                   <Route path="/S1-PGMI" element={<S1PGMI />} />
+                                  <Route path="/kkn" element={<KKN />} />
+                                  <Route path="/kkn-desa-kundan-haruyan-dayak" element={<KKN />} />
                                   <Route path="/sempro-skripsi" element={<Sempro />} />
                                   <Route path="/sidang-skripsi" element={<Sidang />} />
                                   <Route path="/wisuda" element={<Wisuda />} />
@@ -416,6 +453,7 @@ export default function App() {
                         />
                       </Routes>
                     </Suspense>
+                  </GlobalErrorBoundary>
                   </motion.div>
                 )}
               </div>

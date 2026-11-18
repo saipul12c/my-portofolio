@@ -2,9 +2,20 @@
 import { useState, useCallback, useMemo } from 'react';
 import nlp from 'compromise';
 import Sentiment from 'sentiment';
-import blogData from '../../../../data/blog/data.json';
-import faqsData from '../../../../components/helpbutton/faq/data/faqs.json';
-import commitmentsData from '../../../../components/helpbutton/komit/data/commitments.json';
+import { fetchAllPosts } from '../../../blog/services/blogSupabase';
+
+// Dynamic blog data cache for SoftSkills AI from Supabase
+let activeBlogData = [];
+fetchAllPosts().then((posts) => {
+  if (Array.isArray(posts) && posts.length > 0) {
+    activeBlogData = posts;
+  }
+}).catch(() => {});
+import faqsData from '../../../../data/helpbutton/faq/faqs.json';
+import commitmentsData from '../../../../data/helpbutton/komit/commitments.json';
+import { cleanText, extractKeywords, mapSynonyms, detectIntents } from '../../../../utils/ai/nlpCore';
+import { findRelatedEntities } from '../../../../utils/ai/knowledgeBase';
+import { recordAITopic, getCrossAgentGreeting } from '../../../../utils/ai/sessionMemory';
 
 const sentimentAnalyzer = new Sentiment();
 
@@ -47,13 +58,13 @@ function normalizeInput(text) {
   let normalized = text.toLowerCase().trim();
   // 1. Handle common punctuation
   normalized = normalized.replace(/[?!.,]/g, '');
-  
+
   // 2. Map synonyms
   Object.keys(SYNONYM_MAP).forEach(syn => {
     const regex = new RegExp(`\\b${syn}\\b`, 'g');
     normalized = normalized.replace(regex, SYNONYM_MAP[syn]);
   });
-  
+
   return normalized;
 }
 
@@ -109,68 +120,68 @@ const RESPONSE_TEMPLATES = {
 
 // --- CORE UTILITIES ---
 
-  // --- INTERNAL UTILITIES ---
-  function handleJobMatching(query, skillList = []) {
-    const roleMatch = query.match(/(?:untuk|posisi|sebagai|cari|role|pekerjaan)\s+([a-zA-Z\s]+)/i);
-    const targetRole = roleMatch ? roleMatch[1].trim() : "posisi yang Anda cari";
-    
-    // Scoring logic
-    let matchScore = 0;
-    let relevantSkills = [];
-    let relevantBlogs = [];
+// --- INTERNAL UTILITIES ---
+function handleJobMatching(query, skillList = []) {
+  const roleMatch = query.match(/(?:untuk|posisi|sebagai|cari|role|pekerjaan)\s+([a-zA-Z\s]+)/i);
+  const targetRole = roleMatch ? roleMatch[1].trim() : "posisi yang Anda cari";
 
-    (skillList || []).forEach(s => {
-       const sName = (s.name || '').toLowerCase();
-       const isDirect = targetRole.toLowerCase().includes(sName) || sName.includes(targetRole.toLowerCase());
-       const isTagMatch = (s.tags || []).some(t => targetRole.toLowerCase().includes(t.toLowerCase()));
-       if (isDirect || isTagMatch) {
-          matchScore += ((s.experience || 50) / 2);
-          relevantSkills.push(s);
-       }
-    });
+  // Scoring logic
+  let matchScore = 0;
+  let relevantSkills = [];
+  let relevantBlogs = [];
 
-    (blogData || []).forEach(b => {
-       const bTitle = (b.title || '').toLowerCase();
-       if (bTitle.includes(targetRole.toLowerCase()) || (b.tags && b.tags.some(t => targetRole.toLowerCase().includes(t.toLowerCase())))) {
-          matchScore += 15;
-          relevantBlogs.push(b);
-       }
-    });
-
-    matchScore = Math.min(Math.max(matchScore, 40), 99); // Min 40, Max 99
-    
-    let recommendation = "Perlu Eksplorasi Lebih Lanjut";
-    if (matchScore > 80) recommendation = "Sangat Direkomendasikan";
-    else if (matchScore >= 60) recommendation = "Potensial & Kompeten";
-
-    let response = `### **Laporan Analisis Kecocokan** 📊\n`;
-    response += `Berdasarkan kebutuhan Anda untuk **${targetRole}**, berikut adalah hasil evaluasi saya:\n\n`;
-    response += `**Skor Kecocokan:** \`${matchScore}%\` – **${recommendation}**\n\n`;
-    
-    if (relevantSkills.length > 0) {
-       response += `**Kekuatan Utama:**\n`;
-       relevantSkills.slice(0, 2).forEach(s => {
-          response += `* **${s.name}** (Penguasaan ${s.experience || 0}%)\n`;
-       });
+  (skillList || []).forEach(s => {
+    const sName = (s.name || '').toLowerCase();
+    const isDirect = targetRole.toLowerCase().includes(sName) || sName.includes(targetRole.toLowerCase());
+    const isTagMatch = (s.tags || []).some(t => targetRole.toLowerCase().includes(t.toLowerCase()));
+    if (isDirect || isTagMatch) {
+      matchScore += ((s.experience || 50) / 2);
+      relevantSkills.push(s);
     }
+  });
 
-    if (relevantBlogs.length > 0) {
-       response += `\n**Bukti Portofolio:**\nSyaiful telah membagikan wawasannya tentang topik ini di artikel: *"${relevantBlogs[0].title}"*.\n`;
+  ((activeBlogData || blogData) || []).forEach(b => {
+    const bTitle = (b.title || '').toLowerCase();
+    if (bTitle.includes(targetRole.toLowerCase()) || (b.tags && b.tags.some(t => targetRole.toLowerCase().includes(t.toLowerCase())))) {
+      matchScore += 15;
+      relevantBlogs.push(b);
     }
+  });
 
-    response += `\n\n> [!CAUTION]\n> **Disclaimer:** Analisis ini adalah estimasi otomatis berdasarkan korelasi data publik (artikel blog & soft skills). Hasil akhir sebaiknya dikonfirmasi melalui wawancara langsung.\n\n*Apakah Anda ingin menjadwalkan pertemuan atau melihat detail skill lainnya?*`;
-    
-    return response;
+  matchScore = Math.min(Math.max(matchScore, 40), 99); // Min 40, Max 99
+
+  let recommendation = "Perlu Eksplorasi Lebih Lanjut";
+  if (matchScore > 80) recommendation = "Sangat Direkomendasikan";
+  else if (matchScore >= 60) recommendation = "Potensial & Kompeten";
+
+  let response = `### **Laporan Analisis Kecocokan** 📊\n`;
+  response += `Berdasarkan kebutuhan Anda untuk **${targetRole}**, berikut adalah hasil evaluasi saya:\n\n`;
+  response += `**Skor Kecocokan:** \`${matchScore}%\` – **${recommendation}**\n\n`;
+
+  if (relevantSkills.length > 0) {
+    response += `**Kekuatan Utama:**\n`;
+    relevantSkills.slice(0, 2).forEach(s => {
+      response += `* **${s.name}** (Penguasaan ${s.experience || 0}%)\n`;
+    });
   }
+
+  if (relevantBlogs.length > 0) {
+    response += `\n**Bukti Portofolio:**\nSyaiful telah membagikan wawasannya tentang topik ini di artikel: *"${relevantBlogs[0].title}"*.\n`;
+  }
+
+  response += `\n\n> [!CAUTION]\n> **Disclaimer:** Analisis ini adalah estimasi otomatis berdasarkan korelasi data publik (artikel blog & soft skills). Hasil akhir sebaiknya dikonfirmasi melalui wawancara langsung.\n\n*Apakah Anda ingin menjadwalkan pertemuan atau melihat detail skill lainnya?*`;
+
+  return response;
+}
 
 function pickTemplate(category, contextData = {}) {
   const templates = RESPONSE_TEMPLATES[category] || ["Sesuatu yang menarik ditemukan..."];
   let template = templates[Math.floor(Math.random() * templates.length)];
-  
+
   Object.keys(contextData).forEach(key => {
     template = template.replace(`{${key}}`, contextData[key]);
   });
-  
+
   return template;
 }
 
@@ -252,7 +263,7 @@ export function useSoftSkillsAI(skills = []) {
     Object.keys(INTENT_CONFIG).forEach(intent => {
       let score = 0;
       const config = INTENT_CONFIG[intent];
-      
+
       // Keyword match
       config.keywords.forEach(kw => {
         if (text.includes(kw)) score += config.weight;
@@ -273,13 +284,13 @@ export function useSoftSkillsAI(skills = []) {
     const found = [];
     const normalizedQuery = normalizeInput(query);
     const doc = nlp(normalizedQuery);
-    
+
     // Explicit mention & Tag matching
     skills.forEach(s => {
       const nameMatch = normalizedQuery.includes(s.name.toLowerCase());
       const tagMatch = s.tags?.some(tag => normalizedQuery.includes(tag.toLowerCase()));
       const categoryMatch = normalizedQuery.includes(s.category.toLowerCase());
-      
+
       if (nameMatch || tagMatch || categoryMatch) {
         found.push(s);
       }
@@ -287,15 +298,15 @@ export function useSoftSkillsAI(skills = []) {
 
     // Pronoun resolution
     const hasPronoun = doc.match('(itu|tersebut|terakhir|kemarin|tadi|pertama|semuanya|both|keduanya|ia|dia|ini)').found;
-    
+
     if ((found.length === 0 || hasPronoun) && context.entities.length > 0) {
       if (normalizedQuery.includes('semuanya') || normalizedQuery.includes('all')) return skills;
       if (normalizedQuery.includes('pertama')) return [context.entities[0]];
-      
+
       // Intelligent fallback: Use recently talked about entities
       const relevantContext = context.entities.slice(-2);
       if (found.length === 0) return relevantContext;
-      
+
       // Merge found with context if pronoun exists
       return Array.from(new Set([...found, ...relevantContext]));
     }
@@ -312,12 +323,12 @@ export function useSoftSkillsAI(skills = []) {
   const getSingleResponse = (querySegment, context) => {
     const normalizedQuery = normalizeInput(querySegment);
     if (!normalizedQuery) return null;
-    
+
     const doc = nlp(normalizedQuery);
-    
+
     // 0. Negation Check
     const isNegative = doc.match('(bukan|tidak|jangan|bukanlah|no)').found;
-    
+
     // 0.1 Implicit Context Check (Situational Logic)
     const isImplicit = IMPLICIT_CONFIG.keywords.some(kw => normalizedQuery === kw || normalizedQuery.startsWith(kw + ' '));
     if (isImplicit) {
@@ -339,31 +350,31 @@ export function useSoftSkillsAI(skills = []) {
     // --- NEW: PREDICTIVE CONTEXT (Lazy Trigger) ---
     let predictivePrefix = "";
     if (!context?.history || context.history.length === 0) {
-       const lastTopicStr = localStorage.getItem('saipul_ai_last_topic');
-       if (lastTopicStr) {
-          try {
-             const lastTopic = JSON.parse(lastTopicStr);
-             const fiveMinutes = 5 * 60 * 1000;
-             if (Date.now() - lastTopic.timestamp < fiveMinutes) {
-                predictivePrefix = `*Btw, saya lihat Anda baru saja tertarik dengan topik **${lastTopic.name}** di Blog. Senang bisa berdiskusi lebih lanjut!* \n\n`;
-                // Clear to avoid repeating
-                localStorage.removeItem('saipul_ai_last_topic');
-             }
-          } catch(e) {}
-       }
+      const lastTopicStr = localStorage.getItem('saipul_ai_last_topic');
+      if (lastTopicStr) {
+        try {
+          const lastTopic = JSON.parse(lastTopicStr);
+          const fiveMinutes = 5 * 60 * 1000;
+          if (Date.now() - lastTopic.timestamp < fiveMinutes) {
+            predictivePrefix = `*Btw, saya lihat Anda baru saja tertarik dengan topik **${lastTopic.name}** di Blog. Senang bisa berdiskusi lebih lanjut!* \n\n`;
+            // Clear to avoid repeating
+            localStorage.removeItem('saipul_ai_last_topic');
+          }
+        } catch (e) { }
+      }
     }
 
     // --- NEW: JOB MATCHING ENGINE ---
     if (bestIntent === 'jobMatching' && scores.jobMatching > 0.6) {
-       return predictivePrefix + handleJobMatching(normalizedQuery, skills);
+      return predictivePrefix + handleJobMatching(normalizedQuery, skills);
     }
-    
+
     // 1.1 Out-of-Scope (OOS) & Cross-Context Detection
     const genericKeywords = ['presiden', 'cuaca', 'berita', 'politik', 'makan', 'resep', 'lokasi', 'alamat', 'jam', 'tanggal', 'dunia', 'negara'];
     const isGeneric = genericKeywords.some(kw => normalizedQuery.includes(kw));
 
     // --- NEW: CROSS-CONTEXT LOOKUP ---
-    const matchBlog = blogData.find(b => b.title.toLowerCase().includes(normalizedQuery) || (b.tags && b.tags.some(t => normalizedQuery.includes(t.toLowerCase()))));
+    const matchBlog = (activeBlogData || blogData).find(b => b.title.toLowerCase().includes(normalizedQuery) || (b.tags && b.tags.some(t => normalizedQuery.includes(t.toLowerCase()))));
     const matchFAQ = faqsData.find(f => f.question.toLowerCase().includes(normalizedQuery) || f.answer.toLowerCase().includes(normalizedQuery));
     const matchCommit = (commitmentsData.commitments || []).find(c => c.title.toLowerCase().includes(normalizedQuery) || c.desc.toLowerCase().includes(normalizedQuery));
 
@@ -382,7 +393,7 @@ export function useSoftSkillsAI(skills = []) {
 
     // 2. Context Extraction
     const targets = resolveEntities(querySegment, context);
-    
+
     // If negative and has targets, filter them OUT or handle specifically
     if (isNegative && targets.length > 0) {
       return `Saya mengerti Anda ingin mengecualikan **${targets.map(t => t.name).join(', ')}**. Ada yang lain yang ingin ditanyakan?`;
@@ -422,10 +433,10 @@ export function useSoftSkillsAI(skills = []) {
       if (targets.length === 2) {
         const [s1, s2] = targets;
         return `**Analisis Perbandingan: ${s1.name} vs ${s2.name}**\n` +
-               `• Penguasaan: ${s1.experience}% vs ${s2.experience}%\n` +
-               `• Level: ${s1.level} vs ${s2.level}\n` +
-               `• Kesulitan: ${DIFFICULTY_MAP[s1.difficulty] || s1.difficulty} vs ${DIFFICULTY_MAP[s2.difficulty] || s2.difficulty}\n\n` +
-               `*Kesimpulan: Saipul sedikit lebih unggul di bidang ${s1.experience > s2.experience ? s1.name : s2.name}.*`;
+          `• Penguasaan: ${s1.experience}% vs ${s2.experience}%\n` +
+          `• Level: ${s1.level} vs ${s2.level}\n` +
+          `• Kesulitan: ${DIFFICULTY_MAP[s1.difficulty] || s1.difficulty} vs ${DIFFICULTY_MAP[s2.difficulty] || s2.difficulty}\n\n` +
+          `*Kesimpulan: Saipul sedikit lebih unggul di bidang ${s1.experience > s2.experience ? s1.name : s2.name}.*`;
       }
     }
 
@@ -438,9 +449,9 @@ export function useSoftSkillsAI(skills = []) {
       const avg = (activeData.reduce((acc, s) => acc + (s.experience || 0), 0) / activeData.length).toFixed(1);
       const targetCategory = targets.length > 0 && targets[0].category ? targets[0].category : null;
       const loc = targetCategory ? `dalam kategori **${targetCategory}**` : "keseluruhan";
-      
+
       if (normalizedQuery.includes('tersulit') || normalizedQuery.includes('sulit')) {
-        const hardest = activeData.find(s => s.difficulty === 'Hard') || sorted[sorted.length-1];
+        const hardest = activeData.find(s => s.difficulty === 'Hard') || sorted[sorted.length - 1];
         return `Berdasarkan data, skill paling menantang ${loc} adalah **${hardest.name}**.`;
       }
       return `**Statistik ${loc}:**\n• Rata-rata: ${avg}%\n• Tertinggi: ${sorted[0].name} (${sorted[0].experience}%)\n• Jumlah: ${activeData.length} skill.`;
@@ -458,22 +469,22 @@ export function useSoftSkillsAI(skills = []) {
       if (bestIntent === 'why') return `${recallPrefix}**Mengapa ${s.name} Penting?**\n${s.description}\n\n*Dalam ekosistem kerja, ${s.name} membantu Saipul dalam mitigasi masalah dan kolaborasi tim.*`;
       if (bestIntent === 'how') return `${recallPrefix}**Strategi Pengembangan ${s.name}:**\n1. Eksperimen: "${s.examples?.[0]}"\n2. Refleksi diri secara berkala.\n3. Kursus atau literatur terkait.`;
       if (bestIntent === 'example') return `${recallPrefix}**Contoh Implementasi ${s.name}:**\n${s.examples?.map(ex => `• ${ex}`).join('\n')}`;
-      
+
       // Default: Comprehensive Details
       const expBar = createExpBar(s.experience);
       const tags = s.tags?.map(t => `#${t}`).join(' ') || "";
-      
+
       let baseResponse = `${recallPrefix}### **${s.name}**\n` +
-             `*${s.category}*\n\n` +
-             `**Visi:** ${s.description}\n\n` +
-             `**Level:** ✨ ${s.level}\n` +
-             `**Kesulitan:** ${DIFFICULTY_MAP[s.difficulty] || s.difficulty}\n` +
-             `**Penguasaan:** \`${expBar}\` ${s.experience}%\n` +
-             `${tags ? `\n> ${tags}\n` : ""}` +
-             `\n*Anda bisa bertanya tentang "Tips" atau "Contoh" untuk skill ini.*`;
+        `*${s.category}*\n\n` +
+        `**Visi:** ${s.description}\n\n` +
+        `**Level:** ✨ ${s.level}\n` +
+        `**Kesulitan:** ${DIFFICULTY_MAP[s.difficulty] || s.difficulty}\n` +
+        `**Penguasaan:** \`${expBar}\` ${s.experience}%\n` +
+        `${tags ? `\n> ${tags}\n` : ""}` +
+        `\n*Anda bisa bertanya tentang "Tips" atau "Contoh" untuk skill ini.*`;
 
       // --- CROSS-CONTEXT ENRICHMENT (Enriching skill with Blogs/FAQ) ---
-      const relatedBlog = blogData.find(b => (b.tags || []).some(t => t.toLowerCase() === s.name.toLowerCase()));
+      const relatedBlog = (activeBlogData || blogData).find(b => (b.tags || []).some(t => t.toLowerCase() === s.name.toLowerCase()));
       if (relatedBlog) {
         baseResponse += `\n\n---\n💡 **Bacaan Terkait (Blog):**\nSyaiful juga menulis tentang ini di artikel **"${relatedBlog.title}"**. [Lihat Blog](/blog)`;
       }
@@ -486,7 +497,7 @@ export function useSoftSkillsAI(skills = []) {
 
   const getResponse = useCallback((input) => {
     const rawText = input.toLowerCase();
-    
+
     // 1. Segmentation (Handle multiple instructions & Exclusion)
     const segments = rawText.split(/\s+(?:dan|lalu|kemudian|serta|and|then|plus)\s+/);
     const results = [];
@@ -500,9 +511,9 @@ export function useSoftSkillsAI(skills = []) {
     segments.forEach(segment => {
       // Logic for "Analisis semua" or similar broad queries
       const isBroadQuery = segment.includes('semua') || segment.includes('seluruh') || segment.includes('list');
-      
+
       let targets = resolveEntities(segment, { entities: currentEntities });
-      
+
       // Filter out excluded entities
       if (excludedNames.length > 0) {
         targets = targets.filter(t => !excludedNames.some(name => t.name.toLowerCase().includes(name)));
@@ -533,20 +544,30 @@ export function useSoftSkillsAI(skills = []) {
     }));
 
     if (results.length > 0) return results.join('\n\n---\n\n');
-    
+
     return pickTemplate('notFound');
   }, [skills, sessionContext]);
 
   const sendMessage = useCallback((text) => {
     if (!text.trim()) return;
-    setMessages(prev => [...prev, { id: `user-${Date.now()}`, from: 'user', text, timestamp: new Date().toISOString() }]); 
+    recordAITopic(text, 'SoftSkillsAI');
+    const crossGreeting = getCrossAgentGreeting('SoftSkillsAI');
+    const relatedEntities = findRelatedEntities(text);
+
+    setMessages(prev => [...prev, { id: `user-${Date.now()}`, from: 'user', text, timestamp: new Date().toISOString() }]);
     setIsTyping(true);
 
     setTimeout(() => {
+      let replyText = getResponse(text);
+      if (crossGreeting) {
+        replyText = `${crossGreeting}\n\n${replyText}`;
+      }
+
       setMessages(prev => [...prev, {
         id: `bot-${Date.now()}`,
         from: 'bot',
-        text: getResponse(text),
+        text: replyText,
+        relatedEntities: relatedEntities?.hasMatches ? relatedEntities : null,
         timestamp: new Date().toISOString()
       }]);
       setIsTyping(false);
@@ -561,17 +582,17 @@ export function useSoftSkillsAI(skills = []) {
   const suggestions = useMemo(() => {
     if (sessionContext.entities.length > 0) {
       const s = sessionContext.entities[sessionContext.entities.length - 1];
-      
+
       // Smart recommendation based on tags
-      const related = skills.find(other => 
-        other.id !== s.id && 
+      const related = skills.find(other =>
+        other.id !== s.id &&
         other.tags?.some(t => s.tags?.includes(t))
       );
 
       const items = [`Tips ${s.name}`, `Contoh ${s.name}`];
       if (related) items.push(`Bandingkan dengan ${related.name}`);
       items.push("Statistik Kategori");
-      
+
       return items;
     }
     return ["Analisis semua skill", "Berapa jumlah skill?", "Statistik Teratas", "Siapa Saipul?"];
@@ -580,3 +601,4 @@ export function useSoftSkillsAI(skills = []) {
 
   return { messages, isTyping, sendMessage, clearChat, suggestions };
 }
+

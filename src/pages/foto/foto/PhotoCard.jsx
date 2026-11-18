@@ -104,9 +104,19 @@ function PhotoCard({ photo, onClick }) {
         </div>
       </div>
 
-      {/* Corner Badge for New/Featured */}
-      {photo.featured && (
-        <div className="absolute top-2 left-2 z-10">
+      {/* Corner Badge for New/Featured/Album */}
+      <div className="absolute top-2 left-2 z-10 flex flex-col gap-1 pointer-events-none">
+        {photo.isAlbum && (
+          <div className="px-2 py-0.5 bg-pink-500/90 text-white text-[10px] font-bold rounded-full shadow-lg backdrop-blur-md border border-pink-400">
+            🗂️ Album ({photo.albumCount})
+          </div>
+        )}
+        {photo.isFromGallery && !photo.isAlbum && (
+          <div className="px-2 py-0.5 bg-blue-500/80 text-white text-[10px] font-semibold rounded-full shadow-md backdrop-blur-md border border-blue-400/50">
+            ✨ Galeri
+          </div>
+        )}
+        {photo.featured && !photo.isAlbum && (
           <motion.div
             className="px-2 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-black text-[10px] font-bold rounded-full shadow-lg"
             animate={{ scale: [1, 1.08, 1] }}
@@ -114,8 +124,8 @@ function PhotoCard({ photo, onClick }) {
           >
             ✨ Featured
           </motion.div>
-        </div>
-      )}
+        )}
+      </div>
     </motion.div>
   );
 }

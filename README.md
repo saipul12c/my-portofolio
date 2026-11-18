@@ -9,10 +9,11 @@
 Website portfolio ini adalah platform lengkap yang dibangun dengan **React + Vite + Tailwind CSS** di frontend dan **Node.js + Express** di backend. Dirancang untuk memperkenalkan diri secara profesional sambil menampilkan karya-karya terbaik dan konten multimedia.
 
 **Tech Stack:**
-- **Frontend:** React 19, Vite, Tailwind CSS, React Router v7, Framer Motion
-- **Backend:** Node.js, Express.js
-- **Tools:** EmailJS (email integration), React Icons, React Window (virtualization)
-- **Features:** Dark/Light Mode, SEO Optimization, Error Boundary, Responsive Design
+- **Frontend:** React 19, Vite 7, Tailwind CSS v4 (`@tailwindcss/vite`), React Router v7, Framer Motion
+- **Backend & Data:** Supabase Client, Node.js, Express.js, Socket.IO
+- **Styling Architecture:** 100% Pure Tailwind CSS v4 (Zero legacy custom CSS files)
+- **Tools:** EmailJS, Lucide React, React Icons, React Window (virtualization)
+- **Features:** Dark/Light Theme Tokens, SEO Optimization, Error Boundary, Full Responsive Design
 
 ---
 
@@ -348,13 +349,14 @@ Website fully responsive dengan breakpoints:
 
 ---
 
-## 🎨 Tema & Styling
+## 🎨 Tema & Styling (100% Full Tailwind CSS)
 
-Menggunakan **Tailwind CSS** untuk styling:
-- Color scheme yang konsisten
-- Dark mode support dengan CSS variables
-- Custom component classes
-- Responsive utility classes
+Project ini telah sepenuhnya dimigrasi dan distandardisasi menggunakan **Tailwind CSS v4** murni:
+- **Zero Legacy CSS Files**: Seluruh file CSS kustom terpisah (`App.css`, `discond-theme.css`, dll.) telah dihapus dan digantikan langsung oleh utility classes Tailwind.
+- **Modern Vite Integration**: Menggunakan plugin resmi `@tailwindcss/vite` untuk build super cepat dan tree-shaking optimal.
+- **Design Tokens `@theme`**: Pengaturan variabel warna tema (`--theme-bg`, `--theme-surface`, `--theme-accent`, dll.) didefinisikan secara deklaratif di `src/index.css`.
+- **Komunitas / Discord Module**: Seluruh styling sidebar, chat bubble, input, dan navigasi status telah menggunakan utility classes Tailwind tanpa dependensi stylesheet eksternal.
+- **Scrollbar & Responsive**: Styling scrollbar global dan layout responsif multi-device (`sm`, `md`, `lg`, `xl`) didukung penuh.
 
 ---
 
@@ -438,9 +440,12 @@ Vite sudah dikonfigurasi untuk mem-proxy request `/api`, `/socket.io`, dan `/ava
 
 ## ✅ Version History
 
-Latest version: **v1.18.100**
+Latest version: **v1.20.0** (2026-11-15)
+- **Full Tailwind CSS Migration**: Penghapusan total file CSS lawas (`App.css`, `discond-theme.css`) dan refaktor seluruh modul ke utility classes Tailwind CSS murni.
+- **Index.css Streamlined**: Eliminasi lebih dari 180 baris CSS usang/mati untuk efisiensi bundle size maksimal.
+- **Modern Tech Architecture**: Pembaruan dependensi Vite + Tailwind v4 dan penyempurnaan integrasi real-time.
 
-Lihat `CHANGELOG.md` untuk history lengkap perubahan.
+Lihat `CHANGELOG.md` untuk history lengkap seluruh perubahan.
 
 ---
 
@@ -452,13 +457,14 @@ Terima kasih kepada semua open-source libraries dan tools yang digunakan dalam p
 
 ## 🛠 Teknologi yang Digunakan
 
-- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
-- **Framework**: [React/Vue.js/Angular - pilih salah satu jika digunakan]
-- **Styling**: [Tailwind CSS/Bootstrap/SASS - sesuaikan]
-- **Icons**: [FontAwesome/React Icons]
-- **Animation**: [GSAP/Framer Motion/AOS]
-- **Tools**: Git, Webpack, npm/yarn
-- **Deployment**: [Netlify/Vercel/GitHub Pages - sesuaikan]
+- **Frontend**: React 19, JavaScript (ES6+), HTML5
+- **Build Tool**: Vite 7 dengan `@tailwindcss/vite`
+- **Styling**: Tailwind CSS v4 (100% Utility Classes, Zero Custom CSS Files)
+- **Icons**: Lucide React & React Icons
+- **Animation**: Framer Motion
+- **Database & Real-time**: Supabase Client & Socket.IO
+- **Tools**: Git, npm, ESLint
+- **Deployment**: Netlify
 
 ## 🚀 Instalasi dan Menjalankan Lokal
 
@@ -472,7 +478,7 @@ Ikuti langkah-langkah berikut untuk menjalankan proyek ini di lingkungan lokal:
 
 1. **Clone repository**
    ```bash
-   git clone https://github.com/saipul12c/portfolio-website.git
+   git clone https://github.com/saipul12c/my-portofolio.git
    cd portfolio-website
    ```
 
@@ -516,8 +522,8 @@ Untuk mengustomisasi website ini dengan informasi pribadi Anda:
 
 Jika Anda memiliki pertanyaan atau ingin berkolaborasi, silakan hubungi saya melalui:
 
-- **Email**: your.email@example.com
-- **LinkedIn**: [Your LinkedIn Profile](https://linkedin.com/in/yourprofile)
+- **Email**: uju@gmail.com
+- **LinkedIn**: [Your LinkedIn Profile](https://linkedin.com/in/saipul12c)
 - **GitHub**: [Your GitHub Profile](https://github.com/saipul12c)
 
 ## 📄 Lisensi

@@ -23,7 +23,7 @@ import {
   GitBranch,
   Activity
 } from "lucide-react";
-import docsData from "../../docs/data/docsSections.json";
+import docsData from "../../../../data/helpbutton/docs/docsSections.json";
 import { getDocBySlug, getLatestVersionInfo } from "../../docs/lib/versionUtils";
 import PLANNED_VERSIONS from "../data/plannedVersions";
 
@@ -386,9 +386,9 @@ export default function HelpVersionDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-950 via-purple-900 to-black">
+    <div className="min-h-screen bg-gradient-to-br from-[var(--color-gray-900)] via-[#0f1d32] to-[var(--color-gray-900)] text-white">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-gradient-to-r from-indigo-900/60 via-pink-900/40 to-black/40 backdrop-blur-xl border-b border-gray-700 shadow-lg">
+      <div className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-white/10 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -435,7 +435,7 @@ export default function HelpVersionDetail() {
 
           {/* Quick Info */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-gradient-to-br from-pink-900/30 via-indigo-900/20 to-slate-900/30 rounded-xl p-4 border border-gray-700 shadow-lg backdrop-blur-sm transform-gpu transition hover:scale-105">
+            <div className="bg-slate-900/80 backdrop-blur-xl rounded-xl p-4 border border-white/10 shadow-lg transform-gpu transition hover:border-cyan-500/30 hover:scale-105">
               <div className="flex items-center gap-3 mb-2">
                 <Calendar className="text-blue-400" size={20} />
                 <div>
@@ -445,7 +445,7 @@ export default function HelpVersionDetail() {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-pink-900/30 via-indigo-900/20 to-slate-900/30 rounded-xl p-4 border border-gray-700 shadow-lg backdrop-blur-sm transform-gpu transition hover:scale-105">
+            <div className="bg-slate-900/80 backdrop-blur-xl rounded-xl p-4 border border-white/10 shadow-lg transform-gpu transition hover:border-green-500/30 hover:scale-105">
               <div className="flex items-center gap-3 mb-2">
                 <Users className="text-green-400" size={20} />
                 <div>
@@ -455,7 +455,7 @@ export default function HelpVersionDetail() {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-pink-900/30 via-indigo-900/20 to-slate-900/30 rounded-xl p-4 border border-gray-700 shadow-lg backdrop-blur-sm transform-gpu transition hover:scale-105">
+            <div className="bg-slate-900/80 backdrop-blur-xl rounded-xl p-4 border border-white/10 shadow-lg transform-gpu transition hover:border-purple-500/30 hover:scale-105">
               <div className="flex items-center gap-3 mb-2">
                 <Clock className="text-purple-400" size={20} />
                 <div>
@@ -465,7 +465,7 @@ export default function HelpVersionDetail() {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-pink-900/30 via-indigo-900/20 to-slate-900/30 rounded-xl p-4 border border-gray-700 shadow-lg backdrop-blur-sm transform-gpu transition hover:scale-105">
+            <div className="bg-slate-900/80 backdrop-blur-xl rounded-xl p-4 border border-white/10 shadow-lg transform-gpu transition hover:border-cyan-500/30 hover:scale-105">
               <div className="flex items-center gap-3 mb-2">
                 <GitBranch className="text-cyan-400" size={20} />
                 <div>
@@ -765,7 +765,7 @@ export default function HelpVersionDetail() {
             {/* Overview Section */}
             {activeSection === "overview" && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-4">Version Overview</h2>
                   <p className="text-gray-300 mb-6">{version.content || version.description}</p>
                   
@@ -785,7 +785,7 @@ export default function HelpVersionDetail() {
 
                 {/* Tags */}
                 {version.tags && version.tags.length > 0 && (
-                  <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                  <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                     <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                       <Tag size={20} />
                       Tags & Categories
@@ -811,7 +811,7 @@ export default function HelpVersionDetail() {
             {/* Changelog Section */}
             {activeSection === "changelog" && version.changelog && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-6">Changelog</h2>
                   <div className="space-y-4">
                     {version.changelog.map((change, index) => (
@@ -847,7 +847,7 @@ export default function HelpVersionDetail() {
             {/* Version History Section */}
             {activeSection === "history" && version.versionHistory && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-6">Version History</h2>
                   <div className="space-y-4">
                     {version.versionHistory.map((history, index) => (
@@ -900,7 +900,7 @@ export default function HelpVersionDetail() {
             {/* Compatibility Section */}
             {activeSection === "compatibility" && version.compatibility && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-6">Compatibility</h2>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -999,7 +999,7 @@ export default function HelpVersionDetail() {
             {/* Feature Details Section */}
             {activeSection === "details" && version.details && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-6">Feature Details</h2>
                   <div className="space-y-4">
                     {version.details.map((detail, index) => (
@@ -1021,7 +1021,7 @@ export default function HelpVersionDetail() {
             {/* Acceptance Criteria Section */}
             {activeSection === "acceptance" && version.acceptanceCriteria && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-6">Acceptance Criteria</h2>
                   <ul className="list-disc list-inside space-y-2 text-gray-300">
                     {version.acceptanceCriteria.map((crit, i) => (
@@ -1035,7 +1035,7 @@ export default function HelpVersionDetail() {
             {/* Release Checklist Section */}
             {activeSection === "checklist" && version.releaseChecklist && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-6">Release Checklist</h2>
                   <div className="space-y-2 text-gray-300">
                     {version.releaseChecklist.map((item, i) => (
@@ -1051,7 +1051,7 @@ export default function HelpVersionDetail() {
             {/* Migration Notes Section */}
             {activeSection === "migration" && version.migrationNotes && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-6">Migration Notes</h2>
                   {Object.entries(version.migrationNotes).map(([key, list]) => (
                     <div key={key} className="mb-4">
@@ -1068,7 +1068,7 @@ export default function HelpVersionDetail() {
             {/* Test Plan Section */}
             {activeSection === "tests" && version.testPlan && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-6">Test Plan</h2>
                   {Object.entries(version.testPlan).map(([phase, steps]) => (
                     <div key={phase} className="mb-4">
@@ -1085,7 +1085,7 @@ export default function HelpVersionDetail() {
             {/* Performance Targets Section */}
             {activeSection === "performance" && version.performanceTargets && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-6">Performance Targets</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-300">
                     {Object.entries(version.performanceTargets).map(([k, v]) => (
@@ -1102,7 +1102,7 @@ export default function HelpVersionDetail() {
             {/* Rollout Strategy Section */}
             {activeSection === "rollout" && version.rolloutStrategy && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-6">Rollout Strategy</h2>
                   {version.rolloutStrategy.phases && (
                     <div className="mb-4">
@@ -1139,7 +1139,7 @@ export default function HelpVersionDetail() {
             {/* Business Impact Section */}
             {activeSection === "business" && version.businessImpact && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-6">Business Impact</h2>
                   <div className="text-gray-300 space-y-2">
                     {version.businessImpact.expectedIncrease && <p><strong>Expected Increase:</strong> {version.businessImpact.expectedIncrease}</p>}
@@ -1156,7 +1156,7 @@ export default function HelpVersionDetail() {
             {/* AI Upgrade Section */}
             {activeSection === "ai" && version.saipulaiUpgrade && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-4">AI Upgrade</h2>
                   <p className="text-gray-300 mb-4">{version.saipulaiUpgrade.summary || version.saipulaiUpgrade.details || ''}</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1195,7 +1195,7 @@ export default function HelpVersionDetail() {
             {/* New Features Section */}
             {activeSection === "newfeatures" && version.newFeatures && Object.keys(version.newFeatures).length > 0 && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-4">New Features</h2>
                   <div className="space-y-4">
                     {Object.entries(version.newFeatures).map(([key, feat]) => (
@@ -1214,7 +1214,7 @@ export default function HelpVersionDetail() {
             {/* Security Enhancements Section */}
             {activeSection === "security" && version.securityEnhancements && Object.keys(version.securityEnhancements).length > 0 && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-4">Security Enhancements</h2>
                   <div className="text-gray-300 space-y-3">
                     {version.securityEnhancements.website && (
@@ -1237,7 +1237,7 @@ export default function HelpVersionDetail() {
             {/* Rollback Plan Section */}
             {activeSection === "rollback" && version.rollbackPlan && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-4">Rollback Plan</h2>
                   <p className="text-gray-300 mb-2">Available: {version.rollbackPlan.available ? 'Yes' : 'No'}</p>
                   {version.rollbackPlan.rollbackTo && <p className="text-gray-300">Rollback To: {version.rollbackPlan.rollbackTo}</p>}
@@ -1249,7 +1249,7 @@ export default function HelpVersionDetail() {
             {/* Notes Section */}
             {activeSection === "notes" && version.notes && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-4">Notes</h2>
                   <p className="text-gray-300">{version.notes}</p>
                 </div>
@@ -1259,7 +1259,7 @@ export default function HelpVersionDetail() {
             {/* Resources Section */}
             {activeSection === "resources" && version.resources && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-6">Resources</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {version.resources.map((r, i) => (

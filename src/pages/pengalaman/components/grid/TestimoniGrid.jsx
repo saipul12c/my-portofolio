@@ -40,7 +40,7 @@ export default function TestimoniGrid({
 
   const handleNavigateToCompany = (e, company) => {
     e.stopPropagation();
-    navigate(`/testimoni/perusahan/${createSlug(company)}`);
+    navigate(`/testimoni/perusahaan/${createSlug(company)}`);
   };
   return (
     <>
@@ -83,7 +83,7 @@ export default function TestimoniGrid({
                 {t.company && (
                   <button
                     onClick={(e) => handleNavigateToCompany(e, t.company)}
-                    className="flex items-center gap-1 px-2 py-1 bg-emerald-500/20 hover:bg-emerald-500/40 border border-emerald-400/30 rounded-full text-emerald-300 text-xs transition-colors whitespace-nowrap"
+                    className="flex items-center gap-1 px-2 py-1 bg-cyan-500/20 hover:bg-cyan-500/40 border border-cyan-400/30 rounded-full text-cyan-300 text-xs transition-colors whitespace-nowrap"
                     title="Lihat detail perusahaan"
                   >
                     <Building2 size={12} />

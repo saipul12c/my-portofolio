@@ -35,13 +35,13 @@ const TeamTab = ({ team }) => {
                   loading="lazy"
                 />
               ) : (
-                <div className="w-20 h-20 rounded-full mx-auto mb-4 bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+                <div className="w-20 h-20 rounded-full mx-auto mb-4 bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg">
                   <Users size={32} className="text-white" />
                 </div>
               )}
               
               <h3 className="font-bold text-lg mb-1">{member.name}</h3>
-              <p className="text-emerald-400 text-sm mb-4">{member.role}</p>
+              <p className="text-cyan-400 text-sm mb-4 font-medium">{member.role}</p>
               
               <div className="flex items-center gap-2 justify-center text-gray-400 text-sm">
                 <Briefcase size={16} />

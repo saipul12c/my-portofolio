@@ -1,17 +1,17 @@
 import { motion } from "framer-motion";
-import { 
-  Camera, Code2, Sparkles, ArrowRight, 
-  BookOpen, Award, Lightbulb, Heart, 
+import {
+  Camera, Code2, Sparkles, ArrowRight,
+  BookOpen, Award, Lightbulb, Heart,
   Github, ExternalLink, ChevronRight,
   BarChart3, Users, Zap, Star, TrendingUp,
   Briefcase, MapPin, Calendar, Rocket, CheckCircle,
   Eye, MessageCircle, Share2, Clock, Tag,
   Clock3, Users2, Video, Upload, MessageSquare
 } from "lucide-react";
-import { 
+import {
   FaRocket, FaUsers, FaVideo, FaUpload, FaCode,
   FaTwitter, FaGithub, FaLinkedin, FaInstagram, FaYoutube,
-  FaFacebook, FaDiscord 
+  FaFacebook, FaDiscord
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -19,9 +19,13 @@ import Maintenance from "./errors/Maintenance"; // 🧩 impor halaman Maintenanc
 
 // 📊 Import data files
 import projectsData from "../data/projects.json";
-import blogData from "../data/blog/data.json";
+import { fetchAllPosts } from "./blog/services/blogSupabase";
 import galleryData from "../data/galleryData.json";
-import comingSoonData from "../data/comingsoon/data.json"; 
+import comingSoonData from "../data/comingsoon/data.json";
+import certificatesData from "../data/sertif/certificates.json";
+import softskillsData from "../data/skills/softskills.json";
+import specializationsData from "../data/skills/specializations.json";
+import experiencesData from "../data/pengalaman/experiences.json";
 
 export default function Home() {
   const [projects, setProjects] = useState([]);
@@ -34,11 +38,15 @@ export default function Home() {
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
 
-  // 🔄 Load data dari JSON
+  // 🔄 Load data dari JSON & Supabase
   useEffect(() => {
     try {
       setProjects(projectsData.projects?.slice(0, 3) || []);
-      setBlogs(blogData?.slice(0, 3) || []);
+      fetchAllPosts().then((liveBlogs) => {
+        if (Array.isArray(liveBlogs) && liveBlogs.length > 0) {
+          setBlogs(liveBlogs.slice(0, 3));
+        }
+      }).catch(() => { });
       setGallery(galleryData?.slice(0, 6) || []);
       // Pastikan comingSoon adalah array
       setComingSoon(Array.isArray(comingSoonData) ? comingSoonData : []);
@@ -110,112 +118,65 @@ export default function Home() {
     { icon: Code2, label: "Proyek Selesai", value: `${projects.length || 15}+`, color: "cyan" },
     { icon: Camera, label: "Foto Dokumentasi", value: `${gallery.length * 30 || 200}+`, color: "purple" },
     { icon: BookOpen, label: "Artikel Blog", value: `${blogs.length * 5 || 20}+`, color: "blue" },
-    { icon: Award, label: "Sertifikasi", value: "5+", color: "emerald" },
+    { icon: Award, label: "Sertifikasi", value: `${certificatesData.certificates?.length || 19}+`, color: "emerald" },
   ];
 
-  // 🎯 Fitur Utama Website
-  const mainFeatures = [
-    {
-      icon: <Camera className="w-10 h-10 text-cyan-400" />,
-      title: "Galeri Fotografi",
-      description: "Koleksi foto artistik dan dokumentasi dengan kategori terstruktur",
-      link: "/photography",
-      color: "from-cyan-500/20 to-cyan-600/10",
-      border: "border-cyan-500/50"
-    },
-    {
-      icon: <Code2 className="w-10 h-10 text-purple-400" />,
-      title: "Portfolio Proyek",
-      description: "Showcase proyek terbaik dengan teknologi dan demo interaktif",
-      link: "/projects",
-      color: "from-purple-500/20 to-purple-600/10",
-      border: "border-purple-500/50"
-    },
-    {
-      icon: <BookOpen className="w-10 h-10 text-blue-400" />,
-      title: "Blog & Tulisan",
-      description: "Artikel teknis dan insights tentang teknologi & pendidikan",
-      link: "/blog",
-      color: "from-blue-500/20 to-blue-600/10",
-      border: "border-blue-500/50"
-    },
-  ];
+  // 🌟 Keahlian & Spesialisasi (dinamis dari specializations.json)
+  const getSpecializationIcon = (iconName) => {
+    const iconMap = {
+      Sparkles,
+      Zap,
+      Camera,
+      Heart,
+      Code2,
+      BookOpen,
+      Award,
+      Rocket,
+    };
+    const IconComponent = iconMap[iconName] || Sparkles;
+    return <IconComponent className="w-8 h-8" />;
+  };
 
-  // 🌟 Keahlian & Spesialisasi
-  const specializations = [
-    {
-      icon: <Sparkles className="w-8 h-8" />,
-      title: "Frontend Development",
-      skills: ["React", "Tailwind CSS", "Framer Motion", "Vite"]
-    },
-    {
-      icon: <Zap className="w-8 h-8" />,
-      title: "Backend Development",
-      skills: ["Node.js", "Express", "Database", "APIs"]
-    },
-    {
-      icon: <Camera className="w-8 h-8" />,
-      title: "Photography & Visual",
-      skills: ["Photography", "Video Editing", "Visual Design", "UI/UX"]
-    },
-    {
-      icon: <Heart className="w-8 h-8" />,
-      title: "Education & Teaching",
-      skills: ["Curriculum Design", "Digital Learning", "Mentoring", "Content Creation"]
-    },
-  ];
+  const specializations = (specializationsData.specializations || []).map((spec) => ({
+    ...spec,
+    icon: getSpecializationIcon(spec.icon),
+  }));
 
-  // 📈 Pengalaman & Pencapaian
-  const experiences = [
-    {
-      period: "2023 - Sekarang",
-      title: "Full-Stack Developer",
-      company: "Personal Projects & Freelance",
-      description: "Mengembangkan aplikasi web modern menggunakan React, Node.js, dan teknologi terkini",
-      achievements: ["15+ Project", "Clean Code", "Modern Stack"]
-    },
-    {
-      period: "2023 - Sekarang",
-      title: "Content Creator & Educator",
-      company: "Digital Learning Platform",
-      description: "Membuat konten edukatif dan tutorial untuk pembelajaran digital",
-      achievements: ["20+ Articles", "Active Community", "Knowledge Sharing"]
-    },
-    {
-      period: "2022 - Sekarang",
-      title: "Fotografer Dokumentasi",
-      company: "Freelance",
-      description: "Menangkap momen berharga melalui fotografi artistik dan dokumentasi",
-      achievements: ["200+ Photos", "Event Coverage", "Portfolio Gallery"]
-    },
-  ];
+  // 📈 Pengalaman & Pencapaian (dinamis dari experiences.json & tersinkronisasi dengan metrik aktual)
+  const totalProjectsCount = projectsData.projects?.length || 20;
+  const totalBlogsCount = blogs.length > 0 ? `${blogs.length}+` : "20+";
+  const totalPhotosCount = "100+";
 
-  // 🏆 Soft Skills dengan progress
-  const softSkills = [
-    { name: "Komunikasi", level: 90 },
-    { name: "Kolaborasi Tim", level: 85 },
-    { name: "Problem Solving", level: 88 },
-    { name: "Leadership", level: 80 },
-    { name: "Kreativitas", level: 92 },
-    { name: "Time Management", level: 87 },
-  ];
+  const experiences = (experiencesData.experiences || []).map((exp) => {
+    // Generate tag pencapaian dinamis berdasarkan real data proyek, blog, dan foto
+    const dynamicAchievements = (exp.tags || []).map((tag) => {
+      if (exp.metricKey === "projects" && tag.includes("Project")) {
+        return `${totalProjectsCount}+ Project`;
+      }
+      if (exp.metricKey === "blogs" && tag.includes("Article")) {
+        return `${totalBlogsCount} Articles`;
+      }
+      if (exp.metricKey === "photos" && tag.includes("Photo")) {
+        return `${totalPhotosCount} Photos`;
+      }
+      return tag;
+    });
 
-  // 📚 Sertifikasi Unggulan
-  const certifications = [
-    { name: "JavaScript ES6+", issuer: "Verified Platform", year: "2023" },
-    { name: "React Advanced", issuer: "Online Academy", year: "2023" },
-    { name: "Web Development", issuer: "Tech Institute", year: "2023" },
-    { name: "Photography Basics", issuer: "Creative School", year: "2022" },
-    { name: "Digital Marketing", issuer: "Business Academy", year: "2023" },
-  ];
+    return {
+      ...exp,
+      displayAchievements: dynamicAchievements.length > 0 ? dynamicAchievements : (exp.achievements || []).slice(0, 3)
+    };
+  });
 
-  // 🔗 Quick Links
-  const quickLinks = [
-    { icon: Users, label: "Tentang Saya", path: "/about", color: "cyan" },
-    { icon: Award, label: "Sertifikasi", path: "/certificates", color: "purple" },
-    { icon: Lightbulb, label: "Skills", path: "/SoftSkills", color: "blue" },
-    { icon: Heart, label: "Kenangan", path: "/gallery", color: "emerald" },
-  ];
+  // 🏆 Soft Skills (dinamis dari softskills.json & terhubung ke /SoftSkills/:id)
+  const softSkills = (softskillsData.skills || []).slice(0, 6).map((skill) => ({
+    id: skill.id,
+    name: skill.name,
+    level: skill.experience || 85,
+  }));
+
+  // 📚 Sertifikasi Unggulan (dinamis dari certificates.json)
+  const certifications = (certificatesData.certificates || []).slice(0, 4);
 
   // Container variant untuk staggered animation
   const containerVariants = {
@@ -259,16 +220,16 @@ export default function Home() {
           animate={{ scale: 1 }}
           transition={{ duration: 0.6 }}
         >
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent flex justify-center gap-2 items-center mb-4">
-          <Sparkles className="w-7 h-7 text-cyan-300 animate-pulse" />
-          Muhammad Syaiful Mukmin
-        </h1>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent flex justify-center gap-2 items-center mb-4">
+            <Sparkles className="w-7 h-7 text-cyan-300 animate-pulse" />
+            Muhammad Syaiful Mukmin
+          </h1>
           <p className="text-cyan-300 text-sm sm:text-base font-semibold">Pendidik • Pengembang • Fotografer</p>
         </motion.div>
 
         <p className="text-gray-300 text-lg sm:text-xl leading-relaxed max-w-3xl mx-auto">
-          Saya adalah seorang <span className="text-cyan-400 font-semibold">calon pendidik</span> yang passionate dengan 
-          <span className="text-purple-400 font-semibold"> teknologi dan fotografi</span>. 
+          Saya adalah seorang <span className="text-cyan-400 font-semibold">calon pendidik</span> yang passionate dengan
+          <span className="text-purple-400 font-semibold"> teknologi dan fotografi</span>.
           Mengintegrasikan seni visual, pengembangan software, dan pembelajaran digital untuk menciptakan karya yang bermakna. 🚀
         </p>
 
@@ -319,39 +280,6 @@ export default function Home() {
         })}
       </motion.section>
 
-      {/* ━━━ FITUR UTAMA SECTION ━━━ */}
-      <motion.section
-        className="max-w-6xl mx-auto w-full py-16"
-        initial={{ opacity: 0, y: 60 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
-        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text">
-          Jelajahi Konten Utama
-        </h2>
-
-        <div className="grid sm:grid-cols-1 lg:grid-cols-3 gap-6">
-          {mainFeatures.map((feature, i) => (
-            <Link key={i} to={feature.link}>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className={`bg-gradient-to-br ${feature.color} ${feature.border} border backdrop-blur-xl rounded-2xl p-8 h-full hover:shadow-2xl transition-all cursor-pointer group`}
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-all">
-                    {feature.icon}
-                  </div>
-                  <ArrowRight className="w-6 h-6 text-gray-400 group-hover:translate-x-2 transition-transform" />
-                </div>
-                <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
-                <p className="text-gray-300 leading-relaxed">{feature.description}</p>
-              </motion.div>
-            </Link>
-          ))}
-        </div>
-      </motion.section>
-
       {/* ━━━ KEAHLIAN SECTION ━━━ */}
       <motion.section
         className="max-w-6xl mx-auto w-full py-16"
@@ -360,29 +288,52 @@ export default function Home() {
         whileInView="visible"
         viewport={{ once: true }}
       >
-        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text">
-          Keahlian & Spesialisasi
+        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4 text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text">
+          {specializationsData.sectionTitle || "Keahlian & Spesialisasi"}
         </h2>
+        {specializationsData.sectionSubtitle && (
+          <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto text-sm sm:text-base">
+            {specializationsData.sectionSubtitle}
+          </p>
+        )}
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {specializations.map((spec, i) => (
             <motion.div
-              key={i}
+              key={spec.id || i}
               variants={itemVariants}
-              className="bg-white/5 hover:bg-white/10 border border-white/20 hover:border-cyan-500/50 backdrop-blur-xl rounded-2xl p-6 transition-all group"
+              className="bg-white/5 hover:bg-white/10 border border-white/20 hover:border-cyan-500/50 backdrop-blur-xl rounded-2xl p-6 transition-all group flex flex-col justify-between"
             >
-              <div className="text-cyan-400 mb-4 group-hover:scale-110 transition-transform">
-                {spec.icon}
+              <div>
+                <div className="text-cyan-400 mb-4 group-hover:scale-110 transition-transform">
+                  {spec.icon}
+                </div>
+                <h3 className="text-lg font-bold mb-2">{spec.title}</h3>
+                {spec.description && (
+                  <p className="text-gray-400 text-xs mb-4 leading-relaxed">
+                    {spec.description}
+                  </p>
+                )}
+                <div className="space-y-2">
+                  {(spec.skills || []).map((skill, j) => (
+                    <div key={j} className="flex items-center gap-2">
+                      <ChevronRight className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+                      <span className="text-gray-300 text-sm">{skill}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <h3 className="text-lg font-bold mb-4">{spec.title}</h3>
-              <div className="space-y-2">
-                {spec.skills.map((skill, j) => (
-                  <div key={j} className="flex items-center gap-2">
-                    <ChevronRight className="w-4 h-4 text-cyan-400" />
-                    <span className="text-gray-300 text-sm">{skill}</span>
-                  </div>
-                ))}
-              </div>
+
+              {spec.link && (
+                <div className="mt-5 pt-3 border-t border-white/10">
+                  <Link
+                    to={spec.link}
+                    className="inline-flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300 font-semibold transition-colors"
+                  >
+                    Lihat terkait &rarr;
+                  </Link>
+                </div>
+              )}
             </motion.div>
           ))}
         </div>
@@ -402,40 +353,61 @@ export default function Home() {
         <div className="grid sm:grid-cols-1 lg:grid-cols-3 gap-6">
           {experiences.map((exp, i) => (
             <motion.div
-              key={i}
+              key={exp.id || i}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
               viewport={{ once: true }}
-              className="bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-cyan-500/30 backdrop-blur-xl rounded-2xl p-8 hover:border-cyan-500/60 transition-all group"
+              className="bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-cyan-500/30 backdrop-blur-xl rounded-2xl p-8 hover:border-cyan-500/60 transition-all group flex flex-col justify-between"
             >
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <div className="text-cyan-400 text-xs font-bold mb-1 flex items-center gap-1">
-                    <Calendar className="w-3 h-3" /> {exp.period}
+              <div>
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <div className="text-cyan-400 text-xs font-bold mb-1 flex items-center gap-1">
+                      <Calendar className="w-3 h-3" /> {exp.period}
+                    </div>
+                    <h3 className="text-xl font-bold group-hover:text-cyan-300 transition-colors">
+                      {exp.title || exp.position}
+                    </h3>
+                    <p className="text-gray-400 text-sm">{exp.company}</p>
                   </div>
-                  <h3 className="text-xl font-bold group-hover:text-cyan-300 transition-colors">
-                    {exp.title}
-                  </h3>
-                  <p className="text-gray-400 text-sm">{exp.company}</p>
+                  <Briefcase className="w-6 h-6 text-purple-400 flex-shrink-0" />
                 </div>
-                <Briefcase className="w-6 h-6 text-purple-400 flex-shrink-0" />
+                <p className="text-gray-300 text-sm mb-4 leading-relaxed">
+                  {exp.description}
+                </p>
               </div>
-              <p className="text-gray-300 text-sm mb-4 leading-relaxed">
-                {exp.description}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {exp.achievements.map((achievement, j) => (
-                  <span
-                    key={j}
-                    className="text-xs bg-cyan-500/20 text-cyan-300 px-2 py-1 rounded border border-cyan-500/30"
+              <div>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {(exp.displayAchievements || exp.achievements || []).map((achievement, j) => (
+                    <span
+                      key={j}
+                      className="text-xs bg-cyan-500/20 text-cyan-300 px-2.5 py-1 rounded-md border border-cyan-500/30 font-medium"
+                    >
+                      {achievement}
+                    </span>
+                  ))}
+                </div>
+                {exp.link && (
+                  <Link
+                    to={exp.link}
+                    className="inline-flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300 font-semibold transition-colors mt-1"
                   >
-                    {achievement}
-                  </span>
-                ))}
+                    Pelajari lebih lanjut &rarr;
+                  </Link>
+                )}
               </div>
             </motion.div>
           ))}
+        </div>
+        <div className="text-center mt-10">
+          <Link
+            to="/cv"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 hover:scale-105"
+          >
+            <Briefcase className="w-4 h-4" />
+            Lihat CV & Pengalaman Lengkap
+          </Link>
         </div>
       </motion.section>
 
@@ -447,33 +419,59 @@ export default function Home() {
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
       >
-        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text">
+        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4 text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text">
           Soft Skills & Kompetensi
         </h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+          Karakter personal, kemampuan interpersonal, dan pola pikir profesional yang menunjang kolaborasi efektif
+        </p>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {softSkills.map((skill, i) => (
             <motion.div
-              key={i}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              key={skill.id || i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
               viewport={{ once: true }}
             >
-              <div className="flex justify-between items-center mb-2">
-                <span className="font-semibold text-white">{skill.name}</span>
-                <span className="text-cyan-400 font-bold">{skill.level}%</span>
-              </div>
-              <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden border border-white/20">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full"
-                  initial={{ width: 0 }}
-                  whileInView={{ width: `${skill.level}%` }}
-                  transition={{ duration: 1, delay: i * 0.1 }}
-                  viewport={{ once: true }}
-                />
-              </div>
+              <Link
+                to={`/SoftSkills/${skill.id}`}
+                className="block p-5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-cyan-400/50 backdrop-blur-xl transition-all duration-300 group hover:shadow-lg hover:shadow-cyan-500/10 cursor-pointer"
+                title={`Lihat detail ${skill.name}`}
+              >
+                <div className="flex justify-between items-center mb-3">
+                  <span className="font-semibold text-white group-hover:text-cyan-300 transition-colors">
+                    {skill.name}
+                  </span>
+                  <span className="text-cyan-400 font-bold text-sm bg-cyan-950/60 border border-cyan-500/30 px-2.5 py-0.5 rounded-full">
+                    {skill.level}%
+                  </span>
+                </div>
+                <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden border border-white/20">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full"
+                    initial={{ width: 0 }}
+                    whileInView={{ width: `${skill.level}%` }}
+                    transition={{ duration: 1, delay: i * 0.1 }}
+                    viewport={{ once: true }}
+                  />
+                </div>
+                <div className="mt-3 flex items-center justify-between text-xs text-gray-400 group-hover:text-cyan-300 transition-colors">
+                  <span>Lihat Detail Skill</span>
+                  <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />
+                </div>
+              </Link>
             </motion.div>
           ))}
+        </div>
+        <div className="text-center mt-10">
+          <Link
+            to="/SoftSkills"
+            className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 font-semibold transition-colors group"
+          >
+            Lihat Semua Soft Skills
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
         </div>
       </motion.section>
 
@@ -506,10 +504,10 @@ export default function Home() {
               </div>
               <div className="flex-grow">
                 <h4 className="font-bold text-white group-hover:text-yellow-300 transition-colors">
-                  {cert.name}
+                  {cert.title || cert.name}
                 </h4>
                 <div className="flex items-center justify-between text-sm text-gray-400">
-                  <span>{cert.issuer}</span>
+                  <span>{cert.issuer || cert.provider}</span>
                   <span className="text-yellow-400">{cert.year}</span>
                 </div>
               </div>
@@ -525,42 +523,6 @@ export default function Home() {
             Lihat Semua Sertifikasi
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
-        </div>
-      </motion.section>
-
-      {/* ━━━ QUICK LINKS SECTION ━━━ */}
-      <motion.section
-        className="max-w-6xl mx-auto w-full py-16"
-        initial={{ opacity: 0, y: 60 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
-        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text">
-          Akses Cepat
-        </h2>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {quickLinks.map((link, i) => {
-            const Icon = link.icon;
-            const colorMap = {
-              cyan: "hover:border-cyan-500/50 hover:shadow-cyan-500/20",
-              purple: "hover:border-purple-500/50 hover:shadow-purple-500/20",
-              blue: "hover:border-blue-500/50 hover:shadow-blue-500/20",
-              emerald: "hover:border-emerald-500/50 hover:shadow-emerald-500/20",
-            };
-            return (
-              <Link key={i} to={link.path}>
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  className={`bg-white/5 border border-white/20 ${colorMap[link.color]} backdrop-blur-xl rounded-xl p-6 text-center hover:shadow-lg transition-all group cursor-pointer`}
-                >
-                  <Icon className="w-8 h-8 mx-auto mb-3 text-gray-400 group-hover:scale-125 transition-transform" />
-                  <span className="font-semibold text-white">{link.label}</span>
-                </motion.div>
-              </Link>
-            );
-          })}
         </div>
       </motion.section>
 
@@ -700,17 +662,17 @@ export default function Home() {
               Bersiaplah untuk pengalaman platform konten kreator terbaru yang revolusioner
             </p>
           </div>
-      
+
           {comingSoon.map((project) => {
             // Safe access dengan optional chaining
             const brandLogo = project?.brand?.logo || "FaRocket";
             const communityIcon = project?.pages?.community?.icon || "FaUsers";
             const livestreamIcon = project?.pages?.livestream?.icon || "FaVideo";
-            
+
             const IconComponent = getIconComponent(brandLogo);
             const CommunityIcon = getIconComponent(communityIcon);
             const LivestreamIcon = getIconComponent(livestreamIcon);
-            
+
             return (
               <div key={project?.id || 'default'} className="bg-gradient-to-br from-orange-500/20 via-purple-500/10 to-red-500/20 border border-orange-500/30 backdrop-blur-xl rounded-2xl p-8 hover:shadow-2xl transition-all group relative overflow-hidden mb-8">
                 {/* Background Effect */}
@@ -742,7 +704,7 @@ export default function Home() {
                         {project?.content?.description || "A new platform that will change the way creators share content"}
                       </p>
                     </div>
-          
+
                     {/* Features Preview */}
                     {project?.content?.features && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -760,7 +722,7 @@ export default function Home() {
                         })}
                       </div>
                     )}
-          
+
                     {/* Countdown Timer */}
                     <div className="bg-black/30 rounded-xl p-6 border border-orange-500/20">
                       <div className="flex items-center gap-2 justify-center mb-4">
@@ -798,11 +760,11 @@ export default function Home() {
                         })()}
                       </div>
                     </div>
-                      
+
                     {/* CTA Button */}
                     <div className="flex gap-3 pt-4">
-                      <Link 
-                        to="/coming-soon" 
+                      <Link
+                        to="/coming-soon"
                         className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-center py-3 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-lg hover:shadow-orange-500/25 flex items-center justify-center gap-2"
                       >
                         <IconComponent className="w-4 h-4" />
@@ -810,7 +772,7 @@ export default function Home() {
                       </Link>
                     </div>
                   </div>
-                      
+
                   {/* Right Content - Features Preview */}
                   <div className="space-y-6">
                     {/* Community Features */}
@@ -849,7 +811,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
-                      
+
                     {/* Livestream Features */}
                     <div className="bg-gradient-to-br from-red-500/10 to-pink-500/5 rounded-xl p-5 border border-red-500/20 hover:border-red-500/40 transition-all">
                       <div className="flex items-center gap-3 mb-4">
@@ -870,8 +832,8 @@ export default function Home() {
                           const categoryIcon = category?.icon || "FaVideo";
                           const CategoryIcon = getIconComponent(categoryIcon);
                           return (
-                            <span 
-                              key={index} 
+                            <span
+                              key={index}
                               className="text-xs bg-red-500/20 text-red-300 px-3 py-1 rounded-full border border-red-500/30 hover:bg-red-500/30 transition-colors flex items-center gap-1"
                             >
                               <CategoryIcon className="w-3 h-3" />
@@ -912,7 +874,7 @@ export default function Home() {
                         </div>
                       </div>
                     )}
-                      
+
                     {/* Social Links */}
                     <div className="flex justify-center gap-3 pt-4">
                       {(project?.socialLinks?.slice(0, 5) || []).map((social, index) => {

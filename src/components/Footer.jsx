@@ -16,6 +16,7 @@ import {
   MessageSquare,
   Globe,
 } from "lucide-react";
+import { FaTiktok, FaThreads, FaDiscord } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
 export default function Footer() {
@@ -57,11 +58,12 @@ export default function Footer() {
             </p>
 
             {/* SOCIAL ICONS */}
-            <div className="flex gap-5 mt-5">
+            <div className="flex flex-wrap gap-4 mt-5 items-center justify-center md:justify-start">
               <a
                 href="https://github.com/saipul12c"
                 target="_blank"
                 rel="noopener noreferrer"
+                title="GitHub"
                 className="hover:text-cyan-400 transition-transform hover:scale-110"
               >
                 <Github className="w-5 h-5" />
@@ -70,17 +72,46 @@ export default function Footer() {
                 href="https://linkedin.com/in/username"
                 target="_blank"
                 rel="noopener noreferrer"
+                title="LinkedIn"
                 className="hover:text-blue-400 transition-transform hover:scale-110"
               >
                 <Linkedin className="w-5 h-5" />
               </a>
               <a
-                href="https://instagram.com/username"
+                href="https://instagram.com/saipul12c"
                 target="_blank"
                 rel="noopener noreferrer"
+                title="Instagram"
                 className="hover:text-pink-400 transition-transform hover:scale-110"
               >
                 <Instagram className="w-5 h-5" />
+              </a>
+              <a
+                href="https://www.tiktok.com/@saipul12c"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="TikTok"
+                className="hover:text-cyan-400 transition-transform hover:scale-110"
+              >
+                <FaTiktok className="w-5 h-5" />
+              </a>
+              <a
+                href="https://www.threads.net/@saipul12c"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Threads"
+                className="hover:text-purple-400 transition-transform hover:scale-110"
+              >
+                <FaThreads className="w-5 h-5" />
+              </a>
+              <a
+                href="https://discord.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Discord"
+                className="hover:text-indigo-400 transition-transform hover:scale-110"
+              >
+                <FaDiscord className="w-5 h-5" />
               </a>
             </div>
           </motion.div>
@@ -144,15 +175,15 @@ export default function Footer() {
               Get in Touch
             </h4>
             <p className="text-sm text-gray-400 mb-4">
-              Tertarik berkolaborasi atau punya proyek menarik?  
+              Tertarik berkolaborasi atau punya proyek menarik?
               Jangan ragu untuk menghubungi saya 👇
             </p>
 
             <a
-              href="mailto:syaiful.mukmin@example.com"
+              href="mailto:uju355@gmail.com"
               className="inline-flex items-center gap-2 text-sm font-medium text-cyan-300 hover:text-cyan-400 transition-all hover:translate-x-1"
             >
-              <Mail className="w-4 h-4" /> syaiful.mukmin@example.com
+              <Mail className="w-4 h-4" /> uju355@gmail.com
             </a>
 
             <button

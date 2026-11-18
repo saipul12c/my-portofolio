@@ -2,7 +2,16 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Search, Circle, ShieldCheck, X, MessageSquare, History } from 'lucide-react';
 
-export const MemberSidebar = ({ isOpen, onClose, onlineUsers = [], allProfiles = [], messages = [], currentUser }) => {
+export const MemberSidebar = ({ 
+  isOpen, 
+  onClose, 
+  onlineUsers = [], 
+  allProfiles = [], 
+  messages = [], 
+  currentUser,
+  onSelectMember,
+  onSelectMessage
+}) => {
   const [search, setSearch] = useState('');
   const [searchMode, setSearchMode] = useState('members'); // 'members' or 'messages'
 
@@ -89,6 +98,7 @@ export const MemberSidebar = ({ isOpen, onClose, onlineUsers = [], allProfiles =
                   return (
                     <motion.div
                       key={member.id}
+                      onClick={() => onSelectMember?.(member)}
                       whileHover={{ x: 4, backgroundColor: 'rgba(255,255,255,0.03)' }}
                       className="flex items-center gap-4 p-4 rounded-2xl transition-all cursor-pointer group"
                     >
@@ -114,6 +124,7 @@ export const MemberSidebar = ({ isOpen, onClose, onlineUsers = [], allProfiles =
                 filteredMessages.map((msg) => (
                   <motion.div 
                     key={msg.id}
+                    onClick={() => onSelectMessage?.(msg)}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="p-5 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.05] transition-all cursor-pointer group"

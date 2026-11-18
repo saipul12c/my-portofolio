@@ -1,0 +1,42 @@
+{
+  "sectionTitle": "Keahlian & Spesialisasi",
+  "sectionSubtitle": "Kombinasi keahlian teknis pengembangan aplikasi, kreativitas media visual, dan metodologi pendidikan modern",
+  "specializations": [
+    {
+      "id": "frontend",
+      "title": "Frontend Development",
+      "icon": "Sparkles",
+      "color": "cyan",
+      "description": "Pengembangan antarmuka web modern dengan arsitektur modular, responsive design, dan animasi interaktif.",
+      "skills": ["React", "Tailwind CSS", "Framer Motion", "Vite"],
+      "link": "/projects"
+    },
+    {
+      "id": "backend",
+      "title": "Backend Development",
+      "icon": "Zap",
+      "color": "blue",
+      "description": "Perancangan RESTful API, integrasi serverless Supabase/Firebase, serta arsitektur database terstruktur.",
+      "skills": ["Node.js", "Express", "Database", "APIs"],
+      "link": "/projects"
+    },
+    {
+      "id": "photography",
+      "title": "Photography & Visual",
+      "icon": "Camera",
+      "color": "purple",
+      "description": "Fotografi artistik, dokumentasi event, penataan estetika visual, serta kurasi media resolusi tinggi.",
+      "skills": ["Photography", "Video Editing", "Visual Design", "UI/UX"],
+      "link": "/albums"
+    },
+    {
+      "id": "education",
+      "title": "Education & Teaching",
+      "icon": "Heart",
+      "color": "emerald",
+      "description": "Perancangan kurikulum edukasi berbasis teknologi, modul pembelajaran interaktif, dan pelatihan guru digital.",
+      "skills": ["Curriculum Design", "Digital Learning", "Mentoring", "Content Creation"],
+      "link": "/education"
+    }
+  ]
+}

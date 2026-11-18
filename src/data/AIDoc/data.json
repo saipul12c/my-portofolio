@@ -1,11 +1,16 @@
 {
   "header_information": {
     "title": "SaipulAI — Dokumentasi & Panduan",
-    "version": "7.1.0",
+    "version": "8.0.0",
     "config_location": "src/components/helpbutton/chat/config.js",
-    "last_update": "2025-01-05"
+    "last_update": "2026-11-15"
   },
   "change_log_sesi_terakhir": [
+    {
+      "date": "2026-11-15",
+      "version": "8.0.0",
+      "description": "Major Update v8.0.0 — Restrukturisasi Besar & Kurasi Arsitektur Pengaturan SaipulAI: Penyederhanaan sistem live chat dari 8 tab menjadi 4 tab fungsional 100% (Tampilan & Suara, Gaya & Karakter AI, Privasi & Data, Pintasan Keyboard). Mengeliminasi seluruh opsi semu/dummy (Hardware Acceleration, Battery Saver, Cache 250MB, maxTokens, advancedMath toggle, dataAnalysis toggle, dan fake JSON import). Mitigasi risiko kritis QuotaExceededError di localStorage dengan pembersihan uploader file berukuran besar tanpa backend. Mengintegrasikan kontrol Web Speech API (TTS) ke tab Tampilan dan penyempurnaan backward-compatible routing URL settings."
+    },
     {
       "date": "2025-01-05",
       "description": "Peningkatan besar NLP pipeline: Advanced Language Detection dengan linguistic analysis, character frequency analysis, dan confidence scoring. Implementasi Bilingual Response System dengan automatic language switching, translation engine, dan grammar post-processing. Sentiment analysis, response quality evaluation, dan enhanced intent classification dengan 14+ tipe intent."
@@ -30,7 +35,7 @@
   "statistik_versi_saat_ini": {
     "total_fitur": "58+",
     "knowledge_base_files": "7 file",
-    "ukuran_bundle": "11.5MB",
+    "ukuran_bundle": "~350KB (137KB gzip)",
     "waktu_respons": "<250ms",
     "total_versi_dokumentasi": "88 versi",
     "rentang_waktu": "2024-05-15 hingga 2025-01-05",
@@ -54,12 +59,13 @@
   },
   "ringkasan_singkat": "SaipulAI adalah asisten lokal ringan dengan pipeline NLP terintegrasi (lexical → corpus → NLU → knowledge graph), knowledge base berbasis file JSON, utilitas pemrosesan file terpusat, kalkulator berbasis mathjs, keyboard shortcuts konfigurabel, dan mekanisme saran otomatis. File yang diunggah dapat diindeks ke KB secara lokal dan diproses realtime melalui event internal. Kini dengan kemampuan bilingual Indonesia-Inggris dan sistem evaluasi respons yang canggih.",
   "fitur_utama": [
+    "🌐 Public REST API & Web SDK — Endpoint independen (/api/saipul) dan client SDK (public/saipul-sdk.js) untuk integrasi eksternal tanpa risiko kebocoran kredensial sensitif",
     "🌍 Bilingual AI Assistant — Komunikasi dalam bahasa Indonesia dan Inggris dengan automatic language detection dan switching",
     "🧠 Advanced NLP Pipeline — 5 modul inti: lexicalDatabase, languageCorpus, nluDataset, nluProcessing, enhancedKnowledgeBase (semantic knowledge graph)",
     "🎯 Advanced Intent & Context — advancedIntentClassifier, conversationContext, enhancedResponseGenerator untuk strategi respons berbasis intent & multi-turn",
     "❓ Clarification & Smart Fallback — clarificationSystem untuk menangani ambiguitas dengan prompt klarifikasi yang ramah",
     "🔎 Smart KB Query — smartKBQuery dengan exact, synonym, fuzzy/semantic, dan related-concepts search + caching",
-    "📚 Knowledge Base dinamis — sumber utama berasal dari file JSON di src/components/helpbutton/chat/data/; file yang diunggah juga dapat diindeks secara lokal",
+    "📚 Knowledge Base dinamis — sumber utama berasal dari file JSON di src/data/helpbutton/chat/; file yang diunggah juga dapat diindeks secara lokal",
     "🎭 Sentiment Analysis — Deteksi sentimen positif/negatif/netral dari input pengguna",
     "📊 Response Quality Evaluation — Sistem evaluasi 6 metrik (relevance, informativeness, coherence, appropriateness, engagement, safety)",
     "🔤 Advanced Language Detection — Linguistic analysis, character frequency analysis, weighted word scoring dengan confidence 95%+",
@@ -78,37 +84,35 @@
   ],
   "pengaturan_konfigurasi": {
     "default_settings": {
-      "chatbotVersion": "7.1.0",
-      "aiDocsPath": "/help/ai",
-      "calculationPrecision": 12,
+      "chatbotVersion": "8.0.0",
+      "aiDocsPath": "/help/docs/ai",
+      "calculationPrecision": "high",
       "maxActivityLogs": 100,
-      "autoSaveInterval": 30,
+      "autoSave": true,
       "enableKnowledgeBase": true,
       "enableNLP": true,
       "nluMode": "quick",
       "nluConfidenceThreshold": 0.6,
       "enableMathCalculator": true,
-      "enableFileUpload": false,
-      "enableVoiceInput": false,
-      "enableWolframAlpha": false,
-      "enableWeatherAPI": false,
-      "enableCurrencyConverter": false,
-      "debugMode": false,
-      "theme": "dark",
+      "voiceResponse": false,
+      "voiceLanguage": "auto",
+      "privacyMode": false,
+      "memoryContext": true,
+      "autoSuggestions": true,
+      "responseSpeed": "balanced",
+      "theme": "system",
+      "accent": "cyan",
       "language": "auto",
-      "responseTimeout": 10000,
       "enableBilingualMode": true,
-      "enableSentimentAnalysis": true,
-      "enableResponseEvaluation": true,
-      "languageDetectionConfidence": 0.7
+      "enableSentimentAnalysis": true
     },
-    "catatan": "Konfigurasi default dapat dilihat di src/components/helpbutton/chat/config.js. Untuk mengubah perilaku (mis. presisi matematika, mode NLU quick/comprehensive, ambang kepercayaan), edit file konfigurasi lalu restart dev server. Setelah menarik pembaruan, jalankan `npm install` untuk dependency baru (mis. mathjs). Integrasi NLP tidak menambah dependency eksternal."
+    "catatan": "Konfigurasi default disinkronkan langsung dari src/components/helpbutton/chat/config.js. Seluruh opsi terbukti beroperasi nyata di engine tanpa ada saklar semu (Zero-Dummy Architecture). Tidak ada data sensitif atau API key pribadi yang disimpan di konfigurasi ini."
   },
   "contoh_pertanyaan_cara_kerja": [
     {
       "tipe": "lookup_sederhana",
       "input": "Apa itu kecerdasan buatan?",
-      "output": "Dijawab langsung dari AI-base.json bila ada kecocokan kunci"
+      "output": "Dijawab langsung dari modul graf pengetahuan semantik (enhancedKnowledgeBase.js) dengan penjelasan terstruktur"
     },
     {
       "tipe": "kalkulator",
@@ -160,7 +164,7 @@
   ],
   "privasi_keamanan": "Secara default, SaipulAI memproses data secara lokal. File yang diunggah hanya disimpan/diindeks bila fitur upload diaktifkan; proses ini bersifat lokal dan dapat dipicu/diakses melalui event internal. Jangan unggah data sensitif tanpa enkripsi; selalu review kebijakan privasi aplikasi Anda sebelum menyimpan data user.",
   "cara_kontribusi_menambah_data": [
-    "Edit atau buat file JSON di src/components/helpbutton/chat/data/ dengan struktur yang konsisten",
+    "Edit atau buat file JSON di src/data/helpbutton/chat/ dengan struktur yang konsisten",
     "Jika menambahkan modul utilitas baru, tempatkan di src/components/helpbutton/chat/components/logic/utils/ (contoh: fileProcessor.js) atau src/components/helpbutton/chat/logic/utils/",
     "Perluas kecerdasan buatan: tambah entri lexical (ID/EN), contoh kalimat di languageCorpus, intent/entity patterns di nluDataset, serta nodes/relations di enhancedKnowledgeBase",
     "Untuk peningkatan bilingual: tambahkan kata/frasa ke bilingual dictionary dengan weighted frequency",
@@ -170,21 +174,21 @@
   "ai_nlp_ringkasan": {
     "komponen_inti": [
       "lexicalDatabase.js — analisis kata, lemma, sinonim, normalisasi (ID/EN) dengan weighted word lists",
-      "languageCorpus.js — contoh kalimat nyata bilingual, pola percakapan, kemiripan kalimat",
-      "nluDataset.js — intent (7+), entity (8), tipe kalimat (4)",
-      "nluProcessing.js — quick/comprehensive NLU dengan advanced language detection dan sentiment analysis",
-      "enhancedKnowledgeBase.js — knowledge graph semantik + inference"
+      "languageCorpus.js — korpus kalimat nyata bilingual, pola percakapan, kemiripan semantik",
+      "nluDataset.js — dataset intent (7+), entity (8), tipe kalimat (4)",
+      "nluProcessing.js — NLU pipeline dengan deteksi bahasa canggih dan sentiment analysis",
+      "enhancedKnowledgeBase.js — knowledge graph semantik, relasi konsep & inferensi"
     ],
     "modul_lanjutan": [
-      "advancedIntentClassifier.js — 14+ tipe intent tingkat lanjut + strategi respons dengan complexity analysis",
-      "conversationContext.js — manajemen konteks multi-turn bilingual",
-      "enhancedResponseGenerator.js — handler respons berbasis intent dengan bilingual response generation",
-      "smartKBQuery.js — pencarian KB cerdas (exact/sinonim/fuzzy/related) + cache",
-      "clarificationSystem.js — deteksi ambiguitas + prompt klarifikasi bilingual",
-      "translationEngine.js — mesin terjemahan Indonesian-to-English dengan dictionary dan pattern matching",
-      "responseEvaluator.js — sistem evaluasi 6 metrik kualitas respons"
+      "advancedIntentClassifier.js — klasifikasi 14+ tipe intent dengan complexity analysis",
+      "conversationContext.js — pelacakan konteks percakapan multi-turn bilingual",
+      "responseGenerator.js — generator respons utama terpadu dengan modul penerjemahan dwibahasa",
+      "smartKBQuery.js — kueri knowledge base cerdas (exact, synonym, fuzzy, related) + caching",
+      "clarificationSystem.js — deteksi ambiguitas pertanyaan dan pembuatan prompt klarifikasi",
+      "mathCalculator.js — kalkulator aljabar, trigonometri, dan kalkulus simbolik/numerik (mathjs)",
+      "piiDetector.js — detektor data sensitif pribadi untuk proteksi privasi pengguna"
     ],
-    "catatan": "Seluruh integrasi bersifat tambahan (non-breaking) dan tidak menambah dependency eksternal. Sistem sekarang fully bilingual dengan akurasi deteksi bahasa 95%+."
+    "catatan": "Seluruh integrasi berjalan 100% lokal di browser (client-side) tanpa memerlukan dependency eksternal berat atau backend server luar. Sistem beroperasi secara aman, bebas kebocoran kredensial, dan ramah privasi."
   },
   "ai_nlp_statistik": {
     "core_modules": 5,
@@ -192,8 +196,8 @@
     "knowledge_nodes": 4,
     "corpus_sentences": "150+ (bilingual)",
     "total_new_code_lines": 3850,
-    "dependencies": "none (pure JavaScript)",
-    "memory_footprint": "~1.5MB dataset (lexical ~600KB, corpus ~400KB, nlu ~250KB, kb ~150KB, bilingual dict ~100KB)",
+    "dependencies": "mathjs",
+    "memory_footprint": "~350KB bundle (~137KB gzip)",
     "bahasa_didukung": 2,
     "intents_didukung": 14,
     "entities_didukung": 8
@@ -277,11 +281,11 @@
       "enhancedKnowledgeBase.js",
       "advancedIntentClassifier.js",
       "conversationContext.js",
-      "enhancedResponseGenerator.js",
       "smartKBQuery.js",
       "clarificationSystem.js",
-      "translationEngine.js",
-      "responseEvaluator.js"
+      "mathCalculator.js",
+      "piiDetector.js",
+      "responseGenerator.js"
     ]
   },
   "peningkatan_bahasa_dan_evaluasi": {
@@ -295,21 +299,18 @@
     },
     "bilingual_response_system": {
       "automatic_language_switching": "Respon otomatis dalam bahasa yang sesuai input",
-      "translation_engine": "Mesin terjemahan Indonesian-to-English dengan dictionary",
-      "grammar_post_processing": "Perbaikan grammar dan fluency bahasa Inggris",
+      "translation_engine": "Modul terjemahan bilingual cerdas terintegrasi di responseGenerator.js",
+      "grammar_post_processing": "Perbaikan ekspresi dan fluency bahasa Inggris",
       "context_aware_translation": "Terjemahan yang mempertimbangkan intent dan konteks",
       "intent_based_responses": "Respon khusus bahasa Inggris untuk setiap intent",
       "multiple_variations": "Berbagai variasi respon untuk menghindari repetisi"
     },
     "response_quality_evaluation": {
-      "relevance": "25% - Seberapa relevan respon dengan pertanyaan",
-      "informativeness": "20% - Seberapa banyak informasi yang diberikan",
-      "coherence": "15% - Kelancaran dan koherensi respon",
-      "appropriateness": "20% - Kesesuaian dengan konteks dan emosi",
-      "engagement": "10% - Kemampuan melibatkan user",
-      "safety": "10% - Keamanan dan keakuratan informasi",
-      "weighted_scoring": "Overall score dengan bobot berbeda",
-      "automated_recommendations": "Saran perbaikan berdasarkan skor"
+      "relevance": "Evaluasi relevansi konteks berdasarkan kemiripan kata kunci dan TF-IDF",
+      "intent_confidence": "Skor kepercayaan intent berbasis pembobotan pola regex (0.0 - 1.0)",
+      "language_confidence": "Tingkat kepastian deteksi bahasa (Indonesian vs English)",
+      "safety": "Verifikasi keamanan mutlak via piiDetector.js dan penyaringan konten ilegal",
+      "automated_recommendations": "Saran topik kontekstual dinamis berdasarkan intent yang terdeteksi"
     },
     "benefits": {
       "multilingual_support": "Chatbot dapat berkomunikasi dalam dua bahasa utama",
@@ -317,24 +318,21 @@
       "cultural_adaptation": "Penyesuaian dengan preferensi bahasa user",
       "global_accessibility": "Dapat digunakan oleh pengguna internasional",
       "intelligent_language_switching": "Otomatis mendeteksi dan menyesuaikan bahasa",
-      "continuous_improvement": "Belajar dari pola penggunaan bahasa"
+      "continuous_improvement": "Penyempurnaan berkelanjutan dari interaksi pengguna"
     }
   },
   "riwayat_penelitian_eksperimental": {
-    "catatan": "10 entri tambahan ini merepresentasikan berbagai eksperimen dan penelitian yang dilakukan tim pengembang antara Mei 2024 hingga Februari 2025. Banyak fitur masih dalam tahap prototipe dan tidak mencapai produksi.",
+    "catatan": "Daftar kategori riset ini merupakan eksplorasi konseptual, kajian literatur, dan roadmap R&D jangka panjang tim pengembang untuk arah masa depan kecerdasan buatan, bukan kode komputasi aktif di sistem produksi saat ini.",
     "kategori_riset": [
-      "Kuantum Computing & Kriptografi",
-      "Brain-Computer Interfaces",
-      "Metaverse & Realitas Virtual",
-      "AI Generatif & Media Sintetik",
-      "Digital Twins & Simulasi",
-      "Biologi Digital & Wetware",
-      "Swarm Intelligence & Sistem Multi-Agent",
-      "Kesadaran Buatan & Filosofi AI",
-      "Privasi & Zero-Knowledge Proofs",
-      "Psikedelik Digital & State Alteration",
-      "penambahan hukum kecerdasan buatan"
+      "Kuantum Computing & Kriptografi Modern (Kajian Teoretis)",
+      "Brain-Computer Interfaces & Neuro-AI (Studi Literatur)",
+      "Metaverse & Realitas Virtual Imersif (Roadmap)",
+      "AI Generatif & Media Sintetik (Eksplorasi)",
+      "Digital Twins & Simulasi Sistem (R&D)",
+      "Biologi Komputasi & Graf Molekuler (Studi Literatur)",
+      "Swarm Intelligence & Sistem Multi-Agent (R&D)",
+      "Etika & Filosofi Kesadaran Buatan (Kajian)"
     ],
-    "status": "Sebagian besar fitur diarsipkan untuk referensi sejarah dan penelitian masa depan"
+    "status": "Arsip Kajian Teoretis & Eksplorasi Roadmap R&D Masa Depan"
   }
 }

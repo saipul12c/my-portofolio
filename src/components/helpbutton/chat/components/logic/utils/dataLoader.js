@@ -115,16 +115,16 @@ export async function loadKnowledgeBaseData() {
     // Gunakan dynamic imports untuk loading data
     // Ini lebih reliable daripada fetch paths yang bisa 404
     const dataModules = {
-      profile: () => import('../data/profile.json'),
-      cards: () => import('../data/cards.json'),
-      certificates: () => import('../data/certificates.json'),
-      softskills: () => import('../data/softskills.json'),
-      hobbies: () => import('../data/hobbies.json'),
-      collaborations: () => import('../data/collaborations.json'),
-      interests: () => import('../data/interests.json'),
-      AI: () => import('../data/AI-base.json'),
-      aiDoc: () => import('../../../data/AIDoc/data.json'),
-      riwayat: () => import('../../../data/AIDoc/riwayat/riwayat.json')
+      profile: () => import('../../../../../../data/about/profile.json'),
+      cards: () => import('../../../../../../data/about/cards.json'),
+      certificates: () => import('../../../../../../data/sertif/certificates.json'),
+      softskills: () => import('../../../../../../data/skills/softskills.json'),
+      hobbies: () => import('../../../../../../data/helpbutton/chat/hobbies.json'),
+      collaborations: () => import('../../../../../../data/about/collaborations.json'),
+      interests: () => import('../../../../../../data/about/interests.json'),
+      AI: () => import('../../../../../../data/helpbutton/chat/AI-base.json'),
+      aiDoc: () => import('../../../../../../data/AIDoc/data.json'),
+      riwayat: () => import('../../../../../../data/AIDoc/riwayat/riwayat.json')
     };
 
     // Load semua data secara parallel
@@ -227,14 +227,14 @@ export async function fallbackLoadWithFetch() {
   };
 
   const files = [
-    { path: '/data/about/cards.json', key: 'cards' },
-    { path: '/data/about/certificates.json', key: 'certificates' },
-    { path: '/data/about/softskills.json', key: 'softskills' },
-    { path: '/data/about/hobbies.json', key: 'hobbies' },
-    { path: '/data/about/collaborations.json', key: 'collaborations' },
-    { path: '/data/about/interests.json', key: 'interests' },
-    { path: '/data/about/profile.json', key: 'profile' },
-    { path: '/data/about/AI-base.json', key: 'AI' }
+    { path: '/src/data/about/cards.json', key: 'cards' },
+    { path: '/src/data/sertif/certificates.json', key: 'certificates' },
+    { path: '/src/data/skills/softskills.json', key: 'softskills' },
+    { path: '/src/data/helpbutton/chat/hobbies.json', key: 'hobbies' },
+    { path: '/src/data/about/collaborations.json', key: 'collaborations' },
+    { path: '/src/data/about/interests.json', key: 'interests' },
+    { path: '/src/data/about/profile.json', key: 'profile' },
+    { path: '/src/data/helpbutton/chat/AI-base.json', key: 'AI' }
   ];
 
   for (const { path, key } of files) {

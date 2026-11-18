@@ -16,7 +16,7 @@ const TestimonialCard = ({ testimonial, navigate }) => {
       exit={{ opacity: 0, y: -20 }}
       whileHover={{ scale: 1.02 }}
       onClick={() => navigate(`/testimoni/authors/${authorSlug}`)}
-      className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-emerald-500/30 hover:bg-white/8 transition-all duration-300 cursor-pointer group"
+      className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-cyan-500/40 hover:bg-white/8 transition-all duration-300 cursor-pointer group"
       role="button"
       tabIndex={0}
       onKeyPress={(e) => {
@@ -30,7 +30,7 @@ const TestimonialCard = ({ testimonial, navigate }) => {
           <img
             src={testimonial.image}
             alt={testimonial.name}
-            className="w-16 h-16 rounded-xl object-cover border-2 border-white/10 group-hover:border-emerald-500/50 transition-colors"
+            className="w-16 h-16 rounded-xl object-cover border-2 border-white/10 group-hover:border-cyan-400/50 transition-colors"
             loading="lazy"
           />
         </div>
@@ -38,7 +38,7 @@ const TestimonialCard = ({ testimonial, navigate }) => {
         <div className="flex-1 min-w-0">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
             <div>
-              <h4 className="font-semibold text-lg text-white group-hover:text-emerald-400 transition-colors">
+              <h4 className="font-semibold text-lg text-white group-hover:text-cyan-300 transition-colors">
                 {testimonial.name}
               </h4>
               <p className="text-sm text-gray-400">{testimonial.role}</p>

@@ -1,9 +1,9 @@
 import React, { memo, useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  MdEmail, MdShare, MdQrCode, MdHome, MdInfo, MdFolderOpen, 
-  MdMailOutline, MdContentCopy, MdDownload, MdChat, MdForum, MdOpenInNew, MdVerified 
+import {
+  MdEmail, MdShare, MdQrCode, MdHome, MdInfo, MdFolderOpen,
+  MdMailOutline, MdContentCopy, MdDownload, MdChat, MdForum, MdOpenInNew, MdVerified
 } from 'react-icons/md';
 import { HiOutlineClipboardCopy, HiClipboardCheck } from 'react-icons/hi';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
@@ -127,7 +127,7 @@ const MobileLayout = memo(({
           .select('username, content, role, timestamp')
           .order('timestamp', { ascending: false })
           .limit(10);
-        
+
         if (error) throw error;
         if (data) setRecentChats(data);
       } catch (err) {
@@ -140,24 +140,24 @@ const MobileLayout = memo(({
     // Realtime Subscription
     const channel = supabase
       .channel('portal-chat-preview')
-      .on('postgres_changes', { 
-        event: 'INSERT', 
-        schema: 'public', 
-        table: 'messages' 
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages'
       }, (payload) => {
         setRecentChats(prev => [payload.new, ...prev].slice(0, 10));
       })
-      .on('postgres_changes', { 
-        event: 'UPDATE', 
-        schema: 'public', 
-        table: 'messages' 
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'messages'
       }, (payload) => {
         setRecentChats(prev => prev.map(msg => msg.id === payload.new.id ? payload.new : msg));
       })
-      .on('postgres_changes', { 
-        event: 'DELETE', 
-        schema: 'public', 
-        table: 'messages' 
+      .on('postgres_changes', {
+        event: 'DELETE',
+        schema: 'public',
+        table: 'messages'
       }, (payload) => {
         setRecentChats(prev => prev.filter(msg => msg.id !== payload.old.id));
       })
@@ -182,14 +182,14 @@ const MobileLayout = memo(({
   useEffect(() => {
     const interval = setInterval(() => {
       const indexToReplace = Math.floor(Math.random() * 6);
-      
-      const availableHobbies = hobbiesWithSlugs.filter(h => 
+
+      const availableHobbies = hobbiesWithSlugs.filter(h =>
         !displayedHobbies.some(dh => dh.id === h.id)
       );
-      
+
       if (availableHobbies.length > 0) {
         const newHobby = availableHobbies[Math.floor(Math.random() * availableHobbies.length)];
-        
+
         setDisplayedHobbies(prev => {
           const next = [...prev];
           next[indexToReplace] = newHobby;
@@ -197,7 +197,7 @@ const MobileLayout = memo(({
         });
       }
     }, 3000);
-    
+
     return () => clearInterval(interval);
   }, [displayedHobbies, hobbiesWithSlugs]);
 
@@ -217,16 +217,16 @@ const MobileLayout = memo(({
       setDisplayedCerts(prev => {
         const newCerts = [...prev];
         const indexToReplace = Math.floor(Math.random() * Math.min(prev.length, 3));
-        
+
         // Find a certificate that is not currently displayed
         const displayedIds = new Set(prev.map(c => c.id));
         const availableCerts = certificates.filter(c => !displayedIds.has(c.id));
-        
+
         if (availableCerts.length > 0) {
           const randomNewCert = availableCerts[Math.floor(Math.random() * availableCerts.length)];
           newCerts[indexToReplace] = randomNewCert;
         }
-        
+
         return newCerts;
       });
     }, 4000);
@@ -237,7 +237,7 @@ const MobileLayout = memo(({
   // Generate QR Code URL
   useEffect(() => {
     const portalUrl = 'https://syaiful-mukmin.netlify.app/portal';
-    
+
     if (showQRModal && !qrCodeUrl) {
       generateQRCode(portalUrl);
     }
@@ -265,14 +265,14 @@ const MobileLayout = memo(({
 
   const downloadQRCode = () => {
     if (!qrCodeUrl) return;
-    
+
     const link = document.createElement('a');
     link.href = qrCodeUrl;
     link.download = `syaiful-mukmin-portal-qrcode-${new Date().toISOString().slice(0, 10)}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
+
     // Show success message
     setDownloadSuccess(true);
     setTimeout(() => setDownloadSuccess(false), 2000);
@@ -286,7 +286,7 @@ const MobileLayout = memo(({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 to-black p-4 pb-20">
+    <div className="min-h-screen bg-gradient-to-b from-[var(--color-gray-900)] via-[#0f1d32] to-[var(--color-gray-900)] p-4 pb-20">
       {/* Floating background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -left-40 w-80 h-80 bg-purple-600/10 rounded-full blur-3xl" />
@@ -298,7 +298,7 @@ const MobileLayout = memo(({
         <div className="flex justify-center mb-6">
           <Avatar />
         </div>
-        
+
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2 flex items-center justify-center gap-1.5">
             Muhammad Syaiful Mukmin
@@ -326,7 +326,7 @@ const MobileLayout = memo(({
               "Seorang EduTech Enthusiast yang berdedikasi menciptakan solusi inovatif melalui konten digital & pengembangan perangkat lunak."
             </p>
           </div>
-          
+
           {/* Email card */}
           <div className="bg-gray-900/50 backdrop-blur-sm rounded-2xl p-4 border border-gray-800 max-w-md mx-auto">
             <div className="flex items-center justify-between gap-4">
@@ -336,7 +336,7 @@ const MobileLayout = memo(({
                 </div>
                 <div className="text-left flex-1 min-w-0">
                   <p className="text-xs text-gray-400">Contact Email</p>
-                  <p className="text-sm text-white font-medium truncate">hello@yourworld.com</p>
+                  <p className="text-sm text-white font-medium truncate">uju355@gmail.com</p>
                 </div>
               </div>
               <button
@@ -360,11 +360,10 @@ const MobileLayout = memo(({
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`py-2 rounded-xl text-[11px] xs:text-xs font-semibold transition-all duration-300 text-center flex items-center justify-center ${
-                activeTab === tab 
-                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md scale-105' 
+              className={`py-2 rounded-xl text-[11px] xs:text-xs font-semibold transition-all duration-300 text-center flex items-center justify-center ${activeTab === tab
+                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md scale-105'
                   : 'text-gray-400 hover:text-white hover:bg-gray-800/30'
-              }`}
+                }`}
             >
               {tab === 'social' ? 'Links' : tab === 'setup' ? 'Stats' : tab === 'projects' ? 'Projek' : tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
@@ -386,7 +385,7 @@ const MobileLayout = memo(({
                   />
                 ))}
               </div>
-              
+
               {/* About Syaiful Mukmin Section */}
               <div className="mt-6 pt-6 border-t border-gray-700">
                 <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 backdrop-blur-sm rounded-2xl p-4 border border-purple-500/30">
@@ -410,7 +409,7 @@ const MobileLayout = memo(({
                     <span className="text-base">🎨</span>
                     My Hobbies
                   </h3>
-                  <button 
+                  <button
                     onClick={() => navigate("/hobbies")}
                     className="text-[10px] text-gray-500 hover:text-white transition-colors"
                   >
@@ -421,8 +420,8 @@ const MobileLayout = memo(({
                   {displayedHobbies.map((hobby) => {
                     const IconComponent = iconMap[hobby.icon];
                     return (
-                      <div 
-                        key={hobby.id} 
+                      <div
+                        key={hobby.id}
                         onClick={() => navigate(`/hobbies/${hobby.slug}`)}
                         className="bg-gray-900/40 backdrop-blur-sm rounded-xl p-3 border border-gray-800/50 active:scale-95 transition-all"
                       >
@@ -436,8 +435,8 @@ const MobileLayout = memo(({
                           <span className="text-[9px] text-gray-500 font-mono">{hobby.stats?.completion || 0}%</span>
                         </div>
                         <div className="w-full bg-gray-800 rounded-full h-1 overflow-hidden">
-                          <div 
-                            className={`h-1 rounded-full bg-gradient-to-r ${hobby.color || 'from-blue-500 to-cyan-400'} transition-all duration-1000 ease-in-out`} 
+                          <div
+                            className={`h-1 rounded-full bg-gradient-to-r ${hobby.color || 'from-blue-500 to-cyan-400'} transition-all duration-1000 ease-in-out`}
                             style={{ width: `${hobby.stats?.completion || 0}%` }}
                           />
                         </div>
@@ -458,7 +457,7 @@ const MobileLayout = memo(({
                 </h3>
                 <div className="grid grid-cols-1 gap-3">
                   {projects && projects.slice(0, 3).map((project, i) => (
-                    <div 
+                    <div
                       key={project.id || i}
                       onClick={() => navigate(`/project-detail/${project.id || project.slug}`)}
                       className="group bg-gray-800/30 p-3 rounded-xl border border-gray-700/50 transition-all active:scale-95 flex gap-3"
@@ -468,7 +467,7 @@ const MobileLayout = memo(({
                           <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-gray-700">
-                             <MdFolderOpen className="w-6 h-6 text-gray-500" />
+                            <MdFolderOpen className="w-6 h-6 text-gray-500" />
                           </div>
                         )}
                       </div>
@@ -547,10 +546,10 @@ const MobileLayout = memo(({
                   </h3>
                   <span className="text-[10px] text-gray-500 bg-gray-800 px-2 py-0.5 rounded-full">New</span>
                 </div>
-                
+
                 <div className="grid grid-cols-1 gap-3">
                   {displayedCerts.map((cert) => (
-                    <div 
+                    <div
                       key={cert.id}
                       onClick={() => openCertModal(cert)}
                       className="bg-gray-800/30 p-3 rounded-xl border border-gray-700/50 flex justify-between items-center active:scale-95 transition-all group"
@@ -568,8 +567,8 @@ const MobileLayout = memo(({
                     </div>
                   ))}
                 </div>
-                
-                <button 
+
+                <button
                   onClick={() => navigate('/sertifikat')}
                   className="w-full mt-4 py-2 text-[10px] text-gray-500 hover:text-gray-300 text-center border-t border-gray-800/50 pt-3"
                 >
@@ -586,18 +585,17 @@ const MobileLayout = memo(({
                   </h3>
                   <p className="text-[10px] text-gray-500 mt-0.5">Hardware and professional tools.</p>
                 </div>
-                
+
                 <div className="grid grid-cols-1 gap-4">
                   {usesData.map((category, idx) => (
                     <div key={idx} className="bg-gray-900/50 backdrop-blur-sm rounded-2xl p-5 border border-gray-800">
                       <div className="flex items-center gap-3 mb-4">
                         <span className="text-xl">{category.icon}</span>
-                        <h3 className={`text-sm font-black bg-gradient-to-r ${
-                          category.color === 'blue' ? 'from-blue-400 to-cyan-400' :
-                          category.color === 'green' ? 'from-green-400 to-emerald-400' :
-                          category.color === 'purple' ? 'from-purple-400 to-pink-400' :
-                          'from-yellow-400 to-orange-400'
-                        } bg-clip-text text-transparent uppercase tracking-wider`}>
+                        <h3 className={`text-sm font-black bg-gradient-to-r ${category.color === 'blue' ? 'from-blue-400 to-cyan-400' :
+                            category.color === 'green' ? 'from-green-400 to-emerald-400' :
+                              category.color === 'purple' ? 'from-purple-400 to-pink-400' :
+                                'from-yellow-400 to-orange-400'
+                          } bg-clip-text text-transparent uppercase tracking-wider`}>
                           {category.category}
                         </h3>
                       </div>
@@ -623,7 +621,7 @@ const MobileLayout = memo(({
                   <span className="text-base">📊</span>
                   Interaction Metrics
                 </h3>
-                
+
                 <div className="grid grid-cols-3 gap-3 mb-6">
                   <div className="text-center p-3 bg-gray-800/30 rounded-xl border border-gray-700/30">
                     <p className="text-lg font-bold text-white">{stats.connections}</p>
@@ -638,7 +636,7 @@ const MobileLayout = memo(({
                     <p className="text-[9px] text-gray-500 uppercase">Rate</p>
                   </div>
                 </div>
-                
+
                 <div className="p-3 bg-blue-500/5 border border-blue-500/10 rounded-xl">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-[10px] text-gray-400 font-medium">Growth vs Last Year</span>
@@ -658,7 +656,7 @@ const MobileLayout = memo(({
           {activeTab === 'website' && (
             <div className="space-y-3">
               <p className="text-gray-400 text-sm font-medium mb-4">Jelajahi Website</p>
-              
+
               {/* Home Button */}
               <div className="relative group">
                 <button
@@ -744,7 +742,7 @@ const MobileLayout = memo(({
               <MdShare className="w-5 h-5" />
               Share Profile
             </button>
-            <button 
+            <button
               onClick={() => setShowQRModal(!showQRModal)}
               className="p-3 bg-gradient-to-r from-emerald-600 to-green-600 rounded-xl border border-emerald-500/50 active:scale-95 transition-transform hover:opacity-90"
             >
@@ -762,14 +760,14 @@ const MobileLayout = memo(({
                   <h3 className="text-xl font-bold text-white">Portal Profile QR Code</h3>
                   <p className="text-gray-400 text-sm mt-1">Scan untuk mengunjungi portal saya</p>
                 </div>
-                <button 
+                <button
                   onClick={() => setShowQRModal(false)}
                   className="text-gray-400 hover:text-white text-2xl p-2 hover:bg-gray-800 rounded-full transition-colors"
                 >
                   ✕
                 </button>
               </div>
-              
+
               {/* QR Code Container */}
               <div className="relative bg-white p-4 rounded-xl mb-6 flex items-center justify-center qr-pulse">
                 {isGenerating ? (
@@ -779,14 +777,14 @@ const MobileLayout = memo(({
                   </div>
                 ) : qrCodeUrl ? (
                   <div className="relative">
-                    <img 
-                      src={qrCodeUrl} 
+                    <img
+                      src={qrCodeUrl}
                       alt="QR Code Portal Muhammad Syaiful Mukmin"
                       className="w-64 h-64 mx-auto"
                     />
                     {/* Scan line effect */}
                     <div className="scan-line"></div>
-                    
+
                     {/* Logo overlay */}
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-xl flex items-center justify-center">
                       <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
@@ -803,28 +801,27 @@ const MobileLayout = memo(({
                   </div>
                 )}
               </div>
-              
+
               {/* URL Display */}
               <div className="bg-gray-800/50 rounded-lg p-4 mb-6">
                 <p className="text-gray-400 text-xs mb-2">Link Portal:</p>
                 <p className="text-white text-sm font-mono break-all">https://syaiful-mukmin.netlify.app/portal</p>
               </div>
-              
+
               {/* Action Buttons */}
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={downloadQRCode}
                   disabled={!qrCodeUrl}
-                  className={`flex items-center justify-center gap-2 py-3 rounded-xl font-medium transition-all ${
-                    qrCodeUrl 
-                      ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white hover:opacity-90 active:scale-95' 
+                  className={`flex items-center justify-center gap-2 py-3 rounded-xl font-medium transition-all ${qrCodeUrl
+                      ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white hover:opacity-90 active:scale-95'
                       : 'bg-gray-800 text-gray-400 cursor-not-allowed'
-                  }`}
+                    }`}
                 >
                   <MdDownload className="w-5 h-5" />
                   {downloadSuccess ? 'Berhasil!' : 'Download'}
                 </button>
-                
+
                 <button
                   onClick={copyQRCodeLink}
                   className="flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-medium hover:opacity-90 active:scale-95 transition-all"
@@ -833,11 +830,11 @@ const MobileLayout = memo(({
                   Salin Link
                 </button>
               </div>
-              
+
               {/* Usage Instructions */}
               <div className="mt-6 pt-4 border-t border-gray-800">
                 <p className="text-gray-400 text-xs text-center">
-                  Gunakan QR Code ini untuk membagikan portal saya ke orang lain. 
+                  Gunakan QR Code ini untuk membagikan portal saya ke orang lain.
                   QR Code akan mengarahkan ke: <span className="text-emerald-400">syaiful-mukmin.netlify.app/portal</span>
                 </p>
               </div>

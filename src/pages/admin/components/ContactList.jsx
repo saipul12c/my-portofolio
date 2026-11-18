@@ -182,19 +182,19 @@ const ContactList = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2 gap-3">
         <div className="flex items-center gap-3 sm:gap-4 min-w-0">
           <div className="relative flex-shrink-0">
-            <div className="p-2 sm:p-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl sm:rounded-2xl shadow-lg">
+            <div className="p-2 sm:p-3 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl sm:rounded-2xl shadow-lg">
               <Inbox className="text-white" size={24} />
             </div>
             {totalContacts > 0 && (
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse" />
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full border-2 border-slate-900 animate-pulse" />
             )}
           </div>
           <div className="min-w-0">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
               Pesan Terbaru
             </h2>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2 mt-1">
-              <Bot size={12} className="flex-shrink-0" />
+            <p className="text-xs sm:text-sm text-gray-400 flex items-center gap-2 mt-1">
+              <Bot size={12} className="flex-shrink-0 text-cyan-400" />
               <span className="truncate">5 pesan masuk terakhir • Real-time updates</span>
             </p>
           </div>
@@ -205,24 +205,24 @@ const ContactList = () => {
           disabled={refreshLoading}
           whileHover={{ scale: 1.05, rotate: 180 }}
           whileTap={{ scale: 0.95 }}
-          className="p-2 sm:p-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-300 disabled:opacity-50 shadow-lg hover:shadow-xl flex-shrink-0"
+          className="p-2 sm:p-3 bg-slate-800/80 border border-white/10 rounded-lg sm:rounded-xl hover:bg-slate-700/80 hover:border-cyan-500/30 transition-all duration-300 disabled:opacity-50 shadow-lg flex-shrink-0"
           title="Refresh pesan"
         >
           <RefreshCw 
             size={18} 
-            className={`text-purple-600 dark:text-purple-400 ${refreshLoading ? 'animate-spin' : ''}`} 
+            className={`text-cyan-400 ${refreshLoading ? 'animate-spin' : ''}`} 
           />
         </motion.button>
       </div>
 
       <div 
-        className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border border-white/30 dark:border-gray-700/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-h-[700px] overflow-hidden flex flex-col shadow-2xl hover:shadow-3xl transition-all duration-500"
+        className="bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-h-[700px] overflow-hidden flex flex-col shadow-2xl hover:border-cyan-500/30 transition-all duration-500"
         style={{ isolation: 'isolate', transform: 'translateZ(0)' }}
       >
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4 sm:mb-6">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-              <div className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">
+              <div className="text-xs sm:text-sm font-medium text-gray-400">
                 Filter:
               </div>
               {["all", "recent", "priority"].map((tab) => (
@@ -231,8 +231,8 @@ const ContactList = () => {
                   onClick={() => setActiveTab(tab)}
                   className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap ${
                     activeTab === tab
-                      ? "bg-purple-500 text-white shadow-lg"
-                      : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
+                      ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20"
+                      : "bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/5"
                   }`}
                 >
                   {tab === "all" ? "Semua" : tab === "recent" ? "Terbaru" : "Prioritas"}
@@ -254,10 +254,10 @@ const ContactList = () => {
             </div>
           </div>
           <div className="text-right flex-shrink-0">
-            <div className="text-lg sm:text-2xl font-bold text-purple-600 dark:text-purple-400">
+            <div className="text-lg sm:text-2xl font-bold text-cyan-400">
               {displayContacts.length}
             </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">
+            <div className="text-xs text-gray-400">
               dari {totalCount} Pesan
             </div>
           </div>
@@ -301,9 +301,9 @@ const ContactList = () => {
                 transition={{ delay: idx * 0.1 }}
                 onMouseEnter={() => setHoveredContact(idx)}
                 onMouseLeave={() => setHoveredContact(null)}
-                className={`bg-white dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50 rounded-xl sm:rounded-2xl p-3 sm:p-4 transition-all duration-300 group cursor-pointer ${
+                className={`bg-slate-800/40 border border-white/5 rounded-xl sm:rounded-2xl p-3 sm:p-4 transition-all duration-300 group cursor-pointer hover:border-cyan-500/30 ${
                   hoveredContact === idx
-                    ? "ring-2 ring-purple-500/30 shadow-xl"
+                    ? "ring-1 ring-cyan-500/30 shadow-xl bg-slate-800/60"
                     : "shadow-sm hover:shadow-md"
                 }`}
               >
@@ -315,11 +315,11 @@ const ContactList = () => {
                         {contact.name ? contact.name.charAt(0).toUpperCase() : "?"}
                       </div>
                       <div className="min-w-0">
-                        <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-[13px] sm:text-sm truncate">
+                        <h3 className="font-semibold text-white text-[13px] sm:text-sm truncate">
                           {contact.name || "Anonymous"}
                         </h3>
-                        <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
-                          <Mail size={10} className="shrink-0" />
+                        <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-gray-400">
+                          <Mail size={10} className="shrink-0 text-cyan-400" />
                           <span className="truncate">{contact.email || "No email"}</span>
                         </div>
                       </div>
@@ -335,8 +335,8 @@ const ContactList = () => {
                         return (
                           <div className={`text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold border ${
                             analysis.level === 'high' 
-                              ? 'bg-red-50 dark:bg-red-900/20 text-red-600 border-red-100 dark:border-red-800' 
-                              : 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 border-blue-100 dark:border-blue-800'
+                              ? 'bg-red-500/20 text-red-400 border-red-500/30' 
+                              : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
                           }`}>
                             {analysis.level.toUpperCase()}
                           </div>
@@ -346,8 +346,8 @@ const ContactList = () => {
                   </div>
                   
                   {/* Message Body */}
-                  <div className="bg-gray-50 dark:bg-gray-900/30 rounded-lg p-2.5 sm:p-3 border border-gray-100/50 dark:border-gray-700/30">
-                    <p className="text-[12px] sm:text-[13px] text-gray-700 dark:text-gray-300 line-clamp-3 leading-relaxed">
+                  <div className="bg-slate-900/60 rounded-lg p-2.5 sm:p-3 border border-white/5">
+                    <p className="text-[12px] sm:text-[13px] text-gray-300 line-clamp-3 leading-relaxed">
                       {contact.message || "No message available"}
                     </p>
                   </div>

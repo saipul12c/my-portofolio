@@ -24,12 +24,12 @@ export default function Contact() {
   if (isMaintenance) return <Maintenance />;
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-start px-3 sm:px-4 md:px-6 lg:px-8 xl:px-20 py-8 sm:py-12 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900/20 transition-all duration-500 relative overflow-hidden">
+    <main className="min-h-screen flex flex-col items-center justify-start px-3 sm:px-4 md:px-6 lg:px-8 xl:px-20 py-8 sm:py-12 bg-[#0f172a] text-white transition-all duration-500 relative overflow-hidden">
       
       <BackgroundEffects />
       
       <ToastContainer 
-        theme="colored" 
+        theme="dark" 
         position="bottom-center"
         autoClose={4000}
         hideProgressBar={false}
@@ -42,10 +42,10 @@ export default function Contact() {
       <div className="text-center mb-8 sm:mb-12 lg:mb-16 max-w-6xl relative z-10 w-full px-2 sm:px-0">
         <motion.div
           {...badgeAnim}
-          className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-4 sm:px-6 py-2 sm:py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-white/20 shadow-lg"
+          className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-4 sm:px-6 py-2 sm:py-3 bg-white/5 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-white/10 shadow-lg"
         >
           {SPARKLES_ICON}
-          <span className="text-xs sm:text-sm font-medium text-purple-600 dark:text-purple-400">
+          <span className="text-xs sm:text-sm font-medium text-cyan-400">
             Mari Berkolaborasi Bersama
           </span>
           {SPARKLES_ICON}
@@ -55,7 +55,7 @@ export default function Contact() {
           {...titleAnim}
           className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6"
         >
-          <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
             Hubungi Saya
           </span>
           <motion.span
@@ -69,10 +69,10 @@ export default function Contact() {
 
         <motion.p
           {...descAnim}
-          className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 dark:text-gray-300 leading-relaxed mb-6 sm:mb-8 max-w-4xl mx-auto"
+          className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 leading-relaxed mb-6 sm:mb-8 max-w-4xl mx-auto"
         >
           Mari wujudkan ide brilian Anda menjadi kenyataan — 
-          <span className="block mt-2 sm:mt-3 font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+          <span className="block mt-2 sm:mt-3 font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
             Setiap kolaborasi dimulai dengan satu pesan ✨
           </span>
         </motion.p>

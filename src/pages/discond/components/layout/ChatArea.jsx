@@ -98,10 +98,10 @@ const ChatArea = ({ onOpenServers, onOpenChannels, onOpenMembers }) => {
 
   if (!selectedChannel) {
     return (
-      <div className="flex-1 bg-[var(--dc-bg)] flex flex-col">
+      <div className="flex-1 bg-[#36393f] flex flex-col">
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <div className="w-24 h-24 bg-[var(--dc-surface)] rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-24 h-24 bg-[#40444b] rounded-full flex items-center justify-center mx-auto mb-4">
               <Hash className="w-12 h-12 text-gray-400" />
             </div>
             <h3 className="text-2xl font-bold text-white mb-2">Selamat Datang di Komuniti! 👋</h3>
@@ -122,9 +122,9 @@ const ChatArea = ({ onOpenServers, onOpenChannels, onOpenMembers }) => {
   };
 
   return (
-    <div className="flex-1 bg-[var(--dc-bg)] flex flex-col">
+    <div className="flex-1 bg-[#36393f] flex flex-col">
       {/* Channel Header */}
-      <div className="h-12 border-b border-[rgba(255,255,255,0.06)] px-4 flex items-center justify-between shadow-sm bg-[var(--dc-surface-2)]">
+      <div className="h-12 border-b border-[rgba(255,255,255,0.06)] px-4 flex items-center justify-between shadow-sm bg-[#292b2f]">
         <div className="flex items-center space-x-2">
           {/* Mobile controls: show on small screens only */}
           <div className="flex items-center space-x-2 md:hidden mr-2">
@@ -180,7 +180,7 @@ const ChatArea = ({ onOpenServers, onOpenChannels, onOpenMembers }) => {
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {/* Welcome Message */}
         <div className="text-center py-8">
-          <div className="w-16 h-16 bg-[var(--dc-surface)] rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-[#40444b] rounded-full flex items-center justify-center mx-auto mb-4">
             <Hash className="w-8 h-8 text-gray-400" />
           </div>
           <h3 className="text-2xl font-bold text-white mb-2">Selamat datang di #{selectedChannel.name}! 👋</h3>
@@ -199,11 +199,11 @@ const ChatArea = ({ onOpenServers, onOpenChannels, onOpenMembers }) => {
               key={msg.id || index}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex space-x-3 p-2 message-item group"
+              className="flex space-x-3 p-2 hover:bg-[#2f3136]/30 rounded-md group"
             >
               <div className="flex-shrink-0">
                 {!sameAuthor ? (
-                  <div className="w-10 h-10 rounded-full overflow-hidden bg-[var(--dc-cyan)] relative">
+                  <div className="w-10 h-10 rounded-full overflow-hidden bg-[#56b6c2] relative">
                     {msg.profiles?.avatar_url ? (
                       <img alt={msg.profiles?.username || 'user'} src={msg.profiles.avatar_url} className="w-full h-full object-cover" />
                     ) : (
@@ -212,7 +212,7 @@ const ChatArea = ({ onOpenServers, onOpenChannels, onOpenMembers }) => {
                       </div>
                     )}
                     {/* presence badge */}
-                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border border-[var(--dc-bg-2)]" style={{ backgroundColor: member && member.presence === 'online' ? 'var(--dc-accent)' : member && member.presence === 'idle' ? '#f59e0b' : member && member.presence === 'dnd' ? '#ef4444' : '#6b7280' }} />
+                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border border-[#2f3136]" style={{ backgroundColor: member && member.presence === 'online' ? '#3ba55d' : member && member.presence === 'idle' ? '#f59e0b' : member && member.presence === 'dnd' ? '#ef4444' : '#6b7280' }} />
                   </div>
                 ) : (
                   <div className="w-10 h-10" />
@@ -257,7 +257,7 @@ const ChatArea = ({ onOpenServers, onOpenChannels, onOpenMembers }) => {
                       try { api.messages.react(id || msg.id, emoji); } catch (err) { console.error('Failed to react', err); }
                     }}
                   />
-                  <button title="Open thread" onClick={() => setOpenThreadId(msg.thread_id || msg.id)} className="p-1 bg-[var(--dc-surface)] rounded hover:bg-[var(--dc-surface-2)] text-gray-200">🧵</button>
+                  <button title="Open thread" onClick={() => setOpenThreadId(msg.thread_id || msg.id)} className="p-1 bg-[#40444b] rounded hover:bg-[#292b2f] text-gray-200">🧵</button>
                 </div>
               </div>
             </motion.div>
@@ -273,7 +273,7 @@ const ChatArea = ({ onOpenServers, onOpenChannels, onOpenMembers }) => {
           <div className="flex items-center space-x-3 text-sm text-gray-300">
             <div className="flex -space-x-2">
               {typingUsers.slice(0,4).map(u => (
-                <div key={u.id} className="w-6 h-6 rounded-full bg-[var(--dc-surface)] flex items-center justify-center text-xs text-white border border-[var(--dc-bg-2)]">{(u.username||u.name||'U').substring(0,2).toUpperCase()}</div>
+                <div key={u.id} className="w-6 h-6 rounded-full bg-[#40444b] flex items-center justify-center text-xs text-white border border-[#2f3136]">{(u.username||u.name||'U').substring(0,2).toUpperCase()}</div>
               ))}
             </div>
             <div className="flex items-center gap-2">
@@ -290,7 +290,7 @@ const ChatArea = ({ onOpenServers, onOpenChannels, onOpenMembers }) => {
 
       {/* Message Input */}
       <div className="p-4">
-        <form onSubmit={handleSubmit} className="message-input rounded-lg px-4">
+        <form onSubmit={handleSubmit} className="bg-[#202225]/60 rounded-lg px-4 py-2 focus-within:ring-2 focus-within:ring-[#5865f2]/10">
           <div className="flex items-center">
             <button type="button" className="p-2 text-gray-400 hover:text-gray-300">
               <Plus className="w-5 h-5" />

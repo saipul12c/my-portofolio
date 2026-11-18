@@ -198,7 +198,12 @@ export default function Testimoni() {
   }, [selected, navigate]);
 
   return (
-    <main className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center px-3 sm:px-6 md:px-10 lg:px-12 py-8 sm:py-12 md:py-16 lg:py-24">
+    <main className="min-h-screen bg-[var(--color-gray-900)] text-white flex flex-col items-center px-3 sm:px-6 md:px-10 lg:px-12 py-8 sm:py-12 md:py-16 lg:py-24 relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute inset-0 -z-10 pointer-events-none">
+        <div className="absolute top-10 left-10 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-10 right-10 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl animate-pulse" />
+      </div>
       <div className="w-full max-w-7xl">
         <TestimoniHeader avgRating={avgRating} />
       </div>

@@ -25,21 +25,21 @@ const ServerSidebar = ({ onProfileClick, mobileClose, onAuthRequest }) => {
   return (
     <>
       {/* Mobile top bar with close button */}
-      <div className="md:hidden bg-[var(--dc-surface-2)] p-2 flex items-center justify-between">
+      <div className="md:hidden bg-[#292b2f] p-2 flex items-center justify-between">
         <div className="text-white text-sm font-semibold">Servers</div>
         <button onClick={() => mobileClose?.()} className="text-gray-300 p-1">
           <X className="w-5 h-5" />
         </button>
       </div>
-      <div className="w-20 bg-[var(--dc-surface-2)] flex flex-col items-center py-3 space-y-4 overflow-y-auto">
+      <div className="w-20 bg-[#292b2f] flex flex-col items-center py-3 space-y-4 overflow-y-auto">
         {/* Direct Messages */}
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           className={`w-12 h-12 rounded-3xl transition-all duration-200 flex items-center justify-center ${
             !selectedServer 
-              ? 'bg-[var(--dc-cyan)] text-white rounded-2xl shadow-md' 
-              : 'bg-[var(--dc-bg)] text-gray-300 hover:bg-[var(--dc-cyan)] hover:text-white hover:rounded-2xl hover:shadow-md'
+              ? 'bg-[#56b6c2] text-white rounded-2xl shadow-md' 
+              : 'bg-[#36393f] text-gray-300 hover:bg-[#56b6c2] hover:text-white hover:rounded-2xl hover:shadow-md'
           }`}
           onClick={() => setSelectedServer(null)}
           type="button"
@@ -57,16 +57,16 @@ const ServerSidebar = ({ onProfileClick, mobileClose, onAuthRequest }) => {
             whileTap={{ scale: 0.9 }}
             className={`w-12 h-12 rounded-3xl transition-all duration-200 flex items-center justify-center relative ${
               selectedServer?.id === server.id
-                ? 'bg-[var(--dc-cyan)] text-white rounded-2xl shadow-md'
-                : 'bg-[var(--dc-bg)] text-gray-300 hover:bg-[var(--dc-cyan)] hover:text-white hover:rounded-2xl'
+                ? 'bg-[#56b6c2] text-white rounded-2xl shadow-md'
+                : 'bg-[#36393f] text-gray-300 hover:bg-[#56b6c2] hover:text-white hover:rounded-2xl'
             }`}
             onClick={() => setSelectedServer(server)}
             type="button"
           >
-            <span className="text-lg font-semibold server-icon">{server.icon || '🖥️'}</span>
+            <span className="text-lg font-semibold">{server.icon || '🖥️'}</span>
             
             {selectedServer?.id === server.id && (
-              <div className="absolute -left-1 w-1 h-8 bg-[var(--dc-accent)] rounded-r-full"></div>
+              <div className="absolute -left-1 w-1 h-8 bg-[#3ba55d] rounded-r-full"></div>
             )}
           </motion.button>
         ))}
@@ -75,7 +75,7 @@ const ServerSidebar = ({ onProfileClick, mobileClose, onAuthRequest }) => {
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          className="w-12 h-12 rounded-3xl bg-[var(--dc-bg)] text-[var(--dc-accent)] hover:bg-[var(--dc-accent)] hover:text-white hover:rounded-2xl transition-all duration-200 flex items-center justify-center shadow-sm"
+          className="w-12 h-12 rounded-3xl bg-[#36393f] text-[#3ba55d] hover:bg-[#3ba55d] hover:text-white hover:rounded-2xl transition-all duration-200 flex items-center justify-center shadow-sm"
           onClick={() => setShowCreateModal(true)}
           type="button"
         >

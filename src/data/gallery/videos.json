@@ -1,5 +1,146 @@
 [
   {
+    "id": 101,
+    "type": "video",
+    "title": "Official Trailer Pagelaran Seni 2024 - Angkatan 22 UIN Antasari",
+    "desc": "Trailer resmi Pagelaran Seni 2024 yang dipersembahkan oleh mahasiswa Angkatan 22 UIN Antasari Banjarmasin. Menampilkan kolaborasi megah pertunjukan teater, tari, musik, dan karya seni spektakuler dari seluruh lokal.",
+    "src": "/assets/pageran/trailer/trailer.mp4",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "category": "Pagelaran Seni",
+    "duration": "00:02:30",
+    "tags": ["pagelaranseni", "trailer", "official", "angkatan22", "uinantasari", "banjarmasin", "teater", "seni", "event2024"],
+    "uploaded_at": "2024-05-15T19:00:00Z",
+    "creator": {
+      "username": "pagelaranseni22",
+      "display_name": "Pagelaran Seni Angkatan 22",
+      "avatar": "https://randomuser.me/api/portraits/men/42.jpg",
+      "verified": true,
+      "followers": 7800,
+      "bio": "Official Media Pagelaran Seni 2024 Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 🎭✨",
+      "joined_at": "2024-01-01T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/pagelaranseni_uinantasari",
+        "youtube": "https://youtube.com/UINAntasariOfficial"
+      }
+    },
+    "details": {
+      "resolution": "1080p",
+      "format": "MP4",
+      "duration_seconds": 150,
+      "software": "Premiere Pro / After Effects",
+      "location": {
+        "name": "Kampus UIN Antasari Banjarmasin",
+        "city": "Banjarmasin",
+        "country": "Indonesia",
+        "geo": { "lat": -3.3194, "lon": 114.5908 }
+      }
+    },
+    "music": {
+      "title": "Antasari Art Symphony",
+      "artist": "Tim Musik Angkatan 22",
+      "license": "original",
+      "genre": "Soundtrack Pagelaran",
+      "bpm": 110,
+      "is_original_audio": true
+    },
+    "engagement": {
+      "views": 28450,
+      "likes": 5420,
+      "comments": 142,
+      "shares": 245,
+      "saves": 430
+    },
+    "trending": {
+      "is_trending": true,
+      "rank": 1,
+      "trend_category": "Event & Seni"
+    },
+    "comments_preview": [
+      {
+        "user": "mahasiswa_seni",
+        "avatar": "https://randomuser.me/api/portraits/women/22.jpg",
+        "comment": "Keren banget trailernya! Bangga jadi bagian dari Angkatan 22 UIN Antasari 🔥🎭",
+        "likes": 48,
+        "posted_at": "2024-05-15T20:15:00Z"
+      },
+      {
+        "user": "kru_panggung",
+        "avatar": "https://randomuser.me/api/portraits/men/34.jpg",
+        "comment": "Kerja keras panitia dan semua lokal terbayar lunas di event ini!",
+        "likes": 35,
+        "posted_at": "2024-05-15T21:00:00Z"
+      }
+    ]
+  },
+  {
+    "id": 102,
+    "type": "video",
+    "title": "Coming Soon: Pagelaran Seni Angkatan 22 UIN Antasari",
+    "desc": "Teaser video resmi menyambut Pagelaran Seni 2024 Angkatan 22 UIN Antasari Banjarmasin. Cuplikan antusiasme persiapan dan kejutan yang dihadirkan di panggung akbar seni kampus.",
+    "src": "/assets/pageran/trailer/comingsoon.mp4",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "category": "Pagelaran Seni",
+    "duration": "00:01:15",
+    "tags": ["pagelaranseni", "comingsoon", "angkatan22", "uinantasari", "banjarmasin", "trailer", "teaser"],
+    "uploaded_at": "2024-05-10T10:00:00Z",
+    "creator": {
+      "username": "pagelaranseni22",
+      "display_name": "Pagelaran Seni Angkatan 22",
+      "avatar": "https://randomuser.me/api/portraits/men/42.jpg",
+      "verified": true,
+      "followers": 7800,
+      "bio": "Official Media Pagelaran Seni 2024 Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 🎭✨",
+      "joined_at": "2024-01-01T00:00:00Z",
+      "social_links": {
+        "instagram": "https://instagram.com/pagelaranseni_uinantasari",
+        "youtube": "https://youtube.com/UINAntasariOfficial"
+      }
+    },
+    "details": {
+      "resolution": "1080p",
+      "format": "MP4",
+      "duration_seconds": 75,
+      "software": "Premiere Pro",
+      "location": {
+        "name": "Kampus UIN Antasari Banjarmasin",
+        "city": "Banjarmasin",
+        "country": "Indonesia",
+        "geo": { "lat": -3.3194, "lon": 114.5908 }
+      }
+    },
+    "music": {
+      "title": "Rise of Angkatan 22",
+      "artist": "Soundtrack Pagelaran",
+      "license": "original",
+      "genre": "Cinematic",
+      "bpm": 105,
+      "is_original_audio": true
+    },
+    "engagement": {
+      "views": 21300,
+      "likes": 4180,
+      "comments": 96,
+      "shares": 168,
+      "saves": 310
+    },
+    "trending": {
+      "is_trending": true,
+      "rank": 2,
+      "trend_category": "Event & Seni"
+    },
+    "comments_preview": [
+      {
+        "user": "antasari_mhs",
+        "avatar": "https://randomuser.me/api/portraits/men/41.jpg",
+        "comment": "Gak sabar nonton puncaknya! Tiket udah siap 🎟️✨",
+        "likes": 27,
+        "posted_at": "2024-05-10T11:20:00Z"
+      }
+    ]
+  },
+  {
     "id": 1,
     "type": "video",
     "title": "Kehidupan Kampus",
@@ -10,7 +151,6 @@
     "duration": "00:02:45",
     "tags": ["kampus", "edukasi", "mahasiswa", "learning", "campus-life"],
     "uploaded_at": "2024-04-02T09:00:00Z",
-
     "creator": {
       "username": "tim_mediaedu",
       "display_name": "Tim Media Edukasi",
@@ -24,7 +164,6 @@
         "instagram": "https://instagram.com/MediaEdukasi"
       }
     },
-
     "details": {
       "resolution": "1080p",
       "format": "MP4",
@@ -36,7 +175,6 @@
         "geo": { "lat": -6.2088, "lon": 106.8456 }
       }
     },
-
     "music": {
       "title": "Campus Vibes",
       "artist": "EduBeats",
@@ -46,7 +184,6 @@
       "bpm": 95,
       "is_original_audio": true
     },
-
     "engagement": {
       "views": 15830,
       "likes": 4200,
@@ -54,13 +191,11 @@
       "shares": 45,
       "saves": 210
     },
-
     "trending": {
       "is_trending": true,
       "rank": 7,
       "trend_category": "Education"
     },
-
     "comments_preview": [
       {
         "user": "anna_student",
@@ -89,7 +224,6 @@
     "duration": "00:03:10",
     "tags": ["project", "digital", "education", "animation", "learning"],
     "uploaded_at": "2024-07-01T14:00:00Z",
-
     "creator": {
       "username": "media_edutech",
       "display_name": "Media EduTech",
@@ -103,7 +237,6 @@
         "instagram": "https://instagram.com/MediaEduTech"
       }
     },
-
     "details": {
       "format": "MP4",
       "software": "After Effects",
@@ -115,7 +248,6 @@
         "geo": { "lat": -6.9147, "lon": 107.6098 }
       }
     },
-
     "music": {
       "title": "Digital Flow",
       "artist": "TechBeats",
@@ -125,7 +257,6 @@
       "bpm": 100,
       "is_original_audio": true
     },
-
     "engagement": {
       "views": 12340,
       "likes": 3100,
@@ -133,13 +264,11 @@
       "shares": 30,
       "saves": 120
     },
-
     "trending": {
       "is_trending": false,
       "rank": null,
       "trend_category": "Education"
     },
-
     "comments_preview": [
       {
         "user": "dina_teacher",

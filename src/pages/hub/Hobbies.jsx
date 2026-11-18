@@ -15,7 +15,7 @@ export default function Hobbies() {
 
   return (
     <LazyMotion features={domAnimation}>
-      <main className="relative min-h-screen flex flex-col items-center justify-start px-6 py-24 bg-gradient-to-b from-[#0d111a] via-[#111726] to-[#0d111a] text-white overflow-hidden scroll-smooth">
+      <main className="relative min-h-screen flex flex-col items-center justify-start px-6 py-24 bg-gradient-to-b from-[var(--color-gray-900)] via-[#111726] to-[var(--color-gray-900)] text-white overflow-hidden scroll-smooth">
         <BackgroundGlow />
         
         <HobbyHeader />

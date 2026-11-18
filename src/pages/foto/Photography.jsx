@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Maintenance from "../errors/Maintenance";
-import photos from "../../data/foto/photos.json";
+import { getSynchronizedPhotos } from "./utils/syncGalleryToPhotos";
 
 import BackgroundGlow from "./foto/BackgroundGlow";
 import PhotoHeader from "./foto/PhotoHeader";
@@ -15,6 +15,7 @@ import Pagination from "./foto/Pagination";
 import PhotoStats from "./foto/PhotoStats";
 
 export default function Photography() {
+  const allPhotos = useMemo(() => getSynchronizedPhotos(), []);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,7 +28,7 @@ export default function Photography() {
   // 🔍 Filter dan sort optimal
   const filteredAndSortedPhotos = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
-    let result = photos;
+    let result = allPhotos;
 
     if (term) {
       result = result.filter((photo) =>
@@ -59,7 +60,7 @@ export default function Photography() {
     }
 
     return sorted;
-  }, [searchTerm, filterOptions]);
+  }, [allPhotos, searchTerm, filterOptions]);
 
   // 🧮 Hitung pagination
   const totalPages = Math.max(1, Math.ceil(filteredAndSortedPhotos.length / photosPerPage));
@@ -125,11 +126,11 @@ export default function Photography() {
           <PhotoHeader />
           
           {/* Stats Section */}
-          <PhotoStats photos={photos} />
+          <PhotoStats photos={allPhotos} />
           
           <PhotoSearch 
             onSearch={handleSearch} 
-            allPhotos={photos}
+            allPhotos={allPhotos} 
             onFilterChange={handleFilterChange}
             onViewChange={handleViewChange}
             currentView={viewMode}
@@ -177,7 +178,7 @@ export default function Photography() {
           <PhotoSearchRelated 
             searchTerm={searchTerm} 
             filteredPhotos={currentPhotos} 
-            allPhotos={photos} 
+            allPhotos={allPhotos} 
             onSelectCategory={handleSelectCategoryFromRelated}
           />
         )}

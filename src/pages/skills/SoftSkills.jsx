@@ -19,7 +19,7 @@ import fallbackSkillsData from "../../data/skills/softskills.json";
  * - Menangani fitur Tanya AI
  */
 export default function SoftSkills() {
-  const [skillsData, setSkillsData] = useState(null);
+  const [skillsData, setSkillsData] = useState(fallbackSkillsData);
   const [skills, setSkills] = useState([]);
   const [filteredSkills, setFilteredSkills] = useState([]);
   const [selectedSkill, setSelectedSkill] = useState(null);
@@ -41,50 +41,6 @@ export default function SoftSkills() {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  // ✅ Fetch JSON - aman untuk Vite & CRA dengan fallback offline
-  useEffect(() => {
-    let mounted = true;
-
-    // Vite pakai import.meta.env.BASE_URL
-    const publicBase =
-      (typeof import.meta !== "undefined" && import.meta.env?.BASE_URL) || "";
-
-    const fetchSequential = async () => {
-      // Prioritaskan path yang paling mungkin berhasil di environment Vite
-      const optimizedPaths = [
-        `${publicBase}data/about/softskills.json`,
-        "/data/about/softskills.json",
-        "./data/about/softskills.json",
-      ];
-
-      for (const p of optimizedPaths) {
-        try {
-          const res = await fetch(p);
-          if (!res.ok) continue;
-          const data = await res.json();
-          if (mounted && data && Array.isArray(data.skills)) {
-            setSkillsData(data);
-            return;
-          }
-        } catch {
-          continue;
-        }
-      }
-
-      // Fallback ke data lokal jika fetch gagal
-      if (mounted) {
-        console.warn("Menggunakan data fallback lokal untuk soft skills");
-        setSkillsData(fallbackSkillsData);
-      }
-    };
-
-    fetchSequential();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
   // 🔹 Proses data skill (labels, colors, gradients) - dioptimasi dengan useMemo
   useEffect(() => {
     if (!skillsData || !Array.isArray(skillsData.skills)) return;
@@ -94,28 +50,23 @@ export default function SoftSkills() {
 
     const colors = {
       label: [
-        "bg-green-500 text-white",
-        "bg-blue-500 text-white",
-        "bg-red-500 text-white",
-        "bg-yellow-400 text-black",
-        "bg-purple-500 text-white",
-        "bg-pink-500 text-white",
+        "bg-cyan-500/20 text-cyan-300 border border-cyan-400/30",
+        "bg-blue-500/20 text-blue-300 border border-blue-400/30",
+        "bg-purple-500/20 text-purple-300 border border-purple-400/30",
+        "bg-emerald-500/20 text-emerald-300 border border-emerald-400/30",
+        "bg-indigo-500/20 text-indigo-300 border border-indigo-400/30",
       ],
       level: [
-        "bg-cyan-400 text-white",
-        "bg-orange-400 text-white",
-        "bg-indigo-400 text-white",
-        "bg-emerald-400 text-white",
+        "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30",
+        "bg-purple-500/20 text-purple-300 border border-purple-500/30",
+        "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30",
+        "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
       ],
       card: [
-        "from-cyan-600 to-cyan-800",
-        "from-purple-600 to-purple-800",
-        "from-pink-600 to-pink-800",
-        "from-green-600 to-green-800",
-        "from-blue-600 to-blue-800",
-        "from-orange-600 to-orange-800",
-        "from-rose-600 to-rose-800",
-        "from-violet-600 to-violet-800",
+        "from-slate-900/90 via-slate-800/80 to-cyan-950/40 hover:border-cyan-500/50 hover:shadow-cyan-500/10",
+        "from-slate-900/90 via-slate-800/80 to-blue-950/40 hover:border-blue-500/50 hover:shadow-blue-500/10",
+        "from-slate-900/90 via-slate-800/80 to-purple-950/40 hover:border-purple-500/50 hover:shadow-purple-500/10",
+        "from-slate-900/90 via-slate-800/80 to-indigo-950/40 hover:border-indigo-500/50 hover:shadow-indigo-500/10",
       ],
     };
 
@@ -187,7 +138,13 @@ export default function SoftSkills() {
     );
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[var(--color-gray-900)] to-[var(--color-gray-800)] text-white flex flex-col items-center px-6 py-20">
+    <main className="min-h-screen bg-[var(--color-gray-900)] text-white flex flex-col items-center px-6 py-20 relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute top-10 left-10 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-10 right-10 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl animate-pulse" />
+      </div>
+
       <Helmet>
         <title>{skillsData.sectionTitle || "Soft Skills"} | Portofolio M. Syaiful Rahman</title>
         <meta

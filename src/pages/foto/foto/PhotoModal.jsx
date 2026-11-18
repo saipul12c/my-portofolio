@@ -11,6 +11,15 @@ export default function PhotoModal({ photo, onClose, onNavigate }) {
   const [isZoomed, setIsZoomed] = useState(false);
   const [showCopied, setShowCopied] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [albumIndex, setAlbumIndex] = useState(0);
+
+  const isAlbum = Boolean(photo.isAlbum && photo.albumPhotos && photo.albumPhotos.length > 0);
+  const currentImg = isAlbum ? photo.albumPhotos[albumIndex] : photo.img;
+
+  useEffect(() => {
+    setAlbumIndex(0);
+    setIsZoomed(false);
+  }, [photo?.id]);
   
   // Keyboard navigation
   useEffect(() => {
@@ -53,17 +62,16 @@ export default function PhotoModal({ photo, onClose, onNavigate }) {
     if (isDownloading) return;
     setIsDownloading(true);
     try {
-      const response = await fetch(photo.img, { mode: "cors" });
+      const response = await fetch(currentImg, { mode: "cors" });
       if (!response.ok) throw new Error("Gagal mengambil data gambar");
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
-      
       const link = document.createElement("a");
       link.href = blobUrl;
       const safeTitle = (photo.title || "foto")
         .toLowerCase()
         .replace(/[^a-z0-9-_]/g, "_");
-      link.download = `${safeTitle}.jpg`;
+      link.download = `${safeTitle}${isAlbum ? `_${albumIndex + 1}` : ""}.jpg`;
       
       document.body.appendChild(link);
       link.click();
@@ -72,7 +80,7 @@ export default function PhotoModal({ photo, onClose, onNavigate }) {
       setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
     } catch (err) {
       console.warn("Blob download dibatasi oleh browser, membuka di tab baru:", err);
-      window.open(photo.img, "_blank", "noopener,noreferrer");
+      window.open(currentImg, "_blank", "noopener,noreferrer");
     } finally {
       setIsDownloading(false);
     }
@@ -183,7 +191,8 @@ export default function PhotoModal({ photo, onClose, onNavigate }) {
         {/* Image Section */}
         <div className="flex-1 bg-black flex items-center justify-center overflow-hidden min-h-[40vh] md:min-h-auto relative select-none">
           <motion.img
-            src={photo.img}
+            key={currentImg}
+            src={currentImg}
             alt={photo.title}
             className="h-full w-full object-contain transition-transform duration-300 pointer-events-auto"
             loading="eager"
@@ -199,10 +208,74 @@ export default function PhotoModal({ photo, onClose, onNavigate }) {
               Drag untuk menggeser gambar
             </div>
           )}
+
+          {/* Album Slide Controls (jika foto ini merupakan album/koleksi) */}
+          {isAlbum && photo.albumPhotos?.length > 1 && (
+            <>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setAlbumIndex((prev) => (prev > 0 ? prev - 1 : photo.albumPhotos.length - 1));
+                }}
+                className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/90 text-white p-2 rounded-full backdrop-blur-sm transition z-20 cursor-pointer"
+                title="Foto sebelumnya dalam album"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setAlbumIndex((prev) => (prev < photo.albumPhotos.length - 1 ? prev + 1 : 0));
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/90 text-white p-2 rounded-full backdrop-blur-sm transition z-20 cursor-pointer"
+                title="Foto berikutnya dalam album"
+              >
+                <ChevronRight size={20} />
+              </button>
+
+              {/* Indicator dots album */}
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1 bg-black/70 backdrop-blur-md rounded-full border border-white/10 z-20">
+                <span className="text-[11px] text-pink-300 font-semibold mr-1">
+                  {albumIndex + 1} / {photo.albumPhotos.length}
+                </span>
+                {photo.albumPhotos.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setAlbumIndex(idx);
+                    }}
+                    className={`h-1.5 rounded-full transition-all cursor-pointer ${
+                      idx === albumIndex ? "w-4 bg-pink-400" : "w-1.5 bg-white/40 hover:bg-white/70"
+                    }`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Info Section */}
         <div className="w-full md:w-[400px] flex flex-col bg-[#111827]/90 backdrop-blur-md p-4 sm:p-6 text-gray-200 overflow-y-auto">
+          {/* Badges Sumber Data */}
+          <div className="flex flex-wrap items-center gap-1.5 mb-2.5">
+            {photo.isAlbum && (
+              <span className="px-2.5 py-0.5 bg-pink-500/20 text-pink-300 border border-pink-400/30 rounded-full text-[11px] font-semibold flex items-center gap-1">
+                🗂️ Koleksi Album ({photo.albumCount || photo.albumPhotos?.length} Foto)
+              </span>
+            )}
+            {photo.isFromGallery && !photo.isAlbum && (
+              <span className="px-2.5 py-0.5 bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 rounded-full text-[11px] font-semibold flex items-center gap-1">
+                ✨ Dari Galeri Kenangan
+              </span>
+            )}
+            {photo.featured && (
+              <span className="px-2.5 py-0.5 bg-yellow-500/20 text-yellow-300 border border-yellow-400/30 rounded-full text-[11px] font-semibold">
+                ⭐ Featured
+              </span>
+            )}
+          </div>
+
           <h2 className="text-lg sm:text-xl font-semibold text-cyan-300 mb-2">{photo.title}</h2>
           <p className="text-xs sm:text-sm text-gray-300 leading-relaxed mb-3">{photo.description}</p>
 
@@ -250,19 +323,30 @@ export default function PhotoModal({ photo, onClose, onNavigate }) {
           <div className="pt-4 border-t border-white/10 mt-4">
             <p className="text-xs text-gray-400 mb-3 font-medium">Jelajahi Konten Terkait:</p>
             <div className="grid grid-cols-1 gap-2">
+              {photo.isFromGallery && (
+                <motion.button
+                  whileHover={{ x: 4 }}
+                  onClick={() => navigate(`/gallery?media=${photo.originalGalleryId}&type=${photo.isAlbum ? 'album' : 'image'}`)}
+                  className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-pink-500/20 to-purple-500/20 hover:from-pink-500/30 hover:to-purple-500/30 border border-pink-400/40 rounded-lg transition-all text-xs text-pink-200 font-medium cursor-pointer"
+                >
+                  <Image size={14} className="text-pink-400" />
+                  <span>Buka di Galeri Kenangan ➔</span>
+                </motion.button>
+              )}
+
               <motion.button
                 whileHover={{ x: 4 }}
                 onClick={() => navigate("/gallery")}
-                className="flex items-center gap-2 px-3 py-2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-400/30 hover:border-blue-400/60 rounded-lg transition-all text-xs text-blue-300"
+                className="flex items-center gap-2 px-3 py-2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-400/30 hover:border-blue-400/60 rounded-lg transition-all text-xs text-blue-300 cursor-pointer"
               >
                 <Image size={14} />
-                <span>Galeri Kenangan</span>
+                <span>Galeri Kenangan Utama</span>
               </motion.button>
 
               <motion.button
                 whileHover={{ x: 4 }}
                 onClick={() => navigate("/blog")}
-                className="flex items-center gap-2 px-3 py-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-400/30 hover:border-purple-400/60 rounded-lg transition-all text-xs text-purple-300"
+                className="flex items-center gap-2 px-3 py-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-400/30 hover:border-purple-400/60 rounded-lg transition-all text-xs text-purple-300 cursor-pointer"
               >
                 <FileText size={14} />
                 <span>Blog & Cerita</span>
@@ -271,7 +355,7 @@ export default function PhotoModal({ photo, onClose, onNavigate }) {
               <motion.button
                 whileHover={{ x: 4 }}
                 onClick={() => navigate("/projects")}
-                className="flex items-center gap-2 px-3 py-2 bg-green-500/10 hover:bg-green-500/20 border border-green-400/30 hover:border-green-400/60 rounded-lg transition-all text-xs text-green-300"
+                className="flex items-center gap-2 px-3 py-2 bg-green-500/10 hover:bg-green-500/20 border border-green-400/30 hover:border-green-400/60 rounded-lg transition-all text-xs text-green-300 cursor-pointer"
               >
                 <Zap size={14} />
                 <span>Proyek & Portfolio</span>

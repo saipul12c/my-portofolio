@@ -10,7 +10,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 // Mengimpor data dokumentasi statis untuk ditampilkan pada badge versi
-import docsData from "./docs/data/docsSections.json";
+import docsData from "../../data/helpbutton/docs/docsSections.json";
 // Mengimpor utilitas untuk mengambil informasi versi terbaru dari data docs
 import { getLatestVersionInfo } from "./docs/lib/versionUtils";
 

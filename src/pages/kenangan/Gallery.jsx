@@ -3,10 +3,9 @@ import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import Maintenance from "../errors/Maintenance";
 
-import GalleryImages from "./gallery/GalleryImages";
-import GalleryVideos from "./gallery/GalleryVideos";
 import GalleryShorts from "./gallery/GalleryShorts";
-import GalleryAlbums from "./gallery/GalleryAlbums";
+import GalleryPhotos from "./gallery/GalleryPhotos";
+import GalleryVideos from "./gallery/GalleryVideos";
 
 import GalleryShortModal from "./gallery/modals/GalleryShortModal";
 import GalleryMediaModal from "./gallery/modals/GalleryMediaModal";
@@ -128,7 +127,7 @@ export default function Gallery() {
   if (isMaintenance) return <Maintenance />;
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[var(--color-gray-900)] via-[#111827] to-[#020617] text-white flex flex-col items-center px-6 sm:px-10 md:px-20 py-24 relative overflow-hidden">
+    <main className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center px-6 sm:px-10 md:px-20 py-24 relative overflow-hidden">
       {/* 🌈 Background Glow (GPU Optimized) */}
       <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-10 w-80 h-80 bg-cyan-500/15 rounded-full blur-3xl" />
@@ -163,18 +162,14 @@ export default function Gallery() {
         filterSettings={filterSettings}
         onSelect={handleSelectShort}
       />
-      <GalleryImages
-        items={filteredImages}
+      <GalleryPhotos
+        photos={filteredImages}
+        albums={filteredAlbums}
         filterSettings={filterSettings}
         onSelect={handleSelectMedia}
       />
       <GalleryVideos
         items={filteredVideos}
-        filterSettings={filterSettings}
-        onSelect={handleSelectMedia}
-      />
-      <GalleryAlbums
-        items={filteredAlbums}
         filterSettings={filterSettings}
         onSelect={handleSelectMedia}
       />

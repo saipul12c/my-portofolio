@@ -18,7 +18,7 @@ const TimelineTab = ({ timeline }) => {
       
       <div className="relative">
         {/* Timeline Line */}
-        <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-emerald-500 to-teal-500"></div>
+        <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-cyan-500 to-blue-600"></div>
 
         {/* Timeline Items */}
         <div className="space-y-6 pl-20">
@@ -29,14 +29,14 @@ const TimelineTab = ({ timeline }) => {
               className="relative"
             >
               {/* Timeline Dot */}
-              <div className="absolute -left-16 top-1 w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
+              <div className="absolute -left-16 top-1 w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
                 <Briefcase size={20} className="text-white" />
               </div>
 
               {/* Timeline Content */}
               <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Calendar size={16} className="text-emerald-400" />
+                  <Calendar size={16} className="text-cyan-400" />
                   <span className="text-sm text-gray-400">
                     {new Date(item.date).toLocaleDateString('id-ID', {
                       year: 'numeric',

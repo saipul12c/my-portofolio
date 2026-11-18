@@ -3,8 +3,22 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cleanContent, getLabelColor, formatNumber } from "../utils/blogUtils";
 import { useState, useEffect, useRef, useMemo } from "react";
-import blogs from "../../../data/blog/data.json";
 import blogService from "../helpers/BlogService";
+import {
+  fetchComments,
+  addComment,
+  getLikeStatus,
+  toggleLike,
+  getBookmarkStatus,
+  toggleBookmark,
+  recordView,
+  recordShare,
+  getShareCount,
+  getUserRating,
+  submitRating,
+  fetchPostBySlug,
+  subscribeToComments
+} from "../services/blogSupabase";
 import {
   FiArrowLeft,
   FiCalendar,
@@ -21,19 +35,152 @@ import {
   FiCheckCircle,
   FiChevronRight,
   FiMail,
-  FiThumbsUp
+  FiThumbsUp,
+  FiX,
+  FiCopy,
+  FiList
 } from "react-icons/fi";
+
+// Komponen Code Block dengan tombol Salin Kode
+function CodeBlock({ children, className }) {
+  const [copied, setCopied] = useState(false);
+  const codeString = String(children).replace(/\n$/, '');
+  const language = className ? className.replace(/language-/, '') : 'code';
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(codeString);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="relative group my-6 rounded-xl overflow-hidden border border-gray-700/80 bg-gray-950/90 shadow-2xl">
+      <div className="flex items-center justify-between px-4 py-2 bg-gray-900/90 border-b border-gray-800 text-xs text-gray-400 font-mono">
+        <span className="uppercase tracking-wider text-cyan-400 font-semibold">{language}</span>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white transition-colors"
+        >
+          {copied ? (
+            <>
+              <FiCheckCircle className="w-3.5 h-3.5 text-green-400" />
+              <span className="text-green-300">Tersalin!</span>
+            </>
+          ) : (
+            <>
+              <FiCopy className="w-3.5 h-3.5" />
+              <span>Salin</span>
+            </>
+          )}
+        </button>
+      </div>
+      <pre className="p-4 overflow-x-auto text-sm font-mono text-gray-200 leading-relaxed">
+        <code>{children}</code>
+      </pre>
+    </div>
+  );
+}
 
 export default function BlogDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const post = blogs.find((b) => b.slug === slug);
   const location = useLocation();
   const endRef = useRef(null);
+
+  const [post, setPost] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [likes, setLikes] = useState(0);
+  const [views, setViews] = useState(0);
+  const [shares, setShares] = useState(0);
+  const [rating, setRating] = useState(5.0);
+  const [totalRatings, setTotalRatings] = useState(1);
+  const [userRating, setUserRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [ratingSuccess, setRatingSuccess] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [readingProgress, setReadingProgress] = useState(0);
+  const [lightboxImage, setLightboxImage] = useState(null);
+  const [showTOC, setShowTOC] = useState(true);
   const [relatedLimit, _setRelatedLimit] = useState(6);
+
+  // Komentar state
+  const [comments, setComments] = useState([]);
+  const [showCommentForm, setShowCommentForm] = useState(false);
+  const [commentName, setCommentName] = useState("");
+  const [commentEmail, setCommentEmail] = useState("");
+  const [commentMessage, setCommentMessage] = useState("");
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [commentSuccess, setCommentSuccess] = useState(false);
+
+  // 1. Dynamic SEO & Meta tags
+  useEffect(() => {
+    if (post) {
+      const originalTitle = document.title;
+      document.title = `${post.title} | Blog Syaiful`;
+
+      const setMeta = (name, content, isProperty = false) => {
+        const attr = isProperty ? 'property' : 'name';
+        let meta = document.querySelector(`meta[${attr}="${name}"]`);
+        if (!meta) {
+          meta = document.createElement('meta');
+          meta.setAttribute(attr, name);
+          document.head.appendChild(meta);
+        }
+        meta.setAttribute('content', content);
+      };
+
+      if (post.excerpt) {
+        setMeta('description', post.excerpt);
+        setMeta('og:description', post.excerpt, true);
+        setMeta('twitter:description', post.excerpt);
+      }
+      setMeta('og:title', post.title, true);
+      setMeta('twitter:title', post.title);
+      if (post.imageFull || post.thumbnail) {
+        setMeta('og:image', post.imageFull || post.thumbnail, true);
+        setMeta('twitter:image', post.imageFull || post.thumbnail);
+      }
+      setMeta('og:type', 'article', true);
+      setMeta('og:url', window.location.href, true);
+
+      return () => {
+        document.title = originalTitle;
+      };
+    }
+  }, [post]);
+
+  // 2. Daftar Isi Otomatis (Table of Contents)
+  const tableOfContents = useMemo(() => {
+    if (!post?.content) return [];
+    const raw = cleanContent(post.content);
+    const headingRegex = /^(#{2,3})\s+(.+)$/gm;
+    const list = [];
+    let match;
+    while ((match = headingRegex.exec(raw)) !== null) {
+      const level = match[1].length;
+      const title = match[2].trim();
+      const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      list.push({ level, title, id });
+    }
+    return list;
+  }, [post?.content]);
+
+  // 3. Scroll listener untuk reading progress & back-to-top
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalHeight > 0) {
+        const progress = (window.scrollY / totalHeight) * 100;
+        setReadingProgress(Math.min(100, Math.max(0, progress)));
+      }
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const related = useMemo(() => {
     if (!post) return [];
@@ -41,10 +188,60 @@ export default function BlogDetail() {
     return posts.map(r => ({ post: r, reason: post.relatedPosts?.includes(r.slug) ? 'Direkomendasikan' : 'Terkait' }));
   }, [post, relatedLimit]);
 
-  // Scroll ke atas saat artikel berubah & Track topik untuk AI
+  // Load Post, Comments, dan Likes/Views/Shares/Ratings dari Supabase (fallback ke lokal dinamis)
   useEffect(() => {
+    document.body.style.overflow = "auto";
     window.scrollTo({ top: 0, behavior: "smooth" });
-    
+
+    // Fetch data artikel terbaru dari Supabase/lokal dinamis
+    fetchPostBySlug(slug)
+      .then((p) => {
+        if (p) {
+          setPost(p);
+          setLikes(p.likes || 0);
+          setViews(p.views || 0);
+          setShares(p.shares || 0);
+          setRating(Number(p.rating || 5.0));
+          setTotalRatings(p.totalRatings || 1);
+        }
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
+
+    // Catat view secara dinamis & perbarui state
+    recordView(slug, 0).then((v) => {
+      if (typeof v === 'number') {
+        setViews(v);
+      }
+    });
+
+    // Ambil rating user saat ini
+    const curUserRating = getUserRating(slug);
+    setUserRating(curUserRating);
+
+    // Ambil komentar dinamis
+    fetchComments(slug).then((cmts) => {
+      if (Array.isArray(cmts)) {
+        setComments(cmts);
+      }
+    });
+
+    // Subscribe ke realtime komentar jika Supabase aktif
+    const unsubComments = subscribeToComments(slug, (newComment) => {
+      setComments((prev) => {
+        if (prev.some(c => c.id === newComment.id || (c.name === newComment.name && c.message === newComment.message))) {
+          return prev;
+        }
+        return [newComment, ...prev];
+      });
+    });
+
+    // Cek status like & bookmark
+    setIsLiked(getLikeStatus(slug));
+    setIsBookmarked(getBookmarkStatus(slug));
+
     // --- TRACK TOPIK UNTUK AI ---
     if (post) {
       const topicData = {
@@ -54,7 +251,60 @@ export default function BlogDetail() {
       };
       localStorage.setItem('saipul_ai_last_topic', JSON.stringify(topicData));
     }
-  }, [slug, post]);
+
+    return () => {
+      if (typeof unsubComments === 'function') unsubComments();
+      document.body.style.overflow = "auto";
+    };
+  }, [slug]);
+
+  const handleToggleLike = async () => {
+    if (!post) return;
+    const res = await toggleLike(post.slug, likes);
+    setIsLiked(res.isLiked);
+    setLikes(res.count);
+  };
+
+  const handleToggleBookmark = async () => {
+    if (!post) return;
+    const res = await toggleBookmark(post.slug);
+    setIsBookmarked(res);
+  };
+
+  const handleRatingSubmit = async (score) => {
+    if (!post) return;
+    const res = await submitRating(post.slug, score, rating, totalRatings);
+    setUserRating(res.userRating);
+    setRating(res.rating);
+    setTotalRatings(res.totalRatings);
+    setRatingSuccess(true);
+    setTimeout(() => setRatingSuccess(false), 3500);
+  };
+
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+    if (!commentName.trim() || !commentMessage.trim()) return;
+
+    setIsSubmittingComment(true);
+    try {
+      const newComment = await addComment({
+        postSlug: slug,
+        name: commentName,
+        email: commentEmail,
+        message: commentMessage
+      });
+
+      setComments(prev => [newComment, ...prev]);
+      setCommentMessage("");
+      setCommentSuccess(true);
+      setTimeout(() => setCommentSuccess(false), 4000);
+    } catch (err) {
+      console.error("Gagal menambah komentar:", err);
+      alert("Gagal mengirim komentar: " + (err.message || "Silakan coba lagi"));
+    } finally {
+      setIsSubmittingComment(false);
+    }
+  };
 
   // Handle scroll untuk tombol back to top
   useEffect(() => {
@@ -84,12 +334,25 @@ export default function BlogDetail() {
     e.stopPropagation();
     // Generate slug dari nama author
     const authorSlug = author.toLowerCase().replace(/\s+/g, '-');
-    navigate(`/blog/authors/${authorSlug}`, { 
-      state: { 
+    navigate(`/blog/authors/${authorSlug}`, {
+      state: {
         authorName: author,
       }
     });
   };
+
+  // === ⏳ Loading state saat mengambil artikel dinamis ===
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-300 font-medium text-lg">Memuat artikel...</p>
+          <p className="text-gray-500 text-sm mt-1">Mengambil data terbaru dari database</p>
+        </div>
+      </div>
+    );
+  }
 
   // === 🚨 Jika artikel tidak ditemukan ===
   if (!post) {
@@ -155,10 +418,10 @@ export default function BlogDetail() {
       draft: { color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30", text: "📝 Draf", icon: FiBook },
       archived: { color: "bg-gray-500/20 text-gray-400 border-gray-500/30", text: "📁 Arsip", icon: FiBookmark }
     };
-    
+
     const config = statusConfig[status] || statusConfig.published;
     const Icon = config.icon;
-    
+
     return (
       <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border ${config.color}`}>
         <Icon className="w-3 h-3" />
@@ -167,8 +430,14 @@ export default function BlogDetail() {
     );
   };
 
-  // === 📱 Share Artikel ===
+  // === 📱 Share Artikel Dinamis ===
   const handleShare = async () => {
+    if (!post) return;
+
+    // Tingkatkan counter share secara dinamis
+    const nextShares = await recordShare(post.slug, shares);
+    setShares(nextShares);
+
     const shareData = {
       title: post.title,
       text: post.excerpt,
@@ -179,7 +448,7 @@ export default function BlogDetail() {
       try {
         await navigator.share(shareData);
       } catch (err) {
-        console.log('Error sharing:', err);
+        console.log('Share canceled or error:', err);
       }
     } else {
       // Fallback: copy to clipboard
@@ -191,8 +460,16 @@ export default function BlogDetail() {
   // === 🎨 Custom Components untuk ReactMarkdown ===
   const MarkdownComponents = {
     h1: (props) => <h1 className="text-3xl font-bold mt-8 mb-6 text-cyan-400 border-b border-cyan-400/20 pb-3" {...props} />,
-    h2: (props) => <h2 className="text-2xl font-bold mt-8 mb-4 text-purple-400" {...props} />,
-    h3: (props) => <h3 className="text-xl font-bold mt-6 mb-3 text-green-400" {...props} />,
+    h2: (props) => {
+      const text = typeof props.children === 'string' ? props.children : String(props.children);
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return <h2 id={id} className="scroll-mt-24 text-2xl font-bold mt-8 mb-4 text-purple-400" {...props} />;
+    },
+    h3: (props) => {
+      const text = typeof props.children === 'string' ? props.children : String(props.children);
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return <h3 id={id} className="scroll-mt-24 text-xl font-bold mt-6 mb-3 text-green-400" {...props} />;
+    },
     p: (props) => <p className="mb-6 leading-8 text-gray-300 text-justify" {...props} />,
     strong: (props) => <strong className="font-bold text-cyan-300" {...props} />,
     a: (props) => <a className="text-cyan-400 hover:text-cyan-300 underline transition-colors" target="_blank" rel="noopener noreferrer" {...props} />,
@@ -201,18 +478,73 @@ export default function BlogDetail() {
     blockquote: (props) => (
       <blockquote className="border-l-4 border-cyan-500 pl-6 italic bg-gray-800/50 py-4 rounded-r-lg my-6 text-cyan-100" {...props} />
     ),
-    code: ({inline, children, ...props}) =>
+    code: ({ inline, className, children, ...props }) =>
       inline ? (
         <code className="bg-gray-800 px-2 py-1 rounded-lg text-cyan-300 text-sm font-mono" {...props}>{children}</code>
       ) : (
-        <pre className="bg-gray-900 p-4 rounded-lg overflow-auto"><code className="text-sm font-mono text-gray-200" {...props}>{children}</code></pre>
+        <CodeBlock className={className} {...props}>{children}</CodeBlock>
       ),
+    img: ({ src, alt, ...props }) => {
+      const isVideo = src && (src.endsWith('.mp4') || src.endsWith('.webm') || src.endsWith('.mov'));
+      if (isVideo) {
+        return (
+          <span className="block my-8">
+            <span className="block relative overflow-hidden rounded-2xl border border-gray-700/60 bg-gray-900 shadow-xl">
+              <video
+                src={src}
+                controls
+                playsInline
+                preload="metadata"
+                className="w-full max-h-[520px] object-cover rounded-2xl"
+              />
+            </span>
+            {alt && (
+              <span className="block text-center text-xs sm:text-sm text-cyan-400 mt-2.5 italic font-medium">
+                🎬 {alt}
+              </span>
+            )}
+          </span>
+        );
+      }
+      return (
+        <span className="block my-8 group">
+          <span
+            className="block relative overflow-hidden rounded-2xl border border-gray-700/60 bg-gray-900/60 shadow-xl cursor-pointer hover:border-cyan-500/50 transition-all duration-300"
+            onClick={() => setLightboxImage(src)}
+          >
+            <img
+              src={src}
+              alt={alt || "Gambar artikel"}
+              loading="lazy"
+              className="w-full max-h-[520px] object-cover transition-transform duration-500 group-hover:scale-105"
+              {...props}
+            />
+            <span className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
+              <span className="bg-black/75 text-cyan-300 text-xs font-medium px-3.5 py-1.5 rounded-full backdrop-blur-md border border-cyan-500/40 flex items-center gap-2 shadow-2xl">
+                🔍 Klik untuk memperbesar foto
+              </span>
+            </span>
+          </span>
+          {alt && (
+            <span className="block text-center text-xs sm:text-sm text-gray-400 mt-2.5 italic">
+              📷 {alt}
+            </span>
+          )}
+        </span>
+      );
+    },
   };
 
-  // Menggunakan utilitas dari blogUtils untuk konsistensi
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative">
+      {/* 🚀 Reading Progress Bar */}
+      <div className="fixed top-0 left-0 w-full h-1.5 z-50 bg-gray-900/60 backdrop-blur-md">
+        <div
+          className="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 shadow-[0_0_12px_rgba(6,182,212,0.8)] transition-all duration-75 ease-out"
+          style={{ width: `${readingProgress}%` }}
+        />
+      </div>
+
       {/* Scroll to Top Button */}
       {showScrollTop && (
         <button
@@ -232,7 +564,7 @@ export default function BlogDetail() {
             backgroundSize: '100px 100px'
           }}></div>
         </div>
-        
+
         <div className="max-w-4xl mx-auto px-6 pt-8 relative z-10">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm text-gray-400 mb-6 flex-wrap">
@@ -305,32 +637,28 @@ export default function BlogDetail() {
             )}
           </div>
 
-          {/* Stats Bar */}
+          {/* Stats Bar Dinamis */}
           <div className="flex flex-wrap items-center gap-6 py-4 border-t border-b border-gray-700/50 mb-8">
-            {post.views && (
-              <div className="flex items-center gap-2">
-                <FiEye className="w-5 h-5 text-cyan-400" />
-                <span className="text-sm font-medium">{formatNumber(post.views)} views</span>
-              </div>
-            )}
-            {post.likes && (
-              <div className="flex items-center gap-2">
-                <FiHeart className="w-5 h-5 text-red-400" />
-                <span className="text-sm font-medium">{formatNumber(post.likes)} likes</span>
-              </div>
-            )}
-            {post.rating && (
-              <div className="flex items-center gap-2">
-                <FiStar className="w-5 h-5 text-yellow-400" />
-                <span className="text-sm font-medium">{post.rating}/5 rating</span>
-              </div>
-            )}
-            {(post.commentCount > 0) && (
-              <div className="flex items-center gap-2">
-                <FiMessageSquare className="w-5 h-5 text-blue-400" />
-                <span className="text-sm font-medium">{post.commentCount} komentar</span>
-              </div>
-            )}
+            <div className="flex items-center gap-2">
+              <FiEye className="w-5 h-5 text-cyan-400" />
+              <span className="text-sm font-medium">{formatNumber(views)} views</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FiHeart className="w-5 h-5 text-red-400" />
+              <span className="text-sm font-medium">{formatNumber(likes)} likes</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FiStar className="w-5 h-5 text-yellow-400" />
+              <span className="text-sm font-medium">{Number(rating || 5.0).toFixed(1)}/5 rating ({totalRatings} ulasan)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FiShare2 className="w-5 h-5 text-purple-400" />
+              <span className="text-sm font-medium">{formatNumber(shares)} shares</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FiMessageSquare className="w-5 h-5 text-blue-400" />
+              <span className="text-sm font-medium">{comments.length} komentar</span>
+            </div>
           </div>
         </div>
       </div>
@@ -362,39 +690,98 @@ export default function BlogDetail() {
           )}
         </div>
 
-        {/* Action Buttons */}
+        {/* Action Buttons Dinamis */}
         <div className="flex flex-wrap items-center gap-4 mb-8 p-6 bg-gray-800/30 rounded-2xl border border-gray-700/50 backdrop-blur-sm">
           <button
-            onClick={() => setIsLiked(!isLiked)}
-            className={`flex items-center gap-3 px-6 py-3 rounded-xl transition-all duration-300 font-medium ${
-              isLiked 
-                ? 'bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30' 
+            onClick={handleToggleLike}
+            className={`flex items-center gap-3 px-6 py-3 rounded-xl transition-all duration-300 font-medium ${isLiked
+                ? 'bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30'
                 : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 border border-gray-600/50 hover:text-white'
-            }`}
+              }`}
           >
-            <FiHeart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
-            {isLiked ? 'Disukai' : 'Suka'}
+            <FiHeart className={`w-5 h-5 ${isLiked ? 'fill-current text-red-400' : ''}`} />
+            {isLiked ? 'Disukai' : 'Suka'} ({likes})
           </button>
-          
+
           <button
-            onClick={() => setIsBookmarked(!isBookmarked)}
-            className={`flex items-center gap-3 px-6 py-3 rounded-xl transition-all duration-300 font-medium ${
-              isBookmarked 
-                ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:bg-amber-500/30' 
+            onClick={handleToggleBookmark}
+            className={`flex items-center gap-3 px-6 py-3 rounded-xl transition-all duration-300 font-medium ${isBookmarked
+                ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:bg-amber-500/30'
                 : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 border border-gray-600/50 hover:text-white'
-            }`}
+              }`}
           >
-            <FiBookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} />
+            <FiBookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current text-amber-400' : ''}`} />
             {isBookmarked ? 'Disimpan' : 'Simpan'}
           </button>
-          
+
           <button
             onClick={handleShare}
             className="flex items-center gap-3 px-6 py-3 rounded-xl bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 border border-gray-600/50 hover:text-white transition-all duration-300 font-medium"
           >
-            <FiShare2 className="w-5 h-5" />
-            Bagikan
+            <FiShare2 className="w-5 h-5 text-purple-400" />
+            Bagikan ({formatNumber(shares)})
           </button>
+        </div>
+
+        {/* ⭐ Widget Rating Bintang Interaktif Dinamis */}
+        <div className="mb-8 p-6 bg-gradient-to-r from-gray-800/60 via-gray-800/40 to-gray-800/60 rounded-2xl border border-yellow-500/20 backdrop-blur-sm shadow-xl">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                <FiStar className="w-5 h-5 text-yellow-400 fill-current" />
+                <span>Beri Nilai Artikel Ini</span>
+              </h3>
+              <p className="text-xs sm:text-sm text-gray-400 mt-1">
+                {userRating > 0
+                  ? `Rating Anda saat ini: ${userRating} dari 5 bintang. Klik bintang lain untuk mengubah nilai.`
+                  : 'Klik bintang di bawah untuk memberikan apresiasi dan feedback langsung pada artikel ini.'}
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center md:items-end">
+              <div className="flex items-center gap-1.5 bg-gray-900/60 px-4 py-2 rounded-xl border border-gray-700/60">
+                {[1, 2, 3, 4, 5].map((star) => {
+                  const isFilled = (hoverRating || userRating) >= star;
+                  return (
+                    <button
+                      key={star}
+                      type="button"
+                      onMouseEnter={() => setHoverRating(star)}
+                      onMouseLeave={() => setHoverRating(0)}
+                      onClick={() => handleRatingSubmit(star)}
+                      title={`Beri ${star} Bintang`}
+                      className="p-1 hover:scale-125 transition-transform duration-150 focus:outline-none"
+                    >
+                      <FiStar
+                        className={`w-6 h-6 transition-colors duration-150 ${isFilled
+                            ? 'text-yellow-400 fill-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]'
+                            : 'text-gray-600 hover:text-yellow-200'
+                          }`}
+                      />
+                    </button>
+                  );
+                })}
+                <span className="text-sm font-bold text-yellow-300 ml-2 min-w-[36px] text-right">
+                  {(hoverRating || userRating || rating).toFixed(1)}
+                </span>
+              </div>
+
+              {ratingSuccess && (
+                <span className="text-xs text-green-400 font-medium mt-1.5 animate-fadeIn flex items-center gap-1">
+                  <FiCheckCircle className="w-3.5 h-3.5" /> Rating Anda berhasil disimpan!
+                </span>
+              )}
+              {hoverRating > 0 && !ratingSuccess && (
+                <span className="text-[11px] text-gray-400 mt-1.5">
+                  {hoverRating === 1 && '1/5 - Kurang Bermanfaat'}
+                  {hoverRating === 2 && '2/5 - Cukup Informatif'}
+                  {hoverRating === 3 && '3/5 - Baik & Membantu'}
+                  {hoverRating === 4 && '4/5 - Sangat Bagus & Lengkap'}
+                  {hoverRating === 5 && '5/5 - Luar Biasa & Sangat Bermanfaat!'}
+                </span>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Excerpt */}
@@ -410,11 +797,52 @@ export default function BlogDetail() {
           </div>
         )}
 
+        {/* 📚 Daftar Isi Otomatis (Table of Contents) */}
+        {tableOfContents.length > 1 && (
+          <div className="bg-gradient-to-br from-gray-800/60 to-gray-900/60 rounded-2xl p-6 mb-8 border border-gray-700/50 backdrop-blur-sm shadow-xl">
+            <button
+              type="button"
+              onClick={() => setShowTOC(!showTOC)}
+              className="w-full flex items-center justify-between text-left group"
+            >
+              <div className="flex items-center gap-2.5 text-cyan-400 font-bold text-base sm:text-lg">
+                <FiList className="w-5 h-5 text-cyan-400" />
+                <span>Daftar Isi Artikel</span>
+              </div>
+              <span className="text-xs text-gray-400 bg-gray-800 px-2.5 py-1 rounded-lg border border-gray-700/60 group-hover:text-cyan-300 transition-colors">
+                {showTOC ? 'Sembunyikan' : 'Tampilkan'} ({tableOfContents.length})
+              </span>
+            </button>
+            {showTOC && (
+              <nav className="mt-4 pt-4 border-t border-gray-700/50 space-y-2 text-sm">
+                {tableOfContents.map((item, idx) => (
+                  <a
+                    key={idx}
+                    href={`#${item.id}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const el = document.getElementById(item.id);
+                      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}
+                    className={`block transition-all hover:translate-x-1 ${item.level === 3
+                        ? 'pl-6 text-xs text-gray-400 hover:text-cyan-300'
+                        : 'font-medium text-gray-300 hover:text-cyan-400'
+                      }`}
+                  >
+                    <span className="text-cyan-500 mr-2 font-mono text-xs">{idx + 1}.</span>
+                    {item.title}
+                  </a>
+                ))}
+              </nav>
+            )}
+          </div>
+        )}
+
         {/* Konten Artikel */}
         <div className="prose prose-invert prose-lg max-w-none leading-relaxed mb-12">
           {post.content ? (
             <div className="bg-gray-800/30 rounded-2xl p-6 sm:p-8 border border-gray-700/50 backdrop-blur-sm">
-              <ReactMarkdown 
+              <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={MarkdownComponents}
               >
@@ -438,11 +866,15 @@ export default function BlogDetail() {
               <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
                 <FiThumbsUp className="w-4 h-4 text-white" />
               </div>
-              Galeri Foto
+              Galeri Foto (Klik untuk Memperbesar)
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {post.gallery.map((img, i) => (
-                <div key={i} className="group relative overflow-hidden rounded-xl bg-gray-800/50 border border-gray-700/50 hover:border-cyan-500/30 transition-all duration-500">
+                <div
+                  key={i}
+                  onClick={() => setLightboxImage(img)}
+                  className="group relative overflow-hidden rounded-xl bg-gray-800/50 border border-gray-700/50 hover:border-cyan-500/30 transition-all duration-500 cursor-pointer shadow-lg"
+                >
                   <img
                     src={img}
                     alt={`${post.title} - Gallery ${i + 1}`}
@@ -450,8 +882,8 @@ export default function BlogDetail() {
                     className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-4">
-                    <span className="text-white font-medium transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                      Gambar {i + 1}
+                    <span className="text-white font-medium text-xs bg-black/60 px-3 py-1 rounded-full backdrop-blur-sm transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                      🔍 Perbesar Foto {i + 1}
                     </span>
                   </div>
                 </div>
@@ -471,12 +903,14 @@ export default function BlogDetail() {
             </h3>
             <div className="flex flex-wrap gap-3">
               {post.tags.map((tag, i) => (
-                <span
+                <button
                   key={i}
+                  type="button"
+                  onClick={() => navigate(`/blog?search=${encodeURIComponent(tag)}`)}
                   className="bg-gradient-to-r from-cyan-600/20 to-purple-600/20 text-cyan-300 px-4 py-2.5 rounded-xl text-sm border border-cyan-500/30 hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 cursor-pointer hover:scale-105 font-medium"
                 >
                   #{tag}
-                </span>
+                </button>
               ))}
             </div>
           </div>
@@ -530,40 +964,123 @@ export default function BlogDetail() {
 
         {/* Komentar */}
         <div className="mb-12">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
             <h3 className="text-2xl font-bold text-white flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
                 <FiMessageSquare className="w-4 h-4 text-white" />
               </div>
-              Komentar ({post.commentCount || post.comments?.length || 0})
+              Komentar ({comments.length})
             </h3>
-            {(post.commentCount > 0) && (
-              <button className="flex items-center gap-2 text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-all bg-cyan-500/10 hover:bg-cyan-500/20 px-4 py-2 rounded-lg border border-cyan-500/20">
-                <FiMessageSquare className="w-4 h-4" />
-                Tambah Komentar
-              </button>
-            )}
+            <button
+              onClick={() => setShowCommentForm(prev => !prev)}
+              className="flex items-center gap-2 text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-all bg-cyan-500/10 hover:bg-cyan-500/20 px-4 py-2 rounded-lg border border-cyan-500/20"
+            >
+              <FiMessageSquare className="w-4 h-4" />
+              {showCommentForm ? 'Tutup Form Komentar' : 'Tulis Komentar'}
+            </button>
           </div>
 
-          {Array.isArray(post.comments) && post.comments.length > 0 ? (
+          {/* Form Tambah Komentar */}
+          {showCommentForm && (
+            <form onSubmit={handleCommentSubmit} className="bg-gray-800/60 rounded-2xl p-6 border border-gray-700/60 mb-8 backdrop-blur-md shadow-xl animate-fadeIn">
+              <h4 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <span>💬</span> Berikan Tanggapan atau Pertanyaan
+              </h4>
+
+              {commentSuccess && (
+                <div className="mb-4 p-3 bg-green-500/20 border border-green-500/40 rounded-xl text-green-300 text-sm flex items-center gap-2">
+                  <FiCheckCircle className="w-4 h-4 flex-shrink-0" />
+                  Komentar Anda berhasil terkirim dan tersimpan!
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                    Nama Anda <span className="text-rose-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={commentName}
+                    onChange={(e) => setCommentName(e.target.value)}
+                    placeholder="Contoh: Alex Pratama"
+                    className="w-full bg-gray-900/60 border border-gray-700/60 rounded-xl px-4 py-2.5 text-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                    Email (Opsional)
+                  </label>
+                  <input
+                    type="email"
+                    value={commentEmail}
+                    onChange={(e) => setCommentEmail(e.target.value)}
+                    placeholder="email@example.com"
+                    className="w-full bg-gray-900/60 border border-gray-700/60 rounded-xl px-4 py-2.5 text-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                  />
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                  Komentar <span className="text-rose-400">*</span>
+                </label>
+                <textarea
+                  required
+                  rows={4}
+                  value={commentMessage}
+                  onChange={(e) => setCommentMessage(e.target.value)}
+                  placeholder="Tuliskan apresiasi, saran, atau pertanyaan Anda seputar artikel ini..."
+                  className="w-full bg-gray-900/60 border border-gray-700/60 rounded-xl px-4 py-2.5 text-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 resize-y"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowCommentForm(false)}
+                  className="px-4 py-2 rounded-xl bg-gray-700/50 hover:bg-gray-700 text-gray-300 text-sm transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingComment}
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-medium text-sm transition-all shadow-lg hover:shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {isSubmittingComment ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <span>Mengirim...</span>
+                    </>
+                  ) : (
+                    <span>Kirim Komentar</span>
+                  )}
+                </button>
+              </div>
+            </form>
+          )}
+
+          {comments.length > 0 ? (
             <div className="space-y-4">
-              {post.comments.map((c, i) => (
+              {comments.map((c, i) => (
                 <div
-                  key={i}
+                  key={c.id || i}
                   className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700/50 hover:border-cyan-400/20 transition-all duration-300 backdrop-blur-sm"
                 >
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-cyan-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                      {c.name.charAt(0)}
+                      {(c.name || 'U').charAt(0).toUpperCase()}
                     </div>
                     <div>
                       <h4 className="font-semibold text-white">{c.name}</h4>
                       <p className="text-gray-400 text-sm">
-                        {c.date ? formatRelativeTime(c.date) : "Tanggal tidak diketahui"}
+                        {c.date ? formatRelativeTime(c.date) : "Baru saja"}
                       </p>
                     </div>
                   </div>
-                  <p className="text-gray-300 leading-relaxed pl-12">
+                  <p className="text-gray-300 leading-relaxed pl-12 whitespace-pre-wrap">
                     {c.message || ""}
                   </p>
                 </div>
@@ -573,7 +1090,10 @@ export default function BlogDetail() {
             <div className="text-center py-8 bg-gray-800/30 rounded-2xl border border-gray-700/50 backdrop-blur-sm">
               <div className="text-4xl mb-3">💬</div>
               <p className="text-gray-400 mb-4">Belum ada komentar untuk artikel ini.</p>
-              <button className="text-cyan-400 hover:text-cyan-300 font-medium transition-all group flex items-center gap-2 justify-center mx-auto">
+              <button
+                onClick={() => setShowCommentForm(true)}
+                className="text-cyan-400 hover:text-cyan-300 font-medium transition-all group flex items-center gap-2 justify-center mx-auto"
+              >
                 Jadilah yang pertama berkomentar
                 <FiChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
@@ -595,37 +1115,37 @@ export default function BlogDetail() {
                 const r = item.post;
                 const reason = item.reason;
                 return (
-                <Link
-                  key={r.slug}
-                  to={`/blog/${r.slug}`}
-                  className="group bg-gradient-to-br from-gray-800/80 to-gray-900/60 rounded-2xl p-6 border border-gray-700/50 hover:border-cyan-400/30 hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-500 overflow-hidden backdrop-blur-sm"
-                >
-                  <div className="flex gap-4">
-                    {r.thumbnail && (
-                      <img
-                        src={r.thumbnail}
-                        alt={r.title}
-                        loading="lazy"
-                        className="w-20 h-20 object-cover rounded-lg flex-shrink-0 group-hover:scale-110 transition-transform duration-300"
-                      />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-3">
-                        <h4 className="font-bold text-white mb-2 line-clamp-2 group-hover:text-cyan-300 transition-colors">
-                          {r.title}
-                        </h4>
-                        <span className="text-xs text-gray-300 bg-gray-800/40 px-2 py-1 rounded-full ml-2">{reason}</span>
-                      </div>
-                      <p className="text-gray-400 text-sm line-clamp-2 mb-2">
-                        {r.excerpt || "Baca artikel selengkapnya..."}
-                      </p>
-                      <div className="flex items-center gap-2 text-xs text-gray-500">
-                        {r.readTime && <span className="flex items-center gap-1"><FiClock className="w-3 h-3" /> {formatReadTime(r.readTime)}</span>}
-                        {r.views && <span className="flex items-center gap-1"><FiEye className="w-3 h-3" /> {formatNumber(r.views)}</span>}
+                  <Link
+                    key={r.slug}
+                    to={`/blog/${r.slug}`}
+                    className="group bg-gradient-to-br from-gray-800/80 to-gray-900/60 rounded-2xl p-6 border border-gray-700/50 hover:border-cyan-400/30 hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-500 overflow-hidden backdrop-blur-sm"
+                  >
+                    <div className="flex gap-4">
+                      {r.thumbnail && (
+                        <img
+                          src={r.thumbnail}
+                          alt={r.title}
+                          loading="lazy"
+                          className="w-20 h-20 object-cover rounded-lg flex-shrink-0 group-hover:scale-110 transition-transform duration-300"
+                        />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-3">
+                          <h4 className="font-bold text-white mb-2 line-clamp-2 group-hover:text-cyan-300 transition-colors">
+                            {r.title}
+                          </h4>
+                          <span className="text-xs text-gray-300 bg-gray-800/40 px-2 py-1 rounded-full ml-2">{reason}</span>
+                        </div>
+                        <p className="text-gray-400 text-sm line-clamp-2 mb-2">
+                          {r.excerpt || "Baca artikel selengkapnya..."}
+                        </p>
+                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                          {r.readTime && <span className="flex items-center gap-1"><FiClock className="w-3 h-3" /> {formatReadTime(r.readTime)}</span>}
+                          {r.views && <span className="flex items-center gap-1"><FiEye className="w-3 h-3" /> {formatNumber(r.views)}</span>}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
                 );
               })}
             </div>
@@ -642,8 +1162,8 @@ export default function BlogDetail() {
               <FiArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
               Kembali ke Daftar Blog
             </Link>
-            
-              <div className="flex items-center gap-4 text-sm text-gray-400">
+
+            <div className="flex items-center gap-4 text-sm text-gray-400">
               <span>Terakhir diperbarui: {post.updatedAt ? formatRelativeTime(post.updatedAt) : '-'}</span>
               <span>•</span>
               <span>Tingkat bacaan: {post.readingLevel || 'Umum'}</span>
@@ -651,6 +1171,29 @@ export default function BlogDetail() {
           </div>
         </div>
       </article>
+
+      {/* 🖼️ Fullscreen Lightbox Modal untuk Galeri Foto */}
+      {lightboxImage && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn"
+          onClick={() => setLightboxImage(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightboxImage(null)}
+            className="absolute top-6 right-6 w-11 h-11 bg-gray-800/80 hover:bg-gray-700 rounded-full flex items-center justify-center text-white border border-gray-600/50 shadow-2xl transition-all hover:scale-110"
+            title="Tutup Pratinjau (ESC)"
+          >
+            <FiX className="w-5 h-5" />
+          </button>
+          <img
+            src={lightboxImage}
+            alt="Fullscreen View"
+            className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl border border-white/10"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }

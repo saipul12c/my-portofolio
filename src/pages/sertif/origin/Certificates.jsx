@@ -18,10 +18,10 @@ import {
 import { useNavigate } from "react-router-dom";
 
 // Import data
-import certificatesData from "../../data/sertif/certificates.json";
-import softskillsData from "../../data/skills/softskills.json";
-import projectsData from "../../data/projects.json";
-import testimonialsData from "../../data/testimoni/testimonials.json";
+import certificatesData from "../../../data/sertif/certificates.json";
+import softskillsData from "../../../data/skills/softskills.json";
+import projectsData from "../../../data/projects.json";
+import testimonialsData from "../../../data/testimoni/testimonials.json";
 
 const { certificates, tagColors } = certificatesData;
 

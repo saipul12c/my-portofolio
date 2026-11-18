@@ -5,15 +5,15 @@
  * Memastikan data consistency dan menyediakan context untuk semua komponen blog.
  */
 
-import blogs from '../../../data/blog/data.json';
-
 /**
  * Core Blog Service
  */
 class BlogService {
-  constructor(blogData) {
+  constructor(blogData = []) {
     this.blogs = blogData || [];
-    this.validate();
+    if (this.blogs.length > 0) {
+      this.validate();
+    }
   }
 
   /**
@@ -34,6 +34,22 @@ class BlogService {
         }
       });
     });
+  }
+
+  /**
+   * Update internal blogs data dynamically (e.g. from Supabase)
+   */
+  setBlogs(newBlogs) {
+    if (Array.isArray(newBlogs) && newBlogs.length > 0) {
+      this.blogs = newBlogs;
+    }
+  }
+
+  /**
+   * Get all blogs
+   */
+  getAllBlogs() {
+    return this.blogs;
   }
 
   /**
@@ -249,10 +265,10 @@ class BlogService {
 }
 
 // Initialize service
-const blogService = new BlogService(blogs);
+const blogService = new BlogService([]);
 
 // Validate on initialization
-if (process.env.NODE_ENV === 'development') {
+if (typeof process !== 'undefined' && process?.env?.NODE_ENV === 'development') {
   blogService.validateConsistency();
 }
 

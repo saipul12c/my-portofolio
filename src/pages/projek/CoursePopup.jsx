@@ -153,14 +153,14 @@ const CoursePopup = ({
             >
               <div className="flex items-start gap-4 mb-3 sm:mb-4">
                 <div className="text-5xl sm:text-6xl flex-shrink-0">
-                  {selectedCourse.logo}
+                  {selectedCourse.logo || "🎓"}
                 </div>
                 <div className="flex-1 min-w-0">
                   <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white break-words">
-                    {selectedCourse.title}
+                    {selectedCourse.title || selectedCourse.name}
                   </h1>
                   <p className="text-cyan-400 font-semibold mt-1 text-sm sm:text-base">
-                    {selectedCourse.provider}
+                    {selectedCourse.provider || selectedCourse.issuer}
                   </p>
                 </div>
               </div>
@@ -190,7 +190,7 @@ const CoursePopup = ({
                   <span className="text-xs font-semibold text-blue-300 uppercase">Level</span>
                 </div>
                 <p className="text-sm sm:text-base font-bold text-white">
-                  {selectedCourse.level}
+                  {selectedCourse.level || selectedCourse.difficulty}
                 </p>
               </div>
 
@@ -204,7 +204,7 @@ const CoursePopup = ({
                 </p>
               </div>
 
-              {selectedCourse.certificate && (
+              {(selectedCourse.certificate || selectedCourse.verified) && (
                 <div className="bg-yellow-500/15 border border-yellow-400/30 rounded-lg p-3 sm:p-4">
                   <div className="flex items-center gap-2 mb-1">
                     <Award className="w-4 h-4 text-yellow-400" />
@@ -256,7 +256,7 @@ const CoursePopup = ({
                 Keahlian yang Dipelajari
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                {selectedCourse.skills_learned && selectedCourse.skills_learned.map((skill, idx) => (
+                {(selectedCourse.skills_learned || selectedCourse.tags || []).map((skill, idx) => (
                   <motion.div
                     key={idx}
                     custom={idx}
@@ -275,7 +275,7 @@ const CoursePopup = ({
             </motion.div>
 
             {/* Stats Summary */}
-            {selectedCourse.skills_learned && selectedCourse.skills_learned.length > 0 && (
+            {(selectedCourse.skills_learned || selectedCourse.tags || []).length > 0 && (
               <motion.div
                 custom={5}
                 variants={contentVariants}
@@ -289,7 +289,7 @@ const CoursePopup = ({
                       Total Keahlian
                     </p>
                     <p className="text-2xl sm:text-3xl font-bold text-cyan-300 mt-1">
-                      {selectedCourse.skills_learned.length}
+                      {(selectedCourse.skills_learned || selectedCourse.tags || []).length}
                     </p>
                   </div>
                   <div className="text-right">
@@ -310,11 +310,22 @@ const CoursePopup = ({
               variants={contentVariants}
               initial="hidden"
               animate={isClosing ? "hidden" : "visible"}
-              className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-white/10"
+              className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-white/10 flex flex-col sm:flex-row gap-3"
             >
+              {(selectedCourse.urlCertificate || selectedCourse.certificateLinks?.certificate) && (
+                <a
+                  href={selectedCourse.urlCertificate || selectedCourse.certificateLinks?.certificate}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 text-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-gray-950 font-bold rounded-lg transition-all duration-300 transform hover:scale-[1.02] active:scale-95 text-sm sm:text-base flex items-center justify-center gap-2"
+                >
+                  <Award className="w-5 h-5" />
+                  Lihat Sertifikat
+                </a>
+              )}
               <button
                 onClick={handleClose}
-                className="w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95 text-sm sm:text-base"
+                className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-[1.02] active:scale-95 text-sm sm:text-base"
               >
                 Tutup Detail
               </button>

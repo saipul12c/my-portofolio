@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -17,6 +18,7 @@ import remarkGfm from "remark-gfm";
 import { useSoftSkillsAI } from "./hooks/useSoftSkillsAI";
 
 export default function SoftSkillsAI({ isOpen, onClose, skills = [], initialQuery = "" }) {
+  const navigate = useNavigate();
   const {
     messages,
     isTyping,
@@ -153,6 +155,59 @@ export default function SoftSkillsAI({ isOpen, onClose, skills = [], initialQuer
                               {lastBotMessage?.text}
                             </ReactMarkdown>
                           </div>
+
+                          {/* Actionable Quick Chips */}
+                          {lastBotMessage?.relatedEntities && (
+                            <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/20 space-y-2">
+                              <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
+                                <Sparkles className="w-3.5 h-3.5" /> Eksplorasi Terkait Skill Ini:
+                              </div>
+                              <div className="flex flex-wrap gap-2">
+                                {lastBotMessage.relatedEntities.projects?.length > 0 && (
+                                  <button
+                                    onClick={() => navigate('/projek')}
+                                    className="px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
+                                  >
+                                    💻 Proyek Terkait ({lastBotMessage.relatedEntities.projects.length})
+                                  </button>
+                                )}
+                                {lastBotMessage.relatedEntities.blogs?.length > 0 && (
+                                  <button
+                                    onClick={() => navigate('/blog')}
+                                    className="px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
+                                  >
+                                    📚 Artikel Blog ({lastBotMessage.relatedEntities.blogs.length})
+                                  </button>
+                                )}
+                                {lastBotMessage.relatedEntities.certificates?.length > 0 && (
+                                  <button
+                                    onClick={() => navigate('/sertif')}
+                                    className="px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
+                                  >
+                                    🎓 Sertifikasi ({lastBotMessage.relatedEntities.certificates.length})
+                                  </button>
+                                )}
+                                {lastBotMessage.relatedEntities.testimonials?.length > 0 && (
+                                  <button
+                                    onClick={() => navigate('/pengalaman/testimoni')}
+                                    className="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
+                                  >
+                                    ⭐ Testimoni ({lastBotMessage.relatedEntities.testimonials.length})
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => {
+                                    const helpBtn = document.querySelector('[aria-label="Buka Menu Bantuan"]');
+                                    if (helpBtn) helpBtn.click();
+                                  }}
+                                  className="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
+                                >
+                                  💬 Diskusi di Live Chat
+                                </button>
+                              </div>
+                            </div>
+                          )}
+
                           <div className="pt-4 border-t border-white/5 flex items-center justify-between">
                              <div className="flex items-center gap-2 text-emerald-500/50 text-xs italic font-medium">
                                <Zap className="w-3 h-3" />

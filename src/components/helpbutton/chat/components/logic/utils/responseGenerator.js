@@ -641,7 +641,7 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
     const advancedNLP = (aiDocData?.ai_nlp_ringkasan?.modul_lanjutan || []).map(m => `• ${m}`).join('\n');
     
     return {
-      text: `🤖 **Fitur Utama SaipulAI v7.1.0**\n\n${fiturUtama}\n\n🧠 **Teknologi NLP & AI Core:**\n${coreNLP}\n\n🚀 **Modul Lanjutan:**\n${advancedNLP}\n\n💡 **Tips**: Untuk detail teknis, ketik 'versi' atau klik ikon bantuan di pojok menu.`,
+      text: `🤖 **Fitur Utama SaipulAI v${CHATBOT_VERSION}**\n\n${fiturUtama}\n\n🧠 **Teknologi NLP & AI Core:**\n${coreNLP}\n\n🚀 **Modul Lanjutan:**\n${advancedNLP}\n\n💡 **Tips**: Untuk detail teknis, ketik 'versi' atau klik ikon bantuan di pojok menu.`,
       source: { type: 'system', id: 'features' },
       confidence: 1.0
     };

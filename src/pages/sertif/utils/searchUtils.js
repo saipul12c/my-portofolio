@@ -1,6 +1,11 @@
 // === Fuzzy Smart Search ===
 export const smartFilter = (certs, query, category) => {
-  if (!query && category === "All") return certs;
+  let list = certs || [];
+  if (category && category !== "All") {
+    list = list.filter((c) => c.category === category);
+  }
+  if (!query || !query.trim()) return list;
+
   const q = query.toLowerCase().trim();
 
   const scoreItem = (cert) => {
@@ -15,12 +20,11 @@ export const smartFilter = (certs, query, category) => {
     boost(cert.title, 2);
     boost(cert.issuer);
     cert.tags?.forEach((t) => boost(t));
-    if (category !== "All" && cert.category !== category) score -= 5;
 
     return score;
   };
 
-  return certs
+  return list
     .map((c) => ({ ...c, score: scoreItem(c) }))
     .filter((c) => c.score > 0)
     .sort((a, b) => b.score - a.score);

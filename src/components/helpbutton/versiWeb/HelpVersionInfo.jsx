@@ -19,12 +19,12 @@ import {
   Clock4,
   Flame
 } from "lucide-react";
-import docsData from "../docs/data/docsSections.json";
+import docsData from "../../../data/helpbutton/docs/docsSections.json";
 import { 
   getLatestVersionInfo
 } from "../docs/lib/versionUtils";
 
-import plannedVersions from "../docs/data/plannedVersions.json";
+import plannedVersions from "../../../data/helpbutton/docs/plannedVersions.json";
 const PLANNED_VERSIONS = plannedVersions;
 
 export default function HelpVersionInfo() {
@@ -227,25 +227,25 @@ export default function HelpVersionInfo() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a1833] to-[#162447] p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-[var(--color-gray-900)] via-[#0f1d32] to-[var(--color-gray-900)] text-white p-4 md:p-6 relative overflow-hidden">
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-8">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-[#e6e6e6] mb-2">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 mb-2">
               Website Versions & Release History
             </h1>
-            <p className="text-[#bfc8e2]">
+            <p className="text-gray-400">
               Track all versions of your portfolio website, from current releases to upcoming features
             </p>
           </div>
           <div className="flex items-center gap-3 w-full md:w-auto">
-            <div className="w-full md:w-auto p-3 bg-gradient-to-r from-[#162447] to-[#1f2a44] rounded-2xl border border-[#1f2a44]">
+            <div className="w-full md:w-auto p-3 bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-white/10">
               <div className="flex items-center gap-2">
-                <Rocket className="text-purple-400" size={20} />
+                <Rocket className="text-cyan-400" size={20} />
                 <div>
-                  <p className="text-xs text-[#bfc8e2]">Latest Version</p>
-                  <p className="text-lg font-bold text-[#e6e6e6]">{latest.versiWebsite}</p>
+                  <p className="text-xs text-gray-400">Latest Version</p>
+                  <p className="text-lg font-bold text-white">{latest.versiWebsite}</p>
                 </div>
               </div>
             </div>
@@ -254,54 +254,54 @@ export default function HelpVersionInfo() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-gradient-to-br from-[#162447] to-[#1f2a44] rounded-2xl p-6 border border-[#1f2a44]">
+          <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:border-cyan-500/30 transition-all">
             <div className="flex items-center justify-between mb-4">
-              <Package className="text-blue-400" size={24} />
-              <span className="text-xs px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full">
+              <Package className="text-cyan-400" size={24} />
+              <span className="text-xs px-3 py-1 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-full">
                 {versions.length} Total
               </span>
             </div>
-            <h3 className="text-2xl font-bold text-[#e6e6e6] mb-1">{versions.length}</h3>
-            <p className="text-[#bfc8e2] text-sm">Total Versions</p>
+            <h3 className="text-2xl font-bold text-white mb-1">{versions.length}</h3>
+            <p className="text-gray-400 text-sm">Total Versions</p>
           </div>
 
-          <div className="bg-gradient-to-br from-[#162447] to-[#1f2a44] rounded-2xl p-6 border border-[#1f2a44]">
+          <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:border-green-500/30 transition-all">
             <div className="flex items-center justify-between mb-4">
               <Zap className="text-green-400" size={24} />
-              <span className="text-xs px-3 py-1 bg-green-500/20 text-green-400 rounded-full">
+              <span className="text-xs px-3 py-1 bg-green-500/20 text-green-400 border border-green-500/30 rounded-full">
                 Current
               </span>
             </div>
-            <h3 className="text-2xl font-bold text-[#e6e6e6] mb-1">
+            <h3 className="text-2xl font-bold text-white mb-1">
               {versions.filter(v => v.status === "CURRENT").length}
             </h3>
-            <p className="text-[#bfc8e2] text-sm">Active Versions</p>
+            <p className="text-gray-400 text-sm">Active Versions</p>
           </div>
 
-          <div className="bg-gradient-to-br from-[#162447] to-[#1f2a44] rounded-2xl p-6 border border-[#1f2a44]">
+          <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:border-purple-500/30 transition-all">
             <div className="flex items-center justify-between mb-4">
               <Clock4 className="text-purple-400" size={24} />
-              <span className="text-xs px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full">
+              <span className="text-xs px-3 py-1 bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded-full">
                 Upcoming
               </span>
             </div>
-            <h3 className="text-2xl font-bold text-[#e6e6e6] mb-1">
+            <h3 className="text-2xl font-bold text-white mb-1">
               {versions.filter(v => v.status === "PLANNED").length}
             </h3>
-            <p className="text-[#bfc8e2] text-sm">Planned Releases</p>
+            <p className="text-gray-400 text-sm">Planned Releases</p>
           </div>
 
-          <div className="bg-gradient-to-br from-[#162447] to-[#1f2a44] rounded-2xl p-6 border border-[#1f2a44]">
+          <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:border-red-500/30 transition-all">
             <div className="flex items-center justify-between mb-4">
               <Flame className="text-red-400" size={24} />
-              <span className="text-xs px-3 py-1 bg-red-500/20 text-red-400 rounded-full">
+              <span className="text-xs px-3 py-1 bg-red-500/20 text-red-400 border border-red-500/30 rounded-full">
                 Breaking
               </span>
             </div>
-            <h3 className="text-2xl font-bold text-[#e6e6e6] mb-1">
+            <h3 className="text-2xl font-bold text-white mb-1">
               {versions.filter(v => v.breakingChanges).length}
             </h3>
-            <p className="text-[#bfc8e2] text-sm">Breaking Changes</p>
+            <p className="text-gray-400 text-sm">Breaking Changes</p>
           </div>
         </div>
 
@@ -310,40 +310,40 @@ export default function HelpVersionInfo() {
           <button
             onClick={() => setActiveTab("all")}
             className={`px-4 py-2 rounded-xl transition-all ${activeTab === "all" 
-              ? "bg-gradient-to-r from-purple-500 to-purple-600 text-white" 
-              : "bg-gray-800 text-gray-400 hover:bg-gray-700 w-full sm:w-auto"}`}
+              ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/25" 
+              : "bg-slate-800/80 border border-white/10 text-gray-300 hover:text-white hover:border-cyan-500/30 w-full sm:w-auto"}`}
           >
             All Versions
           </button>
           <button
             onClick={() => setActiveTab("current")}
             className={`px-4 py-2 rounded-xl transition-all ${activeTab === "current" 
-              ? "bg-gradient-to-r from-green-500 to-green-600 text-white" 
-              : "bg-gray-800 text-gray-400 hover:bg-gray-700 w-full sm:w-auto"}`}
+              ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg shadow-green-500/25" 
+              : "bg-slate-800/80 border border-white/10 text-gray-300 hover:text-white hover:border-green-500/30 w-full sm:w-auto"}`}
           >
             Current
           </button>
           <button
             onClick={() => setActiveTab("planned")}
             className={`px-4 py-2 rounded-xl transition-all ${activeTab === "planned" 
-              ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white" 
-              : "bg-gray-800 text-gray-400 hover:bg-gray-700 w-full sm:w-auto"}`}
+              ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25" 
+              : "bg-slate-800/80 border border-white/10 text-gray-300 hover:text-white hover:border-blue-500/30 w-full sm:w-auto"}`}
           >
             Planned
           </button>
           <button
             onClick={() => setActiveTab("major")}
             className={`px-4 py-2 rounded-xl transition-all ${activeTab === "major" 
-              ? "bg-gradient-to-r from-red-500 to-red-600 text-white" 
-              : "bg-gray-800 text-gray-400 hover:bg-gray-700 w-full sm:w-auto"}`}
+              ? "bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg shadow-red-500/25" 
+              : "bg-slate-800/80 border border-white/10 text-gray-300 hover:text-white hover:border-red-500/30 w-full sm:w-auto"}`}
           >
             Major
           </button>
           <button
               onClick={() => setActiveTab("breaking")}
               className={`px-4 py-2 rounded-xl transition-all ${activeTab === "breaking" 
-                ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white" 
-                : "bg-gray-800 text-gray-400 hover:bg-gray-700 w-full sm:w-auto"}`}
+                ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/25" 
+                : "bg-slate-800/80 border border-white/10 text-gray-300 hover:text-white hover:border-orange-500/30 w-full sm:w-auto"}`}
             >
               Breaking Changes
             </button>
@@ -357,11 +357,11 @@ export default function HelpVersionInfo() {
               to={`/help/version/${version.slug}`}
               className="group block"
             >
-              <div className="bg-gradient-to-br from-[#162447]/60 to-[#1f2a44]/60 rounded-2xl p-4 sm:p-6 border border-[#1f2a44] hover:border-purple-500/50 transition-all duration-300 hover:scale-[1.02]">
+              <div className="bg-slate-900/70 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-white/10 hover:border-cyan-500/40 hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 hover:scale-[1.01]">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <div className="flex items-center gap-3 mb-2 flex-wrap">
-                      <h3 className="text-xl font-bold text-[#e6e6e6] group-hover:text-purple-300 transition-colors">
+                      <h3 className="text-xl font-bold text-white group-hover:text-cyan-300 transition-colors">
                         {version.version}
                       </h3>
                       <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(version.status)}`}>
@@ -375,21 +375,21 @@ export default function HelpVersionInfo() {
                         <span key={i} className={`px-3 py-1 rounded-full text-xs font-medium ml-1 ${label.color}`}>{label.text}</span>
                       ))}
                     </div>
-                    <p className="text-[#bfc8e2] mb-1">{version.title || version.description}</p>
-                    <p className="text-sm text-[#bfc8e2]">{version.versionCode}</p>
+                    <p className="text-gray-300 mb-1">{version.title || version.description}</p>
+                    <p className="text-sm text-gray-400">{version.versionCode}</p>
                   </div>
-                  <ChevronRight className="text-[#bfc8e2] group-hover:text-purple-400 transition-colors" size={20} />
+                  <ChevronRight className="text-gray-400 group-hover:text-cyan-400 transition-colors" size={20} />
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 pt-4 border-t border-gray-700/50 gap-3">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 pt-4 border-t border-white/10 gap-3">
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
-                      <Calendar className="text-[#bfc8e2]" size={16} />
-                      <span className="text-sm text-[#bfc8e2]">{version.lastUpdated}</span>
+                      <Calendar className="text-gray-400" size={16} />
+                      <span className="text-sm text-gray-400">{version.lastUpdated}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Users className="text-[#bfc8e2]" size={16} />
-                      <span className="text-sm text-[#bfc8e2]">{version.author}</span>
+                      <Users className="text-gray-400" size={16} />
+                      <span className="text-sm text-gray-400">{version.author}</span>
                     </div>
                   </div>
 
@@ -420,7 +420,7 @@ export default function HelpVersionInfo() {
                       </span>
                     ))}
                     {version.tags.length > 3 && (
-                      <span className="px-3 py-1 bg-gray-700/50 text-gray-300 rounded-full text-xs">
+                      <span className="px-3 py-1 bg-white/10 text-gray-300 rounded-full text-xs">
                         +{version.tags.length - 3} more
                       </span>
                     )}
@@ -434,32 +434,32 @@ export default function HelpVersionInfo() {
         {/* Empty State */}
         {filteredVersions.length === 0 && (
           <div className="text-center py-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#1f2a44] mb-4">
-              <Package className="text-[#bfc8e2]" size={32} />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 border border-white/10 mb-4">
+              <Package className="text-gray-400" size={32} />
             </div>
-            <h3 className="text-xl font-semibold text-[#bfc8e2] mb-2">
+            <h3 className="text-xl font-semibold text-white mb-2">
               No versions found
             </h3>
-            <p className="text-[#bfc8e2] max-w-md mx-auto">
+            <p className="text-gray-400 max-w-md mx-auto">
               No versions match your current filter. Try selecting a different category.
             </p>
           </div>
         )}
 
         {/* Footer Info */}
-        <div className="mt-8 p-6 bg-gradient-to-r from-[#162447]/60 to-[#1f2a44]/60 rounded-2xl border border-[#1f2a44]">
+        <div className="mt-8 p-6 bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-white/10">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="text-lg font-semibold text-[#e6e6e6] mb-2">Version Information</h4>
-              <p className="text-[#bfc8e2] text-sm">
+              <h4 className="text-lg font-semibold text-white mb-2">Version Information</h4>
+              <p className="text-gray-400 text-sm">
                 All website versions follow semantic versioning. Click on any version to view detailed release notes, 
                 changelog, migration guides, and compatibility information.
               </p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-[#bfc8e2] mb-1">Last Updated</p>
-              <p className="text-lg font-bold text-[#e6e6e6]">{latest.lastUpdated}</p>
-              <p className="text-xs text-[#bfc8e2] mt-1">by {latest.author}</p>
+              <p className="text-sm text-gray-400 mb-1">Last Updated</p>
+              <p className="text-lg font-bold text-white">{latest.lastUpdated}</p>
+              <p className="text-xs text-gray-400 mt-1">by {latest.author}</p>
             </div>
           </div>
         </div>

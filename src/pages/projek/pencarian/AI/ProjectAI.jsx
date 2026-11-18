@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Search, Bot, X, Sparkles, History, CheckCircle2, 
@@ -141,6 +142,7 @@ const Typewriter = ({ text }) => {
 };
 
 const ProjectAI = ({ onSearch, onSelectProject }) => {
+  const navigate = useNavigate();
   const [inputValue, setInputValue] = useState("");
   const [activeSearch, setActiveSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -341,6 +343,63 @@ const ProjectAI = ({ onSearch, onSelectProject }) => {
                      </motion.div>
                    )}
                 </div>
+
+             {/* Actionable Quick Chips */}
+             {aiResponse?.relatedEntities && (
+               <div className="mx-8 mb-6 p-4 rounded-2xl bg-slate-900/80 border border-cyan-500/20 space-y-2">
+                 <div className="flex items-center gap-2 text-xs font-bold text-cyan-400">
+                   <Sparkles className="w-4 h-4" /> Aksi Cepat & Eksplorasi Terkait:
+                 </div>
+                 <div className="flex flex-wrap gap-2">
+                   {aiResponse.relatedEntities.blogs?.length > 0 && (
+                     <button
+                       onClick={() => navigate(`/blog?search=${encodeURIComponent(activeSearch)}`)}
+                       className="px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
+                     >
+                       <BookOpen className="w-3.5 h-3.5" />
+                       Baca Artikel Blog ({aiResponse.relatedEntities.blogs.length})
+                     </button>
+                   )}
+                   {aiResponse.relatedEntities.skills?.length > 0 && (
+                     <button
+                       onClick={() => navigate(`/skills`)}
+                       className="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
+                     >
+                       <Zap className="w-3.5 h-3.5" />
+                       Cek Kompetensi Skill ({aiResponse.relatedEntities.skills.length})
+                     </button>
+                   )}
+                   {aiResponse.relatedEntities.certificates?.length > 0 && (
+                     <button
+                       onClick={() => navigate(`/certificates`)}
+                       className="px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
+                     >
+                       <GraduationCap className="w-3.5 h-3.5" />
+                       Lihat Sertifikat ({aiResponse.relatedEntities.certificates.length})
+                     </button>
+                   )}
+                   {aiResponse.relatedEntities.testimonials?.length > 0 && (
+                     <button
+                       onClick={() => navigate(`/pengalaman/testimoni`)}
+                       className="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
+                     >
+                       <Award className="w-3.5 h-3.5" />
+                       Ulasan & Testimoni ({aiResponse.relatedEntities.testimonials.length})
+                     </button>
+                   )}
+                   <button
+                     onClick={() => {
+                       const helpBtn = document.querySelector('[aria-label="Buka Menu Bantuan"]');
+                       if (helpBtn) helpBtn.click();
+                     }}
+                     className="px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
+                   >
+                     <MessageSquare className="w-3.5 h-3.5" />
+                     Diskusi Langsung di Live Chat
+                   </button>
+                 </div>
+               </div>
+             )}
 
             {/* Footer */}
             <div className="px-8 py-4 bg-white/[0.02] border-t border-white/5 flex flex-wrap justify-center items-center gap-6 text-[9px] font-bold tracking-widest text-slate-600">

@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import blogData from "../../../data/blog/data.json";
+import { useMemo, useState, useEffect } from "react";
+import { fetchAllPosts } from "../../blog/services/blogSupabase";
 
 /**
  * Hook untuk menemukan blog posts yang terkait dengan bahasa/teknologi
@@ -7,10 +7,25 @@ import blogData from "../../../data/blog/data.json";
  * @returns {Array} - Array blog posts yang relevan
  */
 export const useRelatedBlogPosts = (skillName) => {
-  return useMemo(() => {
-    if (!skillName || !Array.isArray(blogData)) return [];
+  const [blogs, setBlogs] = useState([]);
 
-    const relatedPosts = blogData.filter(post => {
+  useEffect(() => {
+    let isMounted = true;
+    fetchAllPosts().then((posts) => {
+      if (isMounted && Array.isArray(posts) && posts.length > 0) {
+        setBlogs(posts);
+      }
+    }).catch(() => {});
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  return useMemo(() => {
+    if (!skillName || !Array.isArray(blogs)) return [];
+
+    const relatedPosts = blogs.filter(post => {
       // Cek di tags
       if (post.tags && post.tags.some(tag => 
         tag.toLowerCase().includes(skillName.toLowerCase()) ||

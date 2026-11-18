@@ -4,10 +4,10 @@ import PresenceDot from './PresenceDot';
 const MemberListItem = ({ member, onClick }) => {
   const initials = (member.username || member.name || 'U').substring(0, 2).toUpperCase();
   return (
-    <div onClick={() => onClick && onClick(member)} className="flex items-center gap-3 px-2 py-1 rounded hover:bg-[var(--dc-surface)] cursor-pointer select-none">
+    <div onClick={() => onClick && onClick(member)} className="flex items-center gap-3 px-2 py-1 rounded hover:bg-[#40444b] cursor-pointer select-none">
       <div className="relative w-8 h-8 flex-shrink-0">
-        <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white" style={{ backgroundColor: member.color || 'var(--dc-surface)' }}>{initials}</div>
-        <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 flex items-center justify-center bg-[var(--dc-bg)] rounded-full">
+        <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white" style={{ backgroundColor: member.color || '#40444b' }}>{initials}</div>
+        <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 flex items-center justify-center bg-[#36393f] rounded-full">
           <PresenceDot presence={member.presence} size={10} />
         </div>
       </div>

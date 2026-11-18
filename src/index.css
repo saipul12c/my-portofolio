@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 @plugin "@tailwindcss/typography";
 
 @theme {
@@ -12,264 +13,66 @@
 }
 
 :root {
-  /* Default Theme (Cyberpunk/Elite Dark) */
-  --theme-bg: #020617; 
-  --theme-surface: rgba(255, 255, 255, 0.03); 
-  --theme-surface-hover: rgba(255, 255, 255, 0.08);
+  /* Unified Theme Tokens */
+  --theme-bg: #0f172a; 
+  --theme-surface: rgba(15, 23, 42, 0.65); 
+  --theme-surface-hover: rgba(30, 41, 59, 0.8);
   --theme-border: rgba(255, 255, 255, 0.1); 
   --theme-text: #ffffff; 
-  --theme-text-muted: rgba(255, 255, 255, 0.4); 
+  --theme-text-muted: rgba(255, 255, 255, 0.6); 
   --theme-accent: #06b6d4; 
   --theme-accent-glow: rgba(6, 182, 212, 0.35);
   
-  --accent: var(--color-cyan-400, #22d3ee);
-  --accent-hover: var(--color-cyan-500, #06b6d4);
-  --surface-track: #020617;
+  --accent: #22d3ee;
+  --accent-hover: #06b6d4;
+  --surface-track: #0f172a;
   --color-gray-800: #1e293b;
   --color-gray-900: #0f172a;
-  
-  /* Glassmorphism Refined */
-  --glass-bg: rgba(15, 23, 42, 0.65);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-highlight: rgba(255, 255, 255, 0.03);
 }
 
-.theme-dark {
-  --theme-bg: #0f172a; 
-  --theme-surface: rgba(255, 255, 255, 0.05); 
-  --theme-surface-hover: rgba(255, 255, 255, 0.1);
-  --theme-border: rgba(255, 255, 255, 0.15); 
-  --theme-text: #f1f5f9; 
-  --theme-text-muted: #94a3b8; 
-  --theme-accent: #3b82f6; 
+html, body {
+  overflow-x: hidden;
 }
 
-.theme-light {
-  --theme-bg: #f1f5f9; 
-  --theme-surface: #ffffff; 
-  --theme-surface-hover: #f8fafc;
-  --theme-border: #cbd5e1; 
-  --theme-text: #0f172a; 
-  --theme-text-muted: #64748b; 
-  --theme-accent: #0ea5e9; 
-}
-
-/* Untuk semua elemen */
-
-html, body { overflow-x: hidden; }
-
+/* Global Scrollbar */
 * {
-  scrollbar-width: thin;        /* Firefox */
-  scrollbar-color: var(--accent) var(--surface-track); /* warna thumb & track di Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--surface-track);
 }
 
-/* Webkit Browsers (Chrome, Edge, Safari) */
 *::-webkit-scrollbar {
-  width: 6px;   /* lebar scroll bar vertikal */
-  height: 6px;  /* tinggi scroll bar horizontal */
+  width: 6px;
+  height: 6px;
 }
 
 *::-webkit-scrollbar-track {
-  background: var(--surface-track);  /* warna track */
+  background: var(--surface-track);
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: var(--accent); /* warna thumb */
-  border-radius: 10px;             /* rounded thumb */
-  border: 2px solid var(--surface-track); /* memberi jarak thumb ke track */
+  background-color: var(--accent);
+  border-radius: 10px;
+  border: 2px solid var(--surface-track);
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background-color: var(--accent-hover); /* warna saat hover */
+  background-color: var(--accent-hover);
 }
 
 input::placeholder {
   transition: opacity 0.3s ease;
 }
 
-/* Scoped rules for settings modal dropdowns to ensure contrast across themes */
-.saipul-settings-root select,
-.saipul-settings-root select option {
-  background: var(--saipul-surface) !important;
-  color: var(--saipul-text) !important;
-  border-color: var(--saipul-border) !important;
-}
-
-/* Theme overrides for "light-like" themes (light, sepia, solar, soft) 
-   These replace the expensive querySelectorAll('*') loop in JS */
-.saipul-settings-root[data-theme-style="light"] .bg-gray-800,
-.saipul-settings-root[data-theme-style="light"] .bg-gray-900,
-.saipul-settings-root[data-theme-style="light"] .bg-gray-800\/50,
-.saipul-settings-root[data-theme-style="light"] .bg-gray-900\/50 {
-  background-color: var(--saipul-surface, #f3f4f6) !important;
-  color: var(--saipul-text, #0b1220) !important;
-}
-
-.saipul-settings-root[data-theme-style="light"] .text-white {
-  color: var(--saipul-text, #0b1220) !important;
-}
-
-.saipul-settings-root[data-theme-style="light"] .text-gray-200 {
-  color: var(--saipul-text-secondary, #475569) !important;
-}
-
-.saipul-settings-root[data-theme-style="light"] input,
-.saipul-settings-root[data-theme-style="light"] select,
-.saipul-settings-root[data-theme-style="light"] textarea {
-  background-color: var(--saipul-surface, #ffffff) !important;
-  color: var(--saipul-text, #0b1220) !important;
-  border-color: rgba(15, 23, 36, 0.1) !important;
-}
-
-/* Enhance focus/hover visibility for native selects inside modal */
-.saipul-settings-root select:focus {
-  outline: 2px solid rgba(0,0,0,0.08);
-  box-shadow: 0 0 0 3px var(--saipul-button-hover);
-}
-
-
-/* Chat UI styling driven by saipul variables */
-.saipul-chat-root {
-  --saipul-inner-surface: color-mix(in srgb, var(--saipul-surface) 92%, black 0%);
-}
-
-.saipul-chat-root .saipul-chat-message {
-  border: 1px solid var(--saipul-border);
-}
-
-.saipul-chat-root .saipul-action-btn {
-  background: var(--saipul-surface);
-  color: var(--saipul-text);
-  transition: background-color 0.12s ease, transform 0.08s ease;
-}
-.saipul-chat-root .saipul-action-btn:hover {
-  background: var(--saipul-button-hover);
-  transform: translateY(-1px);
-}
-
-.saipul-chat-root .saipul-chat-message a {
-  color: var(--saipul-accent);
-}
-
-.saipul-chat-root .saipul-chat-message ::selection {
-  background: var(--saipul-accent-2);
-  color: var(--saipul-surface);
-}
-
-/* Suggestions button */
-.saipul-suggestion-btn {
-  background: color-mix(in srgb, var(--saipul-surface) 92%, black 0%);
-  color: var(--saipul-text);
-  border: 1px solid var(--saipul-border);
-}
-.saipul-suggestion-btn:hover { background: var(--saipul-button-hover); }
-
-/* Help button item */
-.saipul-help-item { color: var(--saipul-text); }
-.saipul-help-item:hover { background: color-mix(in srgb, var(--saipul-surface) 88%, var(--saipul-accent) 12%); }
-.saipul-help-badge { box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
-
-/* ===== reCAPTCHA Badge Styling ===== */
-/* Hide reCAPTCHA badge by default (hanya tampil di halaman Contact) */
+/* ===== reCAPTCHA Badge Visibility ===== */
 .grecaptcha-badge {
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
 }
 
-/* Tampilkan reCAPTCHA badge HANYA di halaman /contact */
 .recaptcha-visible .grecaptcha-badge {
   visibility: visible;
   opacity: 1;
   pointer-events: auto;
   transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-.saipul-help-icon { color: var(--saipul-surface) !important; }
-.saipul-presence-badge { background: var(--saipul-accent); border: 2px solid var(--saipul-border); }
-.saipul-online-dot { background: var(--saipul-accent); border: 1px solid var(--saipul-border); width: .5rem; height: .5rem; }
-
-/* Settings panels/buttons inside modal */
-.saipul-settings-root .saipul-panel { background: color-mix(in srgb, var(--saipul-surface) 96%, black 0%); border: 1px solid var(--saipul-border); }
-.saipul-settings-root .saipul-row { background: color-mix(in srgb, var(--saipul-surface) 96%, black 0%); border: 1px solid var(--saipul-border); }
-.saipul-settings-root .saipul-btn { background: transparent; padding: .5rem 1rem; border-radius: .5rem; }
-.saipul-settings-root .saipul-btn-export:hover { background: var(--saipul-button-hover); }
-.saipul-settings-root .saipul-btn-import:hover { background: var(--saipul-button-hover); }
-.saipul-settings-root .saipul-btn-danger:hover { background: var(--saipul-button-hover); }
-.saipul-settings-root .saipul-btn-warning:hover { background: var(--saipul-button-hover); }
-
-/* Toggle and input overrides inside modal */
-.saipul-settings-root input, .saipul-settings-root textarea {
-  background: var(--saipul-surface); color: var(--saipul-text); border: 1px solid var(--saipul-border);
-}
-
-.saipul-suggestion-btn {
-  background: color-mix(in srgb, var(--saipul-surface) 80%, var(--saipul-accent) 20%);
-  border-color: color-mix(in srgb, var(--saipul-border) 60%, var(--saipul-accent) 20%);
-  color: var(--saipul-text);
-}
-.saipul-suggestion-btn:hover { background: var(--saipul-button-hover); color: var(--saipul-surface); }
-
-/* Premium Utilities */
-.glass-effect {
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px) saturate(180%);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-}
-
-.glass-card {
-  background: linear-gradient(135deg, var(--glass-highlight), transparent);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.glass-card:hover {
-  border-color: rgba(6, 182, 212, 0.4);
-  box-shadow: 0 0 20px var(--theme-accent-glow);
-  transform: translateY(-2px);
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-.animate-shimmer {
-  position: relative;
-  overflow: hidden;
-}
-
-.animate-shimmer::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.05),
-    transparent
-  );
-  animation: shimmer 2s infinite;
-}
-
-@keyframes gradient-move {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.animate-gradient-fast {
-  background-size: 200% 200%;
-  animation: gradient-move 3s ease infinite;
-}
-
-/* Typography Refinement */
-.text-premium {
-  letter-spacing: -0.02em;
-  line-height: 1.2;
 }

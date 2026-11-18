@@ -1,98 +1,61 @@
 import React from "react";
-import { TrendingUp, BookOpen, Users, Heart, Star, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
+import { TrendingUp, BookOpen, Users, Heart, Star, Share2 } from "lucide-react";
 import { SectionHeader } from "../ui/SectionHeader";
 
 /**
- * BlogStatsSection component - displays blog statistics
+ * BlogStatsSection component - displays blog writing statistics with dark glassmorphism
  */
-export const BlogStatsSection = ({ blogStats }) => {
+export const BlogStatsSection = ({ blogStats = {} }) => {
   return (
-    <div className="mb-10">
-      <SectionHeader 
-        title="Statistik Blog Muhammad Syaiful Mukmin"
-        description="Kontribusi dan dampak melalui penulisan artikel pendidikan"
-        icon={<TrendingUp className="w-8 h-8" />}
+    <div className="space-y-6">
+      <SectionHeader
+        title="Dampak Publikasi & Statistik Blog"
+        description="Penyebaran wawasan EduTech, artikel teknologi pembelajaran, dan respon pembaca"
+        icon={<TrendingUp className="w-5 h-5 text-cyan-400" />}
+        to="/blog"
+        linkText="Buka Halaman Blog"
       />
 
-      {/* Grid Statistik Utama */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-xl p-4 border border-teal-100">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+        <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-xl p-4 text-center hover:border-cyan-500/30 transition-all">
           <div className="flex items-center justify-between mb-2">
-            <BookOpen className="w-5 h-5 text-teal-600" />
-            <span className="text-xs text-teal-600 font-medium">Total</span>
+            <BookOpen className="w-4 h-4 text-cyan-400" />
+            <span className="text-[10px] text-cyan-400 font-semibold uppercase tracking-wider">Artikel</span>
           </div>
-          <div className="text-2xl font-bold text-slate-900">{blogStats.totalArticles}</div>
-          <div className="text-xs text-slate-600">Artikel Ditulis</div>
+          <div className="text-2xl font-extrabold text-white">{blogStats.totalArticles || 0}</div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Artikel Ditulis</div>
         </div>
 
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+        <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-xl p-4 text-center hover:border-blue-500/30 transition-all">
           <div className="flex items-center justify-between mb-2">
-            <Users className="w-5 h-5 text-blue-600" />
-            <span className="text-xs text-blue-600 font-medium">Views</span>
+            <Users className="w-4 h-4 text-blue-400" />
+            <span className="text-[10px] text-blue-400 font-semibold uppercase tracking-wider">Pembaca</span>
           </div>
-          <div className="text-2xl font-bold text-slate-900">{blogStats.totalViews.toLocaleString()}</div>
-          <div className="text-xs text-slate-600">Total Pembaca</div>
+          <div className="text-2xl font-extrabold text-white">
+            {(blogStats.totalViews || 0).toLocaleString()}
+          </div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Total Views</div>
         </div>
 
-        <div className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-xl p-4 border border-rose-100">
+        <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-xl p-4 text-center hover:border-rose-500/30 transition-all">
           <div className="flex items-center justify-between mb-2">
-            <Heart className="w-5 h-5 text-rose-600" />
-            <span className="text-xs text-rose-600 font-medium">Likes</span>
+            <Heart className="w-4 h-4 text-rose-400" />
+            <span className="text-[10px] text-rose-400 font-semibold uppercase tracking-wider">Apresiasi</span>
           </div>
-          <div className="text-2xl font-bold text-slate-900">{blogStats.totalLikes.toLocaleString()}</div>
-          <div className="text-xs text-slate-600">Total Apresiasi</div>
+          <div className="text-2xl font-extrabold text-white">
+            {(blogStats.totalLikes || 0).toLocaleString()}
+          </div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Total Likes</div>
         </div>
 
-        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-100">
+        <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-xl p-4 text-center hover:border-amber-500/30 transition-all">
           <div className="flex items-center justify-between mb-2">
-            <Star className="w-5 h-5 text-amber-600" />
-            <span className="text-xs text-amber-600 font-medium">Rating</span>
+            <Star className="w-4 h-4 text-amber-400" />
+            <span className="text-[10px] text-amber-400 font-semibold uppercase tracking-wider">Rating</span>
           </div>
-          <div className="text-2xl font-bold text-slate-900">{blogStats.averageRating}</div>
-          <div className="text-xs text-slate-600">Rata-rata</div>
-        </div>
-      </div>
-
-      {/* Grid Statistik Sekunder */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        <div className="bg-white border border-slate-200 rounded-lg p-3 text-center">
-          <div className="text-lg font-bold text-teal-600">{blogStats.totalShares}</div>
-          <div className="text-xs text-slate-600">Shares</div>
-        </div>
-        <div className="bg-white border border-slate-200 rounded-lg p-3 text-center">
-          <div className="text-lg font-bold text-teal-600">{blogStats.totalComments}</div>
-          <div className="text-xs text-slate-600">Comments</div>
-        </div>
-        <div className="bg-white border border-slate-200 rounded-lg p-3 text-center">
-          <div className="text-lg font-bold text-teal-600">{blogStats.featuredCount}</div>
-          <div className="text-xs text-slate-600">Featured</div>
-        </div>
-        <div className="bg-white border border-slate-200 rounded-lg p-3 text-center">
-          <div className="text-lg font-bold text-teal-600">{(blogStats.totalWordCount / 1000).toFixed(1)}k</div>
-          <div className="text-xs text-slate-600">Total Kata</div>
-        </div>
-      </div>
-
-      {/* Kategori Blog */}
-      <div className="bg-gradient-to-br from-slate-50 to-teal-50 rounded-xl p-4 border border-slate-200">
-        <h4 className="text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-teal-600" />
-          Kategori yang Dikuasai
-        </h4>
-        <div className="flex flex-wrap gap-2">
-          {blogStats.categories.map((category, index) => (
-            <span key={index} 
-                  className="px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-xs font-medium">
-              {category}
-            </span>
-          ))}
-        </div>
-        <div className="mt-3 pt-3 border-t border-slate-200">
-          <p className="text-xs text-slate-600">
-            <strong className="text-teal-700">Dampak:</strong> Artikel-artikel telah dibaca lebih dari{' '}
-            <strong className="text-teal-700">{blogStats.totalViews.toLocaleString()}</strong> kali dan mendapatkan{' '}
-            <strong className="text-teal-700">{blogStats.totalLikes.toLocaleString()}</strong> apresiasi dari pembaca.
-          </p>
+          <div className="text-2xl font-extrabold text-white">{blogStats.averageRating || "5.0"}</div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Skor Pembaca</div>
         </div>
       </div>
     </div>

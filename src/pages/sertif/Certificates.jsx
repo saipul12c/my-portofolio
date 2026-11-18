@@ -89,7 +89,7 @@ export default function Certificates() {
 
   return (
     <LazyMotion features={domAnimation}>
-      <main className="min-h-screen bg-[#0a0f1a] text-white py-24 px-6 flex flex-col items-center select-none">
+      <main className="min-h-screen bg-[var(--color-gray-900)] text-white py-24 px-6 flex flex-col items-center select-none relative overflow-hidden">
         {/* 🌈 Background efek seperti Projects */}
         <div className="absolute inset-0 -z-10">
           <div className="absolute top-0 left-0 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl animate-pulse" />

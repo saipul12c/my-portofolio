@@ -10,6 +10,7 @@ import { ConversationContextManager, isFollowUp, extractTopics } from '../utils/
 import { DEFAULT_SETTINGS, CHATBOT_VERSION } from '../../../config.js';
 import { storageService } from '../utils/storageService';
 import { supabase } from '../../../../../../lib/supabaseClient';
+import { recordAITopic } from '../../../../../../utils/ai/sessionMemory';
 
 const DEFAULT_KB = {
   AI: {},
@@ -833,6 +834,33 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
             window.dispatchEvent(new CustomEvent('saipul_chat_update', { detail: { type: 'new_bot_message', message: botMsgA } }));
             window.dispatchEvent(new CustomEvent('saipul_chat_update', { detail: { type: 'new_bot_message', message: botMsgB } }));
           } else {
+            // Contextual Action Chips
+            let actionChips = (replyObj && replyObj.actionChips) || [];
+            if (actionChips.length === 0) {
+              const lowerRep = (replyDisplayText || replyText || '').toLowerCase();
+              const lowerInp = (userText || '').toLowerCase();
+              const combined = `${lowerInp} ${lowerRep}`;
+              
+              if (combined.includes('proyek') || combined.includes('project') || combined.includes('karya')) {
+                actionChips.push({ label: 'Jelajahi Proyek', icon: '💻', path: '/projek' });
+              }
+              if (combined.includes('blog') || combined.includes('artikel') || combined.includes('tulisan')) {
+                actionChips.push({ label: 'Baca Blog', icon: '📚', path: '/blog' });
+              }
+              if (combined.includes('skill') || combined.includes('keahlian') || combined.includes('kemampuan')) {
+                actionChips.push({ label: 'Cek Skill', icon: '⚡', path: '/skills' });
+              }
+              if (combined.includes('sertifikat') || combined.includes('sertifikasi') || combined.includes('kursus')) {
+                actionChips.push({ label: 'Lihat Sertifikat', icon: '🎓', path: '/sertif' });
+              }
+              if (combined.includes('testimoni') || combined.includes('ulasan') || combined.includes('rekomendasi')) {
+                actionChips.push({ label: 'Ulasan Klien', icon: '⭐', path: '/pengalaman/testimoni' });
+              }
+              if (combined.includes('faq') || combined.includes('tanya')) {
+                actionChips.push({ label: 'Buka FAQ', icon: '❓', path: '/help/faq' });
+              }
+            }
+
             const botMsg = {
               id: `msg_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
               from: 'bot',
@@ -843,9 +871,14 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
               character: characterData,
               _meta: Object.assign({}, (typeof replyObj === 'object' && replyObj ? {
                 source: replyObj.source || null,
-                confidence: typeof replyObj.confidence === 'number' ? replyObj.confidence : null
+                confidence: typeof replyObj.confidence === 'number' ? replyObj.confidence : null,
+                relatedConcepts: replyObj.relatedConcepts || null,
+                entity: replyObj.entity || null,
+                reasoning: replyObj.reasoning || null,
+                userIntent: intent || null
               } : {}), replyMetaFromPost ? { post: replyMetaFromPost } : {}),
               action: (replyObj && replyObj.action) || null,
+              actionChips: actionChips.slice(0, 3),
               suggestedTopics: (replyObj && replyObj.suggestedTopics) || null
             };
 
@@ -973,6 +1006,8 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     const textToProcess = (overrideData && typeof overrideData === 'object' && overrideData.text) ? overrideData.text : input;
     const clean = sanitizeInput(textToProcess || '');
     if (!clean || !clean.trim()) return;
+
+    recordAITopic(clean, 'SaipulAI');
 
     // Enforce input rules: reject sensitive personal data in user input (use contextual detector)
     try {

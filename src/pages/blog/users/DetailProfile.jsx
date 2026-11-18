@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
-import blogs from "../../../data/blog/data.json";
+import { fetchAllPosts } from "../services/blogSupabase";
 import {
   FiArrowLeft,
   FiCalendar,
@@ -68,36 +68,44 @@ export default function DetailProfile() {
   };
 
   useEffect(() => {
+    document.body.style.overflow = "auto";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
+  useEffect(() => {
     if (authorName) {
       setIsLoading(true);
-      
-      // Simulate API call delay
-      setTimeout(() => {
-        // Find author data from blogs
-        const authorBlogs = blogs.filter(blog => 
-          blog.author.toLowerCase() === authorName.toLowerCase()
-        );
-        
-        if (authorBlogs.length > 0) {
-          const firstBlog = authorBlogs[0];
-          const socialLinks = generateSocialLinks(authorName);
+      fetchAllPosts()
+        .then((allPosts) => {
+          const authorBlogs = (Array.isArray(allPosts) ? allPosts : []).filter(blog => 
+            blog.author && blog.author.toLowerCase() === authorName.toLowerCase()
+          );
           
-          setAuthorData({
-            name: firstBlog.author,
-            avatar: firstBlog.authorAvatar || `/api/placeholder/128/128?text=${firstBlog.author.charAt(0)}`,
-            bio: firstBlog.authorBio || `Penulis berpengalaman di bidang ${firstBlog.category} dengan passion untuk berbagi pengetahuan dan pengalaman melalui tulisan.`,
-            joinDate: firstBlog.date,
-            expertise: firstBlog.category,
-            location: "Indonesia",
-            company: "Freelance Writer",
-            verified: true,
-            socialLinks: socialLinks
-          });
+          if (authorBlogs.length > 0) {
+            const firstBlog = authorBlogs[0];
+            const socialLinks = generateSocialLinks(authorName);
+            
+            setAuthorData({
+              name: firstBlog.author,
+              avatar: firstBlog.authorAvatar || `/api/placeholder/128/128?text=${firstBlog.author.charAt(0)}`,
+              bio: firstBlog.authorBio || `Penulis berpengalaman di bidang ${firstBlog.category} dengan passion untuk berbagi pengetahuan dan pengalaman melalui tulisan.`,
+              joinDate: firstBlog.date,
+              expertise: firstBlog.category,
+              location: "Indonesia",
+              company: "Freelance Writer",
+              verified: true,
+              socialLinks: socialLinks
+            });
 
-          setAuthorPosts(authorBlogs);
-        }
-        setIsLoading(false);
-      }, 800);
+            setAuthorPosts(authorBlogs);
+          }
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setIsLoading(false);
+        });
     }
   }, [authorName]);
 

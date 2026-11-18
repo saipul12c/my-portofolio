@@ -12,6 +12,7 @@ import {
   formatDate,
   STATS_CONFIG 
 } from "../utils/blogUtils";
+import { recordShare } from "../services/blogSupabase";
 
 export default function BlogPopup({
   selectedPost,
@@ -21,6 +22,13 @@ export default function BlogPopup({
   onHideTooltip,
   showTooltip
 }) {
+  // Ensure body scroll is unlocked when component unmounts
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
   // --- TRACK TOPIK UNTUK AI ---
   useEffect(() => {
     if (selectedPost) {
@@ -34,6 +42,11 @@ export default function BlogPopup({
   }, [selectedPost]);
 
   if (!selectedPost) return null;
+
+  const handleAuthorClickWithOverflowReset = (e, author) => {
+    document.body.style.overflow = "auto";
+    if (typeof onAuthorClick === 'function') onAuthorClick(e, author);
+  };
 
   return (
     <div
@@ -51,7 +64,7 @@ export default function BlogPopup({
         <PopupHeader 
           post={selectedPost} 
           onClose={onClosePopup}
-          onAuthorClick={onAuthorClick}
+          onAuthorClick={handleAuthorClickWithOverflowReset}
           onShowTooltip={onShowTooltip}
           onHideTooltip={onHideTooltip}
           showTooltip={showTooltip}
@@ -179,8 +192,8 @@ function PopupContent({ post, onClosePopup }) {
       <CategorySection post={post} />
       <ExcerptSection excerpt={post.excerpt} />
       <ContentSection content={post.content} onClosePopup={onClosePopup} post={post} />
-      <TagsSection tags={post.tags} />
-      <ActionButtons slug={post.slug} />
+      <TagsSection tags={post.tags} onClosePopup={onClosePopup} />
+      <ActionButtons post={post} onClosePopup={onClosePopup} />
       <PostInfo post={post} />
     </div>
   );
@@ -188,7 +201,7 @@ function PopupContent({ post, onClosePopup }) {
 
 function StatsGrid({ post }) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
       {STATS_CONFIG.map((stat, index) => {
         const Icon = stat.icon;
         return (
@@ -196,7 +209,9 @@ function StatsGrid({ post }) {
             <div className="text-center">
               <Icon className={`w-6 h-6 sm:w-7 sm:h-7 text-${stat.color}-400 mb-2 mx-auto group-hover:scale-110 transition-transform`} />
               <span className="text-lg sm:text-xl font-bold text-white block">
-                {formatNumber(post[stat.valueKey] || 0)}
+                {stat.valueKey === 'rating' 
+                  ? Number(post[stat.valueKey] || 5.0).toFixed(1)
+                  : formatNumber(post[stat.valueKey] || 0)}
               </span>
               <span className="text-xs text-gray-400">{stat.label}</span>
             </div>
@@ -389,8 +404,15 @@ function ContentSection({ content, onClosePopup, post }) {
   );
 }
 
-function TagsSection({ tags }) {
+function TagsSection({ tags, onClosePopup }) {
+  const navigate = useNavigate();
   if (!tags || tags.length === 0) return null;
+
+  const handleTagClick = (tag) => {
+    document.body.style.overflow = "auto";
+    if (typeof onClosePopup === 'function') onClosePopup();
+    navigate(`/blog?search=${encodeURIComponent(tag)}`);
+  };
   
   return (
     <div className="mt-6 pt-6 border-t border-gray-700/50">
@@ -399,31 +421,78 @@ function TagsSection({ tags }) {
       </div>
       <div className="flex flex-wrap gap-2 sm:gap-3">
         {tags.map((tag, i) => (
-          <span
+          <button
             key={i}
+            type="button"
+            onClick={() => handleTagClick(tag)}
             className={`text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-full backdrop-blur-sm border font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer ${getTagColor(tag, i)}`}
           >
             #{tag}
-          </span>
+          </button>
         ))}
       </div>
     </div>
   );
 }
 
-function ActionButtons({ slug }) {
+function ActionButtons({ post, onClosePopup }) {
+  const [copied, setCopied] = useState(false);
+  const [shares, setShares] = useState(post?.shares || 0);
+
+  const handleShare = async () => {
+    // Tingkatkan counter share secara dinamis
+    const nextShares = await recordShare(post.slug, shares);
+    setShares(nextShares);
+
+    const shareUrl = `${window.location.origin}/blog/${post.slug}`;
+    const shareData = {
+      title: post.title,
+      text: post.excerpt,
+      url: shareUrl,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.log('Share canceled or failed:', err);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+      } catch (err) {
+        console.error('Clipboard copy failed:', err);
+      }
+    }
+  };
+
+  const handleReadFull = () => {
+    document.body.style.overflow = "auto";
+    if (typeof onClosePopup === 'function') onClosePopup();
+  };
+
   return (
     <div className="flex flex-col sm:flex-row gap-3 mt-8 pt-6 border-t border-gray-700/50">
       <Link
-        to={`/blog/${slug}`}
+        to={`/blog/${post.slug}`}
+        onClick={handleReadFull}
         className="flex-1 bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white py-4 rounded-xl text-center font-semibold transition-all duration-300 hover:shadow-lg hover:scale-[1.02] text-sm sm:text-base flex items-center justify-center gap-2 group"
       >
         <FiBookmark className="w-4 h-4 group-hover:scale-110 transition-transform" />
         📖 Baca Artikel Lengkap
       </Link>
-      <button className="flex items-center justify-center gap-2 px-6 py-4 bg-gray-700/50 border border-gray-600 rounded-xl text-gray-300 hover:text-white hover:border-cyan-500/50 hover:bg-gray-700/70 transition-all duration-300">
-        <FiShare2 className="w-4 h-4" />
-        Bagikan
+      <button 
+        onClick={handleShare}
+        className={`flex items-center justify-center gap-2 px-6 py-4 rounded-xl transition-all duration-300 font-medium ${
+          copied 
+            ? 'bg-green-600/30 text-green-300 border border-green-500/50' 
+            : 'bg-gray-700/50 border border-gray-600 text-gray-300 hover:text-white hover:border-cyan-500/50 hover:bg-gray-700/70'
+        }`}
+      >
+        <FiShare2 className="w-4 h-4 text-purple-400" />
+        {copied ? 'Tautan Disalin! ✅' : `Bagikan (${formatNumber(shares)})`}
       </button>
     </div>
   );

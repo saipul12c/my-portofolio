@@ -2,8 +2,8 @@ import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { LazyMotion, m, AnimatePresence, domAnimation } from "framer-motion";
 import { ChevronDown, Search, HelpCircle, Send, Bot, Sparkles, TrendingUp, BookOpen, Lightbulb, X, History, Clock } from "lucide-react";
-import faqsData from "./data/faqs.json";
-import commitmentsData from "../komit/data/commitments.json";
+import faqsData from "../../../data/helpbutton/faq/faqs.json";
+import commitmentsData from "../../../data/helpbutton/komit/commitments.json";
 import askAI, { getAISuggestions, getCyclingSuggestions, getAIStatistics } from "./AI/Bot";
 
 // Utility untuk menyimpan riwayat ke localStorage

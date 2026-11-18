@@ -12,7 +12,7 @@ const AnalyticsTab = ({ analytics, timeline }) => {
       icon: TrendingUp,
       label: "Tingkat Kesuksesan",
       value: `${Math.round(analytics.successRate)}%`,
-      color: "emerald"
+      color: "cyan"
     },
     {
       icon: Target,
@@ -48,7 +48,7 @@ const AnalyticsTab = ({ analytics, timeline }) => {
         {metrics.map((metric, idx) => {
           const Icon = metric.icon;
           const colorClasses = {
-            emerald: "from-emerald-500/20 to-emerald-600/20 text-emerald-400",
+            cyan: "from-cyan-500/20 to-blue-600/20 text-cyan-400",
             blue: "from-blue-500/20 to-blue-600/20 text-blue-400",
             purple: "from-purple-500/20 to-purple-600/20 text-purple-400",
             yellow: "from-yellow-500/20 to-yellow-600/20 text-yellow-400"
@@ -90,7 +90,7 @@ const AnalyticsTab = ({ analytics, timeline }) => {
                 </div>
                 <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-gradient-to-r from-emerald-500 to-teal-500"
+                    className="h-full bg-gradient-to-r from-cyan-500 to-blue-500"
                     style={{ width: `${(idx + 1) * 20}%` }}
                   ></div>
                 </div>
@@ -110,7 +110,7 @@ const AnalyticsTab = ({ analytics, timeline }) => {
       >
         <h3 className="text-xl font-bold mb-4">Ringkasan Performa</h3>
         <div className="space-y-3 text-gray-300">
-          <p>✓ Tingkat kesuksesan proyek mencapai <span className="font-semibold text-emerald-400">{Math.round(analytics.successRate)}%</span></p>
+          <p>✓ Tingkat kesuksesan proyek mencapai <span className="font-semibold text-cyan-400">{Math.round(analytics.successRate)}%</span></p>
           <p>✓ Kepuasan klien rata-rata <span className="font-semibold text-blue-400">{analytics.clientSatisfaction?.toFixed(1)}/5</span></p>
           <p>✓ Penyelesaian tepat waktu <span className="font-semibold text-purple-400">{Math.round(analytics.projectCompletion)}%</span></p>
           <p>✓ Total revenue yang dihasilkan <span className="font-semibold text-yellow-400">Rp {(analytics.totalRevenue / 1000000).toFixed(1)} Miliar</span></p>

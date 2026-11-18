@@ -14,7 +14,7 @@ const MessageInput = ({ placeholder = 'Message', onSend }) => {
 
   return (
     <div className="p-4">
-      <form onSubmit={submit} className="message-input rounded-lg px-4">
+      <form onSubmit={submit} className="bg-[#202225]/60 rounded-lg px-4 py-2 focus-within:ring-2 focus-within:ring-[#5865f2]/10">
         <div className="flex items-center">
           <button type="button" className="p-2 text-gray-400 hover:text-gray-300">+</button>
           <textarea
@@ -28,7 +28,7 @@ const MessageInput = ({ placeholder = 'Message', onSend }) => {
           />
           <div className="flex items-center space-x-1">
             <button type="button" className="p-2 text-gray-400 hover:text-gray-300">🙂</button>
-            <button type="submit" className="px-3 py-1 bg-[var(--dc-cyan)] text-white rounded">Kirim</button>
+            <button type="submit" className="px-3 py-1 bg-[#56b6c2] text-white rounded">Kirim</button>
           </div>
         </div>
       </form>

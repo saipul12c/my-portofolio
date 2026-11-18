@@ -1,5 +1,4951 @@
 [
   {
+    "id": 219,
+    "title": "Potret Penyanyi: Laras",
+    "description": "Dokumentasi potret penyanyi Laras pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/penyanyi/laras.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Penyanyi, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 220,
+    "title": "Potret Penari: Adaw",
+    "description": "Dokumentasi potret penari Adaw pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/penari/adaw.JPG",
+    "category": "Creative",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Penari, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 221,
+    "title": "Potret Penari: Danti",
+    "description": "Dokumentasi potret penari Danti pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/penari/danti.JPG",
+    "category": "Creative",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Penari, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 222,
+    "title": "Potret Penari: Helda",
+    "description": "Dokumentasi potret penari Helda pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/penari/helda.JPG",
+    "category": "Creative",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Penari, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 223,
+    "title": "Potret Penari: Nida",
+    "description": "Dokumentasi potret penari Nida pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/penari/nida.JPG",
+    "category": "Creative",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Penari, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 224,
+    "title": "Potret Penari: Yulia",
+    "description": "Dokumentasi potret penari Yulia pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/penari/yulia.JPG",
+    "category": "Creative",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Penari, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 225,
+    "title": "Potret Pemain: Alfatia",
+    "description": "Dokumentasi potret pemain Alfatia pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/alfatia.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 226,
+    "title": "Potret Pemain: Alfi",
+    "description": "Dokumentasi potret pemain Alfi pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/alfi.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 227,
+    "title": "Potret Pemain: Amel",
+    "description": "Dokumentasi potret pemain Amel pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/amel.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 228,
+    "title": "Potret Pemain: Amin",
+    "description": "Dokumentasi potret pemain Amin pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/amin.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 229,
+    "title": "Potret Pemain: Arlin",
+    "description": "Dokumentasi potret pemain Arlin pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/arlin.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 230,
+    "title": "Potret Pemain: Baihaqi",
+    "description": "Dokumentasi potret pemain Baihaqi pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/baihaqi.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 231,
+    "title": "Potret Pemain: Eliyana",
+    "description": "Dokumentasi potret pemain Eliyana pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/eliyana.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 232,
+    "title": "Potret Pemain: Fikri",
+    "description": "Dokumentasi potret pemain Fikri pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/fikri.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 233,
+    "title": "Potret Pemain: Gina",
+    "description": "Dokumentasi potret pemain Gina pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/gina.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 234,
+    "title": "Potret Pemain: Hafizah",
+    "description": "Dokumentasi potret pemain Hafizah pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/hafizah.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 235,
+    "title": "Potret Pemain: Halimatus",
+    "description": "Dokumentasi potret pemain Halimatus pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/halimatus.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 236,
+    "title": "Potret Pemain: Hasbi",
+    "description": "Dokumentasi potret pemain Hasbi pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/hasbi.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 237,
+    "title": "Potret Pemain: Keluarga Besar Pagelaran Seni",
+    "description": "Dokumentasi potret pemain Keluarga Besar Pagelaran Seni pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/IMG-20250622-WA0072.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 238,
+    "title": "Potret Pemain: Keluarga Besar Pagelaran Seni",
+    "description": "Dokumentasi potret pemain Keluarga Besar Pagelaran Seni pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/IMG-20250622-WA0074.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 239,
+    "title": "Potret Pemain: Keluarga Besar Pagelaran Seni",
+    "description": "Dokumentasi potret pemain Keluarga Besar Pagelaran Seni pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/IMG-20250622-WA0075.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 240,
+    "title": "Potret Pemain: Keluarga Besar Pagelaran Seni",
+    "description": "Dokumentasi potret pemain Keluarga Besar Pagelaran Seni pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/IMG-20250622-WA0079.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 241,
+    "title": "Potret Pemain: Lulu",
+    "description": "Dokumentasi potret pemain Lulu pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/lulu.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 242,
+    "title": "Potret Pemain: Mahriani",
+    "description": "Dokumentasi potret pemain Mahriani pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/mahriani.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 243,
+    "title": "Potret Pemain: Mukaramah",
+    "description": "Dokumentasi potret pemain Mukaramah pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/mukaramah.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 244,
+    "title": "Potret Pemain: Nabila",
+    "description": "Dokumentasi potret pemain Nabila pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/nabila.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 245,
+    "title": "Potret Pemain: Najmiatus",
+    "description": "Dokumentasi potret pemain Najmiatus pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/najmiatus.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 246,
+    "title": "Potret Penari: Penari",
+    "description": "Dokumentasi potret penari Penari pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/penari.jpg",
+    "category": "Creative",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Penari, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 247,
+    "title": "Potret Pemain: Rifa",
+    "description": "Dokumentasi potret pemain Rifa pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/rifa.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 248,
+    "title": "Potret Pemain: Ririn",
+    "description": "Dokumentasi potret pemain Ririn pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/ririn.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 249,
+    "title": "Potret Pemain: Risma",
+    "description": "Dokumentasi potret pemain Risma pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/risma.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 250,
+    "title": "Potret Pemain: Safii",
+    "description": "Dokumentasi potret pemain Safii pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/safii.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 251,
+    "title": "Potret Pemain: Silahudin",
+    "description": "Dokumentasi potret pemain Silahudin pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/silahudin.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 252,
+    "title": "Potret Pemain: Yasmin",
+    "description": "Dokumentasi potret pemain Yasmin pada Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin 2024.",
+    "img": "/assets/pageran/pemain/yasmin.jpg",
+    "category": "Portrait",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R6",
+    "lens": "RF 85mm F1.4 L",
+    "focal_length": "85mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/200s",
+    "iso": 200,
+    "color_palette": [
+      "#1E1B4B",
+      "#6366F1",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Pemain, Ekspresif, Bersemangat"
+  },
+  {
+    "id": 253,
+    "title": "Momen di Balik Layar Pagelaran Seni #1",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #1).",
+    "img": "/assets/pageran/momens/1.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 254,
+    "title": "Momen di Balik Layar Pagelaran Seni #2",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #2).",
+    "img": "/assets/pageran/momens/2.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 255,
+    "title": "Momen di Balik Layar Pagelaran Seni #3",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #3).",
+    "img": "/assets/pageran/momens/3.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 256,
+    "title": "Momen di Balik Layar Pagelaran Seni #4",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #4).",
+    "img": "/assets/pageran/momens/4.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 257,
+    "title": "Momen di Balik Layar Pagelaran Seni #5",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #5).",
+    "img": "/assets/pageran/momens/5.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 258,
+    "title": "Momen di Balik Layar Pagelaran Seni #6",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #6).",
+    "img": "/assets/pageran/momens/6.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 259,
+    "title": "Momen di Balik Layar Pagelaran Seni #7",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #7).",
+    "img": "/assets/pageran/momens/7.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 260,
+    "title": "Momen di Balik Layar Pagelaran Seni #8",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #8).",
+    "img": "/assets/pageran/momens/8.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 261,
+    "title": "Momen di Balik Layar Pagelaran Seni #9",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #9).",
+    "img": "/assets/pageran/momens/9.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 262,
+    "title": "Momen di Balik Layar Pagelaran Seni #10",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #10).",
+    "img": "/assets/pageran/momens/10.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 263,
+    "title": "Momen di Balik Layar Pagelaran Seni #11",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #11).",
+    "img": "/assets/pageran/momens/11.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 264,
+    "title": "Momen di Balik Layar Pagelaran Seni #12",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #12).",
+    "img": "/assets/pageran/momens/12.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 265,
+    "title": "Momen di Balik Layar Pagelaran Seni #13",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #13).",
+    "img": "/assets/pageran/momens/13.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 266,
+    "title": "Momen di Balik Layar Pagelaran Seni #14",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #14).",
+    "img": "/assets/pageran/momens/14.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 267,
+    "title": "Momen di Balik Layar Pagelaran Seni #15",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #15).",
+    "img": "/assets/pageran/momens/15.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 268,
+    "title": "Momen di Balik Layar Pagelaran Seni #16",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #16).",
+    "img": "/assets/pageran/momens/16.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 269,
+    "title": "Momen di Balik Layar Pagelaran Seni #17",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #17).",
+    "img": "/assets/pageran/momens/17.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 270,
+    "title": "Momen di Balik Layar Pagelaran Seni #18",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #18).",
+    "img": "/assets/pageran/momens/18.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 271,
+    "title": "Momen di Balik Layar Pagelaran Seni #19",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #19).",
+    "img": "/assets/pageran/momens/19.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 272,
+    "title": "Momen di Balik Layar Pagelaran Seni #20",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #20).",
+    "img": "/assets/pageran/momens/20.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 273,
+    "title": "Momen di Balik Layar Pagelaran Seni #21",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #21).",
+    "img": "/assets/pageran/momens/21.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 274,
+    "title": "Momen di Balik Layar Pagelaran Seni #22",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #22).",
+    "img": "/assets/pageran/momens/22.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 275,
+    "title": "Momen di Balik Layar Pagelaran Seni #23",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #23).",
+    "img": "/assets/pageran/momens/23.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 276,
+    "title": "Momen di Balik Layar Pagelaran Seni #24",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #24).",
+    "img": "/assets/pageran/momens/24.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 277,
+    "title": "Momen di Balik Layar Pagelaran Seni #25",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #25).",
+    "img": "/assets/pageran/momens/25.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 278,
+    "title": "Momen di Balik Layar Pagelaran Seni #26",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #26).",
+    "img": "/assets/pageran/momens/26.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 279,
+    "title": "Momen di Balik Layar Pagelaran Seni #27",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #27).",
+    "img": "/assets/pageran/momens/27.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 280,
+    "title": "Momen di Balik Layar Pagelaran Seni #28",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #28).",
+    "img": "/assets/pageran/momens/28.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 281,
+    "title": "Momen di Balik Layar Pagelaran Seni #29",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #29).",
+    "img": "/assets/pageran/momens/29.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 282,
+    "title": "Momen di Balik Layar Pagelaran Seni #30",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #30).",
+    "img": "/assets/pageran/momens/30.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 283,
+    "title": "Momen di Balik Layar Pagelaran Seni #31",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #31).",
+    "img": "/assets/pageran/momens/31.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 284,
+    "title": "Momen di Balik Layar Pagelaran Seni #32",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #32).",
+    "img": "/assets/pageran/momens/32.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 285,
+    "title": "Momen di Balik Layar Pagelaran Seni #33",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #33).",
+    "img": "/assets/pageran/momens/33.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 286,
+    "title": "Momen di Balik Layar Pagelaran Seni #34",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #34).",
+    "img": "/assets/pageran/momens/34.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 287,
+    "title": "Momen di Balik Layar Pagelaran Seni #35",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #35).",
+    "img": "/assets/pageran/momens/35.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 288,
+    "title": "Momen di Balik Layar Pagelaran Seni #36",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #36).",
+    "img": "/assets/pageran/momens/36.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 289,
+    "title": "Momen di Balik Layar Pagelaran Seni #37",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #37).",
+    "img": "/assets/pageran/momens/37.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 290,
+    "title": "Momen di Balik Layar Pagelaran Seni #38",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #38).",
+    "img": "/assets/pageran/momens/38.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 291,
+    "title": "Momen di Balik Layar Pagelaran Seni #39",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #39).",
+    "img": "/assets/pageran/momens/39.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 292,
+    "title": "Momen di Balik Layar Pagelaran Seni #40",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #40).",
+    "img": "/assets/pageran/momens/40.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 293,
+    "title": "Momen di Balik Layar Pagelaran Seni #41",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #41).",
+    "img": "/assets/pageran/momens/41.jpg",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 294,
+    "title": "Momen di Balik Layar Pagelaran Seni #42",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #42).",
+    "img": "/assets/pageran/momens/42.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 295,
+    "title": "Momen di Balik Layar Pagelaran Seni #43",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #43).",
+    "img": "/assets/pageran/momens/43.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 296,
+    "title": "Momen di Balik Layar Pagelaran Seni #44",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #44).",
+    "img": "/assets/pageran/momens/44.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 297,
+    "title": "Momen di Balik Layar Pagelaran Seni #45",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #45).",
+    "img": "/assets/pageran/momens/45.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 298,
+    "title": "Momen di Balik Layar Pagelaran Seni #46",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #46).",
+    "img": "/assets/pageran/momens/46.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 299,
+    "title": "Momen di Balik Layar Pagelaran Seni #47",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #47).",
+    "img": "/assets/pageran/momens/47.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 300,
+    "title": "Momen di Balik Layar Pagelaran Seni #48",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #48).",
+    "img": "/assets/pageran/momens/48.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 301,
+    "title": "Momen di Balik Layar Pagelaran Seni #49",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #49).",
+    "img": "/assets/pageran/momens/49.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 302,
+    "title": "Momen di Balik Layar Pagelaran Seni #50",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #50).",
+    "img": "/assets/pageran/momens/50.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 303,
+    "title": "Momen di Balik Layar Pagelaran Seni #51",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #51).",
+    "img": "/assets/pageran/momens/51.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 304,
+    "title": "Momen di Balik Layar Pagelaran Seni #52",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #52).",
+    "img": "/assets/pageran/momens/52.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 305,
+    "title": "Momen di Balik Layar Pagelaran Seni #53",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #53).",
+    "img": "/assets/pageran/momens/53.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 306,
+    "title": "Momen di Balik Layar Pagelaran Seni #54",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #54).",
+    "img": "/assets/pageran/momens/54.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 307,
+    "title": "Momen di Balik Layar Pagelaran Seni #55",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #55).",
+    "img": "/assets/pageran/momens/55.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 308,
+    "title": "Momen di Balik Layar Pagelaran Seni #56",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #56).",
+    "img": "/assets/pageran/momens/56.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 309,
+    "title": "Momen di Balik Layar Pagelaran Seni #57",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #57).",
+    "img": "/assets/pageran/momens/57.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 310,
+    "title": "Momen di Balik Layar Pagelaran Seni #58",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #58).",
+    "img": "/assets/pageran/momens/58.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 311,
+    "title": "Momen di Balik Layar Pagelaran Seni #59",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #59).",
+    "img": "/assets/pageran/momens/59.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 312,
+    "title": "Momen di Balik Layar Pagelaran Seni #60",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #60).",
+    "img": "/assets/pageran/momens/60.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 313,
+    "title": "Momen di Balik Layar Pagelaran Seni #61",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #61).",
+    "img": "/assets/pageran/momens/61.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 314,
+    "title": "Momen di Balik Layar Pagelaran Seni #62",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #62).",
+    "img": "/assets/pageran/momens/62.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 315,
+    "title": "Momen di Balik Layar Pagelaran Seni #63",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #63).",
+    "img": "/assets/pageran/momens/63.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 316,
+    "title": "Momen di Balik Layar Pagelaran Seni #64",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #64).",
+    "img": "/assets/pageran/momens/64.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 317,
+    "title": "Momen di Balik Layar Pagelaran Seni #65",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #65).",
+    "img": "/assets/pageran/momens/65.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 318,
+    "title": "Momen di Balik Layar Pagelaran Seni #66",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #66).",
+    "img": "/assets/pageran/momens/66.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 319,
+    "title": "Momen di Balik Layar Pagelaran Seni #67",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #67).",
+    "img": "/assets/pageran/momens/67.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 320,
+    "title": "Momen di Balik Layar Pagelaran Seni #68",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #68).",
+    "img": "/assets/pageran/momens/68.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 321,
+    "title": "Momen di Balik Layar Pagelaran Seni #69",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #69).",
+    "img": "/assets/pageran/momens/69.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 322,
+    "title": "Momen di Balik Layar Pagelaran Seni #70",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #70).",
+    "img": "/assets/pageran/momens/70.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 323,
+    "title": "Momen di Balik Layar Pagelaran Seni #71",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #71).",
+    "img": "/assets/pageran/momens/71.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 324,
+    "title": "Momen di Balik Layar Pagelaran Seni #73",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #73).",
+    "img": "/assets/pageran/momens/73.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 325,
+    "title": "Momen di Balik Layar Pagelaran Seni #74",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #74).",
+    "img": "/assets/pageran/momens/74.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 326,
+    "title": "Momen di Balik Layar Pagelaran Seni #75",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #75).",
+    "img": "/assets/pageran/momens/75.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 327,
+    "title": "Momen di Balik Layar Pagelaran Seni #76",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #76).",
+    "img": "/assets/pageran/momens/76.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 328,
+    "title": "Momen di Balik Layar Pagelaran Seni #77",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #77).",
+    "img": "/assets/pageran/momens/77.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 329,
+    "title": "Momen di Balik Layar Pagelaran Seni #78",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #78).",
+    "img": "/assets/pageran/momens/78.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 330,
+    "title": "Momen di Balik Layar Pagelaran Seni #79",
+    "description": "Potret momen hangat, kebersamaan, dan persiapan intensif di balik layar Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin (Foto #79).",
+    "img": "/assets/pageran/momens/79.JPG",
+    "category": "Behind The Scenes",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/160s",
+    "iso": 400,
+    "color_palette": [
+      "#0F172A",
+      "#38BDF8",
+      "#818CF8",
+      "#FB7185"
+    ],
+    "mood": "Di Balik Layar, Kebersamaan, Hangat"
+  },
+  {
+    "id": 215,
+    "title": "Poster Pagelaran Seni 2024 - Lokal A",
+    "description": "Poster resmi pementasan seni dan teater Lokal A pada ajang Pagelaran Seni Mahasiswa Angkatan 22 UIN Antasari Banjarmasin tahun 2024.",
+    "img": "/assets/pageran/Poster/lokala.jpg",
+    "category": "Creative",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Sony Alpha 7 IV",
+    "lens": "FE 24-70mm F2.8 GM II",
+    "focal_length": "35mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/200s",
+    "iso": 100,
+    "color_palette": [
+      "#1E1B4B",
+      "#4338CA",
+      "#F43F5E",
+      "#FBBF24"
+    ],
+    "mood": "Artistik, Dinamis, Penuh Energi"
+  },
+  {
+    "id": 216,
+    "title": "Poster Pagelaran Seni Teater & Drama - Lokal B",
+    "description": "Poster visual utama pertunjukan teatrikal dan drama musikal persembahan Lokal B pada Pagelaran Seni 2024 Angkatan 22 UIN Antasari Banjarmasin.",
+    "img": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "category": "Creative",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Canon EOS R5",
+    "lens": "RF 50mm F1.2 L USM",
+    "focal_length": "50mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/160s",
+    "iso": 160,
+    "color_palette": [
+      "#0F172A",
+      "#8B5CF6",
+      "#EC4899",
+      "#F59E0B"
+    ],
+    "mood": "Teatrikal, Dramatis, Elegan"
+  },
+  {
+    "id": 217,
+    "title": "Poster Harmoni Seni & Musik - Lokal C",
+    "description": "Desain poster visual pementasan alunan melodi dan karya seni kontemporer dari kawan-kawan Lokal C Pagelaran Seni 2024 UIN Antasari.",
+    "img": "/assets/pageran/Poster/lokalc.jpg",
+    "category": "Creative",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Fujifilm X-T5",
+    "lens": "XF 23mm F1.4 R LM WR",
+    "focal_length": "23mm",
+    "aperture": "f/2.0",
+    "shutter_speed": "1/180s",
+    "iso": 200,
+    "color_palette": [
+      "#111827",
+      "#06B6D4",
+      "#3B82F6",
+      "#A855F7"
+    ],
+    "mood": "Harmonis, Meriah, Puitis"
+  },
+  {
+    "id": 218,
+    "title": "Poster Seni Tradisi & Tari Kolosal - Lokal D",
+    "description": "Poster pementasan kreasi tari kolosal dan atraksi seni tradisi kontemporer dari mahasiswa Lokal D Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin.",
+    "img": "/assets/pageran/Poster/lokald.jpg",
+    "category": "Creative",
+    "location": "UIN Antasari Banjarmasin, Kalimantan Selatan",
+    "date_taken": "2026-11-08",
+    "camera": "Nikon Z7 II",
+    "lens": "NIKKOR Z 24-70mm f/2.8 S",
+    "focal_length": "40mm",
+    "aperture": "f/2.8",
+    "shutter_speed": "1/200s",
+    "iso": 125,
+    "color_palette": [
+      "#18181B",
+      "#E11D48",
+      "#F97316",
+      "#FACC15"
+    ],
+    "mood": "Kultural, Magis, Ekspresif"
+  },
+  {
+    "id": 101,
+    "title": "Koleksi Cetak 5R Kenangan Bersama (12 Frame)",
+    "description": "Kompilasi frame cetak 5R momen seru dan penuh kehangatan bersama sahabat di studio foto.",
+    "img": "/assets/images/5R%20x12.jpg",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#4A5568"
+    ],
+    "mood": "Hangat, Ceria, Nostalgik"
+  },
+  {
+    "id": 102,
+    "title": "Tawa Hangat Studio #5532 (Edit)",
+    "description": "Potret studio sahabat #5532 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5532%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 103,
+    "title": "Sahabat Seirama #5533 (Edit)",
+    "description": "Potret studio sahabat #5533 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5533%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "52mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 104,
+    "title": "Momen Penuh Cerita #5535 (Edit)",
+    "description": "Potret studio sahabat #5535 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5535%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "44mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 105,
+    "title": "Energi & Senyuman #5536 (Edit)",
+    "description": "Potret studio sahabat #5536 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5536%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "57mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 106,
+    "title": "Karakter & Chemistry #5537 (Edit)",
+    "description": "Potret studio sahabat #5537 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5537%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 107,
+    "title": "Sudut Kenangan #5538 (Edit)",
+    "description": "Potret studio sahabat #5538 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5538%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 108,
+    "title": "Kebersamaan Nyata #5539 (Edit)",
+    "description": "Potret studio sahabat #5539 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5539%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 109,
+    "title": "Sorot Ceria Sahabat #5540 (Edit)",
+    "description": "Potret studio sahabat #5540 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5540%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "54mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 110,
+    "title": "Gaya & Kekompakan #5541 (Edit)",
+    "description": "Potret studio sahabat #5541 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5541%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 111,
+    "title": "Kisah Satu Frame #5542 (Edit)",
+    "description": "Potret studio sahabat #5542 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5542%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "52mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 112,
+    "title": "Hangatnya Persahabatan #5543 (Edit)",
+    "description": "Potret studio sahabat #5543 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5543%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 113,
+    "title": "Sentuhan Kasual Elegan #5544 (Edit)",
+    "description": "Potret studio sahabat #5544 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5544%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "44mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 114,
+    "title": "Kompak & Berwarna #5545 (Edit)",
+    "description": "Potret studio sahabat #5545 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5545%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 115,
+    "title": "Senyum Tanpa Batas #5546 (Edit)",
+    "description": "Potret studio sahabat #5546 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5546%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "52mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 116,
+    "title": "Langkah Bersama #5547 (Edit)",
+    "description": "Potret studio sahabat #5547 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5547%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "54mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 117,
+    "title": "Irama Kebersamaan #5548 (Edit)",
+    "description": "Potret studio sahabat #5548 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5548%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "52mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 118,
+    "title": "Detik Berharga #5549 (Edit)",
+    "description": "Potret studio sahabat #5549 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5549%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 119,
+    "title": "Kehangatan Tim #5550 (Edit)",
+    "description": "Potret studio sahabat #5550 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5550%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "52mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 120,
+    "title": "Visual Kenangan Indah #5551 (Edit)",
+    "description": "Potret studio sahabat #5551 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5551%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "50mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 121,
+    "title": "Harmoni Kebersamaan #5552 (Edit)",
+    "description": "Potret studio sahabat #5552 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5552%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "50mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 122,
+    "title": "Tawa Hangat Studio #5553 (Edit)",
+    "description": "Potret studio sahabat #5553 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5553%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 123,
+    "title": "Sahabat Seirama #5554 (Edit)",
+    "description": "Potret studio sahabat #5554 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5554%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "44mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 124,
+    "title": "Momen Penuh Cerita #5555 (Edit)",
+    "description": "Potret studio sahabat #5555 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5555%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "44mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 125,
+    "title": "Energi & Senyuman #5556 (Edit)",
+    "description": "Potret studio sahabat #5556 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5556%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "52mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 126,
+    "title": "Karakter & Chemistry #5557 (Edit)",
+    "description": "Potret studio sahabat #5557 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5557%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "42mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 127,
+    "title": "Sudut Kenangan #5558 (Edit)",
+    "description": "Potret studio sahabat #5558 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5558%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 128,
+    "title": "Kebersamaan Nyata #5560 (Edit)",
+    "description": "Potret studio sahabat #5560 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5560%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "40mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 129,
+    "title": "Sorot Ceria Sahabat #5561 (Edit)",
+    "description": "Potret studio sahabat #5561 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5561%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "42mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 130,
+    "title": "Gaya & Kekompakan #5562 (Edit)",
+    "description": "Potret studio sahabat #5562 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5562%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "37mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 131,
+    "title": "Kisah Satu Frame #5563 (Edit)",
+    "description": "Potret studio sahabat #5563 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5563%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "37mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 132,
+    "title": "Hangatnya Persahabatan #5564 (Edit)",
+    "description": "Potret studio sahabat #5564 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5564%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 133,
+    "title": "Sentuhan Kasual Elegan #5565 (Edit)",
+    "description": "Potret studio sahabat #5565 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5565%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "40mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 134,
+    "title": "Kompak & Berwarna #5566 (Edit)",
+    "description": "Potret studio sahabat #5566 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5566%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "38mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 135,
+    "title": "Senyum Tanpa Batas #5567 (Edit)",
+    "description": "Potret studio sahabat #5567 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5567%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "37mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 136,
+    "title": "Langkah Bersama #5568 (Edit)",
+    "description": "Potret studio sahabat #5568 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5568%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 137,
+    "title": "Irama Kebersamaan #5569 (Edit)",
+    "description": "Potret studio sahabat #5569 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5569%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 138,
+    "title": "Detik Berharga #5570 (Edit)",
+    "description": "Potret studio sahabat #5570 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5570%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 139,
+    "title": "Kehangatan Tim #5571 (Edit)",
+    "description": "Potret studio sahabat #5571 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5571%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 140,
+    "title": "Visual Kenangan Indah #5572 (Edit)",
+    "description": "Potret studio sahabat #5572 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5572%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 141,
+    "title": "Harmoni Kebersamaan #5573 (Edit)",
+    "description": "Potret studio sahabat #5573 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5573%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 142,
+    "title": "Tawa Hangat Studio #5574 (Edit)",
+    "description": "Potret studio sahabat #5574 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5574%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 143,
+    "title": "Sahabat Seirama #5575 (Edit)",
+    "description": "Potret studio sahabat #5575 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5575%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 144,
+    "title": "Momen Penuh Cerita #5576 (Edit)",
+    "description": "Potret studio sahabat #5576 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5576%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 145,
+    "title": "Energi & Senyuman #5577 (Edit)",
+    "description": "Potret studio sahabat #5577 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5577%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 146,
+    "title": "Karakter & Chemistry #5578 (Edit)",
+    "description": "Potret studio sahabat #5578 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5578%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 147,
+    "title": "Sudut Kenangan #5579 (Edit)",
+    "description": "Potret studio sahabat #5579 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5579%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 148,
+    "title": "Kebersamaan Nyata #5580 (Edit)",
+    "description": "Potret studio sahabat #5580 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5580%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 149,
+    "title": "Sorot Ceria Sahabat #5581 (Edit)",
+    "description": "Potret studio sahabat #5581 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5581%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 150,
+    "title": "Gaya & Kekompakan #5582 (Edit)",
+    "description": "Potret studio sahabat #5582 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5582%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 151,
+    "title": "Kisah Satu Frame #5583 (Edit)",
+    "description": "Potret studio sahabat #5583 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5583%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 152,
+    "title": "Hangatnya Persahabatan #5584 (Edit)",
+    "description": "Potret studio sahabat #5584 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5584%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 153,
+    "title": "Sentuhan Kasual Elegan #5585 (Edit)",
+    "description": "Potret studio sahabat #5585 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5585%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "44mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 154,
+    "title": "Kompak & Berwarna #5586 (Edit)",
+    "description": "Potret studio sahabat #5586 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5586%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 155,
+    "title": "Senyum Tanpa Batas #5587 (Edit)",
+    "description": "Potret studio sahabat #5587 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5587%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 156,
+    "title": "Langkah Bersama #5588 (Edit)",
+    "description": "Potret studio sahabat #5588 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5588%20SimpleEdit.JPG",
+    "category": "Editorial",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 157,
+    "title": "Irama Kebersamaan #5589 (Edit)",
+    "description": "Potret studio sahabat #5589 dengan sentuhan color grading hangat, menonjolkan ekspresi ceria dan kebersamaan natural.",
+    "img": "/assets/images/IMG_5589%20SimpleEdit.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#F5F5F7",
+      "#D4B996",
+      "#2C3038"
+    ],
+    "mood": "Hangat, Ceria, Elegan"
+  },
+  {
+    "id": 158,
+    "title": "Detik Berharga #5532 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5532 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5532.JPG",
+    "category": "Group Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 159,
+    "title": "Kehangatan Tim #5533 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5533 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5533.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "52mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 160,
+    "title": "Visual Kenangan Indah #5535 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5535 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5535.JPG",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "44mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 161,
+    "title": "Harmoni Kebersamaan #5536 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5536 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5536.JPG",
+    "category": "Group Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "57mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 162,
+    "title": "Tawa Hangat Studio #5537 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5537 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5537.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 163,
+    "title": "Sahabat Seirama #5538 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5538 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5538.JPG",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 164,
+    "title": "Momen Penuh Cerita #5539 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5539 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5539.JPG",
+    "category": "Group Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 165,
+    "title": "Energi & Senyuman #5540 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5540 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5540.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "54mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 166,
+    "title": "Karakter & Chemistry #5541 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5541 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5541.JPG",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 167,
+    "title": "Sudut Kenangan #5542 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5542 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5542.JPG",
+    "category": "Group Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "52mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 168,
+    "title": "Kebersamaan Nyata #5543 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5543 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5543.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 169,
+    "title": "Sorot Ceria Sahabat #5544 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5544 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5544.JPG",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "44mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 170,
+    "title": "Gaya & Kekompakan #5545 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5545 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5545.JPG",
+    "category": "Group Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 171,
+    "title": "Kisah Satu Frame #5546 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5546 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5546.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "52mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 172,
+    "title": "Hangatnya Persahabatan #5547 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5547 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5547.JPG",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "54mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 173,
+    "title": "Sentuhan Kasual Elegan #5548 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5548 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5548.JPG",
+    "category": "Group Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "52mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 174,
+    "title": "Kompak & Berwarna #5549 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5549 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5549.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 175,
+    "title": "Senyum Tanpa Batas #5550 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5550 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5550.JPG",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "52mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 176,
+    "title": "Langkah Bersama #5551 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5551 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5551.JPG",
+    "category": "Group Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "50mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 177,
+    "title": "Irama Kebersamaan #5552 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5552 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5552.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "50mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 178,
+    "title": "Detik Berharga #5553 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5553 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5553.JPG",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 179,
+    "title": "Kehangatan Tim #5554 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5554 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5554.JPG",
+    "category": "Group Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "44mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 180,
+    "title": "Visual Kenangan Indah #5555 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5555 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5555.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "44mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 181,
+    "title": "Harmoni Kebersamaan #5556 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5556 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5556.JPG",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "52mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 182,
+    "title": "Tawa Hangat Studio #5557 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5557 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5557.JPG",
+    "category": "Group Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "42mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 183,
+    "title": "Sahabat Seirama #5558 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5558 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5558.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 184,
+    "title": "Momen Penuh Cerita #5560 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5560 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5560.JPG",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "40mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 185,
+    "title": "Energi & Senyuman #5561 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5561 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5561.JPG",
+    "category": "Group Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "42mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 186,
+    "title": "Karakter & Chemistry #5562 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5562 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5562.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "37mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 187,
+    "title": "Sudut Kenangan #5563 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5563 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5563.JPG",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "37mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 188,
+    "title": "Kebersamaan Nyata #5564 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5564 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5564.JPG",
+    "category": "Group Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 189,
+    "title": "Sorot Ceria Sahabat #5565 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5565 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5565.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "40mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 190,
+    "title": "Gaya & Kekompakan #5566 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5566 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5566.JPG",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "38mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 191,
+    "title": "Kisah Satu Frame #5567 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5567 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5567.JPG",
+    "category": "Group Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "37mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 192,
+    "title": "Hangatnya Persahabatan #5568 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5568 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5568.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 193,
+    "title": "Sentuhan Kasual Elegan #5569 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5569 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5569.JPG",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 194,
+    "title": "Kompak & Berwarna #5570 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5570 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5570.JPG",
+    "category": "Group Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 195,
+    "title": "Senyum Tanpa Batas #5571 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5571 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5571.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 196,
+    "title": "Langkah Bersama #5572 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5572 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5572.JPG",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 197,
+    "title": "Irama Kebersamaan #5573 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5573 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5573.JPG",
+    "category": "Group Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 198,
+    "title": "Detik Berharga #5574 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5574 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5574.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 199,
+    "title": "Kehangatan Tim #5575 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5575 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5575.JPG",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 200,
+    "title": "Visual Kenangan Indah #5576 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5576 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5576.JPG",
+    "category": "Group Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 201,
+    "title": "Harmoni Kebersamaan #5577 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5577 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5577.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "35mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 202,
+    "title": "Tawa Hangat Studio #5578 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5578 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5578.JPG",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 203,
+    "title": "Sahabat Seirama #5579 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5579 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5579.JPG",
+    "category": "Group Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 204,
+    "title": "Studio Portrait #5580 (Special Variant)",
+    "description": "Varian pose studio #5580 dengan komposisi sudut menarik dan pencahayaan studio yang lembut.",
+    "img": "/assets/images/IMG_5580%20copy.jpg",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#1E293B",
+      "#8A94A6",
+      "#F1F5F9"
+    ],
+    "mood": "Modern, Dinamis"
+  },
+  {
+    "id": 205,
+    "title": "Energi & Senyuman #5580 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5580 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5580.JPG",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 206,
+    "title": "Karakter & Chemistry #5581 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5581 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5581.JPG",
+    "category": "Group Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 207,
+    "title": "Sudut Kenangan #5582 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5582 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5582.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 208,
+    "title": "Kebersamaan Nyata #5583 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5583 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5583.JPG",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 209,
+    "title": "Sorot Ceria Sahabat #5584 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5584 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5584.JPG",
+    "category": "Group Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 210,
+    "title": "Gaya & Kekompakan #5585 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5585 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5585.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "44mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 211,
+    "title": "Kisah Satu Frame #5586 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5586 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5586.JPG",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "48mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 212,
+    "title": "Hangatnya Persahabatan #5587 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5587 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5587.JPG",
+    "category": "Group Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 213,
+    "title": "Sentuhan Kasual Elegan #5588 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5588 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5588.JPG",
+    "category": "Studio Portrait",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
+    "id": 214,
+    "title": "Kompak & Berwarna #5589 (Original)",
+    "description": "Tangkapan orisinal kamera Canon EOS RP #5589 yang mengabadikan momen spontan dan chemistry akrab di studio.",
+    "img": "/assets/images/IMG_5589.JPG",
+    "category": "Creative",
+    "location": "Studio Foto, Indonesia",
+    "date_taken": "2026-11-07",
+    "camera": "Canon EOS RP",
+    "lens": "RF24-105mm F4-7.1 IS STM",
+    "focal_length": "46mm",
+    "aperture": "f/9.0",
+    "shutter_speed": "1/100s",
+    "iso": 500,
+    "color_palette": [
+      "#2C3038",
+      "#8A94A6",
+      "#E5E9F0"
+    ],
+    "mood": "Akrab, Alami, Sinematik"
+  },
+  {
     "id": 1,
     "title": "Refleksi Senja",
     "description": "Langit sore di tepian danau yang memantulkan warna jingga keemasan. Simbol ketenangan dan keseimbangan antara cahaya dan bayangan.",
@@ -13,7 +4959,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/200s",
     "iso": 100,
-    "color_palette": ["#FDB813", "#F38E30", "#1A1A1A"],
+    "color_palette": [
+      "#FDB813",
+      "#F38E30",
+      "#1A1A1A"
+    ],
     "mood": "Tenang, Reflektif"
   },
   {
@@ -30,7 +4980,11 @@
     "aperture": "f/1.4",
     "shutter_speed": "1/100s",
     "iso": 800,
-    "color_palette": ["#0F0F0F", "#FF2E63", "#08D9D6"],
+    "color_palette": [
+      "#0F0F0F",
+      "#FF2E63",
+      "#08D9D6"
+    ],
     "mood": "Dinamis, Modern"
   },
   {
@@ -47,7 +5001,11 @@
     "aperture": "f/2.8",
     "shutter_speed": "1/250s",
     "iso": 200,
-    "color_palette": ["#9FD8B8", "#3D5B59", "#FFFFFF"],
+    "color_palette": [
+      "#9FD8B8",
+      "#3D5B59",
+      "#FFFFFF"
+    ],
     "mood": "Damai, Alami"
   },
   {
@@ -64,7 +5022,11 @@
     "aperture": "f/4",
     "shutter_speed": "1/60s",
     "iso": 640,
-    "color_palette": ["#E0C097", "#2B2B2B", "#A67C52"],
+    "color_palette": [
+      "#E0C097",
+      "#2B2B2B",
+      "#A67C52"
+    ],
     "mood": "Nostalgik, Hangat"
   },
   {
@@ -81,7 +5043,11 @@
     "aperture": "f/9",
     "shutter_speed": "1/320s",
     "iso": 100,
-    "color_palette": ["#0077B6", "#90E0EF", "#CAF0F8"],
+    "color_palette": [
+      "#0077B6",
+      "#90E0EF",
+      "#CAF0F8"
+    ],
     "mood": "Segar, Damai"
   },
   {
@@ -98,10 +5064,14 @@
     "aperture": "f/1.8",
     "shutter_speed": "1/200s",
     "iso": 400,
-    "color_palette": ["#EAD7BB", "#A25B5B", "#1A1A1A"],
+    "color_palette": [
+      "#EAD7BB",
+      "#A25B5B",
+      "#1A1A1A"
+    ],
     "mood": "Hangat, Emosional"
   },
-    {
+  {
     "id": 7,
     "title": "Kabut Pagi",
     "description": "Embun pagi menyelimuti lembah hijau, menciptakan atmosfer misterius dan segar di awal hari.",
@@ -115,7 +5085,11 @@
     "aperture": "f/5.6",
     "shutter_speed": "1/125s",
     "iso": 200,
-    "color_palette": ["#C4DACF", "#7B9E87", "#2C4A3F"],
+    "color_palette": [
+      "#C4DACF",
+      "#7B9E87",
+      "#2C4A3F"
+    ],
     "mood": "Misterius, Segar"
   },
   {
@@ -132,7 +5106,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/250s",
     "iso": 100,
-    "color_palette": ["#2D3047", "#E0CA3C", "#D3D4D9"],
+    "color_palette": [
+      "#2D3047",
+      "#E0CA3C",
+      "#D3D4D9"
+    ],
     "mood": "Futuristik, Terstruktur"
   },
   {
@@ -149,7 +5127,11 @@
     "aperture": "f/2.0",
     "shutter_speed": "1/160s",
     "iso": 400,
-    "color_palette": ["#FF6B6B", "#FFD166", "#1A1A2E"],
+    "color_palette": [
+      "#FF6B6B",
+      "#FFD166",
+      "#1A1A2E"
+    ],
     "mood": "Sakral, Dramatis"
   },
   {
@@ -166,7 +5148,11 @@
     "aperture": "f/11",
     "shutter_speed": "1/1000s",
     "iso": 200,
-    "color_palette": ["#1E56A0", "#A3D9FF", "#F6F5F5"],
+    "color_palette": [
+      "#1E56A0",
+      "#A3D9FF",
+      "#F6F5F5"
+    ],
     "mood": "Dramatis, Kuat"
   },
   {
@@ -183,7 +5169,11 @@
     "aperture": "f/4.5",
     "shutter_speed": "1/180s",
     "iso": 320,
-    "color_palette": ["#7D4E57", "#D66853", "#F2F2F2"],
+    "color_palette": [
+      "#7D4E57",
+      "#D66853",
+      "#F2F2F2"
+    ],
     "mood": "Detail, Unik"
   },
   {
@@ -200,7 +5190,11 @@
     "aperture": "f/4",
     "shutter_speed": "1/125s",
     "iso": 800,
-    "color_palette": ["#FF9A76", "#FFD59E", "#3A6351"],
+    "color_palette": [
+      "#FF9A76",
+      "#FFD59E",
+      "#3A6351"
+    ],
     "mood": "Hidup, Autentik"
   },
   {
@@ -217,7 +5211,11 @@
     "aperture": "f/6.3",
     "shutter_speed": "1/320s",
     "iso": 200,
-    "color_palette": ["#FF6B35", "#FFA500", "#2D3047"],
+    "color_palette": [
+      "#FF6B35",
+      "#FFA500",
+      "#2D3047"
+    ],
     "mood": "Epik, Dramatis"
   },
   {
@@ -234,7 +5232,11 @@
     "aperture": "f/5.6",
     "shutter_speed": "1/60s",
     "iso": 400,
-    "color_palette": ["#66666E", "#9999A1", "#F2F2F2"],
+    "color_palette": [
+      "#66666E",
+      "#9999A1",
+      "#F2F2F2"
+    ],
     "mood": "Minimalis, Tenang"
   },
   {
@@ -251,7 +5253,11 @@
     "aperture": "f/2.8",
     "shutter_speed": "1/250s",
     "iso": 400,
-    "color_palette": ["#006994", "#FF6B6B", "#4ECDC4"],
+    "color_palette": [
+      "#006994",
+      "#FF6B6B",
+      "#4ECDC4"
+    ],
     "mood": "Eksotis, Hidup"
   },
   {
@@ -268,7 +5274,11 @@
     "aperture": "f/7.1",
     "shutter_speed": "1/180s",
     "iso": 250,
-    "color_palette": ["#8FA998", "#C4DACF", "#2C4A3F"],
+    "color_palette": [
+      "#8FA998",
+      "#C4DACF",
+      "#2C4A3F"
+    ],
     "mood": "Magis, Damai"
   },
   {
@@ -285,7 +5295,11 @@
     "aperture": "f/2.0",
     "shutter_speed": "1/80s",
     "iso": 3200,
-    "color_palette": ["#0F0F0F", "#FF2E63", "#08D9D6"],
+    "color_palette": [
+      "#0F0F0F",
+      "#FF2E63",
+      "#08D9D6"
+    ],
     "mood": "Energik, Urban"
   },
   {
@@ -302,7 +5316,11 @@
     "aperture": "f/6.3",
     "shutter_speed": "1/200s",
     "iso": 320,
-    "color_palette": ["#A67C52", "#2B2B2B", "#E0C097"],
+    "color_palette": [
+      "#A67C52",
+      "#2B2B2B",
+      "#E0C097"
+    ],
     "mood": "Historis, Megah"
   },
   {
@@ -319,7 +5337,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/160s",
     "iso": 100,
-    "color_palette": ["#1E56A0", "#A3D9FF", "#F6F5F5"],
+    "color_palette": [
+      "#1E56A0",
+      "#A3D9FF",
+      "#F6F5F5"
+    ],
     "mood": "Tenang, Reflektif"
   },
   {
@@ -336,10 +5358,14 @@
     "aperture": "f/2.2",
     "shutter_speed": "1/160s",
     "iso": 500,
-    "color_palette": ["#EAD7BB", "#A25B5B", "#1A1A1A"],
+    "color_palette": [
+      "#EAD7BB",
+      "#A25B5B",
+      "#1A1A1A"
+    ],
     "mood": "Intim, Emosional"
   },
-    {
+  {
     "id": 21,
     "title": "Urban Symphony",
     "description": "Harmoni cahaya dan gerakan dalam kehidupan metropolitan yang tak pernah berhenti bergerak.",
@@ -353,7 +5379,11 @@
     "aperture": "f/2.8",
     "shutter_speed": "1/125s",
     "iso": 800,
-    "color_palette": ["#2D3047", "#FF2E63", "#08D9D6"],
+    "color_palette": [
+      "#2D3047",
+      "#FF2E63",
+      "#08D9D6"
+    ],
     "mood": "Dinamis, Urban"
   },
   {
@@ -370,7 +5400,11 @@
     "aperture": "f/6.3",
     "shutter_speed": "1/200s",
     "iso": 200,
-    "color_palette": ["#FFD166", "#EF476F", "#1A1A2E"],
+    "color_palette": [
+      "#FFD166",
+      "#EF476F",
+      "#1A1A2E"
+    ],
     "mood": "Sakral, Damai"
   },
   {
@@ -387,7 +5421,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/60s",
     "iso": 400,
-    "color_palette": ["#2C4A3F", "#7B9E87", "#C4DACF"],
+    "color_palette": [
+      "#2C4A3F",
+      "#7B9E87",
+      "#C4DACF"
+    ],
     "mood": "Misterius, Alami"
   },
   {
@@ -404,7 +5442,11 @@
     "aperture": "f/9",
     "shutter_speed": "1/400s",
     "iso": 100,
-    "color_palette": ["#0077B6", "#90E0EF", "#CAF0F8"],
+    "color_palette": [
+      "#0077B6",
+      "#90E0EF",
+      "#CAF0F8"
+    ],
     "mood": "Tenang, Segar"
   },
   {
@@ -421,7 +5463,11 @@
     "aperture": "f/4",
     "shutter_speed": "1/160s",
     "iso": 640,
-    "color_palette": ["#FF6B6B", "#FFD166", "#4ECDC4"],
+    "color_palette": [
+      "#FF6B6B",
+      "#FFD166",
+      "#4ECDC4"
+    ],
     "mood": "Hidup, Berwarna"
   },
   {
@@ -438,7 +5484,11 @@
     "aperture": "f/7.1",
     "shutter_speed": "1/320s",
     "iso": 200,
-    "color_palette": ["#2D3047", "#66666E", "#F2F2F2"],
+    "color_palette": [
+      "#2D3047",
+      "#66666E",
+      "#F2F2F2"
+    ],
     "mood": "Epik, Agung"
   },
   {
@@ -455,7 +5505,11 @@
     "aperture": "f/2.0",
     "shutter_speed": "1/200s",
     "iso": 320,
-    "color_palette": ["#A25B5B", "#EAD7BB", "#1A1A1A"],
+    "color_palette": [
+      "#A25B5B",
+      "#EAD7BB",
+      "#1A1A1A"
+    ],
     "mood": "Intim, Berkarakter"
   },
   {
@@ -472,7 +5526,11 @@
     "aperture": "f/6.3",
     "shutter_speed": "1/250s",
     "iso": 200,
-    "color_palette": ["#66666E", "#2D3047", "#D3D4D9"],
+    "color_palette": [
+      "#66666E",
+      "#2D3047",
+      "#D3D4D9"
+    ],
     "mood": "Industrial, Terstruktur"
   },
   {
@@ -489,7 +5547,11 @@
     "aperture": "f/4.0",
     "shutter_speed": "1/180s",
     "iso": 400,
-    "color_palette": ["#FF6B6B", "#4ECDC4", "#F7FFF7"],
+    "color_palette": [
+      "#FF6B6B",
+      "#4ECDC4",
+      "#F7FFF7"
+    ],
     "mood": "Detail, Lembut"
   },
   {
@@ -506,7 +5568,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/500s",
     "iso": 200,
-    "color_palette": ["#1E56A0", "#A3D9FF", "#F6F5F5"],
+    "color_palette": [
+      "#1E56A0",
+      "#A3D9FF",
+      "#F6F5F5"
+    ],
     "mood": "Dinamis, Elegan"
   },
   {
@@ -523,7 +5589,11 @@
     "aperture": "f/2.8",
     "shutter_speed": "1/125s",
     "iso": 400,
-    "color_palette": ["#8B4513", "#D2691E", "#F4A460"],
+    "color_palette": [
+      "#8B4513",
+      "#D2691E",
+      "#F4A460"
+    ],
     "mood": "Bijaksana, Berkarakter"
   },
   {
@@ -540,7 +5610,11 @@
     "aperture": "f/11",
     "shutter_speed": "15s",
     "iso": 100,
-    "color_palette": ["#0F0F0F", "#FF2E63", "#08D9D6"],
+    "color_palette": [
+      "#0F0F0F",
+      "#FF2E63",
+      "#08D9D6"
+    ],
     "mood": "Energik, Futuristik"
   },
   {
@@ -557,7 +5631,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/160s",
     "iso": 100,
-    "color_palette": ["#3D5B59", "#9FD8B8", "#FFFFFF"],
+    "color_palette": [
+      "#3D5B59",
+      "#9FD8B8",
+      "#FFFFFF"
+    ],
     "mood": "Harmonis, Damai"
   },
   {
@@ -574,7 +5652,11 @@
     "aperture": "f/5.6",
     "shutter_speed": "1/250s",
     "iso": 200,
-    "color_palette": ["#1E56A0", "#A3D9FF", "#F6F5F5"],
+    "color_palette": [
+      "#1E56A0",
+      "#A3D9FF",
+      "#F6F5F5"
+    ],
     "mood": "Unik, Tradisional"
   },
   {
@@ -591,7 +5673,11 @@
     "aperture": "f/4",
     "shutter_speed": "1/60s",
     "iso": 800,
-    "color_palette": ["#A67C52", "#2B2B2B", "#E0C097"],
+    "color_palette": [
+      "#A67C52",
+      "#2B2B2B",
+      "#E0C097"
+    ],
     "mood": "Melankolis, Nostalgik"
   },
   {
@@ -608,7 +5694,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/200s",
     "iso": 320,
-    "color_palette": ["#006994", "#FF6B6B", "#4ECDC4"],
+    "color_palette": [
+      "#006994",
+      "#FF6B6B",
+      "#4ECDC4"
+    ],
     "mood": "Vibrant, Hidup"
   },
   {
@@ -625,7 +5715,11 @@
     "aperture": "f/5.6",
     "shutter_speed": "1/320s",
     "iso": 400,
-    "color_palette": ["#0077B6", "#90E0EF", "#CAF0F8"],
+    "color_palette": [
+      "#0077B6",
+      "#90E0EF",
+      "#CAF0F8"
+    ],
     "mood": "Autentik, Tradisional"
   },
   {
@@ -642,7 +5736,11 @@
     "aperture": "f/2.8",
     "shutter_speed": "1/500s",
     "iso": 100,
-    "color_palette": ["#2D3047", "#66666E", "#D3D4D9"],
+    "color_palette": [
+      "#2D3047",
+      "#66666E",
+      "#D3D4D9"
+    ],
     "mood": "Spektakuler, Modern"
   },
   {
@@ -659,7 +5757,11 @@
     "aperture": "f/4",
     "shutter_speed": "1/500s",
     "iso": 200,
-    "color_palette": ["#FDB813", "#F38E30", "#1A1A1A"],
+    "color_palette": [
+      "#FDB813",
+      "#F38E30",
+      "#1A1A1A"
+    ],
     "mood": "Hangat, Tradisional"
   },
   {
@@ -676,10 +5778,14 @@
     "aperture": "f/5.6",
     "shutter_speed": "1/60s",
     "iso": 800,
-    "color_palette": ["#FF6B35", "#FFA500", "#2D3047"],
+    "color_palette": [
+      "#FF6B35",
+      "#FFA500",
+      "#2D3047"
+    ],
     "mood": "Dramatis, Powerful"
   },
-    {
+  {
     "id": 41,
     "title": "Mistical Morning",
     "description": "Kabut pagi menyelimuti lembah hijau menciptakan pemandangan seperti negeri dongeng yang penuh misteri.",
@@ -693,7 +5799,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/125s",
     "iso": 200,
-    "color_palette": ["#8FA998", "#C4DACF", "#2C4A3F"],
+    "color_palette": [
+      "#8FA998",
+      "#C4DACF",
+      "#2C4A3F"
+    ],
     "mood": "Mistis, Damai"
   },
   {
@@ -710,7 +5820,11 @@
     "aperture": "f/5.6",
     "shutter_speed": "1/250s",
     "iso": 400,
-    "color_palette": ["#2D3047", "#FF2E63", "#08D9D6"],
+    "color_palette": [
+      "#2D3047",
+      "#FF2E63",
+      "#08D9D6"
+    ],
     "mood": "Dinamis, Urban"
   },
   {
@@ -727,7 +5841,11 @@
     "aperture": "f/7.1",
     "shutter_speed": "1/160s",
     "iso": 320,
-    "color_palette": ["#2C4A3F", "#7B9E87", "#C4DACF"],
+    "color_palette": [
+      "#2C4A3F",
+      "#7B9E87",
+      "#C4DACF"
+    ],
     "mood": "Hijau, Alami"
   },
   {
@@ -744,7 +5862,11 @@
     "aperture": "f/9",
     "shutter_speed": "1/1000s",
     "iso": 200,
-    "color_palette": ["#1E56A0", "#A3D9FF", "#F6F5F5"],
+    "color_palette": [
+      "#1E56A0",
+      "#A3D9FF",
+      "#F6F5F5"
+    ],
     "mood": "Kuat, Dramatis"
   },
   {
@@ -761,7 +5883,11 @@
     "aperture": "f/6.3",
     "shutter_speed": "1/200s",
     "iso": 250,
-    "color_palette": ["#A67C52", "#2B2B2B", "#E0C097"],
+    "color_palette": [
+      "#A67C52",
+      "#2B2B2B",
+      "#E0C097"
+    ],
     "mood": "Tradisional, Autentik"
   },
   {
@@ -778,7 +5904,11 @@
     "aperture": "f/2.0",
     "shutter_speed": "1/160s",
     "iso": 400,
-    "color_palette": ["#EAD7BB", "#A25B5B", "#1A1A1A"],
+    "color_palette": [
+      "#EAD7BB",
+      "#A25B5B",
+      "#1A1A1A"
+    ],
     "mood": "Emosional, Intim"
   },
   {
@@ -795,7 +5925,11 @@
     "aperture": "f/4.5",
     "shutter_speed": "1/180s",
     "iso": 320,
-    "color_palette": ["#7D4E57", "#D66853", "#F2F2F2"],
+    "color_palette": [
+      "#7D4E57",
+      "#D66853",
+      "#F2F2F2"
+    ],
     "mood": "Detail, Ajaib"
   },
   {
@@ -812,7 +5946,11 @@
     "aperture": "f/2.8",
     "shutter_speed": "1/80s",
     "iso": 1600,
-    "color_palette": ["#0F0F0F", "#FF2E63", "#08D9D6"],
+    "color_palette": [
+      "#0F0F0F",
+      "#FF2E63",
+      "#08D9D6"
+    ],
     "mood": "Futuristik, Dramatis"
   },
   {
@@ -829,7 +5967,11 @@
     "aperture": "f/4",
     "shutter_speed": "1/500s",
     "iso": 100,
-    "color_palette": ["#0077B6", "#90E0EF", "#CAF0F8"],
+    "color_palette": [
+      "#0077B6",
+      "#90E0EF",
+      "#CAF0F8"
+    ],
     "mood": "Eksotis, Menakjubkan"
   },
   {
@@ -846,7 +5988,11 @@
     "aperture": "f/2.8",
     "shutter_speed": "1/125s",
     "iso": 640,
-    "color_palette": ["#FF6B6B", "#FFD166", "#4ECDC4"],
+    "color_palette": [
+      "#FF6B6B",
+      "#FFD166",
+      "#4ECDC4"
+    ],
     "mood": "Tradisional, Autentik"
   },
   {
@@ -863,7 +6009,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/400s",
     "iso": 200,
-    "color_palette": ["#2D3047", "#66666E", "#F2F2F2"],
+    "color_palette": [
+      "#2D3047",
+      "#66666E",
+      "#F2F2F2"
+    ],
     "mood": "Agung, Kuat"
   },
   {
@@ -880,7 +6030,11 @@
     "aperture": "f/4",
     "shutter_speed": "1/125s",
     "iso": 800,
-    "color_palette": ["#2D3047", "#08D9D6", "#FF2E63"],
+    "color_palette": [
+      "#2D3047",
+      "#08D9D6",
+      "#FF2E63"
+    ],
     "mood": "Melankolis, Puitis"
   },
   {
@@ -897,7 +6051,11 @@
     "aperture": "f/5.6",
     "shutter_speed": "1/200s",
     "iso": 400,
-    "color_palette": ["#2C4A3F", "#7B9E87", "#C4DACF"],
+    "color_palette": [
+      "#2C4A3F",
+      "#7B9E87",
+      "#C4DACF"
+    ],
     "mood": "Tenang, Menyegarkan"
   },
   {
@@ -914,7 +6072,11 @@
     "aperture": "f/9",
     "shutter_speed": "1/320s",
     "iso": 100,
-    "color_palette": ["#0077B6", "#90E0EF", "#CAF0F8"],
+    "color_palette": [
+      "#0077B6",
+      "#90E0EF",
+      "#CAF0F8"
+    ],
     "mood": "Tenang, Damai"
   },
   {
@@ -931,7 +6093,11 @@
     "aperture": "f/6.3",
     "shutter_speed": "1/250s",
     "iso": 200,
-    "color_palette": ["#66666E", "#2D3047", "#D3D4D9"],
+    "color_palette": [
+      "#66666E",
+      "#2D3047",
+      "#D3D4D9"
+    ],
     "mood": "Modern, Minimalis"
   },
   {
@@ -948,7 +6114,11 @@
     "aperture": "f/2.0",
     "shutter_speed": "1/200s",
     "iso": 320,
-    "color_palette": ["#8B4513", "#D2691E", "#F4A460"],
+    "color_palette": [
+      "#8B4513",
+      "#D2691E",
+      "#F4A460"
+    ],
     "mood": "Intim, Berkarakter"
   },
   {
@@ -965,7 +6135,11 @@
     "aperture": "f/4.5",
     "shutter_speed": "1/180s",
     "iso": 400,
-    "color_palette": ["#FF6B6B", "#4ECDC4", "#F7FFF7"],
+    "color_palette": [
+      "#FF6B6B",
+      "#4ECDC4",
+      "#F7FFF7"
+    ],
     "mood": "Detail, Elegan"
   },
   {
@@ -982,7 +6156,11 @@
     "aperture": "f/11",
     "shutter_speed": "20s",
     "iso": 100,
-    "color_palette": ["#0F0F0F", "#FF2E63", "#08D9D6"],
+    "color_palette": [
+      "#0F0F0F",
+      "#FF2E63",
+      "#08D9D6"
+    ],
     "mood": "Dinamis, Futuristik"
   },
   {
@@ -999,7 +6177,11 @@
     "aperture": "f/4",
     "shutter_speed": "1/400s",
     "iso": 100,
-    "color_palette": ["#0077B6", "#90E0EF", "#CAF0F8"],
+    "color_palette": [
+      "#0077B6",
+      "#90E0EF",
+      "#CAF0F8"
+    ],
     "mood": "Eksotis, Menakjubkan"
   },
   {
@@ -1016,7 +6198,11 @@
     "aperture": "f/5.6",
     "shutter_speed": "1/320s",
     "iso": 400,
-    "color_palette": ["#1E56A0", "#A3D9FF", "#F6F5F5"],
+    "color_palette": [
+      "#1E56A0",
+      "#A3D9FF",
+      "#F6F5F5"
+    ],
     "mood": "Autentik, Tradisional"
   },
   {
@@ -1033,7 +6219,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/125s",
     "iso": 200,
-    "color_palette": ["#2C4A3F", "#7B9E87", "#C4DACF"],
+    "color_palette": [
+      "#2C4A3F",
+      "#7B9E87",
+      "#C4DACF"
+    ],
     "mood": "Segar, Alami"
   },
   {
@@ -1050,7 +6240,11 @@
     "aperture": "f/4",
     "shutter_speed": "1/250s",
     "iso": 400,
-    "color_palette": ["#2D3047", "#FF2E63", "#08D9D6"],
+    "color_palette": [
+      "#2D3047",
+      "#FF2E63",
+      "#08D9D6"
+    ],
     "mood": "Urban, Dinamis"
   },
   {
@@ -1067,7 +6261,11 @@
     "aperture": "f/9",
     "shutter_speed": "1/15s",
     "iso": 100,
-    "color_palette": ["#1E56A0", "#A3D9FF", "#F6F5F5"],
+    "color_palette": [
+      "#1E56A0",
+      "#A3D9FF",
+      "#F6F5F5"
+    ],
     "mood": "Dramatis, Menyegarkan"
   },
   {
@@ -1084,7 +6282,11 @@
     "aperture": "f/6.3",
     "shutter_speed": "1/400s",
     "iso": 200,
-    "color_palette": ["#FDB813", "#F38E30", "#1A1A1A"],
+    "color_palette": [
+      "#FDB813",
+      "#F38E30",
+      "#1A1A1A"
+    ],
     "mood": "Romantis, Damai"
   },
   {
@@ -1101,7 +6303,11 @@
     "aperture": "f/6.3",
     "shutter_speed": "1/200s",
     "iso": 250,
-    "color_palette": ["#A67C52", "#2B2B2B", "#E0C097"],
+    "color_palette": [
+      "#A67C52",
+      "#2B2B2B",
+      "#E0C097"
+    ],
     "mood": "Sejarah, Sakral"
   },
   {
@@ -1118,7 +6324,11 @@
     "aperture": "f/2.8",
     "shutter_speed": "1/160s",
     "iso": 400,
-    "color_palette": ["#EAD7BB", "#A25B5B", "#1A1A1A"],
+    "color_palette": [
+      "#EAD7BB",
+      "#A25B5B",
+      "#1A1A1A"
+    ],
     "mood": "Hangat, Emosional"
   },
   {
@@ -1135,7 +6345,11 @@
     "aperture": "f/5.6",
     "shutter_speed": "1/180s",
     "iso": 320,
-    "color_palette": ["#7D4E57", "#D66853", "#F2F2F2"],
+    "color_palette": [
+      "#7D4E57",
+      "#D66853",
+      "#F2F2F2"
+    ],
     "mood": "Detail, Lembut"
   },
   {
@@ -1152,7 +6366,11 @@
     "aperture": "f/8",
     "shutter_speed": "10s",
     "iso": 100,
-    "color_palette": ["#0F0F0F", "#FF2E63", "#08D9D6"],
+    "color_palette": [
+      "#0F0F0F",
+      "#FF2E63",
+      "#08D9D6"
+    ],
     "mood": "Megah, Futuristik"
   },
   {
@@ -1169,7 +6387,11 @@
     "aperture": "f/4",
     "shutter_speed": "1/500s",
     "iso": 100,
-    "color_palette": ["#0077B6", "#90E0EF", "#CAF0F8"],
+    "color_palette": [
+      "#0077B6",
+      "#90E0EF",
+      "#CAF0F8"
+    ],
     "mood": "Alami, Menakjubkan"
   },
   {
@@ -1186,10 +6408,14 @@
     "aperture": "f/4",
     "shutter_speed": "1/125s",
     "iso": 800,
-    "color_palette": ["#FF6B6B", "#FFD166", "#4ECDC4"],
+    "color_palette": [
+      "#FF6B6B",
+      "#FFD166",
+      "#4ECDC4"
+    ],
     "mood": "Hidup, Autentik"
   },
-    {
+  {
     "id": 71,
     "title": "Golden Hour Fields",
     "description": "Sinar emas senja menyapu hamparan sawah yang siap panen, menciptakan pemandangan yang hangat dan damai.",
@@ -1203,7 +6429,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/200s",
     "iso": 200,
-    "color_palette": ["#FDB813", "#F38E30", "#1A1A1A"],
+    "color_palette": [
+      "#FDB813",
+      "#F38E30",
+      "#1A1A1A"
+    ],
     "mood": "Hangat, Damai"
   },
   {
@@ -1220,7 +6450,11 @@
     "aperture": "f/5.6",
     "shutter_speed": "1/250s",
     "iso": 400,
-    "color_palette": ["#2D3047", "#66666E", "#D3D4D9"],
+    "color_palette": [
+      "#2D3047",
+      "#66666E",
+      "#D3D4D9"
+    ],
     "mood": "Dramatis, Urban"
   },
   {
@@ -1237,7 +6471,11 @@
     "aperture": "f/6.3",
     "shutter_speed": "1/125s",
     "iso": 400,
-    "color_palette": ["#2C4A3F", "#7B9E87", "#C4DACF"],
+    "color_palette": [
+      "#2C4A3F",
+      "#7B9E87",
+      "#C4DACF"
+    ],
     "mood": "Magis, Lembut"
   },
   {
@@ -1254,7 +6492,11 @@
     "aperture": "f/9",
     "shutter_speed": "1/800s",
     "iso": 320,
-    "color_palette": ["#1E56A0", "#2D3047", "#F6F5F5"],
+    "color_palette": [
+      "#1E56A0",
+      "#2D3047",
+      "#F6F5F5"
+    ],
     "mood": "Dramatis, Kuat"
   },
   {
@@ -1271,7 +6513,11 @@
     "aperture": "f/4",
     "shutter_speed": "1/320s",
     "iso": 500,
-    "color_palette": ["#FF6B6B", "#4ECDC4", "#FFD166"],
+    "color_palette": [
+      "#FF6B6B",
+      "#4ECDC4",
+      "#FFD166"
+    ],
     "mood": "Hidup, Berwarna"
   },
   {
@@ -1288,7 +6534,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/160s",
     "iso": 200,
-    "color_palette": ["#FDB813", "#A67C52", "#2B2B2B"],
+    "color_palette": [
+      "#FDB813",
+      "#A67C52",
+      "#2B2B2B"
+    ],
     "mood": "Spiritual, Damai"
   },
   {
@@ -1305,7 +6555,11 @@
     "aperture": "f/4",
     "shutter_speed": "1/400s",
     "iso": 100,
-    "color_palette": ["#2C4A3F", "#7B9E87", "#C4DACF"],
+    "color_palette": [
+      "#2C4A3F",
+      "#7B9E87",
+      "#C4DACF"
+    ],
     "mood": "Hijau, Alami"
   },
   {
@@ -1322,7 +6576,11 @@
     "aperture": "f/2.8",
     "shutter_speed": "1/125s",
     "iso": 400,
-    "color_palette": ["#8B4513", "#D2691E", "#F4A460"],
+    "color_palette": [
+      "#8B4513",
+      "#D2691E",
+      "#F4A460"
+    ],
     "mood": "Berkarakter, Kuat"
   },
   {
@@ -1339,7 +6597,11 @@
     "aperture": "f/2.8",
     "shutter_speed": "1/250s",
     "iso": 200,
-    "color_palette": ["#0077B6", "#90E0EF", "#CAF0F8"],
+    "color_palette": [
+      "#0077B6",
+      "#90E0EF",
+      "#CAF0F8"
+    ],
     "mood": "Jernih, Damai"
   },
   {
@@ -1356,7 +6618,11 @@
     "aperture": "f/8",
     "shutter_speed": "15s",
     "iso": 100,
-    "color_palette": ["#2D3047", "#FF2E63", "#08D9D6"],
+    "color_palette": [
+      "#2D3047",
+      "#FF2E63",
+      "#08D9D6"
+    ],
     "mood": "Industrial, Futuristik"
   },
   {
@@ -1373,7 +6639,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/320s",
     "iso": 200,
-    "color_palette": ["#2D3047", "#66666E", "#F2F2F2"],
+    "color_palette": [
+      "#2D3047",
+      "#66666E",
+      "#F2F2F2"
+    ],
     "mood": "Agung, Epik"
   },
   {
@@ -1390,7 +6660,11 @@
     "aperture": "f/4",
     "shutter_speed": "1/125s",
     "iso": 800,
-    "color_palette": ["#FF6B6B", "#FFD166", "#4ECDC4"],
+    "color_palette": [
+      "#FF6B6B",
+      "#FFD166",
+      "#4ECDC4"
+    ],
     "mood": "Hidup, Autentik"
   },
   {
@@ -1407,7 +6681,11 @@
     "aperture": "f/11",
     "shutter_speed": "1/8s",
     "iso": 100,
-    "color_palette": ["#1E56A0", "#A3D9FF", "#F6F5F5"],
+    "color_palette": [
+      "#1E56A0",
+      "#A3D9FF",
+      "#F6F5F5"
+    ],
     "mood": "Dramatis, Mistis"
   },
   {
@@ -1424,7 +6702,11 @@
     "aperture": "f/9",
     "shutter_speed": "1/250s",
     "iso": 100,
-    "color_palette": ["#0077B6", "#90E0EF", "#CAF0F8"],
+    "color_palette": [
+      "#0077B6",
+      "#90E0EF",
+      "#CAF0F8"
+    ],
     "mood": "Damai, Eksotis"
   },
   {
@@ -1441,7 +6723,11 @@
     "aperture": "f/6.3",
     "shutter_speed": "1/200s",
     "iso": 320,
-    "color_palette": ["#A67C52", "#2B2B2B", "#E0C097"],
+    "color_palette": [
+      "#A67C52",
+      "#2B2B2B",
+      "#E0C097"
+    ],
     "mood": "Historis, Megah"
   },
   {
@@ -1458,7 +6744,11 @@
     "aperture": "f/4",
     "shutter_speed": "1/500s",
     "iso": 100,
-    "color_palette": ["#FDB813", "#F38E30", "#2D3047"],
+    "color_palette": [
+      "#FDB813",
+      "#F38E30",
+      "#2D3047"
+    ],
     "mood": "Spektakuler, Romantis"
   },
   {
@@ -1475,7 +6765,11 @@
     "aperture": "f/7.1",
     "shutter_speed": "1/500s",
     "iso": 400,
-    "color_palette": ["#8B4513", "#D2691E", "#F4A460"],
+    "color_palette": [
+      "#8B4513",
+      "#D2691E",
+      "#F4A460"
+    ],
     "mood": "Primal, Eksotis"
   },
   {
@@ -1492,7 +6786,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/250s",
     "iso": 200,
-    "color_palette": ["#66666E", "#2D3047", "#D3D4D9"],
+    "color_palette": [
+      "#66666E",
+      "#2D3047",
+      "#D3D4D9"
+    ],
     "mood": "Modern, Terstruktur"
   },
   {
@@ -1509,7 +6807,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/125s",
     "iso": 200,
-    "color_palette": ["#8FA998", "#C4DACF", "#2C4A3F"],
+    "color_palette": [
+      "#8FA998",
+      "#C4DACF",
+      "#2C4A3F"
+    ],
     "mood": "Mistis, Damai"
   },
   {
@@ -1526,7 +6828,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/125s",
     "iso": 200,
-    "color_palette": ["#006994", "#FF6B6B", "#4ECDC4"],
+    "color_palette": [
+      "#006994",
+      "#FF6B6B",
+      "#4ECDC4"
+    ],
     "mood": "Vibrant, Hidup"
   },
   {
@@ -1543,7 +6849,11 @@
     "aperture": "f/2.0",
     "shutter_speed": "1/80s",
     "iso": 1600,
-    "color_palette": ["#FF6B35", "#FFA500", "#2D3047"],
+    "color_palette": [
+      "#FF6B35",
+      "#FFA500",
+      "#2D3047"
+    ],
     "mood": "Hangat, Hidup"
   },
   {
@@ -1560,7 +6870,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/320s",
     "iso": 200,
-    "color_palette": ["#FDB813", "#F38E30", "#2D3047"],
+    "color_palette": [
+      "#FDB813",
+      "#F38E30",
+      "#2D3047"
+    ],
     "mood": "Dramatis, Epik"
   },
   {
@@ -1577,7 +6891,11 @@
     "aperture": "f/2.8",
     "shutter_speed": "1/125s",
     "iso": 800,
-    "color_palette": ["#A25B5B", "#EAD7BB", "#1A1A1A"],
+    "color_palette": [
+      "#A25B5B",
+      "#EAD7BB",
+      "#1A1A1A"
+    ],
     "mood": "Tradisional, Autentik"
   },
   {
@@ -1594,7 +6912,11 @@
     "aperture": "f/9",
     "shutter_speed": "1/400s",
     "iso": 200,
-    "color_palette": ["#2D3047", "#66666E", "#F2F2F2"],
+    "color_palette": [
+      "#2D3047",
+      "#66666E",
+      "#F2F2F2"
+    ],
     "mood": "Dramatis, Kuat"
   },
   {
@@ -1611,7 +6933,11 @@
     "aperture": "f/5.6",
     "shutter_speed": "1/250s",
     "iso": 400,
-    "color_palette": ["#0077B6", "#90E0EF", "#CAF0F8"],
+    "color_palette": [
+      "#0077B6",
+      "#90E0EF",
+      "#CAF0F8"
+    ],
     "mood": "Hidup, Autentik"
   },
   {
@@ -1628,7 +6954,11 @@
     "aperture": "f/2.0",
     "shutter_speed": "1/200s",
     "iso": 500,
-    "color_palette": ["#FF6B6B", "#FFD166", "#1A1A2E"],
+    "color_palette": [
+      "#FF6B6B",
+      "#FFD166",
+      "#1A1A2E"
+    ],
     "mood": "Spiritual, Elegan"
   },
   {
@@ -1645,7 +6975,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/160s",
     "iso": 200,
-    "color_palette": ["#2D3047", "#08D9D6", "#FF2E63"],
+    "color_palette": [
+      "#2D3047",
+      "#08D9D6",
+      "#FF2E63"
+    ],
     "mood": "Modern, Reflektif"
   },
   {
@@ -1662,7 +6996,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/200s",
     "iso": 200,
-    "color_palette": ["#FDB813", "#F38E30", "#2C4A3F"],
+    "color_palette": [
+      "#FDB813",
+      "#F38E30",
+      "#2C4A3F"
+    ],
     "mood": "Damai, Menakjubkan"
   },
   {
@@ -1679,7 +7017,11 @@
     "aperture": "f/6.3",
     "shutter_speed": "1/250s",
     "iso": 250,
-    "color_palette": ["#A67C52", "#2B2B2B", "#E0C097"],
+    "color_palette": [
+      "#A67C52",
+      "#2B2B2B",
+      "#E0C097"
+    ],
     "mood": "Sejarah, Megah"
   },
   {
@@ -1696,7 +7038,11 @@
     "aperture": "f/8",
     "shutter_speed": "1/200s",
     "iso": 100,
-    "color_palette": ["#1E56A0", "#A3D9FF", "#F6F5F5"],
+    "color_palette": [
+      "#1E56A0",
+      "#A3D9FF",
+      "#F6F5F5"
+    ],
     "mood": "Abadi, Damai"
   }
 ]

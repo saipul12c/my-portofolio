@@ -45,6 +45,7 @@ import Troubleshooting from "./components/ai-docs/Troubleshooting/Troubleshootin
 import ExperimentalResearch from "./components/ai-docs/ExperimentalResearch/ExperimentalResearch";
 import Privacy from "./components/ai-docs/Privacy/Privacy";
 import Contribution from "./components/ai-docs/Contribution/Contribution";
+import ApiDocs from "./components/ai-docs/ApiDocs/ApiDocs";
 
 // Komponen untuk menampilkan konten berdasarkan section aktif
 const SectionContent = ({ activeSection, showAllVersions, showRawJson, aiDocData, versionStats, historyData }) => {
@@ -59,6 +60,7 @@ const SectionContent = ({ activeSection, showAllVersions, showRawJson, aiDocData
     "knowledge-base": <KnowledgeBase aiDocData={aiDocData} />,
     "config": <Config />,
     "examples": <Examples aiDocData={aiDocData} />,
+    "api-docs": <ApiDocs />,
     "troubleshooting": <Troubleshooting aiDocData={aiDocData} />,
     "experimental-research": <ExperimentalResearch aiDocData={aiDocData} />,
     "privacy": <Privacy aiDocData={aiDocData} />,
@@ -107,6 +109,7 @@ export default function AI_Docs() {
     { id: "knowledge-base", label: "Sumber Data", icon: <FaDatabase /> },
     { id: "config", label: "Pengaturan", icon: <FaCogs /> },
     { id: "examples", label: "Contoh Penggunaan", icon: <FaGraduationCap /> },
+    { id: "api-docs", label: "REST API & Integrasi", icon: <FaExternalLinkAlt /> },
     { id: "troubleshooting", label: "Troubleshooting", icon: <FaTools /> },
     { id: "experimental-research", label: "Riset Eksperimental", icon: <FaQuestionCircle /> },
     { id: "privacy", label: "Privasi & Keamanan", icon: <FaShieldAlt /> },
@@ -114,9 +117,9 @@ export default function AI_Docs() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 text-gray-100">
+    <div className="min-h-screen bg-[var(--color-gray-900)] text-gray-100">
       {/* Header dengan gradient */}
-      <header className="bg-gradient-to-r from-blue-900/30 via-purple-900/30 to-gray-900 border-b border-gray-800">
+      <header className="bg-gradient-to-r from-cyan-900/20 via-blue-900/20 to-purple-900/20 border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
             <div>

@@ -14,11 +14,13 @@ const SEMANTIC_MAP = {
   "belajar": ["tutorial", "panduan", "tips", "edukasi"]
 };
 
-export const useBlogFilters = (processedBlogs, searchTerm, selectedCategory, sortBy) => {
+export const useBlogFilters = (processedBlogs, searchTerm, selectedCategory, sortBy, showBookmarkedOnly = false) => {
   const filteredBlogs = useMemo(() => {
-    // 1. First, always apply category filter
+    // 1. First, apply category and bookmark filter
     let filtered = processedBlogs.filter((post) => {
-      return selectedCategory === "all" || post.category === selectedCategory;
+      const matchCategory = selectedCategory === "all" || post.category === selectedCategory;
+      const matchBookmark = !showBookmarkedOnly || (typeof window !== 'undefined' && localStorage.getItem(`blog_bookmarked_${post.slug}`) === 'true');
+      return matchCategory && matchBookmark;
     });
 
     const lowerSearch = searchTerm.toLowerCase().trim();
@@ -83,7 +85,7 @@ export const useBlogFilters = (processedBlogs, searchTerm, selectedCategory, sor
       const tieBreakerBatch = sortBlogs([a, b], sortBy);
       return tieBreakerBatch[0].id === a.id ? -1 : 1;
     });
-  }, [processedBlogs, searchTerm, selectedCategory, sortBy]);
+  }, [processedBlogs, searchTerm, selectedCategory, sortBy, showBookmarkedOnly]);
 
   return filteredBlogs;
 };

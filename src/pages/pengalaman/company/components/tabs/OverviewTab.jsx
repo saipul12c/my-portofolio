@@ -26,19 +26,19 @@ const OverviewTab = ({
         <h2 className="text-2xl font-bold mb-4">Ringkasan Perusahaan</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-white/5 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-emerald-400">{info.totalTestimonials}</div>
+            <div className="text-2xl font-bold text-cyan-400">{info.totalTestimonials}</div>
             <div className="text-sm text-gray-400">Testimoni</div>
           </div>
           <div className="bg-white/5 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-emerald-400">{info.avgRating}</div>
+            <div className="text-2xl font-bold text-amber-400">{info.avgRating}</div>
             <div className="text-sm text-gray-400">Rating Rata-rata</div>
           </div>
           <div className="bg-white/5 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-emerald-400">{info.totalTeamMembers}</div>
+            <div className="text-2xl font-bold text-purple-400">{info.totalTeamMembers}</div>
             <div className="text-sm text-gray-400">Ukuran Tim</div>
           </div>
           <div className="bg-white/5 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-emerald-400">{info.avgProjectDuration}m</div>
+            <div className="text-2xl font-bold text-blue-400">{info.avgProjectDuration}m</div>
             <div className="text-sm text-gray-400">Durasi Rata-rata</div>
           </div>
         </div>

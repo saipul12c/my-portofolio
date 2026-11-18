@@ -14,25 +14,29 @@ const NavigationTabs = ({ activeTab, setActiveTab }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex overflow-x-auto gap-1.5 sm:gap-2 mb-6 sm:mb-8 pb-2 scrollbar-hide -mx-4 sm:mx-0 px-4 sm:px-0"
+      className="flex overflow-x-auto gap-2 mb-8 pb-2 scrollbar-hide border-b border-white/10"
     >
-      {tabs.map((tab) => (
-        <motion.button
-          key={tab.id}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setActiveTab(tab.id)}
-          className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-2xl font-semibold transition-all duration-300 whitespace-nowrap text-xs sm:text-sm flex-shrink-0 ${
-            activeTab === tab.id
-              ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
-              : "bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white border border-white/10"
-          }`}
-        >
-          <tab.icon size={16} className="sm:w-5 sm:h-5" />
-          <span className="hidden xs:inline">{tab.label}</span>
-          <span className="xs:hidden text-xs">{tab.label}</span>
-        </motion.button>
-      ))}
+      {tabs.map((tab) => {
+        const IconComponent = tab.icon;
+        const isActive = activeTab === tab.id;
+
+        return (
+          <motion.button
+            key={tab.id}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 whitespace-nowrap text-xs sm:text-sm flex-shrink-0 ${
+              isActive
+                ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/25"
+                : "bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/10 hover:border-white/20"
+            }`}
+          >
+            <IconComponent size={16} className={isActive ? "text-white" : "text-cyan-400"} />
+            <span>{tab.label}</span>
+          </motion.button>
+        );
+      })}
     </motion.div>
   );
 };

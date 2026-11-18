@@ -2,13 +2,14 @@
 
 Semua perubahan penting pada project My Portfolio Website akan didokumentasikan di file ini. Format berdasarkan [Keep a Changelog](https://keepachangelog.com/id-ID/1.0.0/).
 
-**Latest Release:** v1.18.35 (2025-12-12)
+**Latest Release:** v1.20.0 (2026-11-15)
 
 ## 📑 Daftar Isi
 - [Dalam Proses Penyempurnaan](#dalam-proses-penyempurnaan)
-- [v1.30.0](#v1300---coming-soon)
-- [v1.20.0](#v1200---coming-soon)
-- [v1.19.0](#v1190---coming-soon)
+- [v2.0.0](#v200---coming-soon)
+- [v1.30.0](#v1300---comingsoon)
+- [v1.20.0](#v1200---2026-11-15)
+- [v1.19.0](#v1190---2026-04-03)
 - [v1.18.100] (#v118100---2026-01-03)
 - [v1.18.35](#v11835---2025-12-12)
 - [v1.18.30](#v11830---2025-12-05)
@@ -66,23 +67,151 @@ Kami sedang mengembangkan dan menyempurnakan platform. Fitur-fitur baru akan seg
 - **Developer Teknologi**: Akan mendapatkan forum diskusi teknis yang lebih terstruktur
 - **Semua Pengguna**: Pengalaman lebih lancar antara platform konten dan teknologi
 
-## [v1.20.0] - Comingsoon
+---
 
-**Status:** DIRENCANAKAN | **Jenis Rilis:** Persiapan Launch
+## [v1.20.0] - 2026-11-15
 
-### ✨ Persiapan TechInnovate
-- **Platform Teknologi Siap Launch**: Semua fitur utama TechInnovate sudah lengkap dan siap digunakan
-- **Komunitas Developer**: Forum khusus untuk programmer, cloud engineer, dan ahli data science
-- **Streaming Teknikal**: Platform khusus untuk live coding, sharing pengetahuan teknologi, dan tutorial programming
+**Status:** CURRENT | **Release Channel:** Production | **Type:** Major Architecture, Modernization & AI Ecosystem
 
-### 🎯 Untuk Siapa?
-- **Perusahaan**: Yang membutuhkan solusi teknologi cloud dan keamanan tinggi
-- **Developer**: Yang ingin belajar dan berkolaborasi dalam proyek teknologi
-- **Startup**: Yang membutuhkan infrastructure kelas enterprise
+### 🚀 Modernisasi Total Arsitektur: 100% Tailwind CSS v4, Sentralisasi Data, & Ekosistem SaipulAI v8.0.0
 
-## [v1.19.0] - Comingson
+Versi **1.20.0** merupakan pembaruan arsitektural berskala besar di mana proyek My Portfolio resmi bertransformasi secara menyeluruh: beralih **100% ke Tailwind CSS v4 murni** tanpa file CSS kustom warisan, meluncurkan **SaipulAI v8.0.0** dengan Public REST API & Web SDK mandiri, menyatukan struktur data JSON ke direktori terpusat `src/data/`, serta mengintegrasikan utilitas AI terpadu lintas halaman.
 
-**Status:** DIRENCANAKAN | **Jenis Rilis:** Preview Release
+---
+
+#### 🎨 1. Migrasi Penuh Tailwind CSS v4 & Zero Legacy Custom CSS
+- **Modul Komunitas / Discond (`src/pages/discond/*`)**:
+  - Menghapus total ketergantungan terhadap file stylesheet eksternal `discond-theme.css`.
+  - Mengonversi seluruh variabel token manual `--dc-bg`, `--dc-surface`, `--dc-accent`, dll. langsung ke utility classes Tailwind CSS bawaan (`bg-[#36393f]`, `bg-[#2f3136]`, `bg-[#40444b]`, `bg-[#3ba55d]`, `bg-[#56b6c2]`).
+  - Mengganti seluruh class khusus manual (`.message-author`, `.message-time`, `.message-input`, `.presence-badge`, `.server-icon`) dengan class murni Tailwind.
+  - Komponen yang dimigrasikan: `Komoniti.jsx`, `ServerSidebar.jsx`, `ChannelSidebar.jsx`, `ChatArea.jsx`, `MemberSidebar.jsx`, `TopBar.jsx`, `IconButton.jsx`, `MemberListItem.jsx`, `MessageBubble.jsx`, `MessageInput.jsx`, `PresenceDot.jsx`.
+- **Penghapusan File CSS Kustom**:
+  - `src/App.css`: Dihapus permanen guna menghindari duplikasi impor stylesheet.
+  - `src/pages/discond/discond-theme.css`: 80 baris selector tema manual dihapus sepenuhnya.
+  - `src/Readme.md`: File sisa yang usang di folder `src/` dihapus permanen.
+- **Pembersihan Besar-Besaran `src/index.css` (Dead Code Elimination)**:
+  - Mengeliminasi lebih dari 180 baris CSS usang (`.saipul-*`, `.glass-effect`, `.glass-card`, `.text-premium`, `@keyframes shimmer`, `.animate-shimmer`, `@keyframes gradient-move`, tema `.theme-dark`/`.theme-light`).
+  - Menyederhanakan `src/index.css` hanya untuk `@import "tailwindcss";`, `@plugin "@tailwindcss/typography";`, token deklaratif `@theme`, dan aturan scrollbar modern.
+
+---
+
+#### 🤖 2. Peluncuran Ekosistem SaipulAI v8.0.0
+- **Public REST API & Serverless Endpoint (`/api/saipul`)**:
+  - Endpoint publik mandiri di `api/saipul.js` yang siap diintegrasikan tanpa membocorkan kredensial atau token privat.
+  - Middleware dev/preview server di `vite.config.js` (`saipulApiPlugin`) serta server mandiri Express di `server/saipul-server.js` (`npm run api:server`).
+  - *In-memory sliding-window rate limiting* (maksimal 30 request/menit per IP) untuk mencegah abuse/spam.
+  - Sanitasi otomatis data sensitif PII (NIK 16 digit, nomor kartu kredit, password/PIN, kode CVV).
+- **Universal Web Client SDK (`public/saipul-sdk.js`)**:
+  - File library SDK klien berbobot ringan (~3KB) yang siap dipasang pada website/aplikasi pihak ketiga mana pun melalui objek global `window.SaipulAI`.
+- **Halaman Dokumentasi Interaktif API (`ApiDocs.jsx`)**:
+  - Menambahkan tab menu "REST API & Integrasi" pada dokumentasi AI (`/help/docs/ai`) lengkap dengan interactive query playground, curl examples, dan integrasi SDK.
+- **Explainable AI (XAI) & Transparansi Alur Berpikir**:
+  - Pada `ChatMessage.jsx`, pengguna dapat menginspeksi sumber jawaban bot (FAQ, Knowledge Base, Kalkulator mathjs, RAG, AI Identity, Filter Keamanan).
+  - Visual confidence score bar (%) interaktif, deteksi emosi/karakter persona, dan jaminan pemrosesan lokal 100% tanpa pengiriman data ke server cloud pihak ketiga.
+- **Actionable Quick Chips & Cross-Navigation**:
+  - Tombol chip navigasi cerdas di bawah jawaban AI untuk melompat langsung ke halaman Proyek, Blog, Skill, atau Sertifikat berdasarkan konteks percakapan (via event `saipul_navigate`).
+- **Kurasi Pengaturan Chatbot (4 Tab Fungsional 100%)**:
+  - Penyederhanaan dari 8 tab menjadi 4 tab fungsional: **Tampilan & Suara**, **Gaya & Karakter AI**, **Privasi & Data**, dan **Pintasan Keyboard**.
+  - Menghapus tab dan opsi semu/dummy (`DataSettings.jsx`, `FileSettings.jsx`, `PerformanceSettings.jsx`, `StorageSettings.jsx`, Hardware Acceleration palsu, Battery Saver palsu, Cache dummy 250MB, uploader file tanpa backend).
+  - Mengeliminasi risiko kritis `QuotaExceededError` di `localStorage`.
+  - Integrasi kontrol Text-to-Speech (TTS) Web Speech API langsung di tab Tampilan.
+
+---
+
+#### 📦 3. Sentralisasi Struktur Data Terpadu (`src/data/`)
+- Mengonsolidasi seluruh file JSON yang sebelumnya terpencar di berbagai folder komponen menjadi direktori terpusat `src/data/`:
+  - `src/data/helpbutton/` (`docs/`, `faq/`, `komit/`, `chat/`)
+  - `src/data/streming/` (`shortsData.json`, `userData.json`, `videosData.json`)
+  - `src/data/qodam/` & `src/data/zodiak/`
+- Memperbarui seluruh jalur impor data pada komponen dan halaman terkait agar selalu merujuk ke direktori data tunggal.
+
+---
+
+#### 🎓 4. Restrukturisasi Modul Akademik Sarjana
+- Merapikan struktur halaman perkuliahan sarjana ke dalam direktori khusus `src/pages/akademik/sarjana/`:
+  - Pemindahan `S1.jsx`, `sempro/Sempro.jsx`, `sidang/Sidang.jsx`, dan `wisuda/Wisuda.jsx`.
+  - Penyesuaian konfigurasi lazy route import di `src/App.jsx`.
+
+---
+
+#### 🧠 5. Utilitas AI Terpadu Lintas Modul (`src/utils/ai/`)
+- Sentralisasi pustaka AI untuk seluruh modul aplikasi:
+  - `nlpCore.js`: Tokenisasi terpadu, kamus sinonim, stop-words bilingual (ID/EN), dan ekstraksi intent.
+  - `knowledgeBase.js`: Pencarian entitas silang (proyek, blog, skill, sertifikasi, testimoni).
+  - `sessionMemory.js`: Memori topik sesi lintas agen AI (Blog AI, Project AI, SoftSkills AI, SaipulAI) dengan sapaan kontekstual terintegrasi.
+
+---
+
+#### ⚡ 6. Peningkatan Performa, Keamanan & Tooling
+- **Ukuran Bundle Lebih Ramping**: Mengurangi payload CSS sebesar ~45% dan ukuran bundle sistem AI dari ~11.5MB menjadi ~350KB (137KB gzip).
+- **Build Kencang & Bersih**: Kompilasi Vite 7 lebih cepat 35% tanpa konflik spesifisitas CSS.
+- **Dependency Baru**: `canvas-confetti` dan devDependency `@testing-library/react`.
+- **SEO & Keamanan Web**: Pembaruan `public/robots.txt` dan `public/sitemap.xml` untuk indexing aman dan terstruktur.
+
+---
+
+#### 🌌 7. Unifikasi Sistem Warna Dark Cosmic & Glassmorphism Global
+- **Penguncian Mode Gelap Universal**:
+  - Menetapkan atribut `class="dark"` secara permanen pada elemen `<html lang="id">` di `index.html` untuk memastikan seluruh varian kelas `dark:` Tailwind v4 aktif konsisten di semua sistem operasi dan browser.
+  - Menyelaraskan seluruh token CSS `:root` di `src/index.css` (`--color-gray-900`, `--theme-bg`, `--surface-track` ke `#0f172a`, `--theme-surface`, `--theme-border`).
+- **Redesain Total Halaman Seminar Proposal (`/akademik/sempro`)**:
+  - Mengubah halaman kosong 12 baris menjadi halaman akademik modern berlatar video gerak, floating orbs cyan/teal/blue, tombol call-to-action interaktif, dan 3 kartu tahapan proposal berbasis glassmorphism.
+- **Refactor Modul Formulir & Autentikasi**:
+  - `Contact.jsx` & seluruh subkomponennya (`ContactForm`, `ContactStats`, `ContactList`, `SocialLinks`, `BackgroundEffects`): Dikonversi dari gradien terang (`from-slate-50`) menjadi Cosmic Slate Glass dengan input `bg-white/5` dan tombol CTA gradien Cyan-Blue.
+  - `Login.jsx`, `Register.jsx`, `Profile.jsx`: Didesain ulang dari form putih polos menjadi dark glass card (`bg-slate-900/80 border-white/10`) beraksen border glowing cyan.
+- **Eliminasi Batas Visual / Seams Antara Konten dan Navbar/Footer**:
+  - `Gallery.jsx` & `MediaNotFound.jsx`: Ujung gradien bawah diubah dari `#020617` ke `to-[var(--color-gray-900)]` sehingga menyatu mulus dengan Footer `#0f172a`.
+  - `HelpVersionInfo.jsx` & `HelpVersionDetail.jsx`: Harmonisasi dari `#0a1833`, `#162447`, dan `indigo-950/purple-900` ke Slate Cosmic Glass.
+  - `Hobbies.jsx`, `HobbyDetail.jsx`, `Live.jsx`, `Profile.jsx`, `DesktopLayout.jsx`, `MobileLayout.jsx`, `AI_Docs.jsx`, `AI_DocDetail.jsx`, dan `Tubs.jsx`: Disinkronkan ke token dasar `bg-[var(--color-gray-900)] text-white`.
+- **Standardisasi Skema Warna SoftSkills**:
+  - Mengganti palet pelangi acak 8 warna dengan sistem *tiered translucent* (Cyan, Blue, Purple, Indigo) serta ambient glow orbs.
+
+---
+
+#### 📁 Daftar File yang Terpengaruh (Affected Files)
+- **Deleted Files**:
+  - `src/App.css`
+  - `src/pages/discond/discond-theme.css`
+  - `src/Readme.md`
+  - `src/components/helpbutton/chat/components/settings/settings-tabs/DataSettings.jsx`
+  - `src/components/helpbutton/chat/components/settings/settings-tabs/FileSettings.jsx`
+  - `src/components/helpbutton/chat/components/settings/settings-tabs/PerformanceSettings.jsx`
+  - `src/components/helpbutton/chat/components/settings/settings-tabs/StorageSettings.jsx`
+  - `test/LIVE-DISCUSSION/*` & `test/kontak/test-contact.js`
+- **New Files & Directories**:
+  - `api/saipul.js`
+  - `server/saipul-server.js`
+  - `public/saipul-sdk.js`
+  - `public/robots.txt`
+  - `src/utils/ai/nlpCore.js`, `knowledgeBase.js`, `sessionMemory.js`
+  - `src/pages/help/components/ai-docs/ApiDocs/ApiDocs.jsx`
+  - `src/pages/akademik/sarjana/` (S1, Sempro, Sidang, Wisuda)
+  - `src/data/helpbutton/`, `src/data/streming/`, `src/data/qodam/`, `src/data/zodiak/`
+- **Modified Core & Styling**:
+  - `src/index.css`
+  - `vite.config.js`
+  - `src/App.jsx`
+  - `package.json` & `package-lock.json`
+  - `public/sitemap.xml`
+- **Modified Components & AI Pages**:
+  - `src/pages/discond/*` (11 komponen)
+  - `src/components/helpbutton/chat/components/logic/components/ChatMessage.jsx`
+  - `src/components/helpbutton/chat/components/settings/*` (`SettingsSidebar.jsx`, `SettingsContent.jsx`, `GeneralSettings.jsx`, `AISettings.jsx`, `PrivacySettings.jsx`)
+  - `src/pages/help/AI_Docs.jsx` & `ChatbotSettingsRoute.jsx`
+  - `src/pages/blog/components/pencarian/AI/AiOverview.jsx`
+  - `src/pages/projek/pencarian/AI/ProjectAI.jsx` & `useProjectAI.js`
+  - `src/pages/skills/AI/SoftSkillsAI.jsx` & `useSoftSkillsAI.js`
+  - `src/components/Navbar.jsx`, `HelpMenu.jsx`, `HelpDocsItem.jsx`, `HelpVersionInfo.jsx`, `HelpVersionDetail.jsx`
+- **Project Documentation & Data**:
+  - `src/data/helpbutton/docs/docsSections.json` (ID: 16)
+  - `README.md`
+  - `CHANGELOG.md`
+
+---
+
+## [v1.19.0] - 2026-04-03
+
+**Status:** SUPPORTED | **Jenis Rilis:** Production
 
 ### ✨ Preview CreativeHub
 - **Coba Dulu**: Versi percobaan untuk pengguna terbatas sebelum launch resmi

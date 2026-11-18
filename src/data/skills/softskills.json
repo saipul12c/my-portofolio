@@ -375,24 +375,26 @@
       "id": "17",
       "name": "Ketahanan Mental",
       "category": "Soft Skill",
-      "level": "Mahir",
-      "description": "Mampu tetap tenang, fokus, dan produktif di bawah tekanan tinggi serta cepat pulih dari kegagalan atau situasi sulit.",
+      "level": "Ahli",
+      "description": "Mampu tetap tenang, fokus, dan produktif di bawah tekanan tinggi serta cepat pulih dari kegagalan atau situasi penuh tantangan.",
       "color": "slate",
-      "dateAdded": "2025-09-29",
+      "dateAdded": "2023-10-10",
       "labels": [],
-      "experience": 88,
+      "experience": 90,
       "examples": [
         "Tetap tenang dalam situasi darurat proyek",
-        "Bangkit kembali setelah kegagalan kampanye"
+        "Bangkit kembali setelah kegagalan kampanye",
+        "Menghadapi tekanan deadline tanpa panik",
+        "Menjaga kestabilan emosi saat krisis"
       ],
       "icon": "Mountain",
       "difficulty": "Hard",
-      "tags": ["mental", "resiliensi", "fokus"],
+      "tags": ["mental", "resiliensi", "fokus", "daya tahan", "ketenangan"],
       "video": "https://youtu.be/example17",
       "embedUrl": "https://www.youtube.com/embed/example17",
       "lastUpdated": "2025-10-02",
       "colorGradient": ["slate-400", "slate-700"],
-      "popularityScore": 84
+      "popularityScore": 86
     },
     {
       "id": "18",
@@ -718,29 +720,6 @@
   },
   {
     "id": "32",
-    "name": "Ketahanan Mental",
-    "category": "Soft Skill",
-    "level": "Ahli",
-    "description": "Kemampuan untuk tetap fokus, tenang, dan produktif dalam tekanan tinggi atau situasi penuh tantangan.",
-    "color": "red",
-    "dateAdded": "2023-10-10",
-    "labels": [],
-    "experience": 88,
-    "examples": [
-      "Menghadapi tekanan deadline tanpa panik",
-      "Menjaga kestabilan emosi saat krisis"
-    ],
-    "icon": "Flame",
-    "difficulty": "Hard",
-    "tags": ["mental", "daya tahan", "ketenangan"],
-    "video": "https://youtu.be/example32",
-    "embedUrl": "https://www.youtube.com/embed/example32",
-    "lastUpdated": "2025-09-15",
-    "colorGradient": ["red-500", "red-700"],
-    "popularityScore": 85
-  },
-  {
-    "id": "33",
     "name": "Kemampuan Menulis Profesional",
     "category": "Professional Skill",
     "level": "Mahir",
@@ -763,7 +742,7 @@
     "popularityScore": 82
   },
   {
-    "id": "34",
+    "id": "33",
     "name": "Analisis Risiko",
     "category": "Professional Skill",
     "level": "Ahli",
@@ -786,7 +765,7 @@
     "popularityScore": 86
   },
   {
-    "id": "35",
+    "id": "34",
     "name": "Fleksibilitas Budaya",
     "category": "Soft Skill",
     "level": "Mahir",
@@ -809,7 +788,7 @@
     "popularityScore": 79
   },
   {
-    "id": "36",
+    "id": "35",
     "name": "Konsentrasi Tinggi",
     "category": "Soft Skill",
     "level": "Mahir",
@@ -832,7 +811,7 @@
     "popularityScore": 80
   },
   {
-    "id": "37",
+    "id": "36",
     "name": "Delegasi Efektif",
     "category": "Professional Skill",
     "level": "Mahir",
@@ -855,7 +834,7 @@
     "popularityScore": 81
   },
   {
-    "id": "38",
+    "id": "37",
     "name": "Perencanaan Strategis",
     "category": "Professional Skill",
     "level": "Ahli",
@@ -878,7 +857,7 @@
     "popularityScore": 87
   },
   {
-    "id": "39",
+    "id": "38",
     "name": "Berpikir Sistemik",
     "category": "Professional Skill",
     "level": "Ahli",
@@ -901,7 +880,7 @@
     "popularityScore": 85
   },
   {
-    "id": "40",
+    "id": "39",
     "name": "Storytelling Profesional",
     "category": "Soft Skill",
     "level": "Ahli",

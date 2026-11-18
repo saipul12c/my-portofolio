@@ -374,7 +374,7 @@ function analyzeNLUPipeline(message) {
  * @param {array} similarSentences - kalimat-kalimat serupa
  * @returns {object} insights
  */
-function extractCorpusInsights(message, similarSentences) {
+export function extractCorpusInsights(message, similarSentences) {
   const insights = {
     dominantType: null,
     dominantContext: null,
@@ -420,7 +420,7 @@ function extractCorpusInsights(message, similarSentences) {
  * @param {array} entities - daftar entities
  * @returns {array} enriched entities
  */
-function enrichEntityData(entities) {
+export function enrichEntityData(entities) {
   return entities.map(entity => ({
     ...entity,
     lemma: getLemma(entity.value, 'id'),
@@ -434,7 +434,7 @@ function enrichEntityData(entities) {
  * @param {object} nluAnalysis - hasil NLU analysis
  * @returns {array} semantic relations
  */
-function extractSemanticRelations(nluAnalysis) {
+export function extractSemanticRelations(nluAnalysis) {
   const relations = [];
   const entities = nluAnalysis.entities;
 

@@ -47,18 +47,18 @@ const SocialPortal = () => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
     const resizeHandler = () => {
       requestAnimationFrame(checkMobile);
     };
-    
+
     window.addEventListener('resize', resizeHandler);
     return () => window.removeEventListener('resize', resizeHandler);
   }, []);
 
   const handleCopyEmail = useCallback(() => {
-    const email = 'hello@yourworld.com';
+    const email = 'uju355@gmail.com';
     navigator.clipboard.writeText(email).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -112,7 +112,7 @@ const SocialPortal = () => {
   return (
     <>
       {isMobile ? renderMobileLayout() : renderDesktopLayout()}
-      
+
       {/* Certificate Detail Modal */}
       <CertificateModal
         selected={selectedCert}

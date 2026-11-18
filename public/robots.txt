@@ -1,0 +1,15 @@
+# robots.txt untuk Syaiful Mukmin Portfolio & SaipulAI
+# https://syaiful-mukmin.netlify.app/
+
+User-agent: *
+Allow: /
+
+# Cegah bot merayapi rute privat/autentikasi/internal
+Disallow: /login
+Disallow: /register
+Disallow: /discord/profile
+Disallow: /live/dash
+Disallow: /live/users
+
+# Lokasi Peta Situs (Sitemap)
+Sitemap: https://syaiful-mukmin.netlify.app/sitemap.xml

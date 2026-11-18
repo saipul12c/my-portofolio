@@ -1,111 +1,7 @@
 {
-  "certificates": [
-    {
-      "id": 1,
-      "title": "Front-End Web Development",
-      "issuer": "Dicoding Indonesia",
-      "year": "2024",
-      "category": "Web Development",
-      "image": "https://images.unsplash.com/photo-1581093588401-22d3a4f3a1c3?w=800",
-      "urlCertificate": "https://www.dicoding.com/certificates/URL-CONTOH-1",
-      "description": "Menyelesaikan pelatihan pengembangan web front-end menggunakan React, JavaScript, dan Tailwind.",
-      "tags": ["React", "JavaScript", "TailwindCSS"],
-      "difficulty": "Intermediate",
-      "duration": "120 jam",
-      "verified": true,
-      "themeColor": "#60A5FA"
-    },
-    {
-      "id": 2,
-      "title": "UI/UX Design Fundamentals",
-      "issuer": "Google Indonesia",
-      "year": "2023",
-      "category": "UI/UX",
-      "image": "https://images.unsplash.com/photo-1604147706283-d7110b38c7f7?w=800",
-      "urlCertificate": "https://www.google.com/certificates/URL-CONTOH-2",
-      "description": "Pelatihan intensif dalam prinsip desain antarmuka dan prototyping menggunakan Figma.",
-      "tags": ["Figma", "Desain Produk", "User Research"],
-      "difficulty": "Beginner",
-      "duration": "80 jam",
-      "verified": true,
-      "themeColor": "#F472B6"
-    },
-    {
-      "id": 3,
-      "title": "EduTech Innovator Award",
-      "issuer": "Kemdikbud",
-      "year": "2025",
-      "category": "Award & Recognition",
-      "image": "https://images.unsplash.com/photo-1549924231-f129b911e442?w=800",
-      "urlCertificate": "https://kemdikbud.go.id/award/URL-CONTOH-3",
-      "description": "Penghargaan nasional untuk kontribusi dalam pengembangan media pembelajaran digital interaktif.",
-      "tags": ["Inovasi", "EdTech", "Penghargaan"],
-      "difficulty": "N/A",
-      "duration": "—",
-      "verified": true,
-      "themeColor": "#34D399"
-    },
-    {
-      "id": 4,
-      "title": "Project Management Professional (PMP)",
-      "issuer": "PMI Institute",
-      "year": "2024",
-      "category": "Management",
-      "image": "https://images.unsplash.com/photo-1581091870622-1d4cbf3a52c8?w=800",
-      "urlCertificate": "https://pmi.org/certificates/URL-CONTOH-4",
-      "description": "Menekankan pendekatan agile dan waterfall dalam manajemen proyek profesional bersertifikat.",
-      "tags": ["Manajemen Proyek", "Leadership", "Agile"],
-      "difficulty": "Advanced",
-      "duration": "100 jam",
-      "verified": true,
-      "themeColor": "#FBBF24"
-    },
-    {
-      "id": 5,
-      "title": "AI for Everyone",
-      "issuer": "Coursera (DeepLearning.AI)",
-      "year": "2024",
-      "category": "Artificial Intelligence",
-      "image": "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800",
-      "urlCertificate": "https://coursera.org/certificates/URL-CONTOH-5",
-      "description": "Kursus pengenalan AI untuk memahami penerapan praktis kecerdasan buatan di berbagai industri.",
-      "tags": ["Artificial Intelligence", "Machine Learning", "Data"],
-      "difficulty": "Beginner",
-      "duration": "60 jam",
-      "verified": true,
-      "themeColor": "#818CF8"
-    },
-    {
-      "id": 6,
-      "title": "Data Science Bootcamp",
-      "issuer": "Rakamin Academy",
-      "year": "2025",
-      "category": "Data Science",
-      "image": "https://images.unsplash.com/photo-1556761175-4b46a572b786?w=800",
-      "urlCertificate": "https://rakamin.com/certificates/URL-CONTOH-6",
-      "description": "Program intensif untuk analisis data, machine learning, dan visualisasi menggunakan Python dan SQL.",
-      "tags": ["Python", "SQL", "Machine Learning"],
-      "difficulty": "Advanced",
-      "duration": "150 jam",
-      "verified": true,
-      "themeColor": "#06B6D4"
-    },
-    {
-      "id": 7,
-      "title": "Cybersecurity Essentials",
-      "issuer": "Cisco Networking Academy",
-      "year": "2023",
-      "category": "Security",
-      "image": "https://images.unsplash.com/photo-1605902711622-cfb43c4437b5?w=800",
-      "urlCertificate": "https://www.netacad.com/certificates/URL-CONTOH-7",
-      "description": "Pelatihan dasar keamanan siber, mengenal ancaman digital, dan teknik melindungi data pengguna.",
-      "tags": ["Cybersecurity", "Network", "Encryption"],
-      "difficulty": "Intermediate",
-      "duration": "90 jam",
-      "verified": true,
-      "themeColor": "#F87171"
-    }
-  ],
+  "sectionTitle": "Sertifikat & Penghargaan",
+  "icon": "Award",
+  "link": "/certificates",
   "tagColors": [
     "bg-pink-600/30 text-pink-300",
     "bg-violet-600/30 text-violet-300",
@@ -114,5 +10,1000 @@
     "bg-sky-600/30 text-sky-300",
     "bg-cyan-600/30 text-cyan-300",
     "bg-indigo-600/30 text-indigo-300"
+  ],
+  "certificates": [
+    {
+      "id": 1,
+      "title": "Front-End Web Development",
+      "name": "Front-End Web Development",
+      "issuer": "Dicoding Indonesia",
+      "provider": "Dicoding Indonesia",
+      "organization": {
+        "name": "Dicoding Indonesia",
+        "logo": "https://images.unsplash.com/photo-1581093588401-22d3a4f3a1c3?w=100"
+      },
+      "year": "2024",
+      "dateIssued": "2024-01-15",
+      "category": "Web Development",
+      "level": "Intermediate",
+      "difficulty": "Intermediate",
+      "duration": "120 jam",
+      "verified": true,
+      "certificate": true,
+      "status": "active",
+      "image": "https://images.unsplash.com/photo-1581093588401-22d3a4f3a1c3?w=800",
+      "logo": "💻",
+      "urlCertificate": "https://www.dicoding.com/certificates/URL-CONTOH-1",
+      "certificateLinks": {
+        "certificate": "https://www.dicoding.com/certificates/URL-CONTOH-1",
+        "portfolio": null,
+        "video": null
+      },
+      "description": "Menyelesaikan pelatihan pengembangan web front-end komprehensif menggunakan React, JavaScript modern, HTML5, CSS3, dan TailwindCSS.",
+      "tags": [
+        "React",
+        "JavaScript",
+        "TailwindCSS",
+        "Frontend",
+        "HTML",
+        "CSS"
+      ],
+      "skills": [
+        "React",
+        "JavaScript",
+        "TailwindCSS",
+        "Frontend",
+        "HTML",
+        "CSS"
+      ],
+      "skills_learned": [
+        "React",
+        "JavaScript",
+        "TailwindCSS",
+        "Frontend",
+        "HTML",
+        "CSS"
+      ],
+      "themeColor": "#60A5FA",
+      "ui": {
+        "badgeColor": "#60A5FA"
+      }
+    },
+    {
+      "id": 2,
+      "title": "UI/UX Design Fundamentals",
+      "name": "UI/UX Design Fundamentals",
+      "issuer": "Google Indonesia",
+      "provider": "Google Indonesia",
+      "organization": {
+        "name": "Google Indonesia",
+        "logo": "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=100"
+      },
+      "year": "2023",
+      "dateIssued": "2023-09-10",
+      "category": "UI/UX Design",
+      "level": "Beginner",
+      "difficulty": "Beginner",
+      "duration": "90 jam",
+      "verified": true,
+      "certificate": true,
+      "status": "active",
+      "image": "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800",
+      "logo": "🎨",
+      "urlCertificate": "https://grow.google/certificates/URL-CONTOH-2",
+      "certificateLinks": {
+        "certificate": "https://grow.google/certificates/URL-CONTOH-2",
+        "portfolio": null,
+        "video": null
+      },
+      "description": "Sertifikasi perancangan pengalaman dan antarmuka pengguna, mencakup riset pengguna, wireframing, dan prototyping interaktif di Figma.",
+      "tags": [
+        "Figma",
+        "UI/UX",
+        "Design Thinking",
+        "Prototyping",
+        "Wireframing"
+      ],
+      "skills": [
+        "Figma",
+        "UI/UX",
+        "Design Thinking",
+        "Prototyping",
+        "Wireframing"
+      ],
+      "skills_learned": [
+        "Figma",
+        "UI/UX",
+        "Design Thinking",
+        "Prototyping",
+        "Wireframing"
+      ],
+      "themeColor": "#F59E0B",
+      "ui": {
+        "badgeColor": "#F59E0B"
+      }
+    },
+    {
+      "id": 3,
+      "title": "EduTech Innovator Award",
+      "name": "EduTech Innovator Award",
+      "issuer": "Kemdikbud",
+      "provider": "Kemdikbud",
+      "organization": {
+        "name": "Kemdikbud",
+        "logo": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=100"
+      },
+      "year": "2025",
+      "dateIssued": "2025-02-10",
+      "category": "Education Technology",
+      "level": "Advanced",
+      "difficulty": "Advanced",
+      "duration": "60 jam",
+      "verified": true,
+      "certificate": true,
+      "status": "active",
+      "image": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800",
+      "logo": "📜",
+      "urlCertificate": "https://kemdikbud.go.id/awards/URL-CONTOH-3",
+      "certificateLinks": {
+        "certificate": "https://kemdikbud.go.id/awards/URL-CONTOH-3",
+        "portfolio": null,
+        "video": null
+      },
+      "description": "Penghargaan inovasi teknologi pendidikan atas kontribusi perancangan modul interaktif dan platform pembelajaran digital inklusif.",
+      "tags": [
+        "Innovation",
+        "EdTech",
+        "Curriculum",
+        "Digital Learning"
+      ],
+      "skills": [
+        "Innovation",
+        "EdTech",
+        "Curriculum",
+        "Digital Learning"
+      ],
+      "skills_learned": [
+        "Innovation",
+        "EdTech",
+        "Curriculum",
+        "Digital Learning"
+      ],
+      "themeColor": "#10B981",
+      "ui": {
+        "badgeColor": "#10B981"
+      }
+    },
+    {
+      "id": 4,
+      "title": "Project Management Professional (PMP)",
+      "name": "Project Management Professional (PMP)",
+      "issuer": "PMI Institute",
+      "provider": "PMI Institute",
+      "organization": {
+        "name": "PMI Institute",
+        "logo": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=100"
+      },
+      "year": "2024",
+      "dateIssued": "2024-05-18",
+      "category": "Project Management",
+      "level": "Advanced",
+      "difficulty": "Advanced",
+      "duration": "150 jam",
+      "verified": true,
+      "certificate": true,
+      "status": "active",
+      "image": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800",
+      "logo": "💼",
+      "urlCertificate": "https://www.pmi.org/certifications/URL-CONTOH-4",
+      "certificateLinks": {
+        "certificate": "https://www.pmi.org/certifications/URL-CONTOH-4",
+        "portfolio": null,
+        "video": null
+      },
+      "description": "Sertifikasi manajemen proyek berstandar global dengan penekanan pada metodologi Agile/Scrum, manajemen risiko, dan eksekusi sprint tim.",
+      "tags": [
+        "Agile",
+        "Scrum",
+        "Risk Management",
+        "Leadership",
+        "Sprint Planning"
+      ],
+      "skills": [
+        "Agile",
+        "Scrum",
+        "Risk Management",
+        "Leadership",
+        "Sprint Planning"
+      ],
+      "skills_learned": [
+        "Agile",
+        "Scrum",
+        "Risk Management",
+        "Leadership",
+        "Sprint Planning"
+      ],
+      "themeColor": "#8B5CF6",
+      "ui": {
+        "badgeColor": "#8B5CF6"
+      }
+    },
+    {
+      "id": 5,
+      "title": "AI for Everyone",
+      "name": "AI for Everyone",
+      "issuer": "Coursera (DeepLearning.AI)",
+      "provider": "Coursera (DeepLearning.AI)",
+      "organization": {
+        "name": "Coursera (DeepLearning.AI)",
+        "logo": "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=100"
+      },
+      "year": "2024",
+      "dateIssued": "2024-04-20",
+      "category": "Artificial Intelligence",
+      "level": "Intermediate",
+      "difficulty": "Intermediate",
+      "duration": "80 jam",
+      "verified": true,
+      "certificate": true,
+      "status": "active",
+      "image": "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800",
+      "logo": "🤖",
+      "urlCertificate": "https://www.coursera.org/certificates/URL-CONTOH-5",
+      "certificateLinks": {
+        "certificate": "https://www.coursera.org/certificates/URL-CONTOH-5",
+        "portfolio": null,
+        "video": null
+      },
+      "description": "Pemahaman mendalam mengenai konsep dasar AI, Machine Learning, penerapan model generatif, serta strategi implementasi etis AI.",
+      "tags": [
+        "Machine Learning",
+        "AI",
+        "Prompt Engineering",
+        "Generative AI",
+        "Ethics"
+      ],
+      "skills": [
+        "Machine Learning",
+        "AI",
+        "Prompt Engineering",
+        "Generative AI",
+        "Ethics"
+      ],
+      "skills_learned": [
+        "Machine Learning",
+        "AI",
+        "Prompt Engineering",
+        "Generative AI",
+        "Ethics"
+      ],
+      "themeColor": "#EC4899",
+      "ui": {
+        "badgeColor": "#EC4899"
+      }
+    },
+    {
+      "id": 6,
+      "title": "Data Science Bootcamp",
+      "name": "Data Science Bootcamp",
+      "issuer": "Rakamin Academy",
+      "provider": "Rakamin Academy",
+      "organization": {
+        "name": "Rakamin Academy",
+        "logo": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=100"
+      },
+      "year": "2025",
+      "dateIssued": "2025-01-12",
+      "category": "Data Science",
+      "level": "Intermediate",
+      "difficulty": "Intermediate",
+      "duration": "180 jam",
+      "verified": true,
+      "certificate": true,
+      "status": "active",
+      "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800",
+      "logo": "📊",
+      "urlCertificate": "https://www.rakamin.com/certificate/URL-CONTOH-6",
+      "certificateLinks": {
+        "certificate": "https://www.rakamin.com/certificate/URL-CONTOH-6",
+        "portfolio": null,
+        "video": null
+      },
+      "description": "Bootcamp intensif sains data mencakup analisis data eksploratif, pemodelan statistik dengan Python, query SQL database, dan visualisasi data.",
+      "tags": [
+        "Python",
+        "SQL",
+        "Pandas",
+        "Data Science",
+        "Data Visualization"
+      ],
+      "skills": [
+        "Python",
+        "SQL",
+        "Pandas",
+        "Data Science",
+        "Data Visualization"
+      ],
+      "skills_learned": [
+        "Python",
+        "SQL",
+        "Pandas",
+        "Data Science",
+        "Data Visualization"
+      ],
+      "themeColor": "#06B6D4",
+      "ui": {
+        "badgeColor": "#06B6D4"
+      }
+    },
+    {
+      "id": 7,
+      "title": "Cybersecurity Essentials",
+      "name": "Cybersecurity Essentials",
+      "issuer": "Cisco Networking Academy",
+      "provider": "Cisco Networking Academy",
+      "organization": {
+        "name": "Cisco Networking Academy",
+        "logo": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=100"
+      },
+      "year": "2023",
+      "dateIssued": "2023-11-05",
+      "category": "Cybersecurity",
+      "level": "Intermediate",
+      "difficulty": "Intermediate",
+      "duration": "70 jam",
+      "verified": true,
+      "certificate": true,
+      "status": "active",
+      "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800",
+      "logo": "🔒",
+      "urlCertificate": "https://www.netacad.com/certificates/URL-CONTOH-7",
+      "certificateLinks": {
+        "certificate": "https://www.netacad.com/certificates/URL-CONTOH-7",
+        "portfolio": null,
+        "video": null
+      },
+      "description": "Pelatihan keamanan siber mencakup mitigasi serangan siber, arsitektur keamanan jaringan, prinsip kriptografi, dan kepatuhan privasi data.",
+      "tags": [
+        "Network Security",
+        "Cybersecurity",
+        "Encryption",
+        "Threat Analysis",
+        "Firewall"
+      ],
+      "skills": [
+        "Network Security",
+        "Cybersecurity",
+        "Encryption",
+        "Threat Analysis",
+        "Firewall"
+      ],
+      "skills_learned": [
+        "Network Security",
+        "Cybersecurity",
+        "Encryption",
+        "Threat Analysis",
+        "Firewall"
+      ],
+      "themeColor": "#3B82F6",
+      "ui": {
+        "badgeColor": "#3B82F6"
+      }
+    },
+    {
+      "id": 8,
+      "title": "Inovasi Pembelajaran Digital",
+      "name": "Inovasi Pembelajaran Digital",
+      "issuer": "Madrasah Tech Community",
+      "provider": "Madrasah Tech Community",
+      "organization": {
+        "name": "Madrasah Tech Community",
+        "logo": "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=100"
+      },
+      "year": "2022",
+      "dateIssued": "2022-11-30",
+      "category": "Education Technology",
+      "level": "Intermediate",
+      "difficulty": "Intermediate",
+      "duration": "45 jam",
+      "verified": true,
+      "certificate": true,
+      "status": "active",
+      "image": "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800",
+      "logo": "🌟",
+      "urlCertificate": "https://www.madrasahtech.org/certificates/innovation-2022",
+      "certificateLinks": {
+        "certificate": "https://www.madrasahtech.org/certificates/innovation-2022",
+        "portfolio": null,
+        "video": null
+      },
+      "description": "Pelatihan dan sertifikasi perancangan metode pengajaran digital adaptif berbasis teknologi ramah siswa di lingkungan madrasah.",
+      "tags": [
+        "Digital Learning",
+        "EdTech",
+        "Madrasah Tech",
+        "Teacher Innovation"
+      ],
+      "skills": [
+        "Digital Learning",
+        "EdTech",
+        "Madrasah Tech",
+        "Teacher Innovation"
+      ],
+      "skills_learned": [
+        "Digital Learning",
+        "EdTech",
+        "Madrasah Tech",
+        "Teacher Innovation"
+      ],
+      "themeColor": "#14B8A6",
+      "ui": {
+        "badgeColor": "#14B8A6"
+      }
+    },
+    {
+      "id": 9,
+      "title": "Desain UI/UX Dasar",
+      "name": "Desain UI/UX Dasar",
+      "issuer": "BuildWithAngga",
+      "provider": "BuildWithAngga",
+      "organization": {
+        "name": "BuildWithAngga",
+        "logo": "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=100"
+      },
+      "year": "2023",
+      "dateIssued": "2023-05-20",
+      "category": "UI/UX Design",
+      "level": "Beginner",
+      "difficulty": "Beginner",
+      "duration": "40 jam",
+      "verified": true,
+      "certificate": true,
+      "status": "active",
+      "image": "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=800",
+      "logo": "🎨",
+      "urlCertificate": "https://buildwithangga.com/certificates/uiux-001",
+      "certificateLinks": {
+        "certificate": "https://buildwithangga.com/certificates/uiux-001",
+        "portfolio": null,
+        "video": null
+      },
+      "description": "Mempelajari fundamental perancangan desain antarmuka pengguna untuk aplikasi mobile dan web menggunakan Figma.",
+      "tags": [
+        "UI/UX",
+        "Figma",
+        "Design System",
+        "Mobile App Design"
+      ],
+      "skills": [
+        "UI/UX",
+        "Figma",
+        "Design System",
+        "Mobile App Design"
+      ],
+      "skills_learned": [
+        "UI/UX",
+        "Figma",
+        "Design System",
+        "Mobile App Design"
+      ],
+      "themeColor": "#F97316",
+      "ui": {
+        "badgeColor": "#F97316"
+      }
+    },
+    {
+      "id": 10,
+      "title": "Classroom Management Mastery",
+      "name": "Classroom Management Mastery",
+      "issuer": "Teacher Academy",
+      "provider": "Teacher Academy",
+      "organization": {
+        "name": "Teacher Academy",
+        "logo": "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=100"
+      },
+      "year": "2023",
+      "dateIssued": "2023-03-15",
+      "category": "Education & Pedagogy",
+      "level": "Advanced",
+      "difficulty": "Advanced",
+      "duration": "40 jam",
+      "verified": true,
+      "certificate": true,
+      "status": "active",
+      "image": "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800",
+      "logo": "🏫",
+      "urlCertificate": "https://teacheracademy.org/certificates/cm-mastery",
+      "certificateLinks": {
+        "certificate": "https://teacheracademy.org/certificates/cm-mastery",
+        "portfolio": null,
+        "video": null
+      },
+      "description": "Advanced techniques in classroom management, behavior guidance, and creating positive learning environments.",
+      "tags": [
+        "Behavior Management",
+        "Positive Discipline",
+        "Classroom Routines",
+        "Conflict Resolution"
+      ],
+      "skills": [
+        "Behavior Management",
+        "Positive Discipline",
+        "Classroom Routines",
+        "Conflict Resolution"
+      ],
+      "skills_learned": [
+        "Behavior Management",
+        "Positive Discipline",
+        "Classroom Routines",
+        "Conflict Resolution"
+      ],
+      "themeColor": "#6366F1",
+      "ui": {
+        "badgeColor": "#6366F1"
+      }
+    },
+    {
+      "id": 11,
+      "title": "Digital Assessment Tools",
+      "name": "Digital Assessment Tools",
+      "issuer": "EdTech Indonesia",
+      "provider": "EdTech Indonesia",
+      "organization": {
+        "name": "EdTech Indonesia",
+        "logo": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=100"
+      },
+      "year": "2023",
+      "dateIssued": "2023-06-22",
+      "category": "Education Technology",
+      "level": "Intermediate",
+      "difficulty": "Intermediate",
+      "duration": "30 jam",
+      "verified": true,
+      "certificate": true,
+      "status": "active",
+      "image": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800",
+      "logo": "📝",
+      "urlCertificate": "https://edtechindonesia.id/certificates/assessment-tools",
+      "certificateLinks": {
+        "certificate": "https://edtechindonesia.id/certificates/assessment-tools",
+        "portfolio": null,
+        "video": null
+      },
+      "description": "Mastering various digital assessment tools for formative and summative evaluation in modern classrooms.",
+      "tags": [
+        "Google Forms",
+        "Quizizz",
+        "Kahoot",
+        "Edpuzzle",
+        "Rubric Design"
+      ],
+      "skills": [
+        "Google Forms",
+        "Quizizz",
+        "Kahoot",
+        "Edpuzzle",
+        "Rubric Design"
+      ],
+      "skills_learned": [
+        "Google Forms",
+        "Quizizz",
+        "Kahoot",
+        "Edpuzzle",
+        "Rubric Design"
+      ],
+      "themeColor": "#0EA5E9",
+      "ui": {
+        "badgeColor": "#0EA5E9"
+      }
+    },
+    {
+      "id": 12,
+      "title": "Creative Writing for Teachers",
+      "name": "Creative Writing for Teachers",
+      "issuer": "Writing Academy",
+      "provider": "Writing Academy",
+      "organization": {
+        "name": "Writing Academy",
+        "logo": "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=100"
+      },
+      "year": "2022",
+      "dateIssued": "2022-09-18",
+      "category": "Creative & Writing",
+      "level": "Intermediate",
+      "difficulty": "Intermediate",
+      "duration": "36 jam",
+      "verified": true,
+      "certificate": true,
+      "status": "active",
+      "image": "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800",
+      "logo": "✍️",
+      "urlCertificate": "https://writingacademy.org/certificates/creative-writing",
+      "certificateLinks": {
+        "certificate": "https://writingacademy.org/certificates/creative-writing",
+        "portfolio": null,
+        "video": null
+      },
+      "description": "Developing creative writing skills for educational materials, storytelling, and student engagement.",
+      "tags": [
+        "Storytelling",
+        "Educational Content Writing",
+        "Poetry",
+        "Drama in Education"
+      ],
+      "skills": [
+        "Storytelling",
+        "Educational Content Writing",
+        "Poetry",
+        "Drama in Education"
+      ],
+      "skills_learned": [
+        "Storytelling",
+        "Educational Content Writing",
+        "Poetry",
+        "Drama in Education"
+      ],
+      "themeColor": "#D946EF",
+      "ui": {
+        "badgeColor": "#D946EF"
+      }
+    },
+    {
+      "id": 13,
+      "title": "Mindfulness in Education",
+      "name": "Mindfulness in Education",
+      "issuer": "Mindful Schools",
+      "provider": "Mindful Schools",
+      "organization": {
+        "name": "Mindful Schools",
+        "logo": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=100"
+      },
+      "year": "2023",
+      "dateIssued": "2023-04-10",
+      "category": "Psychology & Education",
+      "level": "Beginner",
+      "difficulty": "Beginner",
+      "duration": "24 jam",
+      "verified": true,
+      "certificate": true,
+      "status": "active",
+      "image": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800",
+      "logo": "🧘",
+      "urlCertificate": "https://mindfulschools.org/certificates/mindfulness-edu",
+      "certificateLinks": {
+        "certificate": "https://mindfulschools.org/certificates/mindfulness-edu",
+        "portfolio": null,
+        "video": null
+      },
+      "description": "Integrating mindfulness practices into daily classroom routines for student well-being and focus.",
+      "tags": [
+        "Mindfulness Techniques",
+        "Stress Management",
+        "Focus Exercises",
+        "Emotional Regulation"
+      ],
+      "skills": [
+        "Mindfulness Techniques",
+        "Stress Management",
+        "Focus Exercises",
+        "Emotional Regulation"
+      ],
+      "skills_learned": [
+        "Mindfulness Techniques",
+        "Stress Management",
+        "Focus Exercises",
+        "Emotional Regulation"
+      ],
+      "themeColor": "#10B981",
+      "ui": {
+        "badgeColor": "#10B981"
+      }
+    },
+    {
+      "id": 14,
+      "title": "Project-Based Learning Design",
+      "name": "Project-Based Learning Design",
+      "issuer": "PBL Works",
+      "provider": "PBL Works",
+      "organization": {
+        "name": "PBL Works",
+        "logo": "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=100"
+      },
+      "year": "2023",
+      "dateIssued": "2023-08-05",
+      "category": "Education & Pedagogy",
+      "level": "Advanced",
+      "difficulty": "Advanced",
+      "duration": "45 jam",
+      "verified": true,
+      "certificate": true,
+      "status": "active",
+      "image": "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800",
+      "logo": "📋",
+      "urlCertificate": "https://pblworks.org/certificates/pbl-design",
+      "certificateLinks": {
+        "certificate": "https://pblworks.org/certificates/pbl-design",
+        "portfolio": null,
+        "video": null
+      },
+      "description": "Comprehensive training in designing, implementing, and assessing project-based learning units.",
+      "tags": [
+        "PBL Design",
+        "Project Planning",
+        "Authentic Assessment",
+        "Student Autonomy"
+      ],
+      "skills": [
+        "PBL Design",
+        "Project Planning",
+        "Authentic Assessment",
+        "Student Autonomy"
+      ],
+      "skills_learned": [
+        "PBL Design",
+        "Project Planning",
+        "Authentic Assessment",
+        "Student Autonomy"
+      ],
+      "themeColor": "#F59E0B",
+      "ui": {
+        "badgeColor": "#F59E0B"
+      }
+    },
+    {
+      "id": 15,
+      "title": "Educational Technology Integration",
+      "name": "Educational Technology Integration",
+      "issuer": "ISTE",
+      "provider": "ISTE",
+      "organization": {
+        "name": "ISTE",
+        "logo": "https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=100"
+      },
+      "year": "2024",
+      "dateIssued": "2024-02-28",
+      "category": "Education Technology",
+      "level": "Advanced",
+      "difficulty": "Advanced",
+      "duration": "50 jam",
+      "verified": true,
+      "certificate": true,
+      "status": "active",
+      "image": "https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=800",
+      "logo": "💡",
+      "urlCertificate": "https://iste.org/certificates/tech-integration",
+      "certificateLinks": {
+        "certificate": "https://iste.org/certificates/tech-integration",
+        "portfolio": null,
+        "video": null
+      },
+      "description": "Advanced course on integrating technology seamlessly into curriculum and instruction.",
+      "tags": [
+        "Tech Integration",
+        "Digital Literacy",
+        "Tool Evaluation",
+        "Future Ready Skills"
+      ],
+      "skills": [
+        "Tech Integration",
+        "Digital Literacy",
+        "Tool Evaluation",
+        "Future Ready Skills"
+      ],
+      "skills_learned": [
+        "Tech Integration",
+        "Digital Literacy",
+        "Tool Evaluation",
+        "Future Ready Skills"
+      ],
+      "themeColor": "#8B5CF6",
+      "ui": {
+        "badgeColor": "#8B5CF6"
+      }
+    },
+    {
+      "id": 16,
+      "title": "Student-Centered Learning",
+      "name": "Student-Centered Learning",
+      "issuer": "ASCD",
+      "provider": "ASCD",
+      "organization": {
+        "name": "ASCD",
+        "logo": "https://images.unsplash.com/photo-1577896851231-70ef18881754?w=100"
+      },
+      "year": "2023",
+      "dateIssued": "2023-10-14",
+      "category": "Education & Pedagogy",
+      "level": "Intermediate",
+      "difficulty": "Intermediate",
+      "duration": "35 jam",
+      "verified": true,
+      "certificate": true,
+      "status": "active",
+      "image": "https://images.unsplash.com/photo-1577896851231-70ef18881754?w=800",
+      "logo": "🎯",
+      "urlCertificate": "https://ascd.org/certificates/student-centered",
+      "certificateLinks": {
+        "certificate": "https://ascd.org/certificates/student-centered",
+        "portfolio": null,
+        "video": null
+      },
+      "description": "Strategies for shifting from teacher-centered to student-centered learning environments.",
+      "tags": [
+        "Student Agency",
+        "Choice Boards",
+        "Learning Stations",
+        "Self-Directed Learning"
+      ],
+      "skills": [
+        "Student Agency",
+        "Choice Boards",
+        "Learning Stations",
+        "Self-Directed Learning"
+      ],
+      "skills_learned": [
+        "Student Agency",
+        "Choice Boards",
+        "Learning Stations",
+        "Self-Directed Learning"
+      ],
+      "themeColor": "#EC4899",
+      "ui": {
+        "badgeColor": "#EC4899"
+      }
+    },
+    {
+      "id": 17,
+      "title": "Cultural Responsive Teaching",
+      "name": "Cultural Responsive Teaching",
+      "issuer": "Culturally Responsive Education",
+      "provider": "Culturally Responsive Education",
+      "organization": {
+        "name": "Culturally Responsive Education",
+        "logo": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=100"
+      },
+      "year": "2023",
+      "dateIssued": "2023-07-20",
+      "category": "Inclusive Pedagogy",
+      "level": "Intermediate",
+      "difficulty": "Intermediate",
+      "duration": "28 jam",
+      "verified": true,
+      "certificate": true,
+      "status": "active",
+      "image": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800",
+      "logo": "🌍",
+      "urlCertificate": "https://creeducation.org/certificates/culturally-responsive",
+      "certificateLinks": {
+        "certificate": "https://creeducation.org/certificates/culturally-responsive",
+        "portfolio": null,
+        "video": null
+      },
+      "description": "Developing culturally responsive teaching practices for diverse classroom settings.",
+      "tags": [
+        "Cultural Awareness",
+        "Inclusive Pedagogy",
+        "Bias Recognition",
+        "Equity in Education"
+      ],
+      "skills": [
+        "Cultural Awareness",
+        "Inclusive Pedagogy",
+        "Bias Recognition",
+        "Equity in Education"
+      ],
+      "skills_learned": [
+        "Cultural Awareness",
+        "Inclusive Pedagogy",
+        "Bias Recognition",
+        "Equity in Education"
+      ],
+      "themeColor": "#3B82F6",
+      "ui": {
+        "badgeColor": "#3B82F6"
+      }
+    },
+    {
+      "id": 18,
+      "title": "Data-Driven Instruction",
+      "name": "Data-Driven Instruction",
+      "issuer": "Assessment Academy",
+      "provider": "Assessment Academy",
+      "organization": {
+        "name": "Assessment Academy",
+        "logo": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=100"
+      },
+      "year": "2024",
+      "dateIssued": "2024-03-10",
+      "category": "Data & Assessment",
+      "level": "Advanced",
+      "difficulty": "Advanced",
+      "duration": "42 jam",
+      "verified": true,
+      "certificate": true,
+      "status": "active",
+      "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800",
+      "logo": "📈",
+      "urlCertificate": "https://assessmentacademy.org/certificates/data-driven",
+      "certificateLinks": {
+        "certificate": "https://assessmentacademy.org/certificates/data-driven",
+        "portfolio": null,
+        "video": null
+      },
+      "description": "Using student data to inform instructional decisions and personalize learning pathways.",
+      "tags": [
+        "Data Analysis",
+        "Progress Monitoring",
+        "Differentiation",
+        "Goal Setting"
+      ],
+      "skills": [
+        "Data Analysis",
+        "Progress Monitoring",
+        "Differentiation",
+        "Goal Setting"
+      ],
+      "skills_learned": [
+        "Data Analysis",
+        "Progress Monitoring",
+        "Differentiation",
+        "Goal Setting"
+      ],
+      "themeColor": "#10B981",
+      "ui": {
+        "badgeColor": "#10B981"
+      }
+    },
+    {
+      "id": 19,
+      "title": "Gamification in Education",
+      "name": "Gamification in Education",
+      "issuer": "Game-Based Learning",
+      "provider": "Game-Based Learning",
+      "organization": {
+        "name": "Game-Based Learning",
+        "logo": "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=100"
+      },
+      "year": "2023",
+      "dateIssued": "2023-11-25",
+      "category": "EdTech & Gamification",
+      "level": "Intermediate",
+      "difficulty": "Intermediate",
+      "duration": "32 jam",
+      "verified": true,
+      "certificate": true,
+      "status": "active",
+      "image": "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800",
+      "logo": "🎮",
+      "urlCertificate": "https://gamebasedlearning.org/certificates/gamification",
+      "certificateLinks": {
+        "certificate": "https://gamebasedlearning.org/certificates/gamification",
+        "portfolio": null,
+        "video": null
+      },
+      "description": "Applying game design elements and principles in educational contexts to increase engagement.",
+      "tags": [
+        "Game Design",
+        "Point Systems",
+        "Badges & Rewards",
+        "Engagement Strategies"
+      ],
+      "skills": [
+        "Game Design",
+        "Point Systems",
+        "Badges & Rewards",
+        "Engagement Strategies"
+      ],
+      "skills_learned": [
+        "Game Design",
+        "Point Systems",
+        "Badges & Rewards",
+        "Engagement Strategies"
+      ],
+      "themeColor": "#F59E0B",
+      "ui": {
+        "badgeColor": "#F59E0B"
+      }
+    }
   ]
 }

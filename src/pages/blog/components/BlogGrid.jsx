@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
-import { 
+import {
   FiCalendar,
   FiEye,
   FiHeart,
+  FiShare2,
   FiStar,
   FiClock,
   FiCheckCircle
 } from "react-icons/fi";
-import { getLabelColor, formatDate } from "../utils/blogUtils";
+import { getLabelColor, formatDate, formatNumber } from "../utils/blogUtils";
 
 export default function BlogGrid({
   currentBlogs,
@@ -64,19 +65,22 @@ function ArticleCard({ post, onOpenPopup, onAuthorClick, onShowTooltip, onHideTo
           </div>
         )}
 
-        {/* Overlay Info */}
+        {/* Overlay Info Dinamis */}
         <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3">
           <div className="flex items-center justify-between text-[10px] sm:text-xs text-white/90">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <span className="flex items-center gap-1 backdrop-blur-sm bg-black/30 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
-                <FiEye size={10} className="sm:w-3 sm:h-3" /> {post.views}
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="flex items-center gap-1 backdrop-blur-sm bg-black/40 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
+                <FiEye size={10} className="sm:w-3 sm:h-3 text-cyan-400" /> {formatNumber(post.views || 0)}
               </span>
-              <span className="flex items-center gap-1 backdrop-blur-sm bg-black/30 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
-                <FiHeart size={10} className="sm:w-3 sm:h-3" /> {post.likes}
+              <span className="flex items-center gap-1 backdrop-blur-sm bg-black/40 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
+                <FiHeart size={10} className="sm:w-3 sm:h-3 text-red-400" /> {formatNumber(post.likes || 0)}
+              </span>
+              <span className="flex items-center gap-1 backdrop-blur-sm bg-black/40 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
+                <FiShare2 size={10} className="sm:w-3 sm:h-3 text-purple-400" /> {formatNumber(post.shares || 0)}
               </span>
             </div>
-            <span className="flex items-center gap-1 backdrop-blur-sm bg-black/30 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
-              <FiStar size={10} className="sm:w-3 sm:h-3" /> {post.rating}
+            <span className="flex items-center gap-1 backdrop-blur-sm bg-black/40 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-yellow-300 font-semibold">
+              <FiStar size={10} className="sm:w-3 sm:h-3 text-yellow-400 fill-current" /> {Number(post.rating || 5.0).toFixed(1)}
             </span>
           </div>
         </div>
@@ -101,7 +105,7 @@ function ArticleCard({ post, onOpenPopup, onAuthorClick, onShowTooltip, onHideTo
         <h2 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3 group-hover:text-cyan-400 transition-colors line-clamp-2">
           {post.title}
         </h2>
-        
+
         <p className="text-gray-300 text-xs sm:text-sm line-clamp-2 sm:line-clamp-3 mb-3 sm:mb-4 leading-relaxed">
           {post.excerpt}
         </p>
@@ -116,7 +120,7 @@ function ArticleCard({ post, onOpenPopup, onAuthorClick, onShowTooltip, onHideTo
             onHideTooltip={onHideTooltip}
             showTooltip={showTooltip}
           />
-          
+
           <Link
             to={`/blog/${post.slug}`}
             onClick={(e) => e.stopPropagation()}

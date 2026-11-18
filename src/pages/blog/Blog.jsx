@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import blogs from "../../data/blog/data.json";
 import AiOverview from "./components/pencarian/AI/AiOverview";
-import SearchBar from "./components/pencarian/SearchBar"; 
+import SearchBar from "./components/pencarian/SearchBar";
 import { useBlogData } from "./hooks/useBlogData";
 import { useBlogFilters } from "./hooks/useBlogFilters";
 import { useDebounce } from "../../hooks/useDebounce";
 import { POSTS_PER_PAGE } from "./utils/constants";
+import { fetchAllPosts, subscribeToBlogPosts, formatSupabasePost } from "./services/blogSupabase";
+import blogService from "./helpers/BlogService";
 
 // Import komponen modular
 import BlogHeader from "./components/BlogHeader";
@@ -16,17 +17,82 @@ import BlogPagination from "./components/BlogPagination";
 import BlogPopup from "./components/BlogPopup";
 
 export default function Blog() {
+  const [blogList, setBlogList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState("newest");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [showTooltip, setShowTooltip] = useState(null);
-  
+  const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false);
+
   const [isAiActive, setIsAiActive] = useState(false);
-  
+
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Load from Supabase on mount & ensure body overflow cleanup
+  useEffect(() => {
+    let isMounted = true;
+    const loadPosts = () => {
+      fetchAllPosts()
+        .then((posts) => {
+          if (isMounted && Array.isArray(posts)) {
+            setBlogList(posts);
+            blogService.setBlogs(posts);
+          }
+          if (isMounted) setIsLoading(false);
+        })
+        .catch(() => {
+          if (isMounted) setIsLoading(false);
+        });
+    };
+
+    loadPosts();
+
+    // Refresh metrik dinamis saat user kembali ke tab ini
+    window.addEventListener('focus', loadPosts);
+
+    // Subscribe to realtime updates dari Supabase
+    const unsubscribe = subscribeToBlogPosts((payload) => {
+      if (!isMounted) return;
+      if (payload.eventType === 'UPDATE' && payload.new) {
+        const formatted = formatSupabasePost(payload.new);
+        setBlogList(prev => {
+          const updated = prev.map(p => p.slug === formatted.slug ? { ...p, ...formatted } : p);
+          blogService.setBlogs(updated);
+          return updated;
+        });
+      } else if (payload.eventType === 'INSERT' && payload.new) {
+        const formatted = formatSupabasePost(payload.new);
+        setBlogList(prev => {
+          const updated = [formatted, ...prev.filter(p => p.slug !== formatted.slug)];
+          blogService.setBlogs(updated);
+          return updated;
+        });
+      } else if (payload.eventType === 'DELETE' && payload.old) {
+        setBlogList(prev => {
+          const updated = prev.filter(p => p.id !== payload.old.id && p.slug !== payload.old.slug);
+          blogService.setBlogs(updated);
+          return updated;
+        });
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener('focus', loadPosts);
+      if (typeof unsubscribe === 'function') unsubscribe();
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
+  // Calculate bookmarked count
+  const bookmarkedCount = blogList.filter(b => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem(`blog_bookmarked_${b.slug}`) === 'true';
+  }).length;
 
   // Debounce search term to prevent heavy calculations on every keystroke
   const debouncedSearchTerm = useDebounce(searchTerm, 400);
@@ -37,8 +103,8 @@ export default function Blog() {
   }, [debouncedSearchTerm]);
 
   // Custom hooks untuk data processing
-  const processedBlogs = useBlogData(blogs);
-  const filteredBlogs = useBlogFilters(processedBlogs, debouncedSearchTerm, selectedCategory, sortBy);
+  const processedBlogs = useBlogData(blogList);
+  const filteredBlogs = useBlogFilters(processedBlogs, debouncedSearchTerm, selectedCategory, sortBy, showBookmarkedOnly);
 
   // Pagination
   const indexOfLast = currentPage * POSTS_PER_PAGE;
@@ -46,13 +112,13 @@ export default function Blog() {
   const currentBlogs = filteredBlogs.slice(indexOfFirst, indexOfLast);
 
   // Categories
-  const categories = ["all", ...new Set(blogs.map(post => post.category).filter(Boolean))];
+  const categories = ["all", ...new Set(blogList.map(post => post.category).filter(Boolean))];
 
   // Event handlers
   const handleAuthorClick = (e, author) => {
     e.stopPropagation();
     const slug = author.toLowerCase().replace(/\s+/g, '-');
-    navigate(`/blog/authors/${slug}`, { 
+    navigate(`/blog/authors/${slug}`, {
       state: { authorName: author }
     });
   };
@@ -85,10 +151,10 @@ export default function Blog() {
     if (q !== searchTerm) setSearchTerm(q);
     if (cat !== selectedCategory) setSelectedCategory(cat);
     if (sort !== sortBy) setSortBy(sort);
-    
+
     // Always reset to page 1 if URL search changes (likely a new search/filter)
     setCurrentPage(1);
-    
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
@@ -98,10 +164,10 @@ export default function Blog() {
     if (searchTerm) params.set("search", searchTerm);
     if (selectedCategory !== "all") params.set("category", selectedCategory);
     if (sortBy !== "newest") params.set("sort", sortBy);
-    
+
     const newSearch = params.toString();
     const currentSearch = location.search.replace(/^\?/, "");
-    
+
     if (newSearch !== currentSearch) {
       navigate({ search: newSearch ? `?${newSearch}` : "" }, { replace: true });
     }
@@ -120,10 +186,10 @@ export default function Blog() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[var(--color-gray-900)] via-[var(--color-gray-800)] to-[var(--color-gray-900)]">
+    <div className="min-h-screen bg-[#0f172a]">
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20 text-gray-50 relative" style={{ zIndex: 1 }}>
         <BlogHeader />
-        
+
         <BlogControls
           blogs={processedBlogs}
           searchTerm={searchTerm}
@@ -135,6 +201,9 @@ export default function Blog() {
           setSortBy={setSortBy}
           categories={categories}
           onAiClick={handleAiToggle}
+          showBookmarkedOnly={showBookmarkedOnly}
+          setShowBookmarkedOnly={setShowBookmarkedOnly}
+          bookmarkedCount={bookmarkedCount}
         />
 
         {/* AI Overview */}
@@ -152,13 +221,18 @@ export default function Blog() {
         {/* Stats */}
         <div className="flex flex-wrap gap-3 sm:gap-4 mb-6 sm:mb-8 text-xs sm:text-sm text-gray-400">
           <span>📄 {filteredBlogs.length} artikel ditemukan</span>
+          {showBookmarkedOnly && (
+            <span className="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full flex items-center gap-1">
+              🔖 Koleksi Tersimpan
+            </span>
+          )}
           {selectedCategory !== "all" && <span>📂 Kategori: {selectedCategory}</span>}
           {debouncedSearchTerm && <span>🔍 Pencarian: "{debouncedSearchTerm}"</span>}
         </div>
 
         {/* No Results */}
         {filteredBlogs.length === 0 && (
-          <NoResults />
+          <NoResults isBookmark={showBookmarkedOnly} />
         )}
 
         {/* Articles Grid */}
@@ -195,7 +269,19 @@ export default function Blog() {
   );
 }
 
-function NoResults() {
+function NoResults({ isBookmark = false }) {
+  if (isBookmark) {
+    return (
+      <div className="text-center py-16 sm:py-20 bg-gray-800/30 rounded-xl sm:rounded-2xl border border-gray-700/50">
+        <div className="text-5xl sm:text-6xl mb-4">🔖</div>
+        <p className="text-gray-300 text-base sm:text-lg mb-2 font-medium">Belum ada artikel yang Anda simpan</p>
+        <p className="text-xs sm:text-sm text-gray-400 max-w-md mx-auto px-4">
+          Jelajahi artikel blog dan klik tombol <strong>"Simpan"</strong> pada artikel untuk memasukkannya ke koleksi favorit Anda!
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="text-center py-16 sm:py-20 bg-gray-800/30 rounded-xl sm:rounded-2xl border border-gray-700/50">
       <div className="text-5xl sm:text-6xl mb-4">🔍</div>

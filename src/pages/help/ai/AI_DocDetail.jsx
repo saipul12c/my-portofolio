@@ -75,7 +75,7 @@ export default function AI_DocDetail() {
 
   if (!entry) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 text-gray-100 py-12">
+      <div className="min-h-screen bg-[var(--color-gray-900)] text-gray-100 py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gray-800/20 backdrop-blur-md rounded-2xl border border-white/5 p-12 text-center shadow-2xl">
             <h2 className="text-3xl font-bold text-gray-200 mb-4">Versi tidak ditemukan</h2>
@@ -97,7 +97,7 @@ export default function AI_DocDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0c] text-gray-100 py-12 selection:bg-blue-500/30 selection:text-blue-200">
+    <div className="min-h-screen bg-[var(--color-gray-900)] text-gray-100 py-12 selection:bg-cyan-500/30 selection:text-cyan-200">
       {/* Background Ornaments */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/5 blur-[120px] rounded-full" />

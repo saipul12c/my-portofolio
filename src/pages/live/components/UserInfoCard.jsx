@@ -95,7 +95,7 @@ export const ActiveUsersList = ({ users, currentUser, onMention }) => {
   );
 };
 
-export const UserProfile Preview = ({ user }) => {
+export const UserProfilePreview = ({ user }) => {
   if (!user) return null;
 
   const roleColors = {

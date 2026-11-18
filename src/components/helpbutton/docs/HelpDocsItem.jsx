@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, memo } from "react";
 import * as Icons from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import docsData from "./data/docsSections.json";
+import docsData from "../../../data/helpbutton/docs/docsSections.json";
 
 // --- HELPER COMPONENTS ---
 
@@ -406,7 +406,7 @@ export default function Doct() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#020617] text-gray-100 flex flex-col items-center py-12 sm:py-20 px-4 sm:px-6 relative overflow-hidden font-sans selection:bg-cyan-500 selection:text-white">
+    <div className="min-h-screen bg-[var(--color-gray-900)] text-gray-100 flex flex-col items-center py-12 sm:py-20 px-4 sm:px-6 relative overflow-hidden font-sans selection:bg-cyan-500 selection:text-white">
       
       {/* Background Glows */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">

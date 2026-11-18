@@ -3,7 +3,7 @@
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import { SettingsSidebar } from '../SettingsSidebar';
+import { SettingsSidebar } from './SettingsSidebar';
 
 describe('SettingsSidebar - Navigation Fix', () => {
   

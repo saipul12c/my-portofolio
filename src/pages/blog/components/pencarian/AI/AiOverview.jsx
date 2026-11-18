@@ -3,10 +3,13 @@ import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import nlp from "compromise";
-import faqsData from "../../../../../components/helpbutton/faq/data/faqs.json";
-import commitmentsData from "../../../../../components/helpbutton/komit/data/commitments.json";
+import faqsData from "../../../../../data/helpbutton/faq/faqs.json";
+import commitmentsData from "../../../../../data/helpbutton/komit/commitments.json";
 import softSkillsData from "../../../../../data/skills/softskills.json";
 import { compileAuthorProfiles, findAuthorByName } from "../../../utils/authorUtils";
+import { cleanText, extractKeywords, detectIntents } from "../../../../../utils/ai/nlpCore";
+import { findRelatedEntities } from "../../../../../utils/ai/knowledgeBase";
+import { recordAITopic, getCrossAgentGreeting } from "../../../../../utils/ai/sessionMemory";
 
 export default function AiOverview({ searchTerm, filteredBlogs, allBlogs, onSearch }) {
   const [visible, setVisible] = useState(false);
@@ -43,6 +46,10 @@ export default function AiOverview({ searchTerm, filteredBlogs, allBlogs, onSear
 
     // Use a small delay to ensure the browser can render the "Thinking" state first
     const timer = setTimeout(() => {
+      recordAITopic(searchTerm, 'BlogAI');
+      const crossGreeting = getCrossAgentGreeting('BlogAI');
+      const relatedEntities = findRelatedEntities(searchTerm);
+
       // --- DATA SOURCE CONFIG ---
       // AI now strictly follows the filtered results. No silent local fallback to all articles.
       const dataSource = (filteredBlogs && filteredBlogs.length > 0) ? filteredBlogs : [];
@@ -134,7 +141,7 @@ export default function AiOverview({ searchTerm, filteredBlogs, allBlogs, onSear
           `Halo! ✨ Berdasarkan hasil riset kilat saya di blog kamu, ini lho informasi soal **"${searchTerm}"**: `
         ];
         const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
-        let answer = randomGreeting;
+        let answer = crossGreeting ? `${crossGreeting}\n\n` : randomGreeting;
         let confidence = "high";
 
         // --- CROSS-CONTEXT ENRICHMENT (FAQ & Commitments) ---
@@ -357,6 +364,7 @@ export default function AiOverview({ searchTerm, filteredBlogs, allBlogs, onSear
         qualityMetrics,
         insights: generateInsights(),
         topRelatedArticles,
+        relatedEntities,
         questionType: activeQuestionType
       });
       setIsThinking(false);
@@ -562,11 +570,70 @@ export default function AiOverview({ searchTerm, filteredBlogs, allBlogs, onSear
         </>
       )}
 
+      {/* === Actionable Quick Chips & Cross Navigation === */}
+      {!isThinking && aiAnalysis?.relatedEntities && (
+        <div className="bg-gray-900/60 border border-cyan-500/20 rounded-xl p-3 sm:p-4 my-4 space-y-2">
+          <div className="flex items-center gap-2 text-xs font-semibold text-cyan-400">
+            <span>🚀</span>
+            <span>Aksi Cepat & Eksplorasi Lanjutan:</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {aiAnalysis.relatedEntities.projects.length > 0 && (
+              <button
+                onClick={() => navigate(`/projek?search=${encodeURIComponent(searchTerm)}`)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-400/30 text-xs font-medium transition-all"
+              >
+                <span>💻</span>
+                <span>Lihat Proyek Terkait ({aiAnalysis.relatedEntities.projects.length})</span>
+              </button>
+            )}
+            {aiAnalysis.relatedEntities.skills.length > 0 && (
+              <button
+                onClick={() => navigate(`/skills`)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-400/30 text-xs font-medium transition-all"
+              >
+                <span>⚡</span>
+                <span>Cek Skill Terkait ({aiAnalysis.relatedEntities.skills.length})</span>
+              </button>
+            )}
+            {aiAnalysis.relatedEntities.certificates.length > 0 && (
+              <button
+                onClick={() => navigate(`/sertif`)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-400/30 text-xs font-medium transition-all"
+              >
+                <span>🎓</span>
+                <span>Sertifikasi Terkait ({aiAnalysis.relatedEntities.certificates.length})</span>
+              </button>
+            )}
+            {aiAnalysis.relatedEntities.testimonials.length > 0 && (
+              <button
+                onClick={() => navigate(`/pengalaman/testimoni`)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/30 text-xs font-medium transition-all"
+              >
+                <span>⭐</span>
+                <span>Testimoni ({aiAnalysis.relatedEntities.testimonials.length})</span>
+              </button>
+            )}
+            <button
+              onClick={() => {
+                const helpBtn = document.querySelector('[aria-label="Buka Menu Bantuan"]');
+                if (helpBtn) helpBtn.click();
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-400/30 text-xs font-medium transition-all"
+            >
+              <span>💬</span>
+              <span>Tanya Lebih Lanjut di Live Chat</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* === AI Footer === */}
-      <div className="border-t border-white/10 pt-3 sm:pt-4 mt-3 sm:mt-4">
-        <p className="text-gray-500 text-[10px] sm:text-xs text-center">
-          🤖 Analisis AI didukung oleh SaipulAI • Data diverifikasi real-time • Terakhir diperbarui secara real-time
+      <div className="border-t border-white/10 pt-3 sm:pt-4 mt-3 sm:mt-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-gray-400 text-[10px] sm:text-xs">
+        <p className="text-center sm:text-left">
+          🤖 Analisis AI Multi-Context • Blog, Projects, Skills & Knowledge Base Terpadu
         </p>
+        <span className="text-cyan-400/80 font-mono">Unified Intelligence</span>
       </div>
 
       {/* === Glowing Bottom Border === */}

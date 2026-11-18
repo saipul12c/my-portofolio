@@ -2,13 +2,12 @@ import React from "react";
 import { motion } from "framer-motion";
 import { SkillCard } from "./SkillCard";
 
-const LanguageSectionComponent = ({ 
-  title, 
-  data, 
-  icon, 
-  isProgramming = false, 
+const LanguageSectionComponent = ({
+  title,
+  data,
+  icon,
+  isProgramming = false,
   viewMode,
-  setSelectedSkill,
   expandedTags,
   toggleExpandedTags,
   searchTerm,
@@ -18,7 +17,7 @@ const LanguageSectionComponent = ({
 
   return (
     <section className="space-y-4 sm:space-y-6">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         className="flex items-center space-x-2 sm:space-x-3"
@@ -31,21 +30,20 @@ const LanguageSectionComponent = ({
           </p>
         </div>
       </motion.div>
-      
-      <div className={viewMode === "grid" ? 
-        "grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4" : 
+
+      <div className={viewMode === "grid" ?
+        "grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4" :
         "space-y-2 sm:space-y-3"
       }>
         {data.map((item, index) => {
           const skillId = `${item.nama}-${isProgramming ? 'prog' : 'lang'}`;
           return (
-            <SkillCard 
+            <SkillCard
               key={skillId}
               bahasa={item}
               isProgramming={isProgramming}
               delay={index * 50}
               isList={viewMode === "list"}
-              setSelectedSkill={setSelectedSkill}
               isExpanded={!!expandedTags[skillId]}
               onToggle={() => toggleExpandedTags(skillId)}
             />
@@ -54,7 +52,7 @@ const LanguageSectionComponent = ({
       </div>
 
       {data.length === 0 && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="text-center py-8 sm:py-12"

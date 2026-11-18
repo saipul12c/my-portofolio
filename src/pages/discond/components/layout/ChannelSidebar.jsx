@@ -29,8 +29,8 @@ const ChannelSidebar = ({ mobileClose }) => {
 
   if (!selectedServer) {
     return (
-      <div className="w-60 bg-[var(--dc-bg-2)] flex flex-col">
-        <div className="md:hidden bg-[var(--dc-bg-2)] p-2 flex items-center justify-between">
+      <div className="w-60 bg-[#2f3136] flex flex-col">
+        <div className="md:hidden bg-[#2f3136] p-2 flex items-center justify-between">
           <div className="text-white text-sm font-semibold">Channels</div>
           <button onClick={() => mobileClose?.()} className="text-gray-300 p-1">
             <X className="w-5 h-5" />
@@ -44,7 +44,7 @@ const ChannelSidebar = ({ mobileClose }) => {
             <p className="text-gray-400 text-sm p-4">Tidak ada channel aktif atau backend belum tersedia.</p>
           )}
           {activeChannels.map(ch => (
-            <div key={ch.id} className="px-3 py-2 m-2 rounded bg-[var(--dc-surface)] hover:bg-[var(--dc-surface-2)] cursor-pointer" onClick={() => setSelectedChannel(ch)}>
+            <div key={ch.id} className="px-3 py-2 m-2 rounded bg-[#40444b] hover:bg-[#292b2f] cursor-pointer" onClick={() => setSelectedChannel(ch)}>
               <div className="flex items-center justify-between">
                 <div className="text-white font-medium">{ch.server_name} / {ch.name}</div>
                 <div className="text-gray-400 text-sm">{ch.member_count}👥</div>
@@ -58,8 +58,8 @@ const ChannelSidebar = ({ mobileClose }) => {
   }
 
   return (
-    <div className="w-60 bg-[var(--dc-bg-2)] flex flex-col">
-      <div className="md:hidden bg-[var(--dc-bg-2)] p-2 flex items-center justify-between">
+    <div className="w-60 bg-[#2f3136] flex flex-col">
+      <div className="md:hidden bg-[#2f3136] p-2 flex items-center justify-between">
         <div className="text-white text-sm font-semibold">Channels</div>
         <button onClick={() => mobileClose?.()} className="text-gray-300 p-1">
           <X className="w-5 h-5" />
@@ -89,8 +89,8 @@ const ChannelSidebar = ({ mobileClose }) => {
                 whileHover={{ backgroundColor: 'rgba(79, 84, 92, 0.16)' }}
                 className={`px-4 py-1 mx-2 rounded flex items-center space-x-2 cursor-pointer transition-colors ${
                   selectedChannel?.id === channel.id
-                    ? 'bg-[var(--dc-surface-2)] text-white shadow-inner'
-                    : 'text-gray-400 hover:text-gray-300 hover:bg-[var(--dc-surface)]'
+                    ? 'bg-[#292b2f] text-white shadow-inner'
+                    : 'text-gray-400 hover:text-gray-300 hover:bg-[#40444b]'
                 }`}
                 onClick={() => setSelectedChannel(channel)}
               >
@@ -118,7 +118,7 @@ const ChannelSidebar = ({ mobileClose }) => {
                 whileHover={{ backgroundColor: 'rgba(79, 84, 92, 0.16)' }}
                 className={`px-4 py-1 mx-2 rounded flex items-center space-x-2 cursor-pointer ${
                   selectedChannel?.id === channel.id
-                    ? 'bg-[var(--dc-surface-2)] text-white'
+                    ? 'bg-[#292b2f] text-white'
                     : 'text-gray-400 hover:text-gray-300'
                 }`}
                 onClick={() => setSelectedChannel(channel)}
@@ -138,13 +138,13 @@ const ChannelSidebar = ({ mobileClose }) => {
           <div className="space-y-2">
             {(members || []).filter(m => (m.presence || '').toLowerCase() === 'online').slice(0,5).map((m) => (
               <div key={m.id} className="flex items-center space-x-2 text-gray-400 hover:text-gray-300 cursor-pointer">
-                <div className="w-2 h-2 bg-[var(--dc-accent)] rounded-full"></div>
+                <div className="w-2 h-2 bg-[#3ba55d] rounded-full"></div>
                 <span className="text-sm">{m.username || m.name || (`user-${m.id}`)}</span>
               </div>
             ))}
             {(!(members || []).length) && [1,2,3,4,5].map(i => (
               <div key={i} className="flex items-center space-x-2 text-gray-400 hover:text-gray-300 cursor-pointer">
-                <div className="w-2 h-2 bg-[var(--dc-accent)] rounded-full"></div>
+                <div className="w-2 h-2 bg-[#3ba55d] rounded-full"></div>
                 <span className="text-sm">User{i}</span>
               </div>
             ))}

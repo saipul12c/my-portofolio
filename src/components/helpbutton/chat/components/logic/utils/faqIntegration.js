@@ -2,8 +2,8 @@
  * faqIntegration.js
  * Bridge for sharing FAQ data and logic with Live Chat system.
  */
-import faqsData from "../../../../faq/data/faqs.json";
-import commitmentsData from "../../../../komit/data/commitments.json";
+import faqsData from "../../../../../../data/helpbutton/faq/faqs.json";
+import commitmentsData from "../../../../../../data/helpbutton/komit/commitments.json";
 
 const faqCache = new Map();
 

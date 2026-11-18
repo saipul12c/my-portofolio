@@ -15,6 +15,25 @@ import { MemberSidebar } from './components/MemberSidebar';
 import { ChatHeader } from './components/ChatHeader';
 import { ChatInputArea } from './components/ChatInputArea';
 import { AppealModal } from './components/AppealModal';
+import { MarkdownRenderer } from './components/MarkdownRenderer';
+import { ChannelBar } from './components/ChannelBar';
+import { PollCard } from './components/PollCard';
+import { PollModal } from './components/PollModal';
+import { MessageSearchModal } from './components/MessageSearchModal';
+import { AISummarizerModal } from './components/AISummarizerModal';
+import { LeaderboardModal } from './components/LeaderboardModal';
+import { isAiMentioned, extractAiQuery, generateAiRoomReply } from './utils/saipulRoomIntegration';
+import { MessageItem } from './components/MessageItem';
+import { ImageLightbox } from './components/ImageLightbox';
+import { 
+  playSendSound, 
+  playReceiveSound, 
+  playMentionSound, 
+  isSoundEnabled, 
+  setSoundEnabled 
+} from './utils/soundEffects';
+import { compressImageToWebP } from './utils/imageCompressor';
+import { getCachedMessages, setCachedMessages } from './utils/cacheManager';
 import { Paperclip, Image as ImageIcon, Users as UsersIcon, AlertTriangle, Bell, Sun, Moon, Monitor, ShieldAlert } from 'lucide-react';
 import { containsProfanity } from './utils/profanityFilter';
 
@@ -41,7 +60,7 @@ const INITIAL_CONFIG = {
 };
 
 function Live() {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => getCachedMessages('umum'));
   const [newMessage, setNewMessage] = useState('');
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -86,12 +105,76 @@ function Live() {
   const [showMembers, setShowMembers] = useState(false);
   const [allProfiles, setAllProfiles] = useState([]);
 
+  // Channel, Search, AI & Community Features States
+  const [activeChannel, setActiveChannel] = useState('umum');
+  const [showSearchModal, setShowSearchModal] = useState(false);
+  const [showSummarizerModal, setShowSummarizerModal] = useState(false);
+  const [showLeaderboardModal, setShowLeaderboardModal] = useState(false);
+  const [showPollModal, setShowPollModal] = useState(false);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const [highlightedMessageId, setHighlightedMessageId] = useState(null);
+  const [soundEnabled, setSoundState] = useState(() => isSoundEnabled());
+  const [lightboxMedia, setLightboxMedia] = useState({ isOpen: false, url: '' });
+
+  const toggleSound = () => {
+    const next = !soundEnabled;
+    setSoundState(next);
+    setSoundEnabled(next);
+  };
+
+  // Sync cache with current messages
+  useEffect(() => {
+    if (messages.length > 0) {
+      setCachedMessages(activeChannel, messages);
+    }
+  }, [messages, activeChannel]);
+
+  // Slowmode Cooldown Timer
+  useEffect(() => {
+    if (cooldownSeconds <= 0) return;
+    const timer = setInterval(() => {
+      setCooldownSeconds(prev => Math.max(0, prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldownSeconds]);
+
+  // Global Keyboard Shortcut: Ctrl+F / Ctrl+K for Search
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'f' || e.key === 'k')) {
+        e.preventDefault();
+        setShowSearchModal(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Filter messages by channel & calculate counts
+  const channelCounts = React.useMemo(() => {
+    const counts = {};
+    messages.forEach(m => {
+      const ch = m.channel || 'umum';
+      counts[ch] = (counts[ch] || 0) + 1;
+    });
+    return counts;
+  }, [messages]);
+
+  const filteredChannelMessages = React.useMemo(() => {
+    return messages.filter(m => (m.channel || 'umum') === activeChannel);
+  }, [messages, activeChannel]);
+
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const messageInputRef = useRef(null);
   const emojiPickerRef = useRef(null);
   const lastSentRef = useRef(0);
   const fetchControllerRef = useRef(null);
+  const userRef = useRef(user);
+
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
   const [showAppealModal, setShowAppealModal] = useState(false);
   const [appealReason, setAppealReason] = useState('');
   const [isSubmittingAppeal, setIsSubmittingAppeal] = useState(false);
@@ -160,9 +243,10 @@ function Live() {
   // Check user status in Database (Security Enhanced)
   const checkUserStatus = useCallback(async () => {
     try {
-      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+      const authRes = await supabase.auth.getUser().catch(() => null);
+      const authUser = authRes?.data?.user;
       
-      if (authError || !authUser) {
+      if (!authUser) {
         setUser(null);
         return;
       }
@@ -307,9 +391,11 @@ function Live() {
         fetchReactionsForMessages(data.map(m => m.id));
       } else {
         setHasMore(false);
+        isPrependingOlderRef.current = false;
       }
     } catch (err) {
       console.error('Error loading more messages:', err);
+      isPrependingOlderRef.current = false;
     } finally {
       setFetchingMore(false);
     }
@@ -321,6 +407,11 @@ function Live() {
     let messageSubscription = supabase
       .channel('public:messages')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+        // Play receive sound if message is from someone else
+        if (payload.new && payload.new.username !== userRef.current?.username) {
+          playReceiveSound();
+        }
+
         setMessages(prev => {
           const existingIndex = prev.findIndex(m => 
             (m.id === payload.new.id) || 
@@ -343,7 +434,7 @@ function Live() {
         setMessages(prev => prev.filter(m => m.id !== payload.old.id));
       })
       .on('broadcast', { event: 'typing' }, ({ payload }) => {
-        if (!user || payload.id !== user.id) {
+        if (!userRef.current || payload.id !== userRef.current.id) {
           setTypingUsers(prev => ({
             ...prev,
             [payload.id]: { username: payload.username, timestamp: Date.now() }
@@ -374,6 +465,7 @@ function Live() {
           };
           setMentions(prev => [newMention, ...prev]);
           setUnreadMentions(prev => prev + 1);
+          playMentionSound();
         }
       });
     }
@@ -387,19 +479,17 @@ function Live() {
 
     // 2. Setup subscription for presence (Online Users)
     let presenceChannel = null;
-    if (user) {
+    if (user?.id) {
       presenceChannel = supabase.channel('online-users');
 
       presenceChannel
         .on('presence', { event: 'sync' }, () => {
           const newState = presenceChannel.presenceState();
-          // newState format: { "uuid-1": [{ username: "A", ... }], "uuid-2": ... }
           const activeUsers = {};
           Object.keys(newState).forEach(key => {
             if (newState[key] && newState[key][0]) {
-              // Simpan data user berdasarkan email atau id
               const userData = newState[key][0];
-              activeUsers[userData.email] = userData;
+              activeUsers[userData.id || userData.username] = userData;
             }
           });
           setOnlineUsers(activeUsers);
@@ -420,12 +510,11 @@ function Live() {
           });
       })
       .subscribe(async (status) => {
-          if (status === 'SUBSCRIBED') {
+          if (status === 'SUBSCRIBED' && userRef.current) {
             await presenceChannel.track({
-              id: user.id,
-              email: user.email,
-              username: user.username,
-              role: user.role,
+              id: userRef.current.id,
+              username: userRef.current.username,
+              role: userRef.current.role,
               onlineAt: new Date().toISOString(),
             });
           }
@@ -489,7 +578,7 @@ function Live() {
       if (presenceChannel) supabase.removeChannel(presenceChannel);
       if (userProfileSubscription) supabase.removeChannel(userProfileSubscription);
     };
-  }, [user]);
+  }, [user?.id]);
 
   // Load initial data
   useEffect(() => {
@@ -692,7 +781,7 @@ function Live() {
     setReplyTo(null);
   };
 
-  // Send message to Database
+  // Send message to Database (Dengan Graceful Fallback jika kolom baru belum dimigrasi di Supabase)
   const sendMessageToDatabase = async (messageData) => {
     try {
       const { data, error } = await supabase
@@ -700,13 +789,121 @@ function Live() {
         .insert([messageData])
         .select();
 
-      if (error) throw error;
+      if (error) {
+        // Fallback jika database belum menjalankan SQL migrasi channel/poll_data/is_best_answer
+        if (error.message && (error.message.includes('channel') || error.message.includes('poll_data') || error.message.includes('is_best_answer'))) {
+          const { channel, is_best_answer, poll_data, ...legacyData } = messageData;
+          const retryRes = await supabase.from('messages').insert([legacyData]).select();
+          if (retryRes.error) throw retryRes.error;
+          return { data: retryRes.data[0], error: null };
+        }
+        throw error;
+      }
       return { data: data[0], error: null };
     } catch (err) {
       return { data: null, error: err };
     }
   };
 
+  // Handle Polling Creation
+  const handleCreatePoll = async (pollData) => {
+    if (!user) return;
+    try {
+      const correlationId = `${user.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const messageData = {
+        user_id: user.id,
+        username: user.username,
+        content: `📊 **Jajak Pendapat**: ${pollData.question}`,
+        role: user.role,
+        channel: activeChannel,
+        poll_data: pollData,
+        correlation_id: correlationId,
+        created_at: new Date().toISOString(),
+        timestamp: Date.now(),
+        status: 'sent'
+      };
+
+      setMessages(prev => [messageData, ...prev]);
+      const { data: saved } = await sendMessageToDatabase(messageData);
+      if (saved) {
+        setMessages(prev => prev.map(m => m.correlation_id === correlationId ? saved : m));
+      }
+    } catch (err) {
+      console.error('Failed to create poll message:', err);
+    }
+  };
+
+  // Handle Polling Vote
+  const handleVotePoll = async (pollId, optionId) => {
+    if (!user) return;
+    const currentUserId = user.id || user.username;
+
+    setMessages(prev => prev.map(msg => {
+      if (msg.poll_data && msg.poll_data.id === pollId) {
+        const prevVoted = msg.poll_data.votedUsers?.[currentUserId];
+        if (prevVoted === optionId) return msg;
+
+        const updatedOptions = msg.poll_data.options.map(opt => {
+          let votes = opt.votes || 0;
+          if (opt.id === optionId) votes += 1;
+          if (prevVoted && opt.id === prevVoted) votes = Math.max(0, votes - 1);
+          return { ...opt, votes };
+        });
+
+        const updatedPoll = {
+          ...msg.poll_data,
+          options: updatedOptions,
+          votedUsers: {
+            ...(msg.poll_data.votedUsers || {}),
+            [currentUserId]: optionId
+          },
+          totalVotes: updatedOptions.reduce((s, o) => s + o.votes, 0)
+        };
+
+        if (msg.id) {
+          supabase
+            .from('messages')
+            .update({ poll_data: updatedPoll })
+            .eq('id', msg.id)
+            .then(() => {});
+        }
+
+        return { ...msg, poll_data: updatedPoll };
+      }
+      return msg;
+    }));
+  };
+
+  // Handle Best Answer Toggle
+  const handleToggleBestAnswer = async (message) => {
+    if (!user) return;
+    const newStatus = !message.is_best_answer;
+    setMessages(prev => prev.map(m => m.id === message.id ? { ...m, is_best_answer: newStatus } : m));
+
+    try {
+      await supabase.from('messages').update({ is_best_answer: newStatus }).eq('id', message.id);
+    } catch (err) {
+      console.warn('Failed to toggle best answer:', err);
+    }
+  };
+
+  // Handle Jump to Message (dari hasil Pencarian)
+  const handleJumpToMessage = (messageId) => {
+    const targetMsg = messages.find(m => m.id === messageId);
+    if (targetMsg && targetMsg.channel && targetMsg.channel !== activeChannel) {
+      setActiveChannel(targetMsg.channel);
+    }
+    setHighlightedMessageId(messageId);
+    setTimeout(() => {
+      const el = document.getElementById(`msg-${messageId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 150);
+    setTimeout(() => {
+      setHighlightedMessageId(null);
+    }, 3500);
+  };
 
   // Handle send message
   const handleSendMessage = async (e, mediaUrl = null) => {
@@ -762,6 +959,7 @@ function Live() {
         username: user.username,
         content: messageContent,
         role: user.role,
+        channel: activeChannel,
         reply_to: replyTo ? {
           id: replyTo.id || replyTo.timestamp,
           username: replyTo.username,
@@ -778,6 +976,7 @@ function Live() {
       setMessages(prev => [messageData, ...prev.slice(0, 99)]);
       setReplyTo(null);
       setNewMessage('');
+      playSendSound();
 
       // 2. Send to DB
       const { data: savedData, error: sendError } = await sendMessageToDatabase({
@@ -802,8 +1001,12 @@ function Live() {
       const newCount = user.messageCount + 1;
       setUser(prev => ({ ...prev, messageCount: newCount }));
 
+      // Slowmode cooldown untuk member reguler
+      if (!['SUPER_ADMIN', 'ADMIN'].includes(user.role)) {
+        setCooldownSeconds(5);
+      }
+
       // 5. Achievement Check: Handled by Backend DB Trigger
-      // We just need to refresh achievements locally if count is special
       if ([1, 10, 50, 100].includes(newCount)) {
         setTimeout(() => loadAchievements(user.id), 2000);
       }
@@ -811,8 +1014,39 @@ function Live() {
       setSuccess('Pesan terkirim!');
       setTimeout(() => setSuccess(''), 3000);
 
-      // 6. Mentions are now handled automatically by the Database Trigger
-      // (Simplified frontend logic for better security and performance)
+      // 6. Integrasi Cerdas AI Saipul Langsung di Room jika di-mention
+      if (isAiMentioned(messageContent)) {
+        const aiQuery = extractAiQuery(messageContent);
+        setTimeout(async () => {
+          try {
+            const botReply = await generateAiRoomReply(aiQuery, user.username);
+            const botCorrelationId = `saipul-${Date.now()}`;
+            const botMessage = {
+              user_id: null,
+              username: 'Saipul AI',
+              content: botReply,
+              role: 'SUPER_ADMIN',
+              channel: activeChannel,
+              reply_to: {
+                id: savedData?.id || correlationId,
+                username: user.username,
+                content: messageContent.substring(0, 50) + (messageContent.length > 50 ? '...' : '')
+              },
+              correlation_id: botCorrelationId,
+              created_at: new Date().toISOString(),
+              timestamp: Date.now(),
+              status: 'sent'
+            };
+
+            const { data: botSaved } = await sendMessageToDatabase(botMessage);
+            if (botSaved) {
+              setMessages(prev => [botSaved, ...prev]);
+            }
+          } catch (aiErr) {
+            console.warn('Saipul AI reply failed:', aiErr);
+          }
+        }, 1200);
+      }
 
       messageInputRef.current?.focus();
     } catch (err) {
@@ -949,15 +1183,23 @@ function Live() {
 
   const fetchAllProfiles = async () => {
     try {
-      const { data, error } = await supabase
-        .from('users')
+      // Use 'profiles' view to respect email privacy
+      let { data, error } = await supabase
+        .from('profiles')
         .select('*')
         .order('nama', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        const res = await supabase
+          .from('users')
+          .select('id, nama, role, status, bio, custom_status, created_at')
+          .order('nama', { ascending: true });
+        data = res.data;
+      }
+
       const mapped = (data || []).map(u => ({
         ...u,
-        username: u.nama || u.email?.split('@')[0]
+        username: u.nama || u.email?.split('@')[0] || 'Member'
       }));
       setAllProfiles(mapped);
     } catch (err) {
@@ -1087,30 +1329,27 @@ function Live() {
     }
   };
 
-  // Media Upload Logic
+  // Media Upload Logic (Auto-Compressed to WebP)
   const handleFileSelect = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
+    const rawFile = e.target.files?.[0];
+    if (!rawFile || !user) return;
 
-    if (!file.type.startsWith('image/')) {
+    if (!rawFile.type.startsWith('image/')) {
       setError('Hanya file gambar yang diperbolehkan');
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      setError('Ukuran gambar maksimal 5MB');
       return;
     }
 
     setUploadingMedia(true);
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
+      // 1. Client-side Image Compression ke format WebP hemat kuota
+      const file = await compressImageToWebP(rawFile);
+      const fileExt = file.name.split('.').pop() || 'webp';
+      const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 6)}.${fileExt}`;
       const filePath = `${user.id}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('live_discussion_media')
-        .upload(filePath, file);
+        .upload(filePath, file, { contentType: file.type || 'image/webp' });
 
       if (uploadError) throw uploadError;
 
@@ -1120,7 +1359,7 @@ function Live() {
 
       // Send image URL as a message
       await handleSendMessage(null, data.publicUrl);
-      setSuccess('Gambar berhasil diunggah!');
+      setSuccess('Gambar teroptimasi berhasil diunggah!');
     } catch (err) {
       console.error('Error uploading image:', err);
       setError('Gagal mengunggah gambar.');
@@ -1180,6 +1419,12 @@ function Live() {
   // Save edited message
   const handleSaveEdit = async () => {
     if (!newMessage.trim() || !editingMessage) return;
+
+    if (containsProfanity(newMessage.trim())) {
+      setError('Pesan Anda mengandung kata-kata yang tidak diperbolehkan. Mohon jaga kesopanan.');
+      return;
+    }
+
     setSending(true);
     try {
       const { error } = await supabase
@@ -1245,7 +1490,7 @@ function Live() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#020617] flex items-center justify-center relative overflow-hidden">
+      <div className="min-h-screen bg-[var(--color-gray-900)] flex items-center justify-center relative overflow-hidden">
         <motion.div 
           animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
           transition={{ duration: 4, repeat: Infinity }}
@@ -1262,7 +1507,7 @@ function Live() {
   // Punishment Screen (Banned User)
   if (user && user.banReason) {
     return (
-      <div className="min-h-screen bg-[#020617] flex items-center justify-center p-6 relative overflow-hidden">
+      <div className="min-h-screen bg-[var(--color-gray-900)] flex items-center justify-center p-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-500/10 via-transparent to-transparent opacity-50" />
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
@@ -1348,6 +1593,19 @@ function Live() {
         goToDashboard={goToDashboard}
         openProfileEditor={openProfileEditor}
         handleAuthAction={handleAuthAction}
+        onOpenSearch={() => setShowSearchModal(true)}
+        onOpenLeaderboard={() => setShowLeaderboardModal(true)}
+        onOpenSummarizer={() => setShowSummarizerModal(true)}
+        onOpenPollModal={() => setShowPollModal(true)}
+        soundEnabled={soundEnabled}
+        onToggleSound={toggleSound}
+      />
+
+      {/* Channel Selector Bar */}
+      <ChannelBar
+        activeChannel={activeChannel}
+        onSelectChannel={setActiveChannel}
+        channelCounts={channelCounts}
       />
 
       <main className="flex-1 min-h-0 w-full max-w-6xl mx-auto flex flex-col pt-2 sm:pt-4 pb-3 sm:pb-6 px-2 sm:px-6 relative z-10 overflow-hidden">
@@ -1427,7 +1685,17 @@ function Live() {
                     </motion.div>
                   )}
                   
-                  {[...messages].reverse().map((message, index, array) => {
+                  {filteredChannelMessages.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-16 text-center text-[var(--theme-text-muted)]">
+                      <div className="w-14 h-14 rounded-3xl bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] flex items-center justify-center mb-3 text-cyan-400 shadow-md">
+                        <MessageCircle className="w-7 h-7" />
+                      </div>
+                      <h3 className="text-base font-bold text-[var(--theme-text)]">Belum ada sinyal di #{activeChannel}</h3>
+                      <p className="text-xs max-w-sm mt-1">Jadilah yang pertama mengirim pesan, kode, atau pertanyaan di channel ini!</p>
+                    </div>
+                  )}
+
+                  {[...filteredChannelMessages].reverse().map((message, index, array) => {
                     // Standar Chat Universal:
                     // 1. Pesan saya sendiri selalu di KANAN (alignRight = true)
                     // 2. Pesan orang lain / admin / moderator selalu di KIRI (alignRight = false)
@@ -1448,138 +1716,32 @@ function Live() {
                     const showDateDivider = currentDate && currentDate !== prevDate;
                     
                     return (
-                      <React.Fragment key={message.id || message.timestamp || index}>
-                        {showDateDivider && (
-                          <div className="flex items-center justify-center my-3">
-                            <span className="px-4 py-1 rounded-full bg-[var(--theme-surface)] border border-[var(--theme-border)] text-[9px] font-black uppercase tracking-widest text-[var(--theme-text-muted)] shadow-sm backdrop-blur-md">
-                              {currentDate}
-                            </span>
-                          </div>
-                        )}
-
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className={`flex w-full ${alignRight ? 'justify-end' : 'justify-start'} [transform:translateZ(0)]`}
-                        >
-                          <div className={`group flex flex-col max-w-[85%] sm:max-w-md ${alignRight ? 'items-end' : 'items-start'}`}>
-                            {/* Sender Info (Only for others) */}
-                            {!alignRight && (
-                              <div className="flex items-center gap-2 mb-1.5 ml-2">
-                                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-[10px] font-black text-white shadow-sm">
-                                  {message.username?.[0]?.toUpperCase()}
-                                </div>
-                                <span className="text-[11px] font-bold text-[var(--theme-text-muted)] tracking-wider uppercase">
-                                  {message.username}
-                                </span>
-                              </div>
-                            )}
-
-                            {/* Bubble Container */}
-                            <div className="relative group/bubble flex items-center gap-2">
-                              {/* Actions Overlay for Own Message */}
-                              {isOwnMessage && user && (
-                                <div className="opacity-0 group-hover/bubble:opacity-100 focus-within:opacity-100 transition-opacity flex items-center gap-1 mr-1 bg-[var(--theme-surface)] backdrop-blur-md rounded-xl p-1 border border-[var(--theme-border)] order-first">
-                                  <button onClick={() => copyToClipboard(message.content)} className="p-1.5 hover:bg-[var(--theme-surface-hover)] rounded-lg text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors" title="Copy"><Copy className="w-3.5 h-3.5"/></button>
-                                  <button onClick={() => startEditMessage(message)} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-cyan-400 transition-colors" title="Edit"><Edit2 className="w-3.5 h-3.5"/></button>
-                                  <button onClick={() => handleDeleteMessage(message.id)} className="p-1.5 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors" title="Delete"><Trash2 className="w-3.5 h-3.5"/></button>
-                                </div>
-                              )}
-
-                              {/* Actual Bubble */}
-                              <div className="relative group/bubble-content">
-                                <div className={`px-5 py-3.5 sm:px-6 sm:py-4 rounded-[2rem] shadow-xl transition-colors duration-150 ${
-                                  alignRight 
-                                    ? 'bg-gradient-to-br from-cyan-600 via-blue-600 to-indigo-700 text-white rounded-tr-none border border-cyan-400/20 shadow-[0_4px_20px_rgba(6,182,212,0.2)]' 
-                                    : 'bg-[var(--theme-surface)]/90 backdrop-blur-md border border-[var(--theme-border)] text-[var(--theme-text)] shadow-md rounded-tl-none hover:border-cyan-500/30'
-                                }`}>
-                                    {/* Role Badge for Others */}
-                                    {!isOwnMessage && (
-                                      <div className="flex items-center gap-1.5 mb-2 pb-2 border-b border-[var(--theme-border)]">
-                                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-gradient-to-r ${USER_ROLES[message.role || 'USER']?.color || 'from-gray-500 to-gray-700'} text-white shadow-sm`}>
-                                          {USER_ROLES[message.role || 'USER']?.badge} {USER_ROLES[message.role || 'USER']?.name}
-                                        </span>
-                                      </div>
-                                    )}
-
-                                  {/* Media Display */}
-                                  {message.media_url && (
-                                    <div className="mb-3 rounded-2xl overflow-hidden border border-[var(--theme-border)] bg-black/20">
-                                      <img 
-                                        src={message.media_url} 
-                                        alt="Shared media" 
-                                        className="w-full h-auto max-h-[300px] object-contain cursor-pointer"
-                                        onClick={() => window.open(message.media_url, '_blank')}
-                                      />
-                                    </div>
-                                  )}
-
-                                  {/* Reply Context */}
-                                  {replyData && (
-                                    <div className={`mb-3 p-3 rounded-2xl border-l-4 text-xs ${
-                                      alignRight ? 'bg-black/20 border-white/40 text-white/80' : 'bg-[var(--theme-surface-hover)] border-cyan-500/60 text-[var(--theme-text-muted)]'
-                                    }`}>
-                                      <div className="flex items-center gap-2 mb-1">
-                                        <Reply className="w-3 h-3 text-cyan-400" />
-                                        <span className="font-black uppercase tracking-tighter">{replyData.username}</span>
-                                      </div>
-                                      <p className="italic line-clamp-1">{replyData.content}</p>
-                                    </div>
-                                  )}
-                                  
-                                  <div className="text-sm sm:text-base leading-relaxed break-words">
-                                    {renderMessageContent(message.content)}
-                                    {message.is_edited && <span className="text-[10px] italic opacity-50 ml-2">(edited)</span>}
-                                  </div>
-                                  
-                                  <div className={`mt-2 flex items-center gap-2 text-[10px] font-bold tracking-tighter uppercase ${alignRight ? 'text-white/60' : 'text-[var(--theme-text-muted)]'}`}>
-                                    {formatTime(message.timestamp || message.created_at)}
-                                    {message.status === 'sending' && <div className="w-2 h-2 border border-white/40 border-t-white rounded-full animate-spin" />}
-                                  </div>
-
-                                  {/* Reactions Display */}
-                                  <MessageReactions 
-                                    reactions={reactions[message.id]} 
-                                    onReact={(emoji) => toggleReaction(message.id, emoji)}
-                                    currentUser={user}
-                                  />
-                                </div>
-
-                                {/* Reaction Trigger Button (Floating on hover) */}
-                                {user && (
-                                  <div className={`absolute -bottom-2 ${isOwnMessage ? '-left-2' : '-right-2'} opacity-0 group-hover/bubble-content:opacity-100 transition-opacity z-10`}>
-                                    <button 
-                                      onClick={() => setActiveReactionPicker(message.id)}
-                                      className="p-1.5 bg-[#1e293b] border border-white/10 rounded-full text-white/40 hover:text-white hover:scale-110 shadow-lg"
-                                    >
-                                      <Smile className="w-3.5 h-3.5" />
-                                    </button>
-                                    <ReactionPicker 
-                                      isOpen={activeReactionPicker === message.id}
-                                      onClose={() => setActiveReactionPicker(null)}
-                                      onSelect={(emoji) => toggleReaction(message.id, emoji)}
-                                      position={isOwnMessage ? 'left' : 'right'}
-                                    />
-                                  </div>
-                                )}
-                              </div>
-
-                              {/* Actions Overlay for Others */}
-                              {!isOwnMessage && user && (
-                                <div className="opacity-0 group-hover/bubble:opacity-100 focus-within:opacity-100 transition-opacity flex items-center gap-1 ml-1 bg-[var(--theme-surface)] backdrop-blur-md rounded-xl p-1 border border-[var(--theme-border)]">
-                                  <button onClick={() => handleReply(message)} className="p-1.5 hover:bg-[var(--theme-surface-hover)] rounded-lg text-cyan-400 hover:text-[var(--theme-text)] transition-colors" title="Reply"><Reply className="w-3.5 h-3.5"/></button>
-                                  <button onClick={() => copyToClipboard(message.content)} className="p-1.5 hover:bg-[var(--theme-surface-hover)] rounded-lg text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors" title="Copy"><Copy className="w-3.5 h-3.5"/></button>
-                                  <button onClick={() => handleReportMessage(message)} className="p-1.5 hover:bg-orange-500/20 rounded-lg text-orange-400 transition-colors" title="Report"><AlertTriangle className="w-3.5 h-3.5"/></button>
-                                  {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && (
-                                    <button onClick={() => handleDeleteMessage(message.id)} className="p-1.5 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors" title="Delete"><Trash2 className="w-3.5 h-3.5"/></button>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </motion.div>
-                      </React.Fragment>
+                      <MessageItem
+                        key={message.id || message.timestamp || index}
+                        message={message}
+                        index={index}
+                        showDateDivider={showDateDivider}
+                        currentDate={currentDate}
+                        isOwnMessage={isOwnMessage}
+                        alignRight={alignRight}
+                        replyData={replyData}
+                        user={user}
+                        userRoles={USER_ROLES}
+                        reactions={reactions[message.id]}
+                        activeReactionPicker={activeReactionPicker}
+                        isHighlighted={highlightedMessageId === message.id}
+                        onReply={handleReply}
+                        onStartEdit={startEditMessage}
+                        onDelete={handleDeleteMessage}
+                        onCopy={copyToClipboard}
+                        onReport={handleReportMessage}
+                        onToggleBestAnswer={handleToggleBestAnswer}
+                        onToggleReaction={toggleReaction}
+                        onSetActiveReactionPicker={setActiveReactionPicker}
+                        onVotePoll={handleVotePoll}
+                        onOpenLightbox={(url) => setLightboxMedia({ isOpen: true, url })}
+                        formatTime={formatTime}
+                      />
                     );
                   })}
                 </AnimatePresence>
@@ -1630,6 +1792,8 @@ function Live() {
               sending={sending}
               error={error}
               setError={setError}
+              cooldownSeconds={cooldownSeconds}
+              onOpenPollModal={() => setShowPollModal(true)}
             />
             </div>
           )}
@@ -1688,6 +1852,14 @@ function Live() {
     allProfiles={allProfiles}
     messages={messages}
     currentUser={user}
+    onSelectMember={(targetMember) => {
+      openProfileEditor(targetMember);
+      setShowMembers(false);
+    }}
+    onSelectMessage={(targetMsg) => {
+      handleReply(targetMsg);
+      setShowMembers(false);
+    }}
   />
 
   {/* Notification Drawer / Modal */}
@@ -1780,6 +1952,43 @@ function Live() {
   <MentionNotifications 
     mentions={mentions} 
     onDismiss={(idx) => setMentions(prev => prev.filter((_, i) => i !== idx))} 
+  />
+
+  {/* Message Search Modal */}
+  <MessageSearchModal
+    isOpen={showSearchModal}
+    onClose={() => setShowSearchModal(false)}
+    messages={messages}
+    onJumpToMessage={handleJumpToMessage}
+  />
+
+  {/* AI Summarizer Modal */}
+  <AISummarizerModal
+    isOpen={showSummarizerModal}
+    onClose={() => setShowSummarizerModal(false)}
+    messages={filteredChannelMessages}
+    activeChannel={activeChannel}
+  />
+
+  {/* Leaderboard Modal */}
+  <LeaderboardModal
+    isOpen={showLeaderboardModal}
+    onClose={() => setShowLeaderboardModal(false)}
+    currentUserId={user?.id}
+  />
+
+  {/* Community Poll Modal */}
+  <PollModal
+    isOpen={showPollModal}
+    onClose={() => setShowPollModal(false)}
+    onCreatePoll={handleCreatePoll}
+  />
+
+  {/* Image Lightbox Modal */}
+  <ImageLightbox
+    src={lightboxMedia.url}
+    isOpen={lightboxMedia.isOpen}
+    onClose={() => setLightboxMedia({ isOpen: false, url: '' })}
   />
 </div>
   );

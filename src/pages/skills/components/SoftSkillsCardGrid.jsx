@@ -104,7 +104,7 @@ export default function SoftSkillsCardGrid({ filteredSkills, search = "", highli
                 </div>
               )}
               <div className="flex flex-wrap gap-3 mb-4">
-                <span className="bg-white/20 text-white text-xs font-semibold px-4 py-1 rounded-2xl">
+                <span className="bg-white/10 text-gray-200 border border-white/10 text-xs font-semibold px-4 py-1 rounded-2xl backdrop-blur-sm">
                   {skill.category}
                 </span>
                 <span className={`text-xs font-medium px-4 py-1 rounded-2xl ${skill.levelColor}`}>

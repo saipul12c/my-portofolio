@@ -156,7 +156,7 @@ const Daftar = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4 sm:p-8 relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--color-gray-900)] flex items-center justify-center p-4 sm:p-8 relative overflow-hidden">
       {/* Immersive Background Orbs */}
       <motion.div 
         animate={{ 

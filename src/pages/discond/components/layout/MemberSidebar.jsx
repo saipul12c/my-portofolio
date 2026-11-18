@@ -107,7 +107,7 @@ const MemberSidebar = ({ mobileClose }) => {
                     >
                       {member.name.substring(0, 2).toUpperCase()}
                     </div>
-                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[var(--dc-bg)] rounded-full flex items-center justify-center">
+                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#36393f] rounded-full flex items-center justify-center">
                       <StatusIcon status={member.status} />
                     </div>
                   </div>

@@ -1,6 +1,47 @@
 {
   "version_history_detail": [
     {
+      "version": "8.0.0",
+      "config_location": "src/components/helpbutton/chat/config.js",
+      "last_update": "2026-11-15",
+      "type": "major-update",
+      "supported": true,
+      "summary": "Major Release v8.0.0: Restrukturisasi Besar Arsitektur Pengaturan & Kurasi Fitur Skala Publik. Menyederhanakan sistem chatbot dari 8 tab rumit menjadi 4 tab intuitif yang 100% fungsional (Tampilan & Suara, Gaya & Karakter AI, Privasi & Data, Pintasan Keyboard). Mengeliminasi seluruh saklar semu (dummy), mengisolasi risiko memori LocalStorage untuk volume pengguna tinggi, serta memperkuat backward-compatible routing.",
+      "changelog": {
+        "new_features": [
+          "🎨 Sistem 4 Tab Pengaturan Terpadu: Tampilan & Suara, Gaya & Karakter AI, Privasi & Data, dan Pintasan Keyboard",
+          "🔊 Integrasi Suara & Tampilan Terpusat: Kontrol Text-to-Speech (TTS Web Speech API) langsung di tab Tampilan & Suara",
+          "⚡ Zero-Dummy Architecture: 100% saklar dan opsi yang tampil di live chat terhubung nyata ke logika engine",
+          "🛡️ Proteksi Kuota LocalStorage: Mitigasi risiko crash QuotaExceededError di browser pengunjung publik dengan penghapusan uploader file berukuran besar tanpa backend",
+          "🔗 Backward-Compatible Settings Routing: Dukungan otomatis fallback rute lama (/settings/data, /settings/storage, dll.) ke tab baru"
+        ],
+        "enhancements": [
+          "Penyederhanaan UX untuk kenyamanan ribuan pengguna publik di website/portofolio",
+          "Bundle size lebih ramping dan penghapusan 4 modul tab yang redundan (PerformanceSettings, FileSettings, DataSettings, StorageSettings)",
+          "Kemudahan konfigurasi gaya respons bot (Santai, Formal, Ringkas, Teknis, Humoris, dll.)",
+          "Kontrol privasi langsung untuk hapus riwayat chat dan ekspor data percakapan .json",
+          "Kompabilitas dinamis versi chatbot terintegrasi di seluruh generator respons"
+        ],
+        "bug_fixes": [
+          "Penghapusan tombol import data palsu yang hanya mencetak log dan menampilkan pesan sukses semu",
+          "Penghapusan opsi cache size 250MB yang tidak realistis terhadap batas 5MB browser localStorage",
+          "Penghapusan saklar hardware acceleration dan battery saver yang tidak terhubung ke API browser",
+          "Penghapusan pembatasan token semu (maxTokens) pada engine rule-based SaipulAI",
+          "Penghapusan saklar advancedMath dan dataAnalysis yang tidak memfilter logika kalkulator"
+        ]
+      },
+      "features": [
+        "🎨 Tampilan & Suara Terintegrasi — Tema, warna aksen, bahasa, dan Web Speech API TTS",
+        "🧠 Gaya & Karakter AI — Kontrol nada respons, kecepatan ketikan, presisi kalkulasi, dan ingatan multi-turn",
+        "🛡️ Privasi & Manajemen Data — Mode Incognito/Privasi, auto-save, arsip, ekspor JSON, dan pembersihan memori",
+        "⌨️ Pintasan Keyboard Terkonfigurasi — Shortcuts kustom untuk navigasi cepat",
+        "🌍 Bilingual AI Assistant — Komunikasi dua bahasa (Indonesia & Inggris) dengan deteksi bahasa otomatis",
+        "🧮 Kalkulator Matematika mathjs — Kalkulus, aljabar, dan evaluasi numerik presisi tinggi",
+        "🌐 Public REST API & Web SDK — Endpoint independen (/api/saipul) dan Web SDK client untuk integrasi luar proyek tanpa kebocoran kredensial",
+        "🤝 Live CS Handover — Tombol kontak agen manusia cerdas dengan status presence Supabase"
+      ]
+    },
+    {
       "version": "7.1.0",
       "config_location": "src/components/helpbutton/chat/config.js",
       "last_update": "2025-01-04",
@@ -213,7 +254,7 @@
       "privasi_keamanan": "SaipulAI memproses data secara lokal. Fitur bilingual tidak mengirim data ke server eksternal untuk terjemahan. Semua processing dilakukan client-side. File yang diunggah hanya disimpan/diindeks lokal jika fitur upload diaktifkan. Language detection menggunakan analisis statistik lokal tanpa mengirim teks ke eksternal.",
     
       "cara_kontribusi_menambah_data": [
-        "Edit atau buat file JSON di src/components/helpbutton/chat/data/ dengan struktur konsisten",
+        "Edit atau buat file JSON di src/data/helpbutton/chat/ dengan struktur konsisten",
         "Untuk konten bilingual, tambahkan field 'id' dan 'en' dalam objek knowledge",
         "Tambahkan entri lexical baru di lexicalDatabase.js untuk kedua bahasa",
         "Perluas language corpus dengan contoh kalimat bilingual",
@@ -400,7 +441,7 @@
         "catatan": "Perbaikan di atas menargetkan akar masalah tersebut — memperbaiki impor, memperbaiki urutan deklarasi, memperkenalkan util pemrosesan file terpusat, dan mengganti evaluator matematika. Pastikan menjalankan `npm install` setelah menarik pembaruan karena dependency baru (mis. mathjs)."
       },
         "fitur_utama": [
-        "📚 Knowledge Base dinamis — sumber utama berasal dari file JSON di src/components/helpbutton/chat/data/; file yang diunggah juga dapat diindeks secara lokal",
+        "📚 Knowledge Base dinamis — sumber utama berasal dari file JSON di src/data/helpbutton/chat/; file yang diunggah juga dapat diindeks secara lokal",
         "🧮 Kalkulator matematika (mathjs) — dukungan turunan simbolik dan integrasi numerik yang lebih aman",
         "🔁 Konversi & utilitas — suhu, mata uang dasar, dan analisis statistik sederhana",
         "📁 Dukungan upload & progress realtime — file diindeks ke KB, dilaporkan lewat event dan progress bar di UI",
@@ -410,13 +451,13 @@
       ],
 
       "sumber_data_knowledge_base": [
-        "src/components/helpbutton/chat/data/AI-base.json — basis tanya-jawab AI default",
-        "src/components/helpbutton/chat/data/cards.json",
-        "src/components/helpbutton/chat/data/certificates.json",
-        "src/components/helpbutton/chat/data/collaborations.json",
-        "src/components/helpbutton/chat/data/interests.json",
-        "src/components/helpbutton/chat/data/profile.json",
-        "src/components/helpbutton/chat/data/softskills.json"
+        "src/data/helpbutton/chat/AI-base.json — basis tanya-jawab AI default",
+        "src/data/helpbutton/chat/cards.json",
+        "src/data/helpbutton/chat/certificates.json",
+        "src/data/helpbutton/chat/collaborations.json",
+        "src/data/helpbutton/chat/interests.json",
+        "src/data/helpbutton/chat/profile.json",
+        "src/data/helpbutton/chat/softskills.json"
         ,"Uploaded files / saved KB (localStorage via fileProcessor)"
       ],
 
@@ -475,7 +516,7 @@
       "privasi_keamanan": "Secara default, SaipulAI memproses data secara lokal. File yang diunggah hanya disimpan/diindeks bila fitur upload diaktifkan; proses ini bersifat lokal dan dapat dipicu/diakses melalui event internal. Jangan unggah data sensitif tanpa enkripsi; selalu review kebijakan privasi aplikasi Anda sebelum menyimpan data user.",
 
       "cara_kontribusi_menambah_data": [
-        "Edit atau buat file JSON di src/components/helpbutton/chat/data/ dengan struktur yang konsisten",
+        "Edit atau buat file JSON di src/data/helpbutton/chat/ dengan struktur yang konsisten",
         "Jika menambahkan modul utilitas baru, tempatkan di src/components/helpbutton/chat/components/logic/utils/ (contoh: fileProcessor.js) atau src/components/helpbutton/chat/logic/utils/",
         "Restart aplikasi (npm run dev) agar perubahan ter-load"
       ],

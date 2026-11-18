@@ -1,5 +1,5 @@
 // About.jsx
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Maintenance from "../errors/Maintenance";
 import LoadingScreen from "./components/LoadingScreen";
 
@@ -10,59 +10,20 @@ import AboutCollaborations from "./components/AboutCollaborations";
 import AboutSoftSkills from "./components/AboutSoftSkills";
 import AboutInterests from "./components/AboutInterests";
 
+import profileData from "../../data/about/profile.json";
+import cardsData from "../../data/about/cards.json";
+import certificatesData from "../../data/sertif/certificates.json";
+import collabsData from "../../data/about/collaborations.json";
+import softSkillsData from "../../data/skills/softskills.json";
+import interestsData from "../../data/about/interests.json";
+
 export default function About() {
-  const [profile, setProfile] = useState(null);
-  const [cards, setCards] = useState([]);
-  const [certificates, setCertificates] = useState(null);
-  const [collabs, setCollabs] = useState(null);
-  const [softSkills, setSoftSkills] = useState(null);
-  const [interests, setInterests] = useState(null);
-
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const fetchJson = async (url) => {
-          const res = await fetch(url.trim());
-          if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
-          return res.json();
-        };
-
-        const [
-          profileData,
-          cardsData,
-          certsData,
-          collabsData,
-          softData,
-          interestsData,
-        ] = await Promise.all([
-          fetchJson("/data/about/profile.json"),
-          fetchJson("/data/about/cards.json"),
-          fetchJson("/data/about/certificates.json"),
-          fetchJson("/data/about/collaborations.json"),
-          fetchJson("/data/about/softskills.json"),
-          fetchJson("/data/about/interests.json"),
-        ]);
-
-        setProfile(profileData || {});
-        setCards(cardsData?.cards || []);
-        setCertificates(certsData || { sectionTitle: "Sertifikat", certificates: [] });
-        setCollabs(collabsData || { partners: [] });
-        setSoftSkills(softData || { skills: [] });
-        setInterests(interestsData || {});
-      } catch (error) {
-        console.error("Gagal memuat data About:", error);
-        // Fallback agar halaman tidak stuck di LoadingScreen selamanya jika ada kendala jaringan
-        setProfile((prev) => prev || { name: "Muhammad Syaiful Mukmin" });
-        setCards((prev) => (prev.length > 0 ? prev : [{ id: 1, title: "Keahlian", content: "Pengembangan Web", icon: "Code2", color: "cyan", link: "/skills" }]));
-        setCertificates((prev) => prev || { sectionTitle: "Sertifikat", certificates: [] });
-        setCollabs((prev) => prev || { partners: [] });
-        setSoftSkills((prev) => prev || { skills: [] });
-        setInterests((prev) => prev || {});
-      }
-    }
-
-    loadData();
-  }, []);
+  const [profile] = useState(profileData || {});
+  const [cards] = useState(cardsData?.cards || []);
+  const [certificates] = useState(certificatesData || { sectionTitle: "Sertifikat", certificates: [] });
+  const [collabs] = useState(collabsData || { partners: [] });
+  const [softSkills] = useState(softSkillsData || { skills: [] });
+  const [interests] = useState(interestsData || {});
 
   // 🔧 Toggle mode maintenance
   // const isMaintenance = true; // ubah ke false kalau sudah normal

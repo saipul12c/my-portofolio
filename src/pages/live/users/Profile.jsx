@@ -26,7 +26,7 @@ import {
   Hash
 } from 'lucide-react';
 import { supabase } from '../../../lib/supabaseClient';
-import { useAchievements } from '../hooks/useAchievements';
+import { useAchievements, ACHIEVEMENTS } from '../hooks/useAchievements';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -45,13 +45,23 @@ const Profile = () => {
       setLoading(true);
       try {
         let currentEmail = null;
-        const savedRaw = localStorage.getItem('local_user');
-        if (savedRaw) {
-          const u = JSON.parse(savedRaw);
-          setCurrentUser(u);
-          currentEmail = u.email;
-        } else if (!email) {
-          // No user logged in and no target email in URL
+        const authRes = await supabase.auth.getUser().catch(() => null);
+        const authUser = authRes?.data?.user;
+        if (authUser) {
+          currentEmail = authUser.email;
+        } else {
+          const savedRaw = localStorage.getItem('local_user');
+          if (savedRaw) {
+            try {
+              const u = JSON.parse(savedRaw);
+              currentEmail = u?.email;
+            } catch (e) {
+              /* ignore parse error */
+            }
+          }
+        }
+
+        if (!currentEmail && !email) {
           navigate('/Live-Discussion/login');
           return;
         }
@@ -75,7 +85,10 @@ const Profile = () => {
             };
             setProfileUser(profile);
             setEditForm({ nama: profile.nama, bio: profile.bio });
-            await loadAchievements(u.id, targetEmail);
+            if (authUser && authUser.id === u.id) {
+              setCurrentUser(profile);
+            }
+            await loadAchievements(u.id);
           }
         }
       } catch (err) {
@@ -123,13 +136,13 @@ const Profile = () => {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-[#020617] flex items-center justify-center">
+    <div className="min-h-screen bg-[var(--color-gray-900)] flex items-center justify-center">
       <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }} className="w-12 h-12 border-t-2 border-cyan-500 rounded-full" />
     </div>
   );
 
   if (!profileUser) return (
-    <div className="min-h-screen bg-[#020617] flex items-center justify-center p-6 text-center">
+    <div className="min-h-screen bg-[var(--color-gray-900)] flex items-center justify-center p-6 text-center">
       <div className="max-w-md space-y-6">
         <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter">Identity Not Found</h2>
         <button onClick={() => navigate('/Live-Discussion')} className="px-8 py-4 bg-cyan-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest">Return Home</button>
@@ -138,7 +151,7 @@ const Profile = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#020617] text-white selection:bg-cyan-500/30 font-sans antialiased overflow-hidden selection:text-cyan-200">
+    <div className="min-h-screen bg-[var(--color-gray-900)] text-white selection:bg-cyan-500/30 font-sans antialiased overflow-hidden selection:text-cyan-200">
       {/* Immersive Decor */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-cyan-600/10 rounded-full blur-[120px] animate-pulse" />
@@ -147,7 +160,7 @@ const Profile = () => {
       </div>
 
       {/* Floating Header */}
-      <nav className="sticky top-0 z-50 bg-[#020617]/50 backdrop-blur-2xl border-b border-white/5 px-6 md:px-12 py-6 flex justify-between items-center">
+      <nav className="sticky top-0 z-50 bg-[var(--color-gray-900)]/80 backdrop-blur-2xl border-b border-white/5 px-6 md:px-12 py-6 flex justify-between items-center">
         <motion.button 
           whileHover={{ x: -5 }}
           onClick={() => navigate('/Live-Discussion')}
@@ -259,7 +272,7 @@ const Profile = () => {
                 { label: 'Signals Sent', val: profileUser.messageCount, icon: MessageSquare, col: 'cyan' },
                 { label: 'Badge Level', val: achievements.length, icon: Trophy, col: 'yellow' },
                 { label: 'Sync Grade', val: profileUser.role === 'USER' ? 'D' : 'A', icon: ShieldCheck, col: 'blue' },
-                { label: 'Reputation', val: '992k', icon: TrendingUp, col: 'purple' },
+                { label: 'Reputation', val: `${(profileUser.messageCount * 15) + (achievements.length * 25)} pts`, icon: TrendingUp, col: 'purple' },
               ].map((s, i) => (
                 <motion.div 
                   key={s.label}
@@ -365,7 +378,9 @@ const Profile = () => {
                     </div>
                     <div>
                       <h4 className="text-xl font-black text-white italic uppercase tracking-tighter leading-tight">{ach.name}</h4>
-                      <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mt-2 leading-relaxed">{ach.description}</p>
+                      <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mt-2 leading-relaxed">
+                        {ach.description || Object.values(ACHIEVEMENTS).find(a => a.id === ach.achievement_id)?.description || 'Sinyal pencapaian terverifikasi'}
+                      </p>
                     </div>
                     <div className="pt-4 border-t border-white/5 mt-4 flex items-center justify-between">
                       <span className="text-[9px] font-black text-cyan-400 uppercase tracking-widest tracking-tighter">Synced</span>

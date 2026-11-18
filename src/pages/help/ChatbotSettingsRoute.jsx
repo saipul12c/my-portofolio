@@ -3,14 +3,18 @@ import { ChatbotSettings } from "../../components/helpbutton/chat/components/Cha
 
 const TAB_MAP = {
   general: 'umum',
+  appearance: 'umum',
+  umum: 'umum',
   ai: 'ai',
-  data: 'data',
-  file: 'files',
-  files: 'files',
-  performance: 'perform',
-  perform: 'perform',
+  data: 'ai',
+  behavior: 'ai',
+  file: 'privacy',
+  files: 'privacy',
+  performance: 'umum',
+  perform: 'umum',
   privacy: 'privacy',
-  storage: 'storage',
+  storage: 'privacy',
+  shortcuts: 'shortcuts',
   advanced: 'shortcuts'
 };
 
@@ -27,7 +31,7 @@ export default function ChatbotSettingsRoute() {
     }
   };
 
-  const initialTab = tabId ? (TAB_MAP[tabId] || tabId) : 'umum';
+  const initialTab = tabId ? (TAB_MAP[tabId] || 'umum') : 'umum';
 
   return (
     <div className="fixed bottom-24 right-80 z-[10000]">

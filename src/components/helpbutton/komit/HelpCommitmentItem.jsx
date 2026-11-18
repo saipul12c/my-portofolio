@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import commitmentsData from "./data/commitments.json";
+import commitmentsData from "../../../data/helpbutton/komit/commitments.json";
 import {
   Heart, Sparkles, HandHeart, Users, Globe, Lightbulb, Star,
   ArrowRight, CheckCircle2, ChevronLeft, ChevronRight,
@@ -527,9 +527,9 @@ export default function HelpCommitmentItem() {
   }, [expandedCards, handleCardExpand, handleViewDetail]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-950 dark:to-black py-8 px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--color-gray-900)] text-white py-8 px-4 relative overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-transparent to-purple-500/5" />
+      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5 pointer-events-none" />
 
       {/* Header */}
       <motion.div

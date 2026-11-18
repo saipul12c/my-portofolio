@@ -1,11 +1,11 @@
 import { useReducer, useEffect } from "react";
 import testimonialsData from "../../../../data/testimoni/testimonials.json";
-import { 
-  processCompanyData, 
-  generateAnalytics, 
-  generateCompanyTimeline, 
-  generateTeamMembers, 
-  generatePortfolio, 
+import {
+  processCompanyData,
+  generateAnalytics,
+  generateCompanyTimeline,
+  generateTeamMembers,
+  generatePortfolio,
   findRelatedCompanies,
   createCompanySlug
 } from "../utils/companyUtils";
@@ -16,22 +16,22 @@ const companyReducer = (state, action) => {
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
     case 'SET_DATA':
-      return { 
-        ...state, 
+      return {
+        ...state,
         companyData: action.payload.data,
         filteredAndSortedTestimonials: action.payload.data.testimonials,
         isLoading: false,
         error: null
       };
     case 'SET_ERROR':
-      return { 
-        ...state, 
+      return {
+        ...state,
         error: action.payload,
-        isLoading: false 
+        isLoading: false
       };
     case 'SET_FILTERS':
-      return { 
-        ...state, 
+      return {
+        ...state,
         filters: { ...state.filters, ...action.payload }
       };
     case 'SET_SEARCH_QUERY':
@@ -56,7 +56,7 @@ const companyReducer = (state, action) => {
   }
 };
 
-const initialState = {
+export const initialState = {
   isLoading: true,
   companyData: null,
   filteredAndSortedTestimonials: [],
@@ -85,11 +85,11 @@ export const useCompanyData = (slug) => {
     const loadCompanyData = async () => {
       try {
         dispatch({ type: 'SET_LOADING', payload: true });
-        
+
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        const companyTestimonials = testimonialsData.filter(t => 
+
+        const companyTestimonials = testimonialsData.filter(t =>
           createCompanySlug(t.company) === slug
         );
 
@@ -99,9 +99,9 @@ export const useCompanyData = (slug) => {
         }
 
         const companyInfo = processCompanyData(companyTestimonials);
-        dispatch({ 
-          type: 'SET_DATA', 
-          payload: { 
+        dispatch({
+          type: 'SET_DATA',
+          payload: {
             data: {
               info: companyInfo,
               testimonials: companyTestimonials,
@@ -111,7 +111,7 @@ export const useCompanyData = (slug) => {
               portfolio: generatePortfolio(companyTestimonials),
               relatedCompanies: findRelatedCompanies(companyTestimonials[0].company)
             }
-          } 
+          }
         });
 
         // Track page view

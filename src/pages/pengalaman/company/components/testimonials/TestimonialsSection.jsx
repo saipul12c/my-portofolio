@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, Filter, Calendar, DollarSign, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import TestimonialCard from "./TestimonialCard";
+import { initialState } from "../../hooks/useCompanyData";
 
 const TestimonialsSection = ({ 
   state, 
@@ -56,7 +57,7 @@ const TestimonialsSection = ({
               placeholder="Cari testimoni..."
               value={state.searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-emerald-500 transition-colors"
+              className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-colors"
               aria-label="Cari testimoni"
             />
           </div>
@@ -64,7 +65,7 @@ const TestimonialsSection = ({
             <select
               value={state.sortBy}
               onChange={(e) => handleSortChange(e.target.value)}
-              className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition-colors"
+              className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-500 transition-colors"
               aria-label="Urutkan testimoni"
             >
               <option value="rating">Rating Tertinggi</option>
@@ -96,7 +97,7 @@ const TestimonialsSection = ({
                 <select
                   value={state.filters.rating || ''}
                   onChange={(e) => handleFilterChange('rating', e.target.value ? parseInt(e.target.value) : null)}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-cyan-500"
                 >
                   <option value="">Semua Rating</option>
                   <option value="4">4 Bintang ke atas</option>
@@ -108,7 +109,7 @@ const TestimonialsSection = ({
                 <select
                   value={state.filters.technologies[0] || ''}
                   onChange={(e) => handleFilterChange('technologies', e.target.value ? [e.target.value] : [])}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-cyan-500"
                 >
                   <option value="">Semua Teknologi</option>
                   {info.technologies.map(tech => (
@@ -145,7 +146,7 @@ const TestimonialsSection = ({
                 handleSearchChange('');
                 dispatch({ type: 'SET_FILTERS', payload: initialState.filters });
               }}
-              className="text-emerald-400 hover:text-emerald-300 transition-colors"
+              className="text-cyan-400 hover:text-cyan-300 transition-colors"
             >
               Reset pencarian
             </button>

@@ -4,13 +4,18 @@ import Fuse from "fuse.js";
 
 // DATA IMPORTS (5-level up to src)
 import projectsData from "../../../../../data/projects.json";
-import eduData from "../../../../../data/pendidikan/data.json";
-import blogsData from "../../../../../data/blog/data.json";
+import certificatesData from "../../../../../data/sertif/certificates.json";
+import { fetchAllPosts } from "../../../../../pages/blog/services/blogSupabase";
 import softSkillsData from "../../../../../data/skills/softskills.json";
 
 // SHARED COMPONENTS DATA (5-level up to src)
-import faqsData from "../../../../../components/helpbutton/faq/data/faqs.json";
-import commitmentsData from "../../../../../components/helpbutton/komit/data/commitments.json";
+import faqsData from "../../../../../data/helpbutton/faq/faqs.json";
+import commitmentsData from "../../../../../data/helpbutton/komit/commitments.json";
+
+// AI CORE UTILITIES
+import { cleanText, extractKeywords, detectIntents } from "../../../../../utils/ai/nlpCore";
+import { findRelatedEntities } from "../../../../../utils/ai/knowledgeBase";
+import { recordAITopic, getCrossAgentGreeting } from "../../../../../utils/ai/sessionMemory";
 
 // ============================================================================
 // KONSTANTA & DATA MASTERPIECE
@@ -451,9 +456,20 @@ export const useProjectAI = (searchTerm, debounceDelay = 300) => {
   const timeoutRef = useRef(null);
   const debounceRef = useRef(null);
 
+  const [blogs, setBlogs] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchAllPosts().then((posts) => {
+      if (isMounted && Array.isArray(posts) && posts.length > 0) {
+        setBlogs(posts);
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
+
   const projects = useMemo(() => projectsData.projects || [], []);
-  const courses = useMemo(() => eduData.courses || [], []);
-  const blogs = useMemo(() => blogsData || [], []);
+  const courses = useMemo(() => certificatesData.certificates || [], []);
   const faqs = useMemo(() => faqsData || [], []);
   const commits = useMemo(() => commitmentsData.commitments || [], []);
   const skills = useMemo(() => softSkillsData.skills || [], []);
@@ -479,6 +495,10 @@ export const useProjectAI = (searchTerm, debounceDelay = 300) => {
 
   const generateResponse = useCallback((term, state) => {
     if (!term || term.trim().length < 2) return null;
+
+    recordAITopic(term, 'ProjectAI');
+    const crossGreeting = getCrossAgentGreeting('ProjectAI');
+    const relatedEntities = findRelatedEntities(term);
 
     const analysis = analyzeQueryAdvanced(term, state, knowledgeGraph);
     const { intent, resolvedEntities, sentiment, isFollowUp, needsClarification, preferences, modifiers } = analysis;
@@ -577,7 +597,7 @@ export const useProjectAI = (searchTerm, debounceDelay = 300) => {
         answers.push("Maaf, kalimat Anda memiliki nuansa yang sedang saya pelajari. Bisakah Anda memperjelas apakah ini tentang proyek, blog, atau skill?");
     }
 
-    const intro = generateDynamicIntro(sentiment, state, isFollowUp);
+    const intro = crossGreeting ? `${crossGreeting}\n\n` : generateDynamicIntro(sentiment, state, isFollowUp);
     const outro = generateDynamicOutro(sentiment, ctaSuggestion);
     const answer = `${intro}\n\n${answers.join("\n")}\n\n${outro}`;
     
@@ -593,6 +613,7 @@ export const useProjectAI = (searchTerm, debounceDelay = 300) => {
     aiResponseData.matchedProject = matchedProject;
     aiResponseData.matchedCourse = matchedCourse;
     aiResponseData.matchedBlog = matchedBlog;
+    aiResponseData.relatedEntities = relatedEntities;
     
     setAiResponse(aiResponseData);
   }, [knowledgeGraph, profileSummary, projects, blogs, fuseBlog, fuseFaq, commits, skills, courses]);

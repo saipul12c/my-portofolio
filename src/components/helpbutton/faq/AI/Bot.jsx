@@ -3,11 +3,22 @@
  * Advanced semantic matching with improved context understanding
  */
 
-import faqsData from "../data/faqs.json";
-import commitmentsData from "../../komit/data/commitments.json";
-import blogData from "../../../../data/blog/data.json";
+import faqsData from "../../../../data/helpbutton/faq/faqs.json";
+import commitmentsData from "../../../../data/helpbutton/komit/commitments.json";
+import { fetchAllPosts } from "../../../../pages/blog/services/blogSupabase";
 import softSkillsData from "../../../../data/skills/softskills.json";
 import { compileAuthorProfiles, findAuthorByName } from "../../../../pages/blog/utils/authorUtils";
+import { extractKeywords } from "../../../../utils/ai/nlpCore";
+import { recordAITopic } from "../../../../utils/ai/sessionMemory";
+import { getSmartReply } from "../../chat/components/logic/utils/responseGenerator";
+
+// Dynamic blog data cache from Supabase
+let activeBlogData = [];
+fetchAllPosts().then((posts) => {
+  if (Array.isArray(posts) && posts.length > 0) {
+    activeBlogData = posts;
+  }
+}).catch(() => {});
 
 // Cache for performance
 const faqCache = new Map();
@@ -32,15 +43,6 @@ const preprocessFAQData = () => {
   const processed = faqsData.map((item, index) => {
     const question = item.question.toLowerCase();
     const answer = item.answer.toLowerCase();
-    
-    // Extract keywords from question and answer
-    const extractKeywords = (text) => {
-      const words = text.split(/[^a-z0-9]+/)
-        .filter(word => word.length > 2)
-        .filter(word => !['yang', 'dengan', 'dalam', 'untuk', 'dari', 'pada', 'ke', 'di', 'ini', 'adalah', 'kami'].includes(word));
-      
-      return [...new Set(words)]; // Remove duplicates
-    };
     
     const questionKeywords = extractKeywords(question);
     const answerKeywords = extractKeywords(answer);
@@ -269,6 +271,7 @@ import { findBestFAQMatch } from "../../chat/components/logic/utils/faqIntegrati
 
 // Generate enhanced AI response
 const generateAIResponse = async (query, filteredFaqs = []) => {
+  recordAITopic(query, 'FAQAI');
   await simulateAIDelay(query.length > 50 ? 2 : 1);
   
   const matchResult = findBestFAQMatch(query);
@@ -297,9 +300,8 @@ const generateAIResponse = async (query, filteredFaqs = []) => {
   
   // No good FAQ match found, try to fallback to main Robot logic if possible
   try {
-     const { getSmartReply } = await import("../../chat/components/logic/utils/responseGenerator");
      // Signature: (msg, settings, conversationContext, safeKnowledgeBase, knowledgeStats, intent)
-     const chatResponse = await getSmartReply(query, { memoryContext: false, aiModel: 'expert' }, [], {}, {}, {});
+     const chatResponse = getSmartReply(query, { memoryContext: false, aiModel: 'expert' }, [], {}, {}, {});
      if (chatResponse && chatResponse.confidence > 0.6) {
         return { 
           text: `Saya tidak menemukan jawaban persis di FAQ, tetapi berdasarkan basis pengetahuan SaipulAI:\n\n${chatResponse.text}\n\n*Jawaban ini dihasilkan oleh mesin NLP Live Chat kami.*`,
@@ -312,13 +314,13 @@ const generateAIResponse = async (query, filteredFaqs = []) => {
 
   // --- NEW: Blog Integration Fallback ---
   const q = query.toLowerCase();
-  const matchedBlog = blogData.find(b => 
+  const matchedBlog = (activeBlogData || []).find(b => 
     b.title.toLowerCase().includes(q) || 
     (b.tags || []).some(t => t.toLowerCase().includes(q))
   );
 
   // --- NEW: Author Integration ---
-  const profiles = compileAuthorProfiles(blogData);
+  const profiles = compileAuthorProfiles(activeBlogData || []);
   const matchedAuthor = findAuthorByName(profiles, query.replace(/(siapa|penulis|author|about)/i, "").trim());
   
   if (matchedAuthor && query.match(/(siapa|penulis|author|about)/i)) {

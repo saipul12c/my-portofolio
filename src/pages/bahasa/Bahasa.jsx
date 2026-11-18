@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useCallback, lazy, Suspense } from "react";
+import React, { useState, useRef, useMemo, useCallback } from "react";
 import dataBahasa from "../../data/bahasa/data.json";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { ArrowUp } from "lucide-react";
@@ -11,14 +11,8 @@ import { QuickStats } from "./components/QuickStats";
 import { LanguageSection } from "./components/LanguageSection";
 import { PageConnections } from "./components/PageConnections";
 
-// Lazy load DetailTooltip untuk mengurangi bundle size
-const DetailTooltip = lazy(() => 
-  import("./components/DetailTooltip").then(module => ({ default: module.DetailTooltip }))
-);
-
 const Bahasa = () => {
   const { bahasaSehariHari, bahasaPemrograman } = dataBahasa;
-  const [selectedSkill, setSelectedSkill] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterLevel, setFilterLevel] = useState("all");
   const [viewMode, setViewMode] = useState("grid");
@@ -77,15 +71,6 @@ const Bahasa = () => {
     }
   };
 
-  // Memoize detail modal untuk menghindari re-render unnecessary
-  const detailModal = useMemo(() => selectedSkill ? (
-    <DetailTooltip 
-      bahasa={selectedSkill}
-      isProgramming={selectedSkill.isProgramming}
-      onClose={() => setSelectedSkill(null)}
-    />
-  ) : null, [selectedSkill]);
-
   return (
     <div className="min-h-screen bg-[#0f172a]/80 backdrop-blur-md py-4 sm:py-8 px-3 sm:px-4 relative overflow-hidden text-gray-300">
       {/* Optimized Background Elements dengan will-change untuk performa */}
@@ -140,7 +125,6 @@ const Bahasa = () => {
             icon="🌍"
             isProgramming={false}
             viewMode={viewMode}
-            setSelectedSkill={setSelectedSkill}
             expandedTags={expandedTags}
             toggleExpandedTags={toggleExpandedTags}
             searchTerm={searchTerm}
@@ -153,7 +137,6 @@ const Bahasa = () => {
             icon="💻"
             isProgramming={true}
             viewMode={viewMode}
-            setSelectedSkill={setSelectedSkill}
             expandedTags={expandedTags}
             toggleExpandedTags={toggleExpandedTags}
             searchTerm={searchTerm}
@@ -229,13 +212,6 @@ const Bahasa = () => {
           </motion.button>
         )}
       </AnimatePresence>
-
-      {/* Detail Modal dengan Suspense untuk lazy loading */}
-      <Suspense fallback={null}>
-        <AnimatePresence>
-          {detailModal}
-        </AnimatePresence>
-      </Suspense>
 
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {

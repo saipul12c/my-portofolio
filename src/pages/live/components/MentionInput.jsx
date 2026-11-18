@@ -67,14 +67,29 @@ export const MentionInput = ({ value, onChange, onMention }) => {
     inputRef.current?.focus();
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (showSuggestions && suggestions.length > 0) {
+        handleSelectUser(suggestions[0]);
+      } else {
+        const form = e.target.closest('form');
+        if (form) {
+          form.requestSubmit();
+        }
+      }
+    }
+  };
+
   return (
     <div className="relative w-full group/mention">
       <textarea
         ref={inputRef}
         value={value}
         onChange={handleInputChange}
-        placeholder="Tulis sinyal... gunakan @nama untuk mention"
-        className="w-full bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl px-8 py-5 pr-16 text-sm text-[var(--theme-text)] placeholder-[var(--theme-text-muted)] focus:outline-none focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500/30 transition-all resize-none min-h-[60px] custom-scrollbar backdrop-blur-xl"
+        onKeyDown={handleKeyDown}
+        placeholder="Tulis sinyal... ketik @ untuk mention"
+        className="w-full bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl pl-12 sm:pl-14 pr-16 py-3.5 sm:py-5 text-xs sm:text-sm text-[var(--theme-text)] placeholder-[var(--theme-text-muted)] focus:outline-none focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500/30 transition-all resize-none min-h-[56px] sm:min-h-[60px] custom-scrollbar backdrop-blur-xl"
         rows="2"
       />
 
@@ -98,6 +113,7 @@ export const MentionInput = ({ value, onChange, onMention }) => {
             <div className="max-h-60 overflow-y-auto p-2 custom-scrollbar">
               {suggestions.map((user) => (
                 <button
+                  type="button"
                   key={user.id}
                   onClick={() => handleSelectUser(user)}
                   className="w-full p-3 flex items-center gap-4 hover:bg-white/10 rounded-2xl transition-all group/item text-left"
