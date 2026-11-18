@@ -76,3 +76,17 @@ input::placeholder {
   pointer-events: auto;
   transition: opacity 0.3s ease, visibility 0.3s ease;
 }
+
+/* ===== Photo Shimmer Animation ===== */
+@keyframes photo-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: photo-shimmer 1.8s infinite ease-in-out;
+}

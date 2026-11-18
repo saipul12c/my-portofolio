@@ -4,14 +4,23 @@ export default function BlogPagination({
   filteredBlogs,
   currentPage,
   setCurrentPage,
+  onPageChange,
   postsPerPage = POSTS_PER_PAGE
 }) {
   const totalPages = Math.ceil(filteredBlogs.length / postsPerPage);
   const indexOfLast = currentPage * postsPerPage;
   const indexOfFirst = indexOfLast - postsPerPage;
 
-  const nextPage = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
-  const prevPage = () => setCurrentPage((p) => Math.max(p - 1, 1));
+  const changePage = (p) => {
+    if (typeof onPageChange === "function") {
+      onPageChange(p);
+    } else {
+      setCurrentPage(p);
+    }
+  };
+
+  const nextPage = () => changePage(Math.min(currentPage + 1, totalPages));
+  const prevPage = () => changePage(Math.max(currentPage - 1, 1));
 
   if (filteredBlogs.length <= postsPerPage) return null;
 
@@ -34,7 +43,7 @@ export default function BlogPagination({
           {[...Array(totalPages)].map((_, i) => (
             <button
               key={i + 1}
-              onClick={() => setCurrentPage(i + 1)}
+              onClick={() => changePage(i + 1)}
               className={`w-8 h-8 sm:w-10 sm:h-10 rounded-md sm:rounded-lg transition-all text-xs sm:text-sm ${
                 currentPage === i + 1
                   ? "bg-cyan-600 text-white"

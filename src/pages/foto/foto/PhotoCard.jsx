@@ -1,24 +1,35 @@
 import { useState, useMemo, memo } from "react";
-import { motion } from "framer-motion";
 import { Camera, MapPin } from "lucide-react";
 
-function PhotoCard({ photo, onClick }) {
+function PhotoCard({ photo, onClick, priority = false }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const [loadProgress, setLoadProgress] = useState(0);
 
   // Optimasi resolusi thumbnail untuk grid (menghemat bandwidth dan GPU memory)
   const thumbnailSrc = useMemo(() => {
     if (!photo.img) return "";
     if (photo.img.includes("images.unsplash.com")) {
-      return photo.img.replace(/w=\d+/, "w=600").replace(/q=\d+/, "q=75");
+      return photo.img.replace(/w=\d+/, "w=600").replace(/q=\d+/, "q=75") + "&auto=format";
     }
     return photo.img;
   }, [photo.img]);
 
+  // Progressive background color dari color_palette bawaan foto (Zero Layout Shift & instant visual)
+  const placeholderStyle = useMemo(() => {
+    if (Array.isArray(photo.color_palette) && photo.color_palette.length > 0) {
+      const c1 = photo.color_palette[0];
+      const c2 = photo.color_palette[1] || photo.color_palette[0];
+      return {
+        background: `linear-gradient(135deg, ${c1}33, ${c2}22, #0f172a)`
+      };
+    }
+    return {
+      background: "linear-gradient(135deg, #1e293b, #0f172a)"
+    };
+  }, [photo.color_palette]);
+
   const handleImageLoad = () => {
     setIsLoaded(true);
-    setLoadProgress(100);
   };
 
   const handleImageError = () => {
@@ -27,51 +38,42 @@ function PhotoCard({ photo, onClick }) {
   };
 
   return (
-    <motion.div
-      whileHover={{ scale: 1.02, y: -4 }}
-      whileTap={{ scale: 0.98 }}
-      className="relative overflow-hidden rounded-xl sm:rounded-2xl group shadow-xl bg-white/5 backdrop-blur-md border border-white/10 hover:border-cyan-400/60 transition-all cursor-pointer hover:shadow-cyan-500/20 will-change-transform"
+    <div
       onClick={onClick}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+      className="relative overflow-hidden rounded-xl sm:rounded-2xl group shadow-xl bg-slate-900/90 border border-white/10 hover:border-cyan-400/60 transition-all duration-300 cursor-pointer hover:shadow-cyan-500/20 transform hover:-translate-y-1 hover:scale-[1.015] active:scale-[0.98]"
+      style={{ contentVisibility: "auto", containIntrinsicSize: "300px 225px" }}
     >
-      <div className="aspect-[4/3] overflow-hidden relative">
-        {/* Skeleton Loader */}
+      <div 
+        className="aspect-[4/3] overflow-hidden relative"
+        style={placeholderStyle}
+      >
+        {/* Progressive Palette & Shimmer Wave Loader */}
         {!isLoaded && !hasError && (
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-700 to-gray-800 animate-pulse">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Camera className="w-12 h-12 text-gray-600 animate-pulse" />
-            </div>
-            {/* Loading Progress Bar */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-700">
-              <motion.div
-                className="h-full bg-gradient-to-r from-cyan-400 to-blue-500"
-                initial={{ width: "0%" }}
-                animate={{ width: `${loadProgress}%` }}
-                transition={{ duration: 0.3 }}
-              />
-            </div>
+          <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+            {/* Shimmer light sweep */}
+            <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer pointer-events-none" />
+            <Camera className="w-10 h-10 text-cyan-400/30 animate-pulse relative z-10" />
           </div>
         )}
 
         {/* Error State */}
         {hasError && (
-          <div className="absolute inset-0 bg-gradient-to-br from-red-900/20 to-gray-800 flex items-center justify-center">
+          <div className="absolute inset-0 bg-red-950/30 flex items-center justify-center">
             <div className="text-center">
-              <Camera className="w-12 h-12 text-red-400 mx-auto mb-2" />
-              <p className="text-xs text-red-300">Gagal memuat gambar</p>
+              <Camera className="w-10 h-10 text-red-400/60 mx-auto mb-2" />
+              <p className="text-xs text-red-300/80">Gagal memuat gambar</p>
             </div>
           </div>
         )}
 
-        {/* Actual Image with Optimized Resolution */}
+        {/* Actual Image with Optimized Priority Loading */}
         <img
           src={thumbnailSrc}
           alt={photo.title}
           decoding="async"
-          loading="lazy"
-          className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-1 ${
+          loading={priority ? "eager" : "lazy"}
+          fetchpriority={priority ? "high" : "low"}
+          className={`w-full h-full object-cover transition-opacity duration-500 ease-out group-hover:scale-105 group-hover:rotate-0.5 ${
             isLoaded ? "opacity-100" : "opacity-0"
           }`}
           onLoad={handleImageLoad}
@@ -85,8 +87,8 @@ function PhotoCard({ photo, onClick }) {
       </p>
       
       {/* Hover Overlay with Enhanced Info (Responsive CSS Transition) */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4 pointer-events-none">
-        <div className="transform translate-y-3 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-out">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 pointer-events-none">
+        <div className="transform translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-out">
           <h3 className="text-sm sm:text-base font-semibold text-white mb-1 line-clamp-1">
             {photo.title}
           </h3>
@@ -107,26 +109,22 @@ function PhotoCard({ photo, onClick }) {
       {/* Corner Badge for New/Featured/Album */}
       <div className="absolute top-2 left-2 z-10 flex flex-col gap-1 pointer-events-none">
         {photo.isAlbum && (
-          <div className="px-2 py-0.5 bg-pink-500/90 text-white text-[10px] font-bold rounded-full shadow-lg backdrop-blur-md border border-pink-400">
+          <div className="px-2 py-0.5 bg-pink-600/90 text-white text-[10px] font-bold rounded-full shadow-lg border border-pink-400/60">
             🗂️ Album ({photo.albumCount})
           </div>
         )}
         {photo.isFromGallery && !photo.isAlbum && (
-          <div className="px-2 py-0.5 bg-blue-500/80 text-white text-[10px] font-semibold rounded-full shadow-md backdrop-blur-md border border-blue-400/50">
+          <div className="px-2 py-0.5 bg-blue-600/90 text-white text-[10px] font-semibold rounded-full shadow-md border border-blue-400/60">
             ✨ Galeri
           </div>
         )}
         {photo.featured && !photo.isAlbum && (
-          <motion.div
-            className="px-2 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-black text-[10px] font-bold rounded-full shadow-lg"
-            animate={{ scale: [1, 1.08, 1] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          >
+          <div className="px-2 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-black text-[10px] font-bold rounded-full shadow-lg animate-pulse">
             ✨ Featured
-          </motion.div>
+          </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }
 

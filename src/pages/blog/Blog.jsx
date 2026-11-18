@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import AiOverview from "./components/pencarian/AI/AiOverview";
 import SearchBar from "./components/pencarian/SearchBar";
@@ -26,6 +26,7 @@ export default function Blog() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [showTooltip, setShowTooltip] = useState(null);
   const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false);
+  const blogGridRef = useRef(null);
 
   const [isAiActive, setIsAiActive] = useState(false);
 
@@ -141,6 +142,43 @@ export default function Blog() {
     document.body.style.overflow = "auto";
   };
 
+  // 🎯 Scroll mulus ke area grid blog saat halaman berpindah
+  const handlePageChange = useCallback((newPage) => {
+    setCurrentPage(newPage);
+    if (blogGridRef.current) {
+      blogGridRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, []);
+
+  // 🚀 Background Preload thumbnail artikel halaman berikutnya saat browser idle
+  useEffect(() => {
+    const totalPages = Math.ceil(filteredBlogs.length / POSTS_PER_PAGE);
+    if (currentPage >= totalPages) return;
+    const nextStartIndex = currentPage * POSTS_PER_PAGE;
+    const nextBlogs = filteredBlogs.slice(nextStartIndex, nextStartIndex + POSTS_PER_PAGE);
+    if (!nextBlogs.length) return;
+
+    const preloadImages = () => {
+      nextBlogs.forEach((post) => {
+        if (!post.thumbnail) return;
+        let src = post.thumbnail;
+        if (src.includes("images.unsplash.com")) {
+          src = src.replace(/w=\d+/, "w=600").replace(/q=\d+/, "q=75") + "&auto=format";
+        }
+        const img = new Image();
+        img.src = src;
+      });
+    };
+
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      const idleId = window.requestIdleCallback(preloadImages, { timeout: 2500 });
+      return () => window.cancelIdleCallback(idleId);
+    } else {
+      const timer = setTimeout(preloadImages, 1200);
+      return () => clearTimeout(timer);
+    }
+  }, [currentPage, filteredBlogs]);
+
   // 1. Sync state FROM URL on mount and location changes
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -235,9 +273,9 @@ export default function Blog() {
           <NoResults isBookmark={showBookmarkedOnly} />
         )}
 
-        {/* Articles Grid */}
+        {/* Articles Grid with Ref for smooth scroll */}
         {filteredBlogs.length > 0 && (
-          <>
+          <div ref={blogGridRef} className="scroll-mt-24">
             <BlogGrid
               currentBlogs={currentBlogs}
               handleOpenPopup={handleOpenPopup}
@@ -251,8 +289,9 @@ export default function Blog() {
               filteredBlogs={filteredBlogs}
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
+              onPageChange={handlePageChange}
             />
-          </>
+          </div>
         )}
 
         {/* Article Detail Popup */}

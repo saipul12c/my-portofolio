@@ -19,6 +19,7 @@ function PhotoGrid({ photos, setSelectedPhoto, viewMode = "grid" }) {
         >
           <PhotoCard 
             photo={photo} 
+            priority={index < 3}
             onClick={() => setSelectedPhoto(photo)} 
           />
         </motion.div>

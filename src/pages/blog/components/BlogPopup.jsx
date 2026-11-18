@@ -82,7 +82,8 @@ function PopupHeader({ post, onClose, onAuthorClick, onShowTooltip, onHideToolti
         src={post.imageFull || post.thumbnail}
         alt={post.title}
         className="w-full h-full object-cover transform transition-transform duration-700"
-        loading="lazy"
+        loading="eager"
+        decoding="async"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent" />
       

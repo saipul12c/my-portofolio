@@ -33,7 +33,9 @@ function ShortCardItem({ short, index, currentData, onSelect }) {
           <img
             src={sanitizeUrl(posterUrl)}
             alt={short.title}
-            loading="lazy"
+            decoding="async"
+            loading={index < 4 ? "eager" : "lazy"}
+            fetchpriority={index < 4 ? "high" : "low"}
             onError={() => setImgError(true)}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-90 group-hover:opacity-100"
           />

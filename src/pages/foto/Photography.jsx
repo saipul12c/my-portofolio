@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Maintenance from "../errors/Maintenance";
 import { getSynchronizedPhotos } from "./utils/syncGalleryToPhotos";
@@ -21,6 +21,7 @@ export default function Photography() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filterOptions, setFilterOptions] = useState({ category: "all", sortBy: "date" });
   const [viewMode, setViewMode] = useState("grid");
+  const galleryRef = useRef(null);
   const photosPerPage = 9;
 
   const isMaintenance = false;
@@ -70,6 +71,34 @@ export default function Photography() {
     [filteredAndSortedPhotos, startIndex]
   );
 
+  // 🚀 Background Preload untuk gambar halaman berikutnya saat browser idle
+  useEffect(() => {
+    if (currentPage >= totalPages) return;
+    const nextStartIndex = currentPage * photosPerPage;
+    const nextPhotos = filteredAndSortedPhotos.slice(nextStartIndex, nextStartIndex + photosPerPage);
+    if (!nextPhotos.length) return;
+
+    const preloadImages = () => {
+      nextPhotos.forEach((photo) => {
+        if (!photo.img) return;
+        let src = photo.img;
+        if (src.includes("images.unsplash.com")) {
+          src = src.replace(/w=\d+/, "w=600").replace(/q=\d+/, "q=75") + "&auto=format";
+        }
+        const img = new Image();
+        img.src = src;
+      });
+    };
+
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      const idleId = window.requestIdleCallback(preloadImages, { timeout: 2500 });
+      return () => window.cancelIdleCallback(idleId);
+    } else {
+      const timer = setTimeout(preloadImages, 1200);
+      return () => clearTimeout(timer);
+    }
+  }, [currentPage, totalPages, filteredAndSortedPhotos, photosPerPage]);
+
   // 🔄 Reset ke halaman 1 saat pencarian atau filter berubah
   const handleSearch = useCallback((value) => {
     setSearchTerm(value);
@@ -85,10 +114,14 @@ export default function Photography() {
     setViewMode(mode);
   }, []);
 
-  // 🎯 Fungsi untuk mengganti halaman
+  // 🎯 Fungsi untuk mengganti halaman dengan scroll tepat ke grid
   const handlePageChange = useCallback((page) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (galleryRef.current) {
+      galleryRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }, []);
 
   // Safe navigation between photos in modal
@@ -139,30 +172,32 @@ export default function Photography() {
         </div>
 
         {/* ✨ Grid foto: searchTerm dihapus dari key agar DOM tidak remount setiap ketik 1 huruf */}
-        <motion.div
-          key={`${currentPage}-${filterOptions.category}-${filterOptions.sortBy}-${viewMode}`}
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35 }}
-          className="w-full flex flex-col items-center"
-        >
-          {currentPhotos.length > 0 ? (
-            <PhotoGrid 
-              photos={currentPhotos} 
-              setSelectedPhoto={setSelectedPhoto}
-              viewMode={viewMode}
-            />
-          ) : (
-            <div className="text-center py-16">
-              <p className="text-gray-400 italic text-base md:text-lg mb-2">
-                Tidak ada foto yang cocok dengan pencarianmu 😅
-              </p>
-              <p className="text-gray-500 text-sm">
-                Coba kata kunci lain atau ubah filter
-              </p>
-            </div>
-          )}
-        </motion.div>
+        <div ref={galleryRef} className="w-full scroll-mt-24">
+          <motion.div
+            key={`${currentPage}-${filterOptions.category}-${filterOptions.sortBy}-${viewMode}`}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="w-full flex flex-col items-center"
+          >
+            {currentPhotos.length > 0 ? (
+              <PhotoGrid 
+                photos={currentPhotos} 
+                setSelectedPhoto={setSelectedPhoto}
+                viewMode={viewMode}
+              />
+            ) : (
+              <div className="text-center py-16">
+                <p className="text-gray-400 italic text-base md:text-lg mb-2">
+                  Tidak ada foto yang cocok dengan pencarianmu 😅
+                </p>
+                <p className="text-gray-500 text-sm">
+                  Coba kata kunci lain atau ubah filter
+                </p>
+              </div>
+            )}
+          </motion.div>
+        </div>
 
         {/* 🎯 Pagination */}
         {filteredAndSortedPhotos.length > photosPerPage && (

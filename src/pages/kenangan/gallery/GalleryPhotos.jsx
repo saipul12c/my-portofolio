@@ -41,6 +41,37 @@ export default function GalleryPhotos({ photos = [], albums = [], onSelect, filt
     setCurrentPage(1);
   }, [searchTerm, selectedTags, subTab]);
 
+  // 🚀 Background Preload cover foto & album halaman berikutnya saat browser idle
+  useEffect(() => {
+    if (currentPage >= totalPages) return;
+    const nextStartIndex = currentPage * ITEMS_PER_PAGE;
+    const nextItems = displayItems.slice(nextStartIndex, nextStartIndex + ITEMS_PER_PAGE);
+    if (!nextItems.length) return;
+
+    const preloadImages = () => {
+      nextItems.forEach((item) => {
+        const coverSrc = item.type === "album" || Array.isArray(item.src)
+          ? (Array.isArray(item.src) ? item.src[0] : item.src)
+          : item.src;
+        if (!coverSrc) return;
+        let src = sanitizeUrl(coverSrc);
+        if (src.includes("images.unsplash.com")) {
+          src = src.replace(/w=\d+/, "w=600").replace(/q=\d+/, "q=75") + "&auto=format";
+        }
+        const img = new Image();
+        img.src = src;
+      });
+    };
+
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      const idleId = window.requestIdleCallback(preloadImages, { timeout: 2500 });
+      return () => window.cancelIdleCallback(idleId);
+    } else {
+      const timer = setTimeout(preloadImages, 1200);
+      return () => clearTimeout(timer);
+    }
+  }, [currentPage, totalPages, displayItems, ITEMS_PER_PAGE]);
+
   // Hitung pagination
   const totalPages = Math.max(1, Math.ceil(displayItems.length / ITEMS_PER_PAGE));
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -145,126 +176,14 @@ export default function GalleryPhotos({ photos = [], albums = [], onSelect, filt
             transition={{ duration: 0.3 }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
           >
-            {currentItems.map((item) => {
-              const isAlbum = item.type === "album" || Array.isArray(item.src);
-              const coverSrc = isAlbum ? (Array.isArray(item.src) ? item.src[0] : item.src) : item.src;
-              const photoCount = isAlbum ? (Array.isArray(item.src) ? item.src.length : 1) : 1;
-              const isProPhoto = Boolean(item.isFromPhotography);
-
-              return (
-                <motion.div
-                  key={`${item.type || "media"}-${item.id}`}
-                  whileHover={{ scale: 1.025, y: -4 }}
-                  onClick={() => onSelect && onSelect(item)}
-                  className="group relative cursor-pointer"
-                >
-                  {/* Efek Layer Stack jika berupa Album */}
-                  {isAlbum && (
-                    <div className="absolute -top-1.5 -right-1.5 w-full h-full rounded-2xl bg-pink-500/10 border border-pink-500/20 -z-10 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
-                  )}
-
-                  <div className={`overflow-hidden rounded-2xl bg-[#0d1527]/90 backdrop-blur-xl border transition-all duration-300 shadow-xl ${
-                    isAlbum
-                      ? "border-pink-500/30 hover:border-pink-400 hover:shadow-pink-500/20"
-                      : isProPhoto
-                      ? "border-cyan-500/30 hover:border-cyan-400 hover:shadow-cyan-500/20"
-                      : "border-white/10 hover:border-blue-400/60 hover:shadow-cyan-500/10"
-                  }`}>
-                    {/* Media Thumbnail Container */}
-                    <div className="relative w-full h-64 overflow-hidden bg-black/60">
-                      <img
-                        src={sanitizeUrl(coverSrc)}
-                        alt={item.title || "Karya Galeri"}
-                        loading="lazy"
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-
-                      {/* Dark Gradient Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
-
-                      {/* Top Badges */}
-                      <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-                        {/* Category Badge */}
-                        <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white text-[11px] font-semibold">
-                          {item.category || "Foto"}
-                        </span>
-
-                        {/* Album or Pro Shot Indicator */}
-                        {isAlbum ? (
-                          <span className="px-2.5 py-1 rounded-full bg-pink-500/90 backdrop-blur-md border border-pink-400 text-white text-[11px] font-bold flex items-center gap-1.5 shadow-lg shadow-pink-500/30">
-                            <Layers size={13} />
-                            {photoCount} Foto
-                          </span>
-                        ) : isProPhoto ? (
-                          <span className="px-2.5 py-1 rounded-full bg-cyan-500/90 backdrop-blur-md border border-cyan-400 text-slate-900 text-[11px] font-bold flex items-center gap-1 shadow-lg shadow-cyan-500/30">
-                            <Camera size={12} />
-                            Fotografi
-                          </span>
-                        ) : (
-                          <span className="px-2 py-0.5 rounded-full bg-blue-500/30 backdrop-blur-md border border-blue-400/40 text-blue-200 text-[10px] font-medium flex items-center gap-1">
-                            <Image size={11} />
-                            Foto
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Bottom Info Overlay */}
-                      <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-gray-300">
-                        {item.details?.camera && (
-                          <span className="truncate max-w-[65%] text-gray-300 font-medium text-[11px] flex items-center gap-1">
-                            📷 {item.details.camera}
-                          </span>
-                        )}
-                        {item.details?.location?.name && (
-                          <span className="truncate max-w-[35%] text-gray-400 text-[10px]">
-                            📍 {item.details.location.city || item.details.location.name}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Content Details */}
-                    <div className="p-5 space-y-3">
-                      <div>
-                        <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors line-clamp-1">
-                          {item.title}
-                        </h3>
-                        {item.desc && (
-                          <p className="text-gray-400 text-xs mt-1 line-clamp-2 leading-relaxed">
-                            {item.desc}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Creator Info & Engagement */}
-                      <div className="pt-3 border-t border-white/5 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={sanitizeUrl(item.creator?.avatar || "https://randomuser.me/api/portraits/men/32.jpg")}
-                            alt={item.creator?.display_name || "Creator"}
-                            className="w-6 h-6 rounded-full object-cover border border-cyan-400/40"
-                          />
-                          <span className="text-xs text-gray-300 font-medium truncate max-w-[120px]">
-                            {item.creator?.display_name || "Syaiful Mukmin"}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-3 text-xs text-gray-400">
-                          <span className="flex items-center gap-1">
-                            <Eye size={13} className="text-cyan-400" />
-                            {item.engagement?.views?.toLocaleString() || 0}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Heart size={13} className="text-pink-400" />
-                            {item.engagement?.likes?.toLocaleString() || 0}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+            {currentItems.map((item, index) => (
+              <GalleryPhotoCard
+                key={`${item.type || "media"}-${item.id}`}
+                item={item}
+                priority={index < 3}
+                onSelect={onSelect}
+              />
+            ))}
           </motion.div>
 
           {/* 📄 Pagination Controls */}
@@ -336,5 +255,182 @@ export default function GalleryPhotos({ photos = [], albums = [], onSelect, filt
         </>
       )}
     </section>
+  );
+}
+
+function GalleryPhotoCard({ item, priority = false, onSelect }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  const isAlbum = item.type === "album" || Array.isArray(item.src);
+  const rawCoverSrc = isAlbum ? (Array.isArray(item.src) ? item.src[0] : item.src) : item.src;
+  const photoCount = isAlbum ? (Array.isArray(item.src) ? item.src.length : 1) : 1;
+  const isProPhoto = Boolean(item.isFromPhotography);
+
+  const coverSrc = useMemo(() => {
+    let src = sanitizeUrl(rawCoverSrc);
+    if (src.includes("images.unsplash.com")) {
+      return src.replace(/w=\d+/, "w=600").replace(/q=\d+/, "q=75") + "&auto=format";
+    }
+    return src;
+  }, [rawCoverSrc]);
+
+  const placeholderStyle = useMemo(() => {
+    const palette = item.details?.color_palette;
+    if (Array.isArray(palette) && palette.length > 0) {
+      const c1 = palette[0];
+      const c2 = palette[1] || palette[0];
+      return {
+        background: `linear-gradient(135deg, ${c1}33, ${c2}22, #0d1527)`
+      };
+    }
+    return {
+      background: "linear-gradient(135deg, #1e293b, #0d1527)"
+    };
+  }, [item.details?.color_palette]);
+
+  return (
+    <div
+      onClick={() => onSelect && onSelect(item)}
+      className="group relative cursor-pointer transform hover:-translate-y-1 transition-all duration-300"
+      style={{ contentVisibility: "auto", containIntrinsicSize: "360px 420px" }}
+    >
+      {/* Efek Layer Stack jika berupa Album */}
+      {isAlbum && (
+        <div className="absolute -top-1.5 -right-1.5 w-full h-full rounded-2xl bg-pink-500/10 border border-pink-500/20 -z-10 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+      )}
+
+      <div className={`overflow-hidden rounded-2xl bg-[#0d1527]/95 border transition-all duration-300 shadow-xl ${
+        isAlbum
+          ? "border-pink-500/30 hover:border-pink-400 hover:shadow-pink-500/20"
+          : isProPhoto
+          ? "border-cyan-500/30 hover:border-cyan-400 hover:shadow-cyan-500/20"
+          : "border-white/10 hover:border-blue-400/60 hover:shadow-cyan-500/10"
+      }`}>
+        {/* Media Thumbnail Container with Progressive Shimmer */}
+        <div 
+          className="relative w-full h-64 overflow-hidden bg-black/60"
+          style={placeholderStyle}
+        >
+          {/* Shimmer Wave Loader */}
+          {!isLoaded && !hasError && (
+            <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+              <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer pointer-events-none" />
+              <Camera className="w-10 h-10 text-cyan-400/30 animate-pulse relative z-10" />
+            </div>
+          )}
+
+          {/* Error State */}
+          {hasError && (
+            <div className="absolute inset-0 bg-slate-900/80 flex items-center justify-center">
+              <div className="text-center text-gray-500">
+                <Camera className="w-10 h-10 mx-auto mb-1 opacity-40 text-red-400/60" />
+                <span className="text-[10px] text-red-300/80">Gambar tidak tersedia</span>
+              </div>
+            </div>
+          )}
+
+          <img
+            src={coverSrc}
+            alt={item.title || "Karya Galeri"}
+            decoding="async"
+            loading={priority ? "eager" : "lazy"}
+            fetchpriority={priority ? "high" : "low"}
+            className={`w-full h-full object-cover transition-opacity duration-500 ease-out group-hover:scale-105 ${
+              isLoaded ? "opacity-100" : "opacity-0"
+            }`}
+            onLoad={() => setIsLoaded(true)}
+            onError={() => {
+              setHasError(true);
+              setIsLoaded(true);
+            }}
+          />
+
+          {/* Dark Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
+
+          {/* Top Badges */}
+          <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
+            {/* Category Badge */}
+            <span className="px-2.5 py-1 rounded-full bg-black/70 border border-white/20 text-white text-[11px] font-semibold">
+              {item.category || "Foto"}
+            </span>
+
+            {/* Album or Pro Shot Indicator */}
+            {isAlbum ? (
+              <span className="px-2.5 py-1 rounded-full bg-pink-500/90 border border-pink-400 text-white text-[11px] font-bold flex items-center gap-1.5 shadow-lg shadow-pink-500/30">
+                <Layers size={13} />
+                {photoCount} Foto
+              </span>
+            ) : isProPhoto ? (
+              <span className="px-2.5 py-1 rounded-full bg-cyan-500/90 border border-cyan-400 text-slate-900 text-[11px] font-bold flex items-center gap-1 shadow-lg shadow-cyan-500/30">
+                <Camera size={12} />
+                Fotografi
+              </span>
+            ) : (
+              <span className="px-2 py-0.5 rounded-full bg-blue-500/40 border border-blue-400/40 text-blue-200 text-[10px] font-medium flex items-center gap-1">
+                <Image size={11} />
+                Foto
+              </span>
+            )}
+          </div>
+
+          {/* Bottom Info Overlay */}
+          <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-gray-300 pointer-events-none z-10">
+            {item.details?.camera && (
+              <span className="truncate max-w-[65%] text-gray-300 font-medium text-[11px] flex items-center gap-1">
+                📷 {item.details.camera}
+              </span>
+            )}
+            {item.details?.location?.name && (
+              <span className="truncate max-w-[35%] text-gray-400 text-[10px]">
+                📍 {item.details.location.city || item.details.location.name}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Content Details */}
+        <div className="p-5 space-y-3">
+          <div>
+            <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors line-clamp-1">
+              {item.title}
+            </h3>
+            {item.desc && (
+              <p className="text-gray-400 text-xs mt-1 line-clamp-2 leading-relaxed">
+                {item.desc}
+              </p>
+            )}
+          </div>
+
+          {/* Creator Info & Engagement */}
+          <div className="pt-3 border-t border-white/5 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <img
+                src={sanitizeUrl(item.creator?.avatar || "https://randomuser.me/api/portraits/men/32.jpg")}
+                alt={item.creator?.display_name || "Creator"}
+                loading="lazy"
+                decoding="async"
+                className="w-6 h-6 rounded-full object-cover border border-cyan-400/40"
+              />
+              <span className="text-xs text-gray-300 font-medium truncate max-w-[120px]">
+                {item.creator?.display_name || "Syaiful Mukmin"}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3 text-xs text-gray-400">
+              <span className="flex items-center gap-1">
+                <Eye size={13} className="text-cyan-400" />
+                {item.engagement?.views?.toLocaleString() || 0}
+              </span>
+              <span className="flex items-center gap-1">
+                <Heart size={13} className="text-pink-400" />
+                {item.engagement?.likes?.toLocaleString() || 0}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

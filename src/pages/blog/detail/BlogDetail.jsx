@@ -678,6 +678,8 @@ export default function BlogDetail() {
               src={post.imageFull || post.thumbnail}
               alt={post.title}
               loading="eager"
+              fetchpriority="high"
+              decoding="async"
               className="w-full h-80 md:h-96 object-cover hover:scale-105 transition-transform duration-700"
             />
           ) : (

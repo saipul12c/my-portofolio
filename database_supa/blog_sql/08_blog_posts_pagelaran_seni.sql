@@ -97,11 +97,11 @@ Bagi siapa pun yang berkesempatan menyaksikan malam pementasan tersebut, kenanga
   '2024-05-18T20:00:00Z'::timestamptz,
   '15 min read',
   true,
-  30189,
-  4397,
-  324,
+  27160,
+  3224,
+  382,
   4.9,
-  208,
+  193,
   'published'
 ) ON CONFLICT (id) DO UPDATE SET
   slug = EXCLUDED.slug,
@@ -209,11 +209,11 @@ Tarian kolosal Pagelaran Seni Angkatan 2022 telah usai, namun keindahan jejak la
   '2024-05-18T21:00:00Z'::timestamptz,
   '14 min read',
   true,
-  28126,
-  3634,
-  417,
+  27038,
+  3867,
+  304,
   4.9,
-  197,
+  194,
   'published'
 ) ON CONFLICT (id) DO UPDATE SET
   slug = EXCLUDED.slug,
@@ -321,11 +321,11 @@ Mereka adalah pahlawan tanpa tanda jasa yang memastikan mimpi rekan-rekannya di 
   '2024-05-18T22:00:00Z'::timestamptz,
   '16 min read',
   true,
-  28114,
-  3938,
-  366,
+  28055,
+  3751,
+  424,
   4.9,
-  202,
+  216,
   'published'
 ) ON CONFLICT (id) DO UPDATE SET
   slug = EXCLUDED.slug,
@@ -433,11 +433,11 @@ Bagi mahasiswa divisi musik dan vokal, pengalaman ini adalah pembuktian jati dir
   '2024-05-18T22:30:00Z'::timestamptz,
   '15 min read',
   true,
-  26064,
-  4037,
-  362,
+  27620,
+  3495,
+  327,
   4.9,
-  205,
+  212,
   'published'
 ) ON CONFLICT (id) DO UPDATE SET
   slug = EXCLUDED.slug,
@@ -545,11 +545,11 @@ Ketika seluruh lampu auditorium akhirnya dimatikan dan para penonton pulang memb
   '2024-05-18T23:00:00Z'::timestamptz,
   '14 min read',
   true,
-  26921,
-  3548,
-  372,
+  31137,
+  3893,
+  413,
   4.9,
-  181,
+  225,
   'published'
 ) ON CONFLICT (id) DO UPDATE SET
   slug = EXCLUDED.slug,
@@ -657,11 +657,11 @@ Pagelaran Seni 2024 Angkatan 22 UIN Antasari Banjarmasin telah membuktikan bahwa
   '2024-05-18T23:30:00Z'::timestamptz,
   '15 min read',
   true,
-  31686,
-  3941,
-  407,
+  28369,
+  3842,
+  344,
   4.9,
-  239,
+  202,
   'published'
 ) ON CONFLICT (id) DO UPDATE SET
   slug = EXCLUDED.slug,
@@ -769,11 +769,11 @@ Ada rasa haru yang mendalam saat menyaksikan dunia magis yang dibangun selama be
   '2024-05-19T00:00:00Z'::timestamptz,
   '15 min read',
   true,
-  25070,
-  4320,
-  404,
+  24173,
+  4214,
+  444,
   4.9,
-  186,
+  191,
   'published'
 ) ON CONFLICT (id) DO UPDATE SET
   slug = EXCLUDED.slug,
@@ -881,11 +881,11 @@ Busana dan rias karakter Pagelaran Seni 2024 membuktikan bahwa tradisi bukan abu
   '2024-05-19T00:30:00Z'::timestamptz,
   '16 min read',
   true,
-  26268,
-  3560,
-  340,
+  31469,
+  3791,
+  372,
   4.9,
-  220,
+  214,
   'published'
 ) ON CONFLICT (id) DO UPDATE SET
   slug = EXCLUDED.slug,
@@ -993,11 +993,11 @@ Mereka telah membuktikan bahwa komunikasi visual bukan sekadar urusan memilih wa
   '2024-05-19T01:00:00Z'::timestamptz,
   '15 min read',
   true,
-  28148,
-  4239,
-  360,
+  29317,
+  3902,
+  332,
   4.9,
-  230,
+  199,
   'published'
 ) ON CONFLICT (id) DO UPDATE SET
   slug = EXCLUDED.slug,
@@ -1105,11 +1105,11 @@ Namun, ada sesuatu yang telah berubah selamanya di dalam diri mereka: sebuah bin
   '2024-05-19T01:30:00Z'::timestamptz,
   '17 min read',
   true,
-  25422,
-  4091,
-  381,
+  28284,
+  3271,
+  309,
   4.9,
-  184,
+  180,
   'published'
 ) ON CONFLICT (id) DO UPDATE SET
   slug = EXCLUDED.slug,
@@ -1134,161 +1134,171 @@ Namun, ada sesuatu yang telah berubah selamanya di dalam diri mereka: sebuah bin
 
 INSERT INTO public.blog_comments (
   comment_id,
-  post_id,
+  post_slug,
   name,
   message,
   created_at
 ) VALUES (
-  'cmt_pageran_26_1',
-  '26',
+  'cmt_pageran_1',
+  'teater-dramaturgi-pagelaran-seni-2024-uin-antasari',
   'Rahmat Hidayat',
   'Membaca ulasan teater ini membuat saya teringat malam gladi resik yang penuh haru. Analisis dramaturginya sangat dalam dan menangkap jiwa panggung Angkatan 22!',
   NOW()
 ) ON CONFLICT (comment_id) DO UPDATE SET
+  post_slug = EXCLUDED.post_slug,
   name = EXCLUDED.name,
   message = EXCLUDED.message;
 
 INSERT INTO public.blog_comments (
   comment_id,
-  post_id,
+  post_slug,
   name,
   message,
   created_at
 ) VALUES (
-  'cmt_pageran_27_2',
-  '27',
+  'cmt_pageran_2',
+  'harmoni-gerak-tari-kolosal-pagelaran-seni-2024',
   'Siti Nurhaliza',
   'Tarian kolosal Lokal C benar-benar menghipnotis seluruh auditorium. Kostum dan formasi selendangnya terekam begitu indah dalam artikel ini.',
   NOW()
 ) ON CONFLICT (comment_id) DO UPDATE SET
+  post_slug = EXCLUDED.post_slug,
   name = EXCLUDED.name,
   message = EXCLUDED.message;
 
 INSERT INTO public.blog_comments (
   comment_id,
-  post_id,
+  post_slug,
   name,
   message,
   created_at
 ) VALUES (
-  'cmt_pageran_28_3',
-  '28',
+  'cmt_pageran_3',
+  'manajemen-produksi-dan-logistik-pagelaran-seni-2024',
   'Ahmad Fauzan',
   'Sebagai salah satu tim perlengkapan, saya bangga sekali membaca ini. Keringat begadang dan kopi dingin di meja logistik akhirnya terbayar lunas.',
   NOW()
 ) ON CONFLICT (comment_id) DO UPDATE SET
+  post_slug = EXCLUDED.post_slug,
   name = EXCLUDED.name,
   message = EXCLUDED.message;
 
 INSERT INTO public.blog_comments (
   comment_id,
-  post_id,
+  post_slug,
   name,
   message,
   created_at
 ) VALUES (
-  'cmt_pageran_29_4',
-  '29',
+  'cmt_pageran_4',
+  'aransemen-musik-tata-suara-pagelaran-seni-2024',
   'Dina Maulida',
   'Aransemen vokal Laras dan kawan-kawan masih terngiang-ngiang sampai sekarang. Artikel ini mengulas detail teknis tata suara dengan sangat luar biasa!',
   NOW()
 ) ON CONFLICT (comment_id) DO UPDATE SET
+  post_slug = EXCLUDED.post_slug,
   name = EXCLUDED.name,
   message = EXCLUDED.message;
 
 INSERT INTO public.blog_comments (
   comment_id,
-  post_id,
+  post_slug,
   name,
   message,
   created_at
 ) VALUES (
-  'cmt_pageran_30_5',
-  '30',
+  'cmt_pageran_5',
+  'etika-visual-dan-fotografi-panggung-pagelaran-seni-2024',
   'Fajar Shadiq',
   'Koleksi fotonya luar biasa tajam di kondisi minim cahaya panggung! Salut untuk etika siluman tim fotografer yang tidak mengganggu penonton.',
   NOW()
 ) ON CONFLICT (comment_id) DO UPDATE SET
+  post_slug = EXCLUDED.post_slug,
   name = EXCLUDED.name,
   message = EXCLUDED.message;
 
 INSERT INTO public.blog_comments (
   comment_id,
-  post_id,
+  post_slug,
   name,
   message,
   created_at
 ) VALUES (
-  'cmt_pageran_31_6',
-  '31',
+  'cmt_pageran_6',
+  'dampak-sosial-karakter-pagelaran-seni-2024',
   'Nurul Izzah',
   'Artikel yang sangat menyentuh hati. Panggung ini benar-benar mengubah kami dari anak kos yang pemalu menjadi pribadi yang berani berekspresi.',
   NOW()
 ) ON CONFLICT (comment_id) DO UPDATE SET
+  post_slug = EXCLUDED.post_slug,
   name = EXCLUDED.name,
   message = EXCLUDED.message;
 
 INSERT INTO public.blog_comments (
   comment_id,
-  post_id,
+  post_slug,
   name,
   message,
   created_at
 ) VALUES (
-  'cmt_pageran_32_7',
-  '32',
+  'cmt_pageran_7',
+  'estetika-scenografi-tata-panggung-pagelaran-seni-2024',
   'Bambang Prasetyo',
   'Scenografi kayu palet dan kain Sasirangan itu membuktikan bahwa kreativitas mahasiswa mampu menembus keterbatasan fasilitas. Karya seni sejati!',
   NOW()
 ) ON CONFLICT (comment_id) DO UPDATE SET
+  post_slug = EXCLUDED.post_slug,
   name = EXCLUDED.name,
   message = EXCLUDED.message;
 
 INSERT INTO public.blog_comments (
   comment_id,
-  post_id,
+  post_slug,
   name,
   message,
   created_at
 ) VALUES (
-  'cmt_pageran_33_8',
-  '33',
+  'cmt_pageran_8',
+  'filosofi-busana-tata-rias-tradisi-banjar-pagelaran-seni-2024',
   'Putri Rahmayani',
   'Kajian makna filosofis motif Sasirangan Gigi Haruan dan riasan Banjar di tulisan ini sangat bernilai akademis. Bangga akan budaya Banua!',
   NOW()
 ) ON CONFLICT (comment_id) DO UPDATE SET
+  post_slug = EXCLUDED.post_slug,
   name = EXCLUDED.name,
   message = EXCLUDED.message;
 
 INSERT INTO public.blog_comments (
   comment_id,
-  post_id,
+  post_slug,
   name,
   message,
   created_at
 ) VALUES (
-  'cmt_pageran_34_9',
-  '34',
+  'cmt_pageran_9',
+  'strategi-komunikasi-visual-promosi-pagelaran-seni-2024',
   'Ilham Syahputra',
   'Strategi promosi dan reels-nya memang keren banget waktu itu, sampai tiket sold out dalam hitungan hari. Salute untuk divisi publikasi!',
   NOW()
 ) ON CONFLICT (comment_id) DO UPDATE SET
+  post_slug = EXCLUDED.post_slug,
   name = EXCLUDED.name,
   message = EXCLUDED.message;
 
 INSERT INTO public.blog_comments (
   comment_id,
-  post_id,
+  post_slug,
   name,
   message,
   created_at
 ) VALUES (
-  'cmt_pageran_35_10',
-  '35',
+  'cmt_pageran_10',
+  'refleksi-batin-aktor-suara-pemain-pagelaran-seni-2024',
   'Amelia Khairunnisa',
   'Menetes air mata membacanya. Panggung seni boleh usai dan lampu telah padam, tapi persaudaraan Angkatan 22 abadi selamanya.',
   NOW()
 ) ON CONFLICT (comment_id) DO UPDATE SET
+  post_slug = EXCLUDED.post_slug,
   name = EXCLUDED.name,
   message = EXCLUDED.message;
 
