@@ -11,16 +11,11 @@ import { DEFAULT_SETTINGS, CHATBOT_VERSION } from '../../../config.js';
 import { storageService } from '../utils/storageService';
 import { supabase } from '../../../../../../lib/supabaseClient';
 import { recordAITopic } from '../../../../../../utils/ai/sessionMemory';
+import { getUnifiedKnowledgeBase } from '../../../../../../utils/ai/knowledgeBase';
+import { scheduleSilentBenchmarkLearning } from '../../../../../../utils/ai/benchmarkLearner.js';
 
 const DEFAULT_KB = {
-  AI: {},
-  hobbies: [],
-  cards: [],
-  certificates: [],
-  collaborations: [],
-  interests: {},
-  profile: {},
-  softskills: [],
+  ...getUnifiedKnowledgeBase(),
   uploadedData: [],
   fileMetadata: []
 };
@@ -81,6 +76,15 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     }, []);
   const [kbState, setKbState] = useState(() => ({ ...DEFAULT_KB, ...(knowledgeBase || {}) }));
   const [isAgentOnline, setIsAgentOnline] = useState(false);
+
+  // Evaluasi mandiri & pembelajaran otomatis berkala di latar belakang (1 bulan sekali secara senyap)
+  useEffect(() => {
+    try {
+      scheduleSilentBenchmarkLearning(kbState);
+    } catch (e) {
+      // Senyap
+    }
+  }, []);
 
   // Track agent presence for live support handover
   useEffect(() => {

@@ -6,7 +6,7 @@
  * File ini fokus pada search, loading, dan formatting data dari berbagai sumber
  */
 
-import { generateComprehensiveAnswer as generateEnhancedAnswer } from './enhancedKnowledgeBase';
+import { generateComprehensiveAnswer as generateEnhancedAnswer } from './enhancedKnowledgeBase.js';
 
 /**
  * Load semua data dari JSON files dan parse
@@ -21,6 +21,14 @@ export function loadDataFromKnowledgeBase(knowledgeBase = {}) {
     skills: [],
     aiBase: {},
     uploadedData: [],
+    experiences: [],
+    specializations: [],
+    authorProfiles: [],
+    gallery: [],
+    discussionRoom: [],
+    comingsoon: [],
+    zodiac: [],
+    qodam: [],
     metadata: {
       loadedAt: new Date().toISOString(),
       itemsCount: 0
@@ -60,6 +68,8 @@ export function loadDataFromKnowledgeBase(knowledgeBase = {}) {
     // Load soft skills
     if (knowledgeBase.softskills && Array.isArray(knowledgeBase.softskills)) {
       data.skills = knowledgeBase.softskills;
+    } else if (knowledgeBase.skills && Array.isArray(knowledgeBase.skills)) {
+      data.skills = knowledgeBase.skills;
     }
 
     // Load AI Base
@@ -67,11 +77,57 @@ export function loadDataFromKnowledgeBase(knowledgeBase = {}) {
       data.aiBase = typeof knowledgeBase.ai === 'string'
         ? JSON.parse(knowledgeBase.ai)
         : knowledgeBase.ai;
+    } else if (knowledgeBase.aiBase) {
+      data.aiBase = typeof knowledgeBase.aiBase === 'string'
+        ? JSON.parse(knowledgeBase.aiBase)
+        : knowledgeBase.aiBase;
     }
 
     // Load uploaded data
     if (knowledgeBase.uploadedData && Array.isArray(knowledgeBase.uploadedData)) {
       data.uploadedData = knowledgeBase.uploadedData;
+    }
+
+    // Load experiences
+    if (knowledgeBase.experiences && Array.isArray(knowledgeBase.experiences)) {
+      data.experiences = knowledgeBase.experiences;
+    }
+
+    // Load specializations
+    if (knowledgeBase.specializations && Array.isArray(knowledgeBase.specializations)) {
+      data.specializations = knowledgeBase.specializations;
+    }
+
+    // Load authorProfiles
+    if (knowledgeBase.authorProfiles) {
+      data.authorProfiles = Array.isArray(knowledgeBase.authorProfiles)
+        ? knowledgeBase.authorProfiles
+        : Object.values(knowledgeBase.authorProfiles);
+    }
+
+    // Load gallery
+    if (knowledgeBase.galleryAlbums && Array.isArray(knowledgeBase.galleryAlbums)) {
+      data.gallery = knowledgeBase.galleryAlbums;
+    } else if (knowledgeBase.gallery && Array.isArray(knowledgeBase.gallery.albums)) {
+      data.gallery = knowledgeBase.gallery.albums;
+    }
+
+    // Load discussionRoom
+    if (knowledgeBase.discussionRoom && Array.isArray(knowledgeBase.discussionRoom)) {
+      data.discussionRoom = knowledgeBase.discussionRoom;
+    }
+
+    // Load comingsoon
+    if (knowledgeBase.comingsoon && Array.isArray(knowledgeBase.comingsoon)) {
+      data.comingsoon = knowledgeBase.comingsoon;
+    }
+
+    // Load zodiac & qodam
+    if (knowledgeBase.zodiac && Array.isArray(knowledgeBase.zodiac)) {
+      data.zodiac = knowledgeBase.zodiac;
+    }
+    if (knowledgeBase.qodam && Array.isArray(knowledgeBase.qodam)) {
+      data.qodam = knowledgeBase.qodam;
     }
 
     // Count items
@@ -83,7 +139,15 @@ export function loadDataFromKnowledgeBase(knowledgeBase = {}) {
       Object.keys(data.interests).length +
       data.skills.length +
       Object.keys(data.aiBase).length +
-      data.uploadedData.length;
+      data.uploadedData.length +
+      data.experiences.length +
+      data.specializations.length +
+      data.authorProfiles.length +
+      data.gallery.length +
+      data.discussionRoom.length +
+      data.comingsoon.length +
+      data.zodiac.length +
+      data.qodam.length;
 
   } catch (error) {
     console.error('Error loading knowledge base data:', error);
@@ -107,6 +171,11 @@ export function searchAcrossDataSources(query, knowledgeBase = {}) {
     uploaded: [],
     interests: [],
     collaborations: [],
+    experiences: [],
+    specializations: [],
+    authorProfiles: [],
+    gallery: [],
+    discussionRoom: [],
     allMatches: []
   };
 
@@ -184,9 +253,68 @@ export function searchAcrossDataSources(query, knowledgeBase = {}) {
     }
   }
 
+  // Search in author profiles
+  for (const auth of data.authorProfiles) {
+    const authText = `${auth.name || ''} ${auth.bio || ''} ${auth.expertise || ''} ${auth.company || ''}`.toLowerCase();
+    if (authText.includes(normalizedQuery)) {
+      results.authorProfiles.push(auth);
+      results.allMatches.push({ ...auth, type: 'author_profile', score: 1 });
+    }
+  }
+
+  // Search in experiences
+  for (const exp of data.experiences) {
+    const expText = `${exp.title || ''} ${exp.position || ''} ${exp.company || ''} ${exp.description || ''} ${exp.tags?.join(' ') || ''}`.toLowerCase();
+    if (expText.includes(normalizedQuery)) {
+      results.experiences.push(exp);
+      results.allMatches.push({ ...exp, type: 'experience', score: 1 });
+    }
+  }
+
+  // Search in specializations
+  for (const spec of data.specializations) {
+    const specText = `${spec.title || ''} ${spec.description || ''} ${spec.skills?.join(' ') || ''}`.toLowerCase();
+    if (specText.includes(normalizedQuery)) {
+      results.specializations.push(spec);
+      results.allMatches.push({ ...spec, type: 'specialization', score: 1 });
+    }
+  }
+
+  // Search in gallery
+  for (const gal of data.gallery) {
+    const galText = `${gal.title || ''} ${gal.desc || ''} ${gal.category || ''} ${gal.tags?.join(' ') || ''}`.toLowerCase();
+    if (galText.includes(normalizedQuery)) {
+      results.gallery.push(gal);
+      results.allMatches.push({ ...gal, type: 'gallery', score: 1 });
+    }
+  }
+
+  // Search in discussion room
+  for (const disc of data.discussionRoom) {
+    const discText = `${disc.content || ''} ${disc.username || ''}`.toLowerCase();
+    if (discText.includes(normalizedQuery)) {
+      results.discussionRoom.push(disc);
+      results.allMatches.push({ ...disc, type: 'discussion_room', score: 1 });
+    }
+  }
+
   // Sort all matches by relevance (simple heuristic)
   results.allMatches.sort((a, b) => {
-    const typeOrder = { 'profile': 5, 'skill': 4, 'ai_concept': 4, 'card': 3, 'certificate': 3, 'collaboration': 2, 'interests': 2, 'uploaded_file': 1 };
+    const typeOrder = { 
+      'author_profile': 6,
+      'profile': 5, 
+      'experience': 5,
+      'specialization': 4,
+      'skill': 4, 
+      'ai_concept': 4, 
+      'card': 3, 
+      'certificate': 3, 
+      'gallery': 3,
+      'collaboration': 2, 
+      'interests': 2, 
+      'discussion_room': 2,
+      'uploaded_file': 1 
+    };
     return (typeOrder[b.type] || 0) - (typeOrder[a.type] || 0);
   });
 
@@ -204,7 +332,7 @@ export function getProfileInfo(knowledgeBase = {}) {
     return null;
   }
 
-  let info = `**Tentang:\n`;
+  let info = `**Tentang Penulis:**\n\n`;
   
   if (profile.name) {
     info += `Nama: ${profile.name}\n`;
@@ -517,12 +645,22 @@ export function getDataStatistics(knowledgeBase = {}) {
     aiConcepts: Object.keys(loadedData.aiBase).length,
     uploadedFiles: loadedData.uploadedData.length,
     totalItems: loadedData.metadata.itemsCount,
+    experiences: loadedData.experiences.length,
+    specializations: loadedData.specializations.length,
+    authorProfiles: loadedData.authorProfiles.length,
+    gallery: loadedData.gallery.length,
+    discussionRoom: loadedData.discussionRoom.length,
     categories: [
       'profile',
       'cards',
       'certificates',
       'collaborations',
       'skills',
+      'experiences',
+      'specializations',
+      'author_profiles',
+      'gallery',
+      'discussion_room',
       'ai_concepts',
       'uploaded_files'
     ].filter(cat => {
@@ -532,10 +670,57 @@ export function getDataStatistics(knowledgeBase = {}) {
         'certificates': loadedData.certificates,
         'collaborations': loadedData.collaborations,
         'skills': loadedData.skills,
+        'experiences': loadedData.experiences,
+        'specializations': loadedData.specializations,
+        'author_profiles': loadedData.authorProfiles,
+        'gallery': loadedData.gallery,
+        'discussion_room': loadedData.discussionRoom,
         'ai_concepts': loadedData.aiBase,
         'uploaded_files': loadedData.uploadedData
       };
       return Array.isArray(map[cat]) ? map[cat].length > 0 : Object.keys(map[cat] || {}).length > 0;
     })
   };
+}
+
+/**
+ * Get Author Profiles Summary
+ */
+export function getAuthorProfilesSummary(knowledgeBase = {}) {
+  const data = loadDataFromKnowledgeBase(knowledgeBase);
+  if (!data.authorProfiles || data.authorProfiles.length === 0) return null;
+
+  let output = `✍️ **Daftar Penulis Blog:**\n\n`;
+  for (const auth of data.authorProfiles) {
+    output += `• **${auth.name}**\n  ${auth.bio || ''}\n  *Keahlian: ${auth.expertise || '-'} | Lokasi: ${auth.location || '-'}*\n\n`;
+  }
+  return output;
+}
+
+/**
+ * Get Experiences Summary
+ */
+export function getExperiencesSummary(knowledgeBase = {}) {
+  const data = loadDataFromKnowledgeBase(knowledgeBase);
+  if (!data.experiences || data.experiences.length === 0) return null;
+
+  let output = `💼 **Riwayat Pengalaman & Karir:**\n\n`;
+  for (const exp of data.experiences) {
+    output += `• **${exp.position || exp.title}** (${exp.company || '-'})\n  Periode: ${exp.period || '-'}\n  ${exp.description || ''}\n\n`;
+  }
+  return output;
+}
+
+/**
+ * Get Gallery Summary
+ */
+export function getGallerySummary(knowledgeBase = {}) {
+  const data = loadDataFromKnowledgeBase(knowledgeBase);
+  if (!data.gallery || data.gallery.length === 0) return null;
+
+  let output = `🖼️ **Koleksi Galeri & Album:**\n\n`;
+  for (const gal of data.gallery.slice(0, 5)) {
+    output += `• **${gal.title}** (${gal.category || 'Fotografi'})\n  ${gal.desc || ''}\n\n`;
+  }
+  return output;
 }

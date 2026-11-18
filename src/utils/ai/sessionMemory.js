@@ -6,6 +6,7 @@
 
 const STORAGE_KEY = 'saipul_ai_session_memory';
 const MAX_HISTORY = 5;
+const SESSION_TTL_MS = 4 * 60 * 60 * 1000; // 4 jam TTL untuk menghindari konteks basi
 
 const isBrowser = () => typeof window !== 'undefined' && typeof window.sessionStorage !== 'undefined';
 
@@ -20,7 +21,18 @@ export const getSessionMemory = () => {
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY);
     if (!raw) return { lastTopic: null, lastAgent: null, recentTopics: [], visitCount: 0 };
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+
+    // Validasi masa berlaku (TTL)
+    if (parsed.updatedAt) {
+      const age = Date.now() - new Date(parsed.updatedAt).getTime();
+      if (age > SESSION_TTL_MS) {
+        sessionStorage.removeItem(STORAGE_KEY);
+        return { lastTopic: null, lastAgent: null, recentTopics: [], visitCount: 0 };
+      }
+    }
+
+    return parsed;
   } catch (e) {
     console.warn('Gagal membaca AI Session Memory:', e);
     return { lastTopic: null, lastAgent: null, recentTopics: [], visitCount: 0 };

@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "api:server": "node server/saipul-server.js",
     "test": "node ./test-contact.js",
-    "test:nlu": "node ./test-nlu-runner.js"
+    "test:nlu": "node test/testNaturalNLU.js",
+    "test:benchmark": "node test/runBenchmark.js"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

@@ -137,13 +137,20 @@ export const extractKeywords = (text = '') => {
 
 /**
  * Memetakan sinonim ke istilah kanonik
+ * Mendukung frasa multi-kata dan meng-escape karakter regex khusus
  */
 export const mapSynonyms = (text = '') => {
   if (typeof text !== 'string') return '';
   let mapped = text.toLowerCase();
   
-  Object.keys(SYNONYM_MAP).forEach(syn => {
-    const regex = new RegExp(`\\b${syn}\\b`, 'gi');
+  // Urutkan dari sinonim terpanjang terlebih dahulu agar frasa majemuk (e.g. 'jam terbang') dipetakan lebih awal
+  const sortedSynonyms = Object.keys(SYNONYM_MAP).sort((a, b) => b.length - a.length);
+
+  sortedSynonyms.forEach(syn => {
+    const escaped = syn.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const startBoundary = /^\w/.test(syn) ? '\\b' : '';
+    const endBoundary = /\w$/.test(syn) ? '\\b' : '';
+    const regex = new RegExp(`${startBoundary}${escaped}${endBoundary}`, 'gi');
     mapped = mapped.replace(regex, SYNONYM_MAP[syn]);
   });
   

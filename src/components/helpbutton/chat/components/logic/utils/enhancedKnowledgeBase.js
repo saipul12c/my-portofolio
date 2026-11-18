@@ -10,9 +10,9 @@
  * struktur pengetahuan dan hubungan antar konsep
  */
 
-import { getSynonyms as _getSynonyms, getLemma as _getLemma, getWordMeaning as _getWordMeaning } from './lexicalDatabase';
-import { getExpressionVariations as _getExpressionVariations } from './languageCorpus';
-import { analyzeNLU, extractEntities } from './nluDataset';
+import { getSynonyms as _getSynonyms, getLemma as _getLemma, getWordMeaning as _getWordMeaning } from './lexicalDatabase.js';
+import { getExpressionVariations as _getExpressionVariations } from './languageCorpus.js';
+import { analyzeNLU, extractEntities } from './nluDataset.js';
 
 /**
  * KNOWLEDGE STRUCTURE

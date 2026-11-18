@@ -14,7 +14,8 @@ import {
   Shield,
   X,
   CalendarDays,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Users
 } from 'lucide-react';
 
 export default function DashboardSidebar({ 
@@ -63,6 +64,12 @@ export default function DashboardSidebar({
       label: 'Kategori & Tagar', 
       icon: FolderTree,
       badge: stats?.categoryStats?.length || 0
+    },
+    { 
+      id: 'authors', 
+      label: 'Profil Penulis', 
+      icon: Users,
+      badge: null
     },
     { 
       id: 'data', 

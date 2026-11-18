@@ -34,6 +34,7 @@ import {
 } from './utils/soundEffects';
 import { compressImageToWebP } from './utils/imageCompressor';
 import { getCachedMessages, setCachedMessages } from './utils/cacheManager';
+import { setDiscussionRoomData } from '../../utils/ai/knowledgeBase';
 import { Paperclip, Image as ImageIcon, Users as UsersIcon, AlertTriangle, Bell, Sun, Moon, Monitor, ShieldAlert } from 'lucide-react';
 import { containsProfanity } from './utils/profanityFilter';
 
@@ -126,6 +127,7 @@ function Live() {
   useEffect(() => {
     if (messages.length > 0) {
       setCachedMessages(activeChannel, messages);
+      setDiscussionRoomData(messages);
     }
   }, [messages, activeChannel]);
 

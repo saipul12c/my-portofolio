@@ -34,106 +34,151 @@ function escapeHtml(unsafe) {
     .replace(/'/g, '&#039;');
 }
 
-// Helper untuk menguraikan transparansi & alur berpikir jawaban bot
+// Helper untuk menguraikan alur berpikir & penalaran asisten AI yang alami dan ramah pengguna
 function getTransparencyInfo(message) {
   const meta = message?._meta || {};
   const rawSource = meta.source || null;
   const rawConf = typeof meta.confidence === 'number' ? meta.confidence : null;
-  const emotion = message?.emotion?.primary || message?.emotion || null;
-  const character = message?.character?.character || message?.character || null;
 
   let sourceType = 'nlu';
-  let sourceId = '';
   if (typeof rawSource === 'string') {
     sourceType = rawSource.toLowerCase();
   } else if (rawSource && typeof rawSource === 'object') {
     sourceType = (rawSource.type || rawSource.category || 'knowledge_base').toLowerCase();
-    sourceId = rawSource.id || '';
   }
 
-  let label = 'Knowledge Engine';
+  // Format emosi / nada bahasa yang aman (mencegah [object Object])
+  let formattedEmotion = 'Ramah & Solutif';
+  const rawEmotion = message?.emotion?.primary || message?.emotion || null;
+  if (rawEmotion && typeof rawEmotion === 'object') {
+    formattedEmotion = rawEmotion.primary || rawEmotion.name || 'Ramah & Solutif';
+  } else if (typeof rawEmotion === 'string' && rawEmotion.trim()) {
+    formattedEmotion = rawEmotion.trim();
+  }
+  const emotionMap = {
+    'friendly': 'Ramah & Bersahabat',
+    'professional': 'Profesional',
+    'helpful': 'Solutif & Informatif',
+    'curious': 'Antusias',
+    'polite': 'Sopan & Santun',
+    'neutral': 'Informatif'
+  };
+  formattedEmotion = emotionMap[formattedEmotion.toLowerCase()] || formattedEmotion;
+
+  let label = 'Basis Pengetahuan';
   let icon = '🧠';
-  let description = 'Basis data pengetahuan lokal portofolio (JSON)';
-  let method = 'Pencocokan Semantik NLU & Ekstraksi Entitas';
-  let defaultConf = 0.85;
+  let defaultConf = 0.92;
+  let stepUnderstand = 'Menganalisis topik dan maksud kueri pengguna.';
+  let stepSearch = 'Menelusuri informasi yang paling relevan dari basis data portofolio resmi.';
+  let stepFormulate = 'Menyusun respon yang akurat, informatif, dan mudah dipahami.';
 
   switch (sourceType) {
     case 'faq':
-      label = 'Database FAQ';
+      label = 'Tanya Jawab (FAQ)';
       icon = '❓';
-      description = `Dokumentasi Tanya Jawab (FAQ)${sourceId ? ` [${sourceId}]` : ''}`;
-      method = 'Pencarian Kesamaan Teks TF-IDF / Token Overlap';
-      defaultConf = 0.92;
+      stepUnderstand = 'Mengenali pertanyaan seputar profil, keahlian, dan komitmen profesional.';
+      stepSearch = 'Mencocokkan informasi dari dokumentasi tanya jawab dan pilar komitmen resmi.';
+      stepFormulate = 'Menampilkan jawaban terverifikasi dengan rujukan yang jelas.';
+      defaultConf = 0.95;
       break;
     case 'calculator':
-      label = 'Kalkulator Matematis';
+      label = 'Kalkulator Cerdas';
       icon = '🧮';
-      description = 'Evaluator Ekspresi Matematika Lokal';
-      method = 'Deterministik Math Parser (mathjs / custom evaluator)';
+      stepUnderstand = 'Mendeteksi ekspresi perhitungan dan rumus matematis.';
+      stepSearch = 'Memverifikasi parameter angka dan kaidah operasi perhitungan.';
+      stepFormulate = 'Melakukan kalkulasi presisi dan menyajikan hasil perhitungan.';
       defaultConf = 0.99;
       break;
     case 'conversion':
       label = 'Konversi Satuan';
       icon = '📐';
-      description = 'Standar Konversi Satuan & Unit';
-      method = 'Algoritma Rasio Konversi Metrik/Imperial';
+      stepUnderstand = 'Mengidentifikasi besaran nilai dan unit satuan awal.';
+      stepSearch = 'Menyesuaikan faktor konversi satuan metrik & standar internasional.';
+      stepFormulate = 'Menghitung hasil konversi dan menyajikannya secara akurat.';
       defaultConf = 0.99;
       break;
     case 'rag':
-      label = 'Dokumen RAG';
+    case 'uploaded_file':
+      label = 'Analisis Dokumen';
       icon = '📚';
-      description = 'Sintesis Multi-Dokumen Terpadu';
-      method = 'Retrieval-Augmented Generation (Client-Side Vector/Keyword Retrieval)';
-      defaultConf = 0.88;
+      stepUnderstand = 'Membaca konteks pertanyaan terkait dokumen atau file yang dilampirkan.';
+      stepSearch = 'Menelusuri bagian teks dokumen yang paling relevan dengan topik.';
+      stepFormulate = 'Menyimpulkan isi dokumen ke dalam ringkasan jawaban.';
+      defaultConf = 0.90;
       break;
-    case 'data_integration':
-    case 'knowledge_base':
-      label = 'Knowledge Base';
-      icon = '🧠';
-      description = 'Basis Data Portofolio (Proyek, Skill, Sertifikasi, Edukasi)';
-      method = 'Integrasi Graf Pengetahuan & Heuristik N-Gram Overlap';
-      defaultConf = 0.87;
+    case 'project':
+    case 'projects':
+      label = 'Portofolio Proyek';
+      icon = '🚀';
+      stepUnderstand = 'Mendeteksi pertanyaan mengenai proyek, karya, dan teknologi.';
+      stepSearch = 'Mengakses katalog rekayasa web, teknologi, dan showcase proyek.';
+      stepFormulate = 'Menyajikan deskripsi proyek, teknologi yang digunakan, dan informasi terkait.';
+      defaultConf = 0.92;
+      break;
+    case 'certificate':
+    case 'certificates':
+      label = 'Sertifikasi Resmi';
+      icon = '🏆';
+      stepUnderstand = 'Mendeteksi kueri tentang sertifikasi, lisensi, dan piagam.';
+      stepSearch = 'Menelusuri arsip sertifikasi kompetensi dan lembaga penerbit resmi.';
+      stepFormulate = 'Menampilkan rincian kredensial dan bidang keahlian resmi.';
+      defaultConf = 0.92;
+      break;
+    case 'skill':
+    case 'softskill':
+    case 'skills':
+      label = 'Keahlian & Skill';
+      icon = '🌟';
+      stepUnderstand = 'Menganalisis pertanyaan terkait kompetensi dan soft skills.';
+      stepSearch = 'Mengambil profil keahlian interpersonal dan penguasaan teknis.';
+      stepFormulate = 'Merangkum tingkat keahlian dan implementasi praktisnya.';
+      defaultConf = 0.90;
       break;
     case 'ai_identity':
     case 'ai_capabilities':
     case 'ai_creator':
       label = 'Profil SaipulAI';
       icon = '🤖';
-      description = 'Manifest & Identitas Asisten Virtual SaipulAI';
-      method = 'Rule-Based Self-Disclosure & Profiling System';
+      stepUnderstand = 'Mengenali pertanyaan seputar identitas dan kapabilitas SaipulAI.';
+      stepSearch = 'Memuat spesifikasi fungsi dan panduan asisten virtual.';
+      stepFormulate = 'Menyapa pengguna dan menjelaskan bantuan yang dapat diberikan.';
       defaultConf = 0.95;
       break;
     case 'time':
-      label = 'Waktu Dunia';
+      label = 'Waktu Global';
       icon = '🕒';
-      description = 'Resolusi Zona Waktu Global (Intl DateTime API)';
-      method = 'Pemetaan Zona Waktu Sistem Browser';
+      stepUnderstand = 'Mendeteksi permintaan waktu atau zona wilayah.';
+      stepSearch = 'Menyesuaikan referensi waktu sistem lokal dan standar zona waktu.';
+      stepFormulate = 'Menampilkan informasi tanggal dan jam secara akurat.';
       defaultConf = 0.98;
       break;
     case 'policy':
     case 'reported':
     case 'throttle':
-      label = 'Filter Keamanan';
+      label = 'Panduan Keamanan';
       icon = '🛡️';
-      description = 'Kebijakan Moderasi Konten & Perlindungan Privasi PII';
-      method = 'Pemeriksaan Aturan Keamanan & Pencegahan Fabrikasi';
+      stepUnderstand = 'Memeriksa kesesuaian konten dengan standar etika dan privasi.';
+      stepSearch = 'Menerapkan filter perlindungan data sensitif.';
+      stepFormulate = 'Menyampaikan saran interaksi yang aman dan sesuai kebijakan.';
       defaultConf = 0.95;
       break;
     case 'live_cs':
     case 'live_cs_referral':
     case 'live_cs_direct':
-      label = 'Bantuan Langsung';
+      label = 'Dukungan Langsung';
       icon = '🎧';
-      description = 'Integrasi Layanan Customer Support / Room Diskusi';
-      method = 'Deteksi Intent Bantuan Manusia';
+      stepUnderstand = 'Mendeteksi kebutuhan konsultasi atau bantuan personal.';
+      stepSearch = 'Memeriksa status ketersediaan ruang diskusi dan agen manusia.';
+      stepFormulate = 'Menyediakan panduan langsung untuk terhubung ke sesi percakapan.';
       defaultConf = 0.95;
       break;
     default:
-      label = 'Analisis NLU';
+      label = 'Penalaran AI';
       icon = '💡';
-      description = 'Pemrosesan Bahasa Alami Kueri Pengguna';
-      method = 'Klasifikasi Intent & Ekstraksi Entitas Semantik';
-      defaultConf = 0.82;
+      stepUnderstand = 'Memahami konteks pertanyaan dan kata kunci yang Anda masukkan.';
+      stepSearch = 'Mencari referensi terbaik dari basis pengetahuan portofolio.';
+      stepFormulate = 'Menyusun informasi yang relevan dan siap dibaca.';
+      defaultConf = 0.88;
       break;
   }
 
@@ -143,12 +188,11 @@ function getTransparencyInfo(message) {
   return {
     label,
     icon,
-    description,
-    method,
+    stepUnderstand,
+    stepSearch,
+    stepFormulate,
     percent,
-    emotion: emotion ? String(emotion) : null,
-    character: character ? String(character) : null,
-    relatedConcepts: Array.isArray(meta.relatedConcepts) ? meta.relatedConcepts : []
+    emotion: formattedEmotion
   };
 }
 
@@ -287,12 +331,12 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
 
   const formatTextToElements = (txt) => {
     if (!txt) return null;
-    // sanitize input text early
-    const sanitized = escapeHtml(txt);
-    // Normalize line endings
-    const blocks = txt.split(/\n\n+/);
+    // Normalize Windows/Unix line endings
+    const normalized = String(txt).replace(/\r\n/g, '\n');
+    const blocks = normalized.split(/\n\n+/);
     return blocks.map((block, idx) => {
       const lines = block.split(/\n/).map((l) => l.trim()).filter(Boolean);
+      if (lines.length === 0) return null;
 
       // If all lines are list items (start with • or -)
       const isList = lines.every((l) => l.startsWith("•") || l.startsWith("-"));
@@ -306,17 +350,32 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
         );
       }
 
-      // Header line like: 🧮 **MATEMATIKA & ANALISIS**
+      // Header line like: 🧮 **MATEMATIKA & ANALISIS** or **Judul:** Isi berikutnya
       const firstLine = lines[0] || "";
-      const headerMatch = firstLine.match(/^(.*?)?\s*\*\*(.+?)\*\*/);
+      const headerMatch = firstLine.match(/^(.*?)?\s*\*\*(.+?)\*\*(.*)/s);
       if (headerMatch) {
         const emoji = headerMatch[1] ? headerMatch[1].trim() : "";
         const headerText = headerMatch[2];
-        const rest = lines.slice(1).join("\n");
+        const restOfFirstLine = (headerMatch[3] || "").trim();
+        const otherLines = lines.slice(1);
+        const allRestLines = [restOfFirstLine, ...otherLines].filter(Boolean);
+
         return (
-          <div key={idx} className="mb-2">
-            <div className="text-sm font-semibold flex items-center gap-2">{emoji && <span>{emoji}</span>}<span>{headerText}</span></div>
-            {rest && <p className="text-sm mt-1">{renderInline(rest)}</p>}
+          <div key={idx} className="mb-2.5">
+            <div className="text-sm font-semibold flex items-center gap-2 text-white">
+              {emoji && <span>{emoji}</span>}
+              <span>{headerText}</span>
+            </div>
+            {allRestLines.length > 0 && (
+              <div className="text-sm mt-1 leading-relaxed opacity-95">
+                {allRestLines.map((ln, i) => (
+                  <span key={i}>
+                    {renderInline(ln)}
+                    {i < allRestLines.length - 1 && <br />}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         );
       }
@@ -371,21 +430,10 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
       className={`flex ${isUser ? "justify-end" : "justify-start"} my-2`}
     >
       <div
-        className={`saipul-chat-message px-4 py-2 rounded-lg max-w-[92%] sm:max-w-[80%] break-words shadow-md selection:bg-slate-200 selection:text-slate-900 ${isUser ? "rounded-br-none" : "rounded-bl-none"}`} style={{
+        className={`saipul-chat-message px-4 py-2.5 rounded-2xl max-w-[92%] sm:max-w-[80%] break-words shadow-md selection:bg-slate-200 selection:text-slate-900 ${isUser ? "rounded-br-sm" : "rounded-bl-sm"}`} style={{
           background: isUser ? 'var(--saipul-accent)' : 'var(--saipul-surface)',
           color: isUser ? 'var(--saipul-surface)' : 'var(--saipul-text)'
         }}>
-        {/* intent indicator for user messages */}
-        {isUser && message?.intent && (
-          <div className="text-[10px] opacity-90 mb-1 flex justify-end">
-            <span className="px-2 py-0.5 rounded-full" style={{ background: 'rgba(0,0,0,0.12)', color: 'var(--saipul-surface)' }}>
-              {typeof message.intent === 'object' 
-                ? (message.intent.type || message.intent.intent || 'MESSAGE').toUpperCase() 
-                : String(message.intent).toUpperCase()}
-              {message.intent && typeof message.intent === 'object' && message.intent.confidence !== undefined ? ` • ${Math.round((message.intent.confidence||0)*100)}%` : ''}
-            </span>
-          </div>
-        )}
 
         {isUser && message?._meta?.progress > 0 && message?._meta?.progress < 100 && (
           <div className="text-[10px] opacity-70 mb-1 flex justify-end">
@@ -420,13 +468,13 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
                   <div className="flex items-center justify-between gap-1.5 pb-1.5 border-b border-white/10 text-[11px]">
                     <div className="flex items-center gap-1.5 flex-wrap">
                       {/* Badge Sumber */}
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 font-medium">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 font-medium">
                         <span>{transparency.icon}</span>
                         <span>{transparency.label}</span>
                       </span>
 
                       {/* Badge Keyakinan (Confidence) */}
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border font-medium ${
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border font-medium ${
                         transparency.percent >= 75
                           ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
                           : transparency.percent >= 50
@@ -434,26 +482,25 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
                           : 'bg-rose-500/15 text-rose-300 border-rose-500/30'
                       }`}>
                         <span>🎯</span>
-                        <span>{transparency.percent}% Yakin</span>
+                        <span>{transparency.percent >= 80 ? 'Sangat Relevan' : `${transparency.percent}% Relevan`}</span>
                       </span>
                     </div>
 
-                    {/* Tombol Toggle Analisis */}
+                    {/* Tombol Toggle Alur Berpikir */}
                     <button
                       type="button"
                       onClick={() => setShowAnalysis(!showAnalysis)}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white transition-all border border-white/10 active:scale-95 cursor-pointer ml-auto"
-                      title="Lihat proses berpikir dan transparansi AI"
-                      aria-label="Lihat proses berpikir AI"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white transition-all border border-white/10 active:scale-95 cursor-pointer ml-auto"
+                      title="Lihat alur berpikir dan penalaran AI"
+                      aria-label="Lihat alur berpikir AI"
                     >
                       <Sparkles size={11} className="text-cyan-400" />
-                      <span className="hidden sm:inline font-medium">{showAnalysis ? "Tutup" : "Proses Analisis"}</span>
-                      <span className="sm:hidden font-medium">{showAnalysis ? "Tutup" : "Analisis"}</span>
+                      <span className="font-medium">{showAnalysis ? "Tutup" : "Alur Berpikir"}</span>
                       {showAnalysis ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
                     </button>
                   </div>
 
-                  {/* Collapsible Panel Analisis */}
+                  {/* Collapsible Panel Alur Berpikir Cerdas */}
                   <AnimatePresence>
                     {showAnalysis && (
                       <motion.div
@@ -461,79 +508,73 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
                         animate={{ opacity: 1, height: 'auto', y: 0 }}
                         exit={{ opacity: 0, height: 0, y: -4 }}
                         transition={{ duration: 0.2 }}
-                        className="mb-2.5 p-2.5 rounded-lg bg-black/40 border border-cyan-500/30 text-xs text-gray-200 space-y-2 overflow-hidden shadow-inner backdrop-blur-sm"
+                        className="mb-3 p-3 rounded-xl bg-slate-950/85 border border-cyan-500/30 text-xs text-slate-200 space-y-2.5 overflow-hidden shadow-xl backdrop-blur-md"
                       >
-                        <div className="flex items-center justify-between font-semibold text-cyan-300 text-[11px] border-b border-white/10 pb-1.5">
+                        <div className="flex items-center justify-between font-semibold text-cyan-300 text-xs border-b border-white/10 pb-2">
                           <span className="flex items-center gap-1.5">
-                            <Cpu size={12} className="text-cyan-400" />
-                            <span>Transparansi & Logika Jawaban</span>
+                            <Sparkles size={13} className="text-cyan-400" />
+                            <span>Proses Penalaran AI</span>
                           </span>
-                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-cyan-950/60 text-cyan-300 border border-cyan-500/20">
-                            Client-Side NLU
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 font-medium">
+                            Pemrosesan Cerdas
                           </span>
                         </div>
 
-                        {/* 1. Sumber Data */}
-                        <div className="space-y-0.5">
-                          <div className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Sumber Data</div>
-                          <div className="text-gray-200 text-[11px] leading-relaxed bg-white/5 p-1.5 rounded border border-white/5">
-                            {transparency.description}
+                        {/* 3 Langkah Penalaran Manusiawi */}
+                        <div className="space-y-1.5 pt-0.5">
+                          <div className="flex items-start gap-2.5 bg-white/5 p-2 rounded-xl border border-white/5">
+                            <span className="text-sm select-none">💭</span>
+                            <div>
+                              <div className="font-semibold text-white text-[11px]">1. Memahami Konteks</div>
+                              <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+                                {transparency.stepUnderstand}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-start gap-2.5 bg-white/5 p-2 rounded-xl border border-white/5">
+                            <span className="text-sm select-none">🔍</span>
+                            <div>
+                              <div className="font-semibold text-white text-[11px]">2. Menelusuri Data Relevan</div>
+                              <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+                                {transparency.stepSearch}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-start gap-2.5 bg-white/5 p-2 rounded-xl border border-white/5">
+                            <span className="text-sm select-none">✨</span>
+                            <div>
+                              <div className="font-semibold text-white text-[11px]">3. Menyusun Respon</div>
+                              <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+                                {transparency.stepFormulate}
+                              </p>
+                            </div>
                           </div>
                         </div>
 
-                        {/* 2. Metode Penalaran */}
-                        <div className="space-y-0.5">
-                          <div className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Metode Penalaran</div>
-                          <div className="text-gray-200 text-[11px] leading-relaxed bg-white/5 p-1.5 rounded border border-white/5">
-                            {transparency.method}
-                          </div>
-                        </div>
-
-                        {/* 3. Skor Keyakinan Bar */}
-                        <div className="space-y-1">
-                          <div className="flex justify-between items-center text-[10px]">
-                            <span className="text-gray-400 font-semibold uppercase tracking-wider">Tingkat Keyakinan (Confidence)</span>
-                            <span className={`font-semibold ${
-                              transparency.percent >= 75 ? 'text-emerald-400' : transparency.percent >= 50 ? 'text-amber-400' : 'text-rose-400'
-                            }`}>
-                              {transparency.percent}%
+                        {/* Status Kesesuaian & Gaya Bahasa */}
+                        <div className="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+                          <div className="flex items-center gap-2">
+                            <span className="text-slate-400">Tingkat Kesesuaian:</span>
+                            <span className="font-semibold text-cyan-300">
+                              {transparency.percent >= 80 ? 'Sangat Relevan' : `${transparency.percent}%`}
                             </span>
                           </div>
-                          <div className="w-full h-1.5 bg-gray-700/60 rounded-full overflow-hidden">
-                            <div
-                              className={`h-full rounded-full transition-all duration-300 ${
-                                transparency.percent >= 75 ? 'bg-gradient-to-r from-emerald-500 to-cyan-400' : transparency.percent >= 50 ? 'bg-gradient-to-r from-amber-500 to-yellow-400' : 'bg-gradient-to-r from-rose-500 to-red-400'
-                              }`}
-                              style={{ width: `${transparency.percent}%` }}
-                            />
-                          </div>
+                          {transparency.emotion && (
+                            <div className="flex items-center gap-1.5 text-slate-400">
+                              <span>Gaya Bahasa:</span>
+                              <span className="px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 text-[10px] font-medium">
+                                {transparency.emotion}
+                              </span>
+                            </div>
+                          )}
                         </div>
 
-                        {/* 4. Tone / Konsep Terkait */}
-                        {(transparency.emotion || (transparency.relatedConcepts && transparency.relatedConcepts.length > 0)) && (
-                          <div className="text-[10px] text-gray-300 pt-1 border-t border-white/10 flex flex-wrap gap-1.5">
-                            {transparency.emotion && (
-                              <span className="px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                                🎭 Nada: {transparency.emotion}
-                              </span>
-                            )}
-                            {transparency.character && (
-                              <span className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                                💼 Karakter: {transparency.character}
-                              </span>
-                            )}
-                            {transparency.relatedConcepts.slice(0, 3).map((concept, i) => (
-                              <span key={i} className="px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                                🏷️ {concept}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* 5. Jaminan Privasi */}
-                        <div className="pt-1 border-t border-white/5 flex items-center gap-1 text-[10px] text-emerald-400">
-                          <ShieldCheck size={11} className="flex-shrink-0" />
-                          <span>Privasi: Diproses 100% lokal di browser Anda (tanpa data dilempar ke cloud pihak ketiga)</span>
+                        {/* Jaminan Privasi */}
+                        <div className="pt-1.5 border-t border-white/5 flex items-center gap-1.5 text-[10px] text-emerald-400">
+                          <ShieldCheck size={12} className="flex-shrink-0" />
+                          <span>Privasi: Diproses secara aman & privat langsung di peramban Anda.</span>
                         </div>
                       </motion.div>
                     )}

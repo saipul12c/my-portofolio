@@ -1,4 +1,5 @@
-import { smartKBQuery } from './smartKBQuery';
+import { smartKBQuery } from './smartKBQuery.js';
+import { processDeepNeuralQuery, formatNeuralAnswer } from '../../../../../../utils/ai/neural/deepNeuralPipeline.js';
 
 /**
  * Query knowledge base dengan improved error handling dan data validation
@@ -27,7 +28,7 @@ export function getKnowledgeResponse(userInput, safeKnowledgeBase, settings) {
         
         // Tambahkan context jika dari file upload
         if (bestMatch.source === 'uploaded_file') {
-          responseText = `📄 **Dari file "${bestMatch.fileName || 'Unknown'}"**:\n${responseText}\n\n*Informasi ini berasal dari file yang Anda upload.*`;
+          responseText = `📄 **Dari file "${bestMatch.fileName || 'Unknown'}"**:\n\n${responseText}\n\n*Informasi ini berasal dari file yang Anda upload.*`;
         }
 
         if (settings?.creativeMode) {
@@ -113,6 +114,27 @@ export function getKnowledgeResponse(userInput, safeKnowledgeBase, settings) {
           confidence: 0.9
         };
       }
+    }
+
+    // Fallback: Direct Deep Neural Pipeline Query (Level 1 + Level 2)
+    try {
+      const neuralResult = processDeepNeuralQuery(userInput, safeKnowledgeBase);
+      if (neuralResult && neuralResult.isHighConfidenceSemantic) {
+        const neuralAnswer = formatNeuralAnswer(neuralResult);
+        if (neuralAnswer) {
+          return {
+            text: neuralAnswer,
+            source: {
+              type: 'deep_neural_fallback',
+              id: neuralResult.topClass,
+              score: neuralResult.bestMatch.score
+            },
+            confidence: Math.min(0.95, 0.70 + (neuralResult.bestMatch.score * 0.25))
+          };
+        }
+      }
+    } catch (e) {
+      console.warn('Direct neural query fallback failed:', e);
     }
 
     // No match found

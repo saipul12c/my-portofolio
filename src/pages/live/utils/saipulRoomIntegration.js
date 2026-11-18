@@ -4,6 +4,7 @@
  */
 
 import { getSmartReply } from '../../../components/helpbutton/chat/components/logic/utils/responseGenerator';
+import { getUnifiedKnowledgeBase, setDiscussionRoomData } from '../../../utils/ai/knowledgeBase';
 
 export const isAiMentioned = (content) => {
   if (!content) return false;
@@ -21,12 +22,13 @@ export const generateAiRoomReply = async (userQuery, senderName = 'Teman') => {
   }
 
   try {
-    // Panggil mesin respon NLP Saipul jika tersedia
+    // Panggil mesin respon NLP Saipul dengan Knowledge Base terpadu (JSON, Author Profile, Experiences, Gallery)
+    const kb = getUnifiedKnowledgeBase();
     const replyObj = getSmartReply(
       userQuery,
       { aiEnabled: true, personality: 'friendly' },
       [],
-      null,
+      kb,
       null,
       null
     );
@@ -48,6 +50,11 @@ export const generateAiRoomReply = async (userQuery, senderName = 'Teman') => {
  * Menganalisis riwayat obrolan dan membuat ringkasan cerdas
  */
 export const summarizeMessages = (messages = []) => {
+  if (Array.isArray(messages) && messages.length > 0) {
+    // Sinkronisasi riwayat room ke Universal Knowledge Base SaipulAI
+    setDiscussionRoomData(messages);
+  }
+
   if (!messages || messages.length === 0) {
     return {
       topic: 'Belum ada percakapan',

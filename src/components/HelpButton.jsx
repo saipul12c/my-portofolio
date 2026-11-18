@@ -7,6 +7,7 @@ import { ChatbotWindow } from "./helpbutton/chat/components/ChatbotWindow";
 import { ChatbotSettings } from "./helpbutton/chat/components/ChatbotSettings";
 import { useRecaptcha } from "../context/useRecaptcha";
 import { useNavigate } from "react-router-dom";
+import { getUnifiedKnowledgeBase, getKnowledgeStats } from "../utils/ai/knowledgeBase";
 
 function ChatbotErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -178,6 +179,8 @@ export default function HelpButton() {
           <ChatbotWindow
             onClose={closeChat}
             onOpenSettings={openSettings}
+            knowledgeBase={getUnifiedKnowledgeBase()}
+            knowledgeStats={getKnowledgeStats()}
           />
         </div>
       )}

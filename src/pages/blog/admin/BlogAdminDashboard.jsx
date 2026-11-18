@@ -16,6 +16,7 @@ import CommentsTab from './components/tabs/CommentsTab';
 import CategoriesTab from './components/tabs/CategoriesTab';
 import DataManagerTab from './components/tabs/DataManagerTab';
 import SettingsTab from './components/tabs/SettingsTab';
+import AuthorsTab from './components/tabs/AuthorsTab';
 import EditorialCalendarTab from './components/tabs/EditorialCalendarTab';
 import MediaLibraryTab from './components/tabs/MediaLibraryTab';
 import PostEditorModal from './components/tabs/PostEditorModal';
@@ -211,6 +212,7 @@ export default function BlogAdminDashboard() {
       case 'media': return 'Galeri Media Terpadu & Unsplash';
       case 'comments': return 'Moderasi Komentar & Diskusi';
       case 'categories': return 'Kelola Kategori & Tagar';
+      case 'authors': return 'Manajemen Profil Penulis';
       case 'data': return 'Manajemen Basis Data & Cadangan';
       case 'settings': return 'Pengaturan & Keamanan Akses';
       default: return 'Blog Control Hub';
@@ -306,6 +308,13 @@ export default function BlogAdminDashboard() {
                     categories={categories}
                     posts={posts}
                     onSaveCategories={handleSaveCategories}
+                  />
+                )}
+
+                {activeTab === 'authors' && (
+                  <AuthorsTab 
+                    posts={posts}
+                    setToast={showToast}
                   />
                 )}
 

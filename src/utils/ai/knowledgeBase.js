@@ -6,6 +6,8 @@
 
 import projectsData from '../../data/projects.json';
 import softskillsData from '../../data/skills/softskills.json';
+import specializationsData from '../../data/skills/specializations.json';
+import experiencesData from '../../data/pengalaman/experiences.json';
 import docsSectionsData from '../../data/helpbutton/docs/docsSections.json';
 import plannedVersionsData from '../../data/helpbutton/docs/plannedVersions.json';
 import commitmentsData from '../../data/helpbutton/komit/commitments.json';
@@ -15,6 +17,7 @@ import cardsData from '../../data/about/cards.json';
 import certificatesData from '../../data/sertif/certificates.json';
 import collaborationsData from '../../data/about/collaborations.json';
 import hobbiesData from '../../data/hub/hobbiesData.json';
+import chatHobbiesData from '../../data/helpbutton/chat/hobbies.json';
 import interestsData from '../../data/about/interests.json';
 import aiBaseData from '../../data/helpbutton/chat/AI-base.json';
 import testimonialsData from '../../data/testimoni/testimonials.json';
@@ -24,12 +27,115 @@ import blogsData from '../../data/blog/data.json';
 import photosData from '../../data/foto/photos.json';
 import aiDocData from '../../data/AIDoc/data.json';
 import riwayatData from '../../data/AIDoc/riwayat/riwayat.json';
+import galleryData from '../../data/galleryData.json';
+import galleryAlbumsData from '../../data/gallery/albums.json';
+import galleryImagesData from '../../data/gallery/images.json';
+import galleryShortsData from '../../data/gallery/shorts.json';
+import galleryVideosData from '../../data/gallery/videos.json';
+import streamingVideosData from '../../data/streming/videosData.json';
+import streamingShortsData from '../../data/streming/shortsData.json';
+import comingSoonData from '../../data/comingsoon/data.json';
+import maintenanceData from '../../data/maintenance/maintenanceData.json';
+import qodamData from '../../data/qodam/data.json';
+import zodiacData from '../../data/zodiak/data.json';
+import { getAuthorProfiles } from '../../pages/blog/services/authorProfileService.js';
+import { getCachedMessages } from '../../pages/live/utils/cacheManager.js';
+import { kknOverview, kknStats, kknOutputs, kknPillars } from '../../pages/akademik/sarjana/kkn/data/kknData.js';
+import { getLearnedBenchmarkKnowledge } from './benchmarkLearner.js';
+
+// Data Visi, Misi & Minat Bakat (dari halaman /visi)
+export const visiMisiData = {
+  visi: "Menjadi pendidik dan kreator media edukatif yang adaptif terhadap kemajuan teknologi dan inovasi digital, sekaligus menginspirasi melalui pembelajaran kreatif, interaktif, dan berdampak. Berkomitmen menciptakan solusi edukasi yang inklusif, berkelanjutan, dan memberikan manfaat positif bagi individu maupun masyarakat luas.",
+  misi: [
+    "Menciptakan solusi digital yang relevan & bermanfaat bagi masyarakat.",
+    "Membangun ruang kolaboratif dan edukatif untuk kreator muda dan pendidik.",
+    "Terus belajar, bereksperimen, dan berinovasi tanpa batas dalam arsitektur modern.",
+    "Berkontribusi positif melalui integrasi teknologi mutakhir dan empati kemanusiaan."
+  ],
+  minatBakat: [
+    { title: "Web Development", desc: "Membangun pengalaman digital yang interaktif & berjiwa dengan standar clean code." },
+    { title: "Photography & Visual", desc: "Menangkap momen berharga jadi karya visual yang bercerita dan artistik." },
+    { title: "UI/UX Design", desc: "Menggabungkan estetika modern glassmorphism dengan kenyamanan logika pengguna." },
+    { title: "Creative Strategy", desc: "Menemukan ide segar dan mengubahnya jadi solusi nyata berdampak." },
+    { title: "Content Creation", desc: "Membuat konten edukasi bermutu tinggi yang relate & meaningful bagi pembelajar." },
+    { title: "Personal Growth", desc: "Terus meng-upgrade mindset, skill, dan etika profesional setiap hari." }
+  ],
+  timeline: [
+    { year: "2021", text: "Awal langkah kecil — belajar desain dan pemrograman web secara otodidak." },
+    { year: "2022", text: "Mulai membangun proyek freelance dan kolaborasi kreatif." },
+    { year: "2023", text: "Mendalami UI/UX modern, arsitektur frontend, dan merilis portofolio digital pertama." },
+    { year: "2024", text: "Aktif dalam komunitas teknologi dan edukasi digital, membagikan wawasan." },
+    { year: "2025", text: "Fokus mengembangkan platform digital untuk kolaborasi, AI terintegrasi, dan edukasi generasi penerus." }
+  ]
+};
+
+// Data Akun Sosial & Platform Resmi (dari halaman /portal & /contact)
+export const portalPlatforms = [
+  { platform: "Instagram", username: "@saipul16_", url: "https://instagram.com/saipul16_", desc: "Dokumentasi visual, update proyek, dan cerita kreatif." },
+  { platform: "LinkedIn", username: "Muhammad Syaiful Mukmin", url: "https://linkedin.com/in/saipul16_", desc: "Koneksi profesional, rekam jejak karir, dan keahlian software engineering." },
+  { platform: "GitHub / Twitter", username: "@saipul16_", url: "https://twitter.com/saipul16_", desc: "Diskusi teknologi dan repositori open-source." },
+  { platform: "YouTube", username: "@saipul16_", url: "https://youtube.com/@saipul16_", desc: "Konten video edukatif dan sinematografi." },
+  { platform: "Telegram", username: "@saipul16_", url: "https://t.me/saipul16_", desc: "Saluran komunikasi dan diskusi langsung." },
+  { platform: "Website Resmi", username: "syaiful-mukmin.netlify.app", url: "/", desc: "Pusat portofolio, blog teknologi, galeri karya, dan SaipulAI." }
+];
+
+// Direktori Lengkap Seluruh Halaman Website untuk Pemandu Navigasi AI
+export const sitePagesDirectory = [
+  { path: "/", title: "Beranda Utama", category: "Utama", desc: "Halaman muka portofolio dengan pengenalan interaktif, proyek unggulan, dan statistik utama." },
+  { path: "/about", title: "Tentang Saya (About)", category: "Profil", desc: "Profil biografi lengkap, kartu keahlian, filosofi, minat, dan identitas profesional." },
+  { path: "/cv-saya", title: "CV Digital Interaktif", category: "Karir", desc: "Curriculum Vitae interaktif mencakup ringkasan profesional, keahlian teknis, dan riwayat pekerjaan." },
+  { path: "/visi", title: "Visi, Misi & Minat", category: "Profil", desc: "Visi masa depan, misi strategis, minat bakat, dan timeline perjalanan karir." },
+  { path: "/projects", title: "Showcase Proyek Web", category: "Proyek", desc: "Katalog 22+ proyek aplikasi web modern lengkap dengan filter teknologi dan demo." },
+  { path: "/softskills", title: "Keahlian & Soft Skills", category: "Keahlian", desc: "Daftar kompetensi interpersonal, kepemimpinan, komunikasi, dan metodologi kerja." },
+  { path: "/certificates", title: "Sertifikat & Lisensi", category: "Prestasi", desc: "Daftar sertifikat kompetensi resmi dari berbagai platform edukasi dan teknologi." },
+  { path: "/education", title: "Pendidikan & Kursus", category: "Pendidikan", desc: "Riwayat pendidikan formal, kursus pemrograman, dan pelatihan profesional." },
+  { path: "/blog", title: "Blog & Artikel Edukatif", category: "Blog", desc: "Kumpulan artikel mendalam tentang web development, clean code, dan inovasi digital." },
+  { path: "/blog/authors/m-syaiful-mukmin", title: "Profil Penulis Blog", category: "Blog", desc: "Halaman profil penulis blog dengan biografi, keahlian, dan daftar artikel terbitan." },
+  { path: "/gallery", title: "Galeri & Media Visual", category: "Karya Visual", desc: "Pusat koleksi foto studio 5R, album pagelaran seni angkatan 22, dan video kreatif." },
+  { path: "/photography", title: "Fotografi Portofolio", category: "Karya Visual", desc: "Koleksi foto artistik, dokumentasi event, dan kurasi visual resolusi tinggi." },
+  { path: "/S1-PGMI", title: "Akademik Sarjana S1-PGMI", category: "Akademik", desc: "Informasi dan rekam jejak akademik program studi S1 PGMI FTK UIN Antasari Banjarmasin." },
+  { path: "/kkn", title: "Laporan KKN Desa Kundan", category: "Akademik", desc: "Dokumentasi 32 hari pengabdian KKN di Desa Kundan Haruyan Dayak, HARDAY FEST, dan pembinaan 4 sekolah." },
+  { path: "/sempro-skripsi", title: "Seminar Proposal Skripsi", category: "Akademik", desc: "Tahapan seminar proposal penelitian sarjana." },
+  { path: "/sidang-skripsi", title: "Sidang Skripsi Munaqasyah", category: "Akademik", desc: "Sidang ujian akhir skripsi sarjana." },
+  { path: "/wisuda", title: "Momen Wisuda Sarjana", category: "Akademik", desc: "Perayaan kelulusan dan penganugerahan gelar sarjana." },
+  { path: "/Live-Discussion", title: "Live Discussion Room", category: "Komunitas", desc: "Ruang obrolan langsung komunitas dengan dukungan asisten cerdas SaipulAI." },
+  { path: "/testimoni", title: "Testimoni & Klien", category: "Ulasan", desc: "Rekomendasi profesional, testimoni rekan kerja, dan ulasan hasil kolaborasi proyek." },
+  { path: "/portal", title: "Portal Navigasi & Sosial", category: "Navigasi", desc: "Pusat penghubung seluruh akun media sosial, tautan platform, dan jalan pintas website." },
+  { path: "/help/docs", title: "Dokumentasi Sistem & AI", category: "Bantuan", desc: "Panduan lengkap penggunaan sistem, arsitektur SaipulAI, dan fitur portofolio." },
+  { path: "/help/faq", title: "Tanya Jawab (FAQ)", category: "Bantuan", desc: "Jawaban cepat atas pertanyaan yang sering diajukan seputar layanan dan portofolio." },
+  { path: "/help/commitment", title: "Komitmen Layanan", category: "Bantuan", desc: "Prinsip dedikasi kerja, jaminan kualitas, dan integritas profesional." },
+  { path: "/help/version", title: "Versi & Changelog", category: "Bantuan", desc: "Riwayat pembaruan fitur, perbaikan sistem, dan roadmap versi aplikasi." },
+  { path: "/live-cs/security", title: "Keamanan Sistem", category: "Keamanan", desc: "Standar keamanan data, proteksi privasi, dan transparansi pemrosesan AI lokal." },
+  { path: "/hobbies", title: "Minat & Hobi", category: "Personal", desc: "Aktivitas kegemaran seperti fotografi, coding eksperimental, dan literasi teknologi." },
+  { path: "/bahasa", title: "Kemampuan Bahasa", category: "Personal", desc: "Penguasaan multibahasa meliputi Bahasa Indonesia, Bahasa Banjar, Inggris, dan Arab." },
+  { path: "/coming-soon", title: "Fitur Mendatang (Roadmap)", category: "Inovasi", desc: "Platform baru yang sedang dikembangkan seperti CreativeHub dan livestreaming." },
+  { path: "/contact", title: "Hubungi Penulis / Admin", category: "Kontak", desc: "Formulir interaktif untuk mengirimkan pesan, tawaran kolaborasi, atau feedback." }
+];
 
 // Cache blogs dinamis dari Supabase
 let runtimeBlogs = [];
 export const setKnowledgeBaseBlogs = (blogs = []) => {
   if (Array.isArray(blogs)) {
     runtimeBlogs = blogs;
+  }
+};
+
+// Cache room diskusi dinamis dari Live Room / Supabase
+let runtimeDiscussionMessages = [];
+export const setDiscussionRoomData = (messages = []) => {
+  if (Array.isArray(messages)) {
+    runtimeDiscussionMessages = messages;
+  }
+};
+
+export const getDiscussionRoomData = () => {
+  if (runtimeDiscussionMessages.length > 0) return runtimeDiscussionMessages;
+  try {
+    const cachedUmum = getCachedMessages('umum');
+    const cachedProjek = getCachedMessages('projek');
+    return [...(Array.isArray(cachedUmum) ? cachedUmum : []), ...(Array.isArray(cachedProjek) ? cachedProjek : [])];
+  } catch (e) {
+    return [];
   }
 };
 
@@ -48,16 +154,33 @@ const extractArray = (data, fallbackKey = null) => {
  * Mengambil seluruh database mentah yang telah dinormalisasi
  */
 export const getUnifiedKnowledgeBase = () => {
+  const authorProfilesObj = typeof getAuthorProfiles === 'function' ? getAuthorProfiles() : {};
+  const authorProfilesList = Array.isArray(authorProfilesObj) ? authorProfilesObj : Object.values(authorProfilesObj || {});
+
+  const allHobbies = [
+    ...extractArray(hobbiesData, 'hobbies'),
+    ...extractArray(chatHobbiesData, 'hobbies')
+  ];
+
+  const galleryItems = extractArray(galleryData);
+  const galleryAlbums = extractArray(galleryAlbumsData);
+  const galleryImages = extractArray(galleryImagesData);
+  const galleryShorts = extractArray(galleryShortsData);
+  const galleryVideos = extractArray(galleryVideosData);
+
   return {
     profile: profileData || {},
+    authorProfiles: authorProfilesList,
     cards: extractArray(cardsData, 'cards'),
     projects: extractArray(projectsData, 'projects'),
     skills: extractArray(softskillsData, 'skills'),
+    specializations: extractArray(specializationsData, 'specializations'),
+    experiences: extractArray(experiencesData, 'experiences'),
     documents: extractArray(docsSectionsData, 'sections'),
     plannedVersions: extractArray(plannedVersionsData, 'versions'),
     commitments: extractArray(commitmentsData, 'commitments'),
     faq: extractArray(faqsData, 'faqs'),
-    hobbies: extractArray(hobbiesData, 'hobbies'),
+    hobbies: allHobbies,
     certificates: extractArray(certificatesData, 'certificates'),
     collaborations: extractArray(collaborationsData, 'collaborations'),
     interests: interestsData || {},
@@ -67,24 +190,74 @@ export const getUnifiedKnowledgeBase = () => {
     education: extractArray(educationData, 'courses'),
     blogs: runtimeBlogs.length > 0 ? runtimeBlogs : extractArray(blogsData, 'blogs'),
     photos: extractArray(photosData, 'photos'),
+    gallery: {
+      items: galleryItems,
+      albums: galleryAlbums,
+      images: galleryImages,
+      shorts: galleryShorts,
+      videos: galleryVideos
+    },
+    galleryAlbums,
+    galleryImages,
+    galleryVideos,
+    streamingVideos: extractArray(streamingVideosData),
+    streamingShorts: extractArray(streamingShortsData),
+    discussionRoom: getDiscussionRoomData(),
+    comingsoon: extractArray(comingSoonData),
+    maintenance: maintenanceData || {},
+    qodam: extractArray(qodamData),
+    zodiac: extractArray(zodiacData),
+    academic: {
+      overview: kknOverview || {},
+      stats: kknStats || [],
+      outputs: kknOutputs || [],
+      pillars: kknPillars || []
+    },
+    visiMisi: visiMisiData,
+    portalPlatforms: portalPlatforms,
+    sitePages: sitePagesDirectory,
+    benchmarkLearner: getLearnedBenchmarkKnowledge(),
     aiDoc: aiDocData || {},
     riwayat: extractArray(riwayatData, 'riwayat')
   };
 };
 
 /**
- * Statistik ringkas ukuran knowledge base
+ * Statistik ringkas ukuran knowledge base (menghitung kedalaman konten secara akurat tanpa duplikasi)
  */
 export const getKnowledgeStats = () => {
   const kb = getUnifiedKnowledgeBase();
   let totalItems = 0;
+  const counted = new Set();
+
+  const countDeep = (obj) => {
+    if (!obj || counted.has(obj)) return 0;
+    counted.add(obj);
+
+    if (Array.isArray(obj)) {
+      return obj.length;
+    }
+    if (typeof obj === 'object') {
+      let sum = 0;
+      for (const val of Object.values(obj)) {
+        if (Array.isArray(val)) {
+          if (!counted.has(val)) {
+            counted.add(val);
+            sum += val.length;
+          }
+        } else if (typeof val === 'object' && val !== null) {
+          sum += countDeep(val);
+        } else if (typeof val === 'string' && val.trim().length > 0) {
+          sum += 1;
+        }
+      }
+      return sum;
+    }
+    return 0;
+  };
 
   Object.values(kb).forEach(val => {
-    if (Array.isArray(val)) {
-      totalItems += val.length;
-    } else if (typeof val === 'object' && val !== null) {
-      totalItems += Object.keys(val).length;
-    }
+    totalItems += countDeep(val);
   });
 
   return {
@@ -150,12 +323,68 @@ export const findRelatedEntities = (keyword = '') => {
   );
 
   // 7. FAQ
-  const matchedFAQ = kb.faq.filter(f => 
+  const matchedFAQ = (kb.faq || []).filter(f => 
     matchText(f.question) || matchText(f.answer)
   );
 
+  // 8. Experiences (Pengalaman Kerja & Karir)
+  const matchedExperiences = (kb.experiences || []).filter(e => 
+    matchText(e.title) || matchText(e.position) || matchText(e.company) || matchText(e.description) ||
+    matchArray(e.tags) || matchArray(e.achievements)
+  );
+
+  // 9. Specializations (Keahlian & Spesialisasi)
+  const matchedSpecializations = (kb.specializations || []).filter(s => 
+    matchText(s.title) || matchText(s.description) || matchArray(s.skills)
+  );
+
+  // 10. Author Profiles (Profil Penulis Blog)
+  const matchedAuthorProfiles = (kb.authorProfiles || []).filter(a => 
+    matchText(a.name) || matchText(a.bio) || matchText(a.expertise) || matchText(a.location) || matchText(a.company)
+  );
+
+  // 11. Gallery & Albums (Koleksi Galeri Foto & Album)
+  const galleryItems = [
+    ...(kb.galleryAlbums || []),
+    ...(kb.galleryImages || []),
+    ...(kb.gallery?.items || [])
+  ];
+  const matchedGallery = galleryItems.filter(g => 
+    matchText(g.title) || matchText(g.desc) || matchText(g.category) || matchArray(g.tags)
+  );
+
+  // 12. Discussion Room (Insight & Percakapan Room Live)
+  const matchedDiscussion = (kb.discussionRoom || []).filter(d => 
+    matchText(d.content) || matchText(d.username) || matchText(d.reply_to_name)
+  );
+
+  // 13. Academic & KKN Pengabdian
+  const kknMatches = [];
+  if (kb.academic?.overview) {
+    const ov = kb.academic.overview;
+    if (matchText(ov.title) || matchText(ov.location) || matchText(ov.subtitle) || matchText(ov.programStudy) || matchText(ov.university)) {
+      kknMatches.push(ov);
+    }
+  }
+
+  // 14. Visi, Misi & Minat Bakat
+  const visiMatches = [];
+  if (kb.visiMisi) {
+    if (matchText(kb.visiMisi.visi) || kb.visiMisi.misi?.some(m => matchText(m)) || kb.visiMisi.minatBakat?.some(mb => matchText(mb.title) || matchText(mb.desc))) {
+      visiMatches.push(kb.visiMisi);
+    }
+  }
+
+  // 15. Site Pages Directory
+  const matchedPages = (kb.sitePages || []).filter(p => 
+    matchText(p.title) || matchText(p.desc) || matchText(p.path) || matchText(p.category)
+  );
+
   const totalMatches = matchedProjects.length + matchedBlogs.length + matchedSkills.length + 
-                       matchedCertificates.length + matchedTestimonials.length + matchedEducation.length;
+                       matchedCertificates.length + matchedTestimonials.length + matchedEducation.length +
+                       matchedExperiences.length + matchedSpecializations.length + matchedAuthorProfiles.length +
+                       matchedGallery.length + matchedDiscussion.length + kknMatches.length + visiMatches.length + 
+                       matchedPages.length + matchedFAQ.length;
 
   return {
     keyword: k,
@@ -164,6 +393,14 @@ export const findRelatedEntities = (keyword = '') => {
     projects: matchedProjects,
     blogs: matchedBlogs,
     skills: matchedSkills,
+    specializations: matchedSpecializations,
+    experiences: matchedExperiences,
+    authorProfiles: matchedAuthorProfiles,
+    gallery: matchedGallery,
+    discussionRoom: matchedDiscussion,
+    academic: kknMatches,
+    visiMisi: visiMatches,
+    sitePages: matchedPages,
     certificates: matchedCertificates,
     testimonials: matchedTestimonials,
     education: matchedEducation,

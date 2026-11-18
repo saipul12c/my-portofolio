@@ -46,12 +46,12 @@ export const LexicalDatabase = {
 
     // Common Verbs
     verbs: {
-      'adalah': { meaning: 'menyatakan keadaan', tense: 'present', base: 'adalah', variations: ['ialah', 'merupakan'] },
-      'membuat': { meaning: 'menciptakan sesuatu', tense: 'present', base: 'buat', variations: ['bikin', 'ciptakan', 'membuat'] },
-      'mengetahui': { meaning: 'memiliki pengetahuan', tense: 'present', base: 'tahu', variations: ['tahu', 'tau', 'mengerti'] },
-      'membantu': { meaning: 'memberikan bantuan', tense: 'present', base: 'bantu', variations: ['bantu', 'bantuan', 'membantu'] },
-      'menggunakan': { meaning: 'memakai sesuatu', tense: 'present', base: 'guna', variations: ['pakai', 'menggunakan', 'pakai'] },
-      'belajar': { meaning: 'memperoleh pengetahuan', tense: 'present', base: 'ajar', variations: ['belajar', 'studying', 'pelajari'] }
+      'adalah': { meaning: 'menyatakan keadaan', tense: 'present', base: 'adalah', variations: ['ialah', 'merupakan'], synonyms: ['ialah', 'merupakan', 'yaitu'] },
+      'membuat': { meaning: 'menciptakan sesuatu', tense: 'present', base: 'buat', variations: ['bikin', 'ciptakan', 'membuat'], synonyms: ['menciptakan', 'membikin', 'menyusun', 'merancang'] },
+      'mengetahui': { meaning: 'memiliki pengetahuan', tense: 'present', base: 'tahu', variations: ['tahu', 'tau', 'mengerti'], synonyms: ['memahami', 'mengerti', 'paham'] },
+      'membantu': { meaning: 'memberikan bantuan', tense: 'present', base: 'bantu', variations: ['bantu', 'bantuan', 'membantu'], synonyms: ['menolong', 'mendukung', 'memfasilitasi'] },
+      'menggunakan': { meaning: 'memakai sesuatu', tense: 'present', base: 'guna', variations: ['pakai', 'menggunakan', 'pakai'], synonyms: ['memakai', 'memanfaatkan', 'menerapkan'] },
+      'belajar': { meaning: 'memperoleh pengetahuan', tense: 'present', base: 'ajar', variations: ['belajar', 'studying', 'pelajari'], synonyms: ['menuntut ilmu', 'mendalami', 'mempelajari'] }
     },
 
     // Emotions/Sentiments

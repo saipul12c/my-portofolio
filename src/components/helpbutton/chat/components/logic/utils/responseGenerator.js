@@ -189,18 +189,26 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
     console.warn('Failed to analyze local reports for caution Note:', e);
   }
 
-  // ===== NEW: FAQ INTEGRATION (High Priority) =====
-  // Cek FAQ sebelum greeting untuk memastikan pertanyaan teknis terjawab dengan akurat
+  // ===== NEW: FAQ & COMMITMENT INTEGRATION (High Priority) =====
+  // Cek FAQ dan Komitmen sebelum greeting untuk memastikan pertanyaan teknis & profil terjawab akurat
   const faqMatch = findBestFAQMatch(msg);
   if (faqMatch && faqMatch.score > 80) {
-     return {
-       text: (typeof cautionNote !== 'undefined' ? `${cautionNote}\n\n` : '') + 
-             `**FAQ Detail:**\n${faqMatch.item.answer}\n\n💡 *Jawaban ini diambil dari database FAQ kami.*`,
-       source: { type: 'faq', id: `faq_${faqMatch.item.id}` },
-       confidence: Math.min(faqMatch.score / 150, 0.95),
-       emotion: emotionData.primary,
-       character: characterData.character
-     };
+    const isCommitment = faqMatch.item?.source === 'commitment';
+    const headerTitle = isCommitment 
+      ? `🤝 **${faqMatch.item.question || 'Nilai & Komitmen Syaiful'}**`
+      : `❓ **${faqMatch.item.question || 'Informasi FAQ'}**`;
+    const sourceFooter = isCommitment
+      ? `💡 *Informasi ini diambil dari pilar komitmen & dedikasi Muhammad Syaiful Mukmin.*`
+      : `💡 *Jawaban ini diambil dari basis data FAQ kami.*`;
+
+    return {
+      text: (typeof cautionNote !== 'undefined' ? `${cautionNote}\n\n` : '') + 
+            `${headerTitle}\n\n${faqMatch.item.answer}\n\n${sourceFooter}`,
+      source: { type: 'faq', id: `faq_${faqMatch.item.id}` },
+      confidence: Math.min(faqMatch.score / 150, 0.95),
+      emotion: emotionData.primary,
+      character: characterData.character
+    };
   }
   
   // ===== NEW: LIVE CS CONTEXT CHECK =====

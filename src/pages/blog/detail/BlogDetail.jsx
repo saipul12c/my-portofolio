@@ -38,7 +38,8 @@ import {
   FiThumbsUp,
   FiX,
   FiCopy,
-  FiList
+  FiList,
+  FiImage
 } from "react-icons/fi";
 
 // Komponen Code Block dengan tombol Salin Kode
@@ -78,6 +79,181 @@ function CodeBlock({ children, className }) {
       <pre className="p-4 overflow-x-auto text-sm font-mono text-gray-200 leading-relaxed">
         <code>{children}</code>
       </pre>
+    </div>
+  );
+}
+
+// 🖼️ Komponen Gambar Konten Artikel (Diperkecil elegan + Shimmer Wave + Progressive Loading)
+function BlogContentImage({ src, alt, onOpenLightbox, ...props }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  const isVideo = src && (src.endsWith('.mp4') || src.endsWith('.webm') || src.endsWith('.mov'));
+  if (isVideo) {
+    return (
+      <span className="block my-6 max-w-xl mx-auto">
+        <span className="block relative overflow-hidden rounded-xl border border-gray-700/60 bg-gray-900 shadow-xl">
+          <video
+            src={src}
+            controls
+            playsInline
+            preload="metadata"
+            className="w-full max-h-[360px] object-cover rounded-xl"
+          />
+        </span>
+        {alt && (
+          <span className="block text-center text-xs text-cyan-400 mt-2 italic font-medium">
+            🎬 {alt}
+          </span>
+        )}
+      </span>
+    );
+  }
+
+  return (
+    <span className="block my-6 max-w-md sm:max-w-lg md:max-w-xl mx-auto group">
+      <span
+        className="block relative overflow-hidden rounded-xl sm:rounded-2xl border border-gray-700/60 bg-slate-900/90 shadow-lg cursor-pointer hover:border-cyan-500/50 transition-all duration-300 min-h-[160px]"
+        onClick={() => onOpenLightbox && onOpenLightbox(src)}
+      >
+        {/* Shimmer Wave Loader */}
+        {!isLoaded && !hasError && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900 overflow-hidden">
+            <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer pointer-events-none" />
+            <FiImage className="w-8 h-8 text-cyan-400/30 animate-pulse relative z-10" />
+          </div>
+        )}
+
+        {hasError && (
+          <div className="absolute inset-0 bg-slate-900 flex items-center justify-center text-gray-500 text-xs">
+            <FiImage className="w-6 h-6 mr-1 opacity-40 text-red-400/60" /> Gambar tidak dapat dimuat
+          </div>
+        )}
+
+        <img
+          src={src}
+          alt={alt || "Gambar artikel"}
+          loading="lazy"
+          decoding="async"
+          onLoad={() => setIsLoaded(true)}
+          onError={() => {
+            setHasError(true);
+            setIsLoaded(true);
+          }}
+          className={`w-full max-h-[320px] sm:max-h-[360px] object-contain sm:object-cover mx-auto transition-all duration-500 group-hover:scale-102 ${
+            isLoaded ? "opacity-100" : "opacity-0"
+          }`}
+          {...props}
+        />
+
+        <span className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
+          <span className="bg-black/80 text-cyan-300 text-xs font-medium px-3.5 py-1.5 rounded-full border border-cyan-500/40 flex items-center gap-1.5 shadow-xl">
+            🔍 Perbesar foto
+          </span>
+        </span>
+      </span>
+      {alt && (
+        <span className="block text-center text-xs text-gray-400 mt-2 italic">
+          📷 {alt}
+        </span>
+      )}
+    </span>
+  );
+}
+
+// 🖼️ Komponen Gambar Cover Utama Artikel
+function BlogDetailCover({ post }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  if (post.coverVideo) {
+    return (
+      <div className="mb-8 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-gray-700/50">
+        <video
+          src={post.coverVideo}
+          controls
+          className="w-full h-80 sm:h-96 object-cover"
+          poster={post.thumbnail}
+        />
+      </div>
+    );
+  }
+
+  const imgSrc = post.imageFull || post.thumbnail;
+  if (!imgSrc) {
+    return (
+      <div className="mb-8 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-gray-700/50 w-full h-64 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center text-gray-500">
+        <div className="text-center">
+          <div className="text-4xl mb-2">📷</div>
+          <p>Tidak ada gambar</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mb-8 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-gray-700/50 relative bg-slate-900 h-80 md:h-96">
+      {!isLoaded && !hasError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900 overflow-hidden">
+          <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer pointer-events-none" />
+          <FiImage className="w-12 h-12 text-cyan-400/30 animate-pulse relative z-10" />
+        </div>
+      )}
+      <img
+        src={imgSrc}
+        alt={post.title}
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        onLoad={() => setIsLoaded(true)}
+        onError={() => {
+          setHasError(true);
+          setIsLoaded(true);
+        }}
+        className={`w-full h-full object-cover hover:scale-105 transition-all duration-700 ${
+          isLoaded ? "opacity-100" : "opacity-0"
+        }`}
+      />
+    </div>
+  );
+}
+
+// 🖼️ Komponen Item Galeri Blog
+function BlogGalleryItem({ img, index, title, onOpenLightbox }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  return (
+    <div
+      onClick={() => onOpenLightbox && onOpenLightbox(img)}
+      className="group relative overflow-hidden rounded-xl bg-slate-900/90 border border-gray-700/50 hover:border-cyan-500/40 transition-all duration-300 cursor-pointer shadow-lg h-48"
+    >
+      {!isLoaded && !hasError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900 overflow-hidden">
+          <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer pointer-events-none" />
+          <FiImage className="w-8 h-8 text-cyan-400/30 animate-pulse relative z-10" />
+        </div>
+      )}
+      <img
+        src={img}
+        alt={`${title} - Gallery ${index + 1}`}
+        loading={index < 3 ? "eager" : "lazy"}
+        fetchpriority={index < 3 ? "high" : "low"}
+        decoding="async"
+        onLoad={() => setIsLoaded(true)}
+        onError={() => {
+          setHasError(true);
+          setIsLoaded(true);
+        }}
+        className={`w-full h-full object-cover group-hover:scale-110 transition-all duration-500 ${
+          isLoaded ? "opacity-100" : "opacity-0"
+        }`}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-4 pointer-events-none">
+        <span className="text-white font-medium text-xs bg-black/60 px-3 py-1 rounded-full backdrop-blur-sm transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 border border-white/10">
+          🔍 Perbesar Foto {index + 1}
+        </span>
+      </div>
     </div>
   );
 }
@@ -484,55 +660,14 @@ export default function BlogDetail() {
       ) : (
         <CodeBlock className={className} {...props}>{children}</CodeBlock>
       ),
-    img: ({ src, alt, ...props }) => {
-      const isVideo = src && (src.endsWith('.mp4') || src.endsWith('.webm') || src.endsWith('.mov'));
-      if (isVideo) {
-        return (
-          <span className="block my-8">
-            <span className="block relative overflow-hidden rounded-2xl border border-gray-700/60 bg-gray-900 shadow-xl">
-              <video
-                src={src}
-                controls
-                playsInline
-                preload="metadata"
-                className="w-full max-h-[520px] object-cover rounded-2xl"
-              />
-            </span>
-            {alt && (
-              <span className="block text-center text-xs sm:text-sm text-cyan-400 mt-2.5 italic font-medium">
-                🎬 {alt}
-              </span>
-            )}
-          </span>
-        );
-      }
-      return (
-        <span className="block my-8 group">
-          <span
-            className="block relative overflow-hidden rounded-2xl border border-gray-700/60 bg-gray-900/60 shadow-xl cursor-pointer hover:border-cyan-500/50 transition-all duration-300"
-            onClick={() => setLightboxImage(src)}
-          >
-            <img
-              src={src}
-              alt={alt || "Gambar artikel"}
-              loading="lazy"
-              className="w-full max-h-[520px] object-cover transition-transform duration-500 group-hover:scale-105"
-              {...props}
-            />
-            <span className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
-              <span className="bg-black/75 text-cyan-300 text-xs font-medium px-3.5 py-1.5 rounded-full backdrop-blur-md border border-cyan-500/40 flex items-center gap-2 shadow-2xl">
-                🔍 Klik untuk memperbesar foto
-              </span>
-            </span>
-          </span>
-          {alt && (
-            <span className="block text-center text-xs sm:text-sm text-gray-400 mt-2.5 italic">
-              📷 {alt}
-            </span>
-          )}
-        </span>
-      );
-    },
+    img: ({ src, alt, ...props }) => (
+      <BlogContentImage
+        src={src}
+        alt={alt}
+        onOpenLightbox={setLightboxImage}
+        {...props}
+      />
+    ),
   };
 
   return (
@@ -664,33 +799,8 @@ export default function BlogDetail() {
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-8 text-gray-200">
-        {/* Cover Media */}
-        <div className="mb-8 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-gray-700/50">
-          {post.coverVideo ? (
-            <video
-              src={post.coverVideo}
-              controls
-              className="w-full h-96 object-cover"
-              poster={post.thumbnail}
-            />
-          ) : post.imageFull || post.thumbnail ? (
-            <img
-              src={post.imageFull || post.thumbnail}
-              alt={post.title}
-              loading="eager"
-              fetchpriority="high"
-              decoding="async"
-              className="w-full h-80 md:h-96 object-cover hover:scale-105 transition-transform duration-700"
-            />
-          ) : (
-            <div className="w-full h-64 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center text-gray-500">
-              <div className="text-center">
-                <div className="text-4xl mb-2">📷</div>
-                <p>Tidak ada gambar</p>
-              </div>
-            </div>
-          )}
-        </div>
+        {/* Cover Media dengan Progressive Shimmer & Priority Loading */}
+        <BlogDetailCover post={post} />
 
         {/* Action Buttons Dinamis */}
         <div className="flex flex-wrap items-center gap-4 mb-8 p-6 bg-gray-800/30 rounded-2xl border border-gray-700/50 backdrop-blur-sm">
@@ -872,23 +982,13 @@ export default function BlogDetail() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {post.gallery.map((img, i) => (
-                <div
+                <BlogGalleryItem
                   key={i}
-                  onClick={() => setLightboxImage(img)}
-                  className="group relative overflow-hidden rounded-xl bg-gray-800/50 border border-gray-700/50 hover:border-cyan-500/30 transition-all duration-500 cursor-pointer shadow-lg"
-                >
-                  <img
-                    src={img}
-                    alt={`${post.title} - Gallery ${i + 1}`}
-                    loading="lazy"
-                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-4">
-                    <span className="text-white font-medium text-xs bg-black/60 px-3 py-1 rounded-full backdrop-blur-sm transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                      🔍 Perbesar Foto {i + 1}
-                    </span>
-                  </div>
-                </div>
+                  img={img}
+                  index={i}
+                  title={post.title}
+                  onOpenLightbox={setLightboxImage}
+                />
               ))}
             </div>
           </div>
@@ -1124,12 +1224,15 @@ export default function BlogDetail() {
                   >
                     <div className="flex gap-4">
                       {r.thumbnail && (
-                        <img
-                          src={r.thumbnail}
-                          alt={r.title}
-                          loading="lazy"
-                          className="w-20 h-20 object-cover rounded-lg flex-shrink-0 group-hover:scale-110 transition-transform duration-300"
-                        />
+                        <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-slate-800 relative">
+                          <img
+                            src={r.thumbnail}
+                            alt={r.title}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          />
+                        </div>
                       )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-3">
