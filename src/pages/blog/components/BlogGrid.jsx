@@ -177,42 +177,6 @@ function ArticleCard({ post, priority = false, onOpenPopup, onAuthorClick, onSho
     </article>
   );
 }
-          <span>•</span>
-          <span className="text-cyan-400 truncate">{post.category}</span>
-        </div>
-
-        <h2 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3 group-hover:text-cyan-400 transition-colors line-clamp-2">
-          {post.title}
-        </h2>
-
-        <p className="text-gray-300 text-xs sm:text-sm line-clamp-2 sm:line-clamp-3 mb-3 sm:mb-4 leading-relaxed">
-          {post.excerpt}
-        </p>
-
-        <div className="flex items-center justify-between">
-          {/* Author dengan Tooltip dan Redirect */}
-          <AuthorButton
-            author={post.author}
-            slug={post.slug}
-            onAuthorClick={onAuthorClick}
-            onShowTooltip={onShowTooltip}
-            onHideTooltip={onHideTooltip}
-            showTooltip={showTooltip}
-          />
-
-          <Link
-            to={`/blog/${post.slug}`}
-            onClick={(e) => e.stopPropagation()}
-            className="text-cyan-400 hover:text-cyan-300 text-xs sm:text-sm font-semibold flex items-center gap-1 group/link"
-          >
-            Baca
-            <span className="group-hover/link:translate-x-0.5 sm:group-hover/link:translate-x-1 transition-transform">→</span>
-          </Link>
-        </div>
-      </div>
-    </article>
-  );
-}
 
 function AuthorButton({ author, slug, onAuthorClick, onShowTooltip, onHideTooltip, showTooltip }) {
   return (
