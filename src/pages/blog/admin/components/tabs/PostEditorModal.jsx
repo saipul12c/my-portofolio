@@ -550,7 +550,7 @@ export default function PostEditorModal({
                   type="text"
                   value={coverVideo}
                   onChange={(e) => setCoverVideo(e.target.value)}
-                  placeholder="/assets/pageran/trailer/trailer.mp4"
+                  placeholder="/assets/pageran/trailer/trailer.webm"
                   className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-cyan-400 font-mono"
                 />
                 {coverVideo && (
@@ -569,7 +569,7 @@ export default function PostEditorModal({
                   rows={2}
                   value={galleryInput}
                   onChange={(e) => setGalleryInput(e.target.value)}
-                  placeholder="/assets/pageran/momens/1.jpg, /assets/pageran/pemain/amel.jpg"
+                  placeholder="/assets/pageran/momens/1.webp, /assets/pageran/pemain/amel.webp"
                   className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-cyan-400 font-mono"
                 />
               </div>

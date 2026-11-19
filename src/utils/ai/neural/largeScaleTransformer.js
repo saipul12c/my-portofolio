@@ -31,7 +31,7 @@ export async function initLargeScaleTransformer(onProgress = null) {
     if (typeof window !== 'undefined') {
       try {
         // Coba import modul Xenova jika terpasang di node_modules atau browser
-        const transformers = await import('@xenova/transformers').catch(() => null);
+        const transformers = await import(/* @vite-ignore */ '@xenova/transformers').catch(() => null);
         if (transformers && transformers.pipeline) {
           pipelineFn = transformers.pipeline;
         } else {
@@ -47,7 +47,7 @@ export async function initLargeScaleTransformer(onProgress = null) {
     } else {
       // Node.js environment (misal saat testing)
       try {
-        const transformers = await import('@xenova/transformers').catch(() => null);
+        const transformers = await import(/* @vite-ignore */ '@xenova/transformers').catch(() => null);
         if (transformers && transformers.pipeline) {
           pipelineFn = transformers.pipeline;
         }

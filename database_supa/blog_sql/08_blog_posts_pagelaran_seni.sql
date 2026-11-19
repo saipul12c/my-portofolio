@@ -37,7 +37,7 @@ INSERT INTO public.blog_posts (
   'teater-dramaturgi-pagelaran-seni-2024-uin-antasari',
   'Di Balik Tirai Teater Mahasiswa: Eksplorasi Dramaturgi dan Dinamika Artistik Pagelaran Seni 2024',
   'Kajian mendalam mengenai proses kreatif, adaptasi naskah lokal, dan pergulatan batin para aktor teater mahasiswa Angkatan 2022 UIN Antasari Banjarmasin dalam menghidupkan panggung Pagelaran Seni 2024.',
-  '![Poster Resmi Pagelaran Seni Lokal A](/assets/pageran/Poster/lokala.jpg)
+  '![Poster Resmi Pagelaran Seni Lokal A](/assets/pageran/Poster/lokala.webp)
 
 ## Menggali Naskah, Membangun Jiwa di Ruang Latihan Kampus
 
@@ -47,9 +47,9 @@ Pementasan teater pada Pagelaran Seni 2024 ini lahir dari kegelisahan kultural g
 
 Tantangan terbesar yang dihadapi tim dramaturgi adalah bagaimana membangun intensitas konflik tanpa terjebak dalam melodrama klise. Tokoh-tokoh yang ditulis bukan sekadar hitam dan putih; ada pergulatan antara tanggung jawab keluarga, keraguan masa depan, dan luka-luka tak terucap yang kerap dialami anak rantau di kota Banjarmasin. Kedalaman naskah inilah yang memaksa setiap pemeran menggali memori personal mereka agar resonansi cerita terasa jujur dan berakar kuat.
 
-![Suasana Gladi Resik dan Pematangan Karakter](/assets/pageran/momens/1.jpg)
+![Suasana Gladi Resik dan Pematangan Karakter](/assets/pageran/momens/1.webp)
 
-![Potret Pemeran Karakter: Amel dalam Penghayatan Emosi](/assets/pageran/pemain/amel.jpg)
+![Potret Pemeran Karakter: Amel dalam Penghayatan Emosi](/assets/pageran/pemain/amel.webp)
 
 ## Olah Rasa, Olah Vokal, dan Dialektika Tubuh Aktor
 
@@ -59,7 +59,7 @@ Sutradara menuntut disiplin tingkat tinggi. Satu kedipan mata yang salah waktu a
 
 Di balik ketegangan tersebut, tumbuh rasa saling percaya yang luar biasa erat. Ketika seorang aktor lupa sepenggal dialog akibat demam panggung sesaat, rekan mainnya dengan tangkas melakukan improvisasi cerdas untuk menyelamatkan jalannya adegan tanpa sedikit pun disadari oleh penonton. Keajaiban teater terletak pada kepasrahan kolektif ini: sebuah kesadaran bahwa panggung adalah ruang bersama di mana tidak ada yang boleh jatuh sendirian.
 
-![Cuplikan Video Trailer Resmi Panggung Pagelaran Seni](/assets/pageran/trailer/trailer.mp4)
+![Cuplikan Video Trailer Resmi Panggung Pagelaran Seni](/assets/pageran/trailer/trailer.webm)
 
 ## Gesekan Teknis di Balik Sayap Panggung dan Keajaiban Pementasan Live
 
@@ -69,9 +69,9 @@ Di sinilah letak ujian sesungguhnya dari sebuah manajemen pertunjukan. Sebuah pr
 
 Penonton yang hadir tidak hanya disuguhi visual panggung yang memukau, melainkan dihanyutkan oleh gelombang emosi yang naik turun secara tertata rapi. Mulai dari tawa lepas saat dialog-dialog jenaka khas Banjar dilontarkan, hingga hening mencekam saat monolog kepedihan mencapai puncaknya di mana hanya tarikan napas aktor yang terdengar di seluruh penjuru gedung.
 
-![Potret Fokus Karakter: Amin](/assets/pageran/pemain/amin.jpg)
+![Potret Fokus Karakter: Amin](/assets/pageran/pemain/amin.webp)
 
-![Detik-Detik Penentuan di Balik Layar Menjelang Naik Panggung](/assets/pageran/momens/14.jpg)
+![Detik-Detik Penentuan di Balik Layar Menjelang Naik Panggung](/assets/pageran/momens/14.webp)
 
 ## Mengapa Seni Teater Relevan bagi Generasi Hari Ini?
 
@@ -81,7 +81,7 @@ Bagi para mahasiswa yang terlibat, proses berbulan-bulan ini meninggalkan bekas 
 
 Karya panggung ini telah usai, layarnya telah ditutup, dan tepuk tangan riuh penonton telah reda menjadi keheningan malam. Namun, percikan energi dan kedewasaan emosional yang tertanam di benak para penampil akan terus hidup menjadi fondasi kokoh dalam perjalanan intelektual mereka ke depan.
 
-![Dokumentasi Suasana Pementasan Panggung Bersama Tim](/assets/pageran/momens/2.jpg)
+![Dokumentasi Suasana Pementasan Panggung Bersama Tim](/assets/pageran/momens/2.webp)
 
 ## Catatan Epilog: Jejak Artistik yang Abadi
 
@@ -91,9 +91,9 @@ Bagi siapa pun yang berkesempatan menyaksikan malam pementasan tersebut, kenanga
   'Seni & Budaya',
   '["teater","dramaturgi","senipertunjukan","uinantasari","angkatan22","banjarmasin","mahasiswa"]'::jsonb,
   'Tim Dokumentasi & Kuratorial Seni',
-  '/assets/pageran/Poster/lokala.jpg',
-  '/assets/pageran/trailer/trailer.mp4',
-  '["/assets/pageran/Poster/lokala.jpg","/assets/pageran/pemain/amel.jpg","/assets/pageran/pemain/amin.jpg","/assets/pageran/momens/1.jpg","/assets/pageran/momens/2.jpg","/assets/pageran/momens/14.jpg"]'::jsonb,
+  '/assets/pageran/Poster/lokala.webp',
+  '/assets/pageran/trailer/trailer.webm',
+  '["/assets/pageran/Poster/lokala.webp","/assets/pageran/pemain/amel.webp","/assets/pageran/pemain/amin.webp","/assets/pageran/momens/1.webp","/assets/pageran/momens/2.webp","/assets/pageran/momens/14.webp"]'::jsonb,
   '2024-05-18T20:00:00Z'::timestamptz,
   '15 min read',
   true,
@@ -149,7 +149,7 @@ INSERT INTO public.blog_posts (
   'harmoni-gerak-tari-kolosal-pagelaran-seni-2024',
   'Harmoni Tubuh dan Ruang: Koreografi Tari Kolosal Mahasiswa Angkatan 22',
   'Membedah komposisi gerak, sinkronisasi ritme, serta filosofi keanggunan busana para penari mahasiswi Angkatan 22 dalam mempersembahkan tarian kolosal penuh pesona di Pagelaran Seni 2024.',
-  '![Poster Tari Tradisional Lokal C](/assets/pageran/Poster/lokalc.jpg)
+  '![Poster Tari Tradisional Lokal C](/assets/pageran/Poster/lokalc.webp)
 
 ## Menenun Langkah di Atas Lantai Panggung Budaya
 
@@ -159,9 +159,9 @@ Menciptakan sebuah tarian kolosal yang melibatkan puluhan penari bukanlah perkar
 
 Para penari—di antaranya Adaw, Danti, Helda, Nida, dan Yulia—harus membiasakan tubuh mereka dengan postur tegak sempurna, tumpuan telapak kaki yang kokoh, dan sudut kemiringan kepala yang harus selalu terjaga simetris. Latihan fisik diulang berulang-ulang hingga setiap penari tidak lagi perlu melihat ke samping untuk mengetahui apakah posisinya sudah sejajar dengan rekannya; gerakan telah menjadi memori otot (*muscle memory*) yang bekerja otomatis berpadu dengan ritme musik pengiring.
 
-![Potret Penari Anggun: Adaw](/assets/pageran/pemain/penari/adaw.JPG)
+![Potret Penari Anggun: Adaw](/assets/pageran/pemain/penari/adaw.webp)
 
-![Potret Penari: Danti dengan Pesona Mahkota Tradisional](/assets/pageran/pemain/penari/danti.JPG)
+![Potret Penari: Danti dengan Pesona Mahkota Tradisional](/assets/pageran/pemain/penari/danti.webp)
 
 ## Formasi Ruang Dinamis: Dari Simetri Tenang hingga Gelombang Dinamis
 
@@ -171,7 +171,7 @@ Perubahan formasi ini menuntut kesadaran spasial yang sangat tinggi dari setiap 
 
 Ekspresi wajah juga menjadi elemen yang digarap dengan sangat teliti. Dalam seni tari, senyum bukan sekadar tempelan kosmetik di bibir, melainkan pancaran batin (*inner beauty*) yang mengomunikasikan rasa syukur, keramahan, dan ketenangan jiwa. Sorot mata yang tajam namun meneduhkan menjadi jendela bagi penonton untuk merasakan kedalaman pesan spiritual yang disisipkan di balik irama tari.
 
-![Cuplikan Video Penampilan Tari Panggung Lokal C](/assets/pageran/penampilan/lokalc.mp4)
+![Cuplikan Video Penampilan Tari Panggung Lokal C](/assets/pageran/penampilan/lokalc.webm)
 
 ## Gemerlap Mahkota dan Makna Simbolik Busana Tradisi
 
@@ -181,9 +181,9 @@ Namun, menari dengan busana lengkap seberat beberapa kilogram di bawah terik lam
 
 Di balik rias wajah yang tebal dan anggun, tersimpan cerita-cerita kecil yang menghangatkan hati: saling membantu memasang jarum pentul di ruang ganti yang sempit, berbagi bedak dan lipstik, hingga saling memijat bahu rekan yang kaku menjelang giliran tampil. Solidaritas persaudaraan inilah yang memberikan jiwa (*roh*) pada tarian tersebut, menjadikannya lebih dari sekadar peragaan gerak mekanis.
 
-![Pesona Anggun Penari: Helda](/assets/pageran/pemain/penari/helda.JPG)
+![Pesona Anggun Penari: Helda](/assets/pageran/pemain/penari/helda.webp)
 
-![Pesona Anggun Penari: Nida](/assets/pageran/pemain/penari/nida.JPG)
+![Pesona Anggun Penari: Nida](/assets/pageran/pemain/penari/nida.webp)
 
 ## Konsistensi Latihan dan Pengorbanan Menjelang Hari Pementasan
 
@@ -193,7 +193,7 @@ Namun, tidak pernah terdengar keluhan yang mematahkan semangat. Dorongan untuk m
 
 Keberhasilan tarian kolosal ini membuktikan bahwa pelestarian seni tradisional tidak harus berjalan kaku dan membosankan. Ketika dikemas dengan kreativitas visual yang segar, tata cahaya panggung modern, dan energi muda yang membara, tarian daerah memiliki daya pukau yang tak kalah magnetis dibanding tarian pop kontemporer mancanegara.
 
-![Potret Penari: Yulia dalam Balutan Pesona Panggung](/assets/pageran/pemain/penari/yulia.JPG)
+![Potret Penari: Yulia dalam Balutan Pesona Panggung](/assets/pageran/pemain/penari/yulia.webp)
 
 ## Catatan Epilog: Selendang yang Terus Berkibar
 
@@ -203,9 +203,9 @@ Tarian kolosal Pagelaran Seni Angkatan 2022 telah usai, namun keindahan jejak la
   'Seni & Budaya',
   '["tari","koreografi","taritradisional","uinantasari","angkatan22","budayabanjar","senipergelaran"]'::jsonb,
   'Tim Kuratorial Seni & Budaya',
-  '/assets/pageran/Poster/lokalc.jpg',
-  '/assets/pageran/penampilan/lokalc.mp4',
-  '["/assets/pageran/Poster/lokalc.jpg","/assets/pageran/pemain/penari/helda.JPG","/assets/pageran/pemain/penari/nida.JPG","/assets/pageran/pemain/penari/adaw.JPG","/assets/pageran/pemain/penari/danti.JPG","/assets/pageran/pemain/penari/yulia.JPG"]'::jsonb,
+  '/assets/pageran/Poster/lokalc.webp',
+  '/assets/pageran/penampilan/lokalc.webm',
+  '["/assets/pageran/Poster/lokalc.webp","/assets/pageran/pemain/penari/helda.webp","/assets/pageran/pemain/penari/nida.webp","/assets/pageran/pemain/penari/adaw.webp","/assets/pageran/pemain/penari/danti.webp","/assets/pageran/pemain/penari/yulia.webp"]'::jsonb,
   '2024-05-18T21:00:00Z'::timestamptz,
   '14 min read',
   true,
@@ -261,7 +261,7 @@ INSERT INTO public.blog_posts (
   'manajemen-produksi-dan-logistik-pagelaran-seni-2024',
   'Anatomi Produksi Panggung Kampus: Seni Mengelola Krisis, Tim, dan Anggaran',
   'Menelisik dapur kerja panitia Pagelaran Seni 2024: bagaimana mahasiswa Angkatan 22 mengorkestrasi rapat evaluasi, menambal anggaran ketat, mengamankan logistik panggung, dan mengatasi krisis tanpa panik.',
-  '![Poster Pagelaran Seni Lokal B](/assets/pageran/Poster/lokalb%20poster.jpg)
+  '![Poster Pagelaran Seni Lokal B](/assets/pageran/Poster/lokalb%20poster.webp)
 
 ## Mengapa Suksesnya Panggung Ditentukan Jauh Sebelum Tirai Terbuka?
 
@@ -271,9 +271,9 @@ Manajemen produksi Pagelaran Seni Angkatan 2022 UIN Antasari Banjarmasin menghad
 
 Sejak bulan pertama pembentukan kepanitiaan, rapat-rapat koordinasi maraton menjadi menu harian. Mulai dari penentuan konsep acara, penyusunan *timeline* produksi yang ketat, survei penyewaan peralatan audio-visual, hingga izin birokrasi penggunaan fasilitas kampus. Di sinilah kepemimpinan mahasiswa diuji: bagaimana menyatukan puluhan karakter mahasiswa yang memiliki ego dan kesibukan masing-masing menjadi sebuah mesin kerja yang solid dan saling menopang.
 
-![Suasana Rapat Evaluasi Panitia Penuh Argumen dan Diskusi Konstruktif](/assets/pageran/momens/5.jpg)
+![Suasana Rapat Evaluasi Panitia Penuh Argumen dan Diskusi Konstruktif](/assets/pageran/momens/5.webp)
 
-![Koordinasi Lapangan dan Pembagian Tugas Tim Logistik](/assets/pageran/momens/10.jpg)
+![Koordinasi Lapangan dan Pembagian Tugas Tim Logistik](/assets/pageran/momens/10.webp)
 
 ## Dapur Rapat Evaluasi: Debat Alot, Solusi Cepat, dan Kopi Penjaga Fajar
 
@@ -283,7 +283,7 @@ Namun kehebatan mahasiswa Angkatan 22 terletak pada kedewasaan mereka dalam meng
 
 Kopi hitam murah dalam gelas plastik dan bungkus gorengan dingin menjadi saksi bisu bagaimana keputusan-keputusan krusial diambil saat jarum jam telah menunjukkan pukul tiga dini hari. Mahasiswa belajar tentang arti negosiasi harga dengan vendor lokal, cara memetakan jalur evakuasi penonton, hingga menyusun rencana darurat (*contingency plan*) seandainya terjadi pemadaman listrik mendadak di kawasan Banjarmasin.
 
-![Cuplikan Rekaman Video Rapat Pemantapan Panitia](/assets/pageran/rapat/rapatpemantapan.mp4)
+![Cuplikan Rekaman Video Rapat Pemantapan Panitia](/assets/pageran/rapat/rapatpemantapan.webm)
 
 ## Manajemen Krisis Hari H: Menjaga Ketenangan di Tengah Badai Tak Terduga
 
@@ -293,9 +293,9 @@ Di saat-saat genting seperti inilah kepemimpinan lapangan bekerja. Alih-alih sal
 
 Ketenangan dalam menghadapi krisis ini merupakan hasil dari simulasi gladi resik yang telah diulang berkali-kali. Setiap anggota panitia telah dibekali dengan pemahaman tugas pokok dan fungsi (tupoksi) yang jelas serta saluran komunikasi radio (*HT*) yang tertib. Tidak ada yang panik, karena semua orang tahu siapa yang harus dihubungi dan tindakan apa yang harus segera diambil.
 
-![Momen Pematangan Teknis di Ruang Kontrol dan Meja Logistik](/assets/pageran/momens/12.jpg)
+![Momen Pematangan Teknis di Ruang Kontrol dan Meja Logistik](/assets/pageran/momens/12.webp)
 
-![Evaluasi Cepat Tim Lapangan Menjelang Pintu Gedung Dibuka](/assets/pageran/momens/20.jpg)
+![Evaluasi Cepat Tim Lapangan Menjelang Pintu Gedung Dibuka](/assets/pageran/momens/20.webp)
 
 ## Transparansi Anggaran dan Tanggung Jawab Moral Kepanitiaan
 
@@ -305,7 +305,7 @@ Dana yang terkumpul dikelola dengan efisiensi tingkat tinggi. Panitia berhasil m
 
 Pembelajaran praktis mengenai manajemen anggaran dan akuntabilitas ini memberikan bekal keterampilan hidup (*life skills*) yang jauh lebih berharga daripada sekadar teori di buku kuliah manajemen. Mahasiswa belajar bahwa profesionalisme tidak diukur dari seberapa mewah anggaran yang dipegang, melainkan dari seberapa cermat dan bertanggung jawab mereka mengoptimalkan setiap rupiah demi tercapainya tujuan bersama.
 
-![Cuplikan Video Rapat Evaluasi 2](/assets/pageran/rapat/rapat2.mp4)
+![Cuplikan Video Rapat Evaluasi 2](/assets/pageran/rapat/rapat2.webm)
 
 ## Catatan Epilog: Pahlawan Tanpa Tanda Jasa di Balik Kegelapan
 
@@ -315,9 +315,9 @@ Mereka adalah pahlawan tanpa tanda jasa yang memastikan mimpi rekan-rekannya di 
   'Manajemen Event',
   '["manajemenevent","organisasi","logistik","uinantasari","angkatan22","behindthescenes","produksipanggung"]'::jsonb,
   'Divisi Logistik & Manajemen Produksi',
-  '/assets/pageran/Poster/lokalb poster.jpg',
-  '/assets/pageran/rapat/rapatpemantapan.mp4',
-  '["/assets/pageran/Poster/lokalb poster.jpg","/assets/pageran/momens/2.jpg","/assets/pageran/momens/5.jpg","/assets/pageran/momens/10.jpg","/assets/pageran/momens/12.jpg","/assets/pageran/momens/20.jpg"]'::jsonb,
+  '/assets/pageran/Poster/lokalb poster.webp',
+  '/assets/pageran/rapat/rapatpemantapan.webm',
+  '["/assets/pageran/Poster/lokalb poster.webp","/assets/pageran/momens/2.webp","/assets/pageran/momens/5.webp","/assets/pageran/momens/10.webp","/assets/pageran/momens/12.webp","/assets/pageran/momens/20.webp"]'::jsonb,
   '2024-05-18T22:00:00Z'::timestamptz,
   '16 min read',
   true,
@@ -373,7 +373,7 @@ INSERT INTO public.blog_posts (
   'aransemen-musik-tata-suara-pagelaran-seni-2024',
   'Menjahit Bunyi, Menggetarkan Emosi: Eksplorasi Musik Akustik dan Vokal Panggung',
   'Kisah di balik aransemen musik orisinal, harmonisasi vokal solo dan paduan suara, serta seluk-beluk *sound engineering* panggung akustik yang menggetarkan jiwa penonton Pagelaran Seni 2024.',
-  '![Poster Musik Pertunjukan Lokal D](/assets/pageran/Poster/lokald.jpg)
+  '![Poster Musik Pertunjukan Lokal D](/assets/pageran/Poster/lokald.webp)
 
 ## Denyut Akustik dan Harmoni Suara Mahasiswa
 
@@ -383,9 +383,9 @@ Proses kreasi aransemen musik Lokal D dimulai dari lembaran partitur kosong. Mah
 
 Keberanian bereksplorasi inilah yang melahirkan aransemen orisinal yang segar. Setiap lagu memiliki arsitektur dinamis: diawali dengan petikan dawai gitar yang sunyi untuk mengiringi dialog batin tokoh, lalu secara bertahap memasukkan gesekan melodi dan ketukan perkusi yang meninggi saat konflik memuncak, hingga diakhiri dengan akor megah yang menggetarkan rongga dada penonton di seluruh auditorium.
 
-![Potret Vokalis Berbakat: Laras dengan Suara Penuh Penghayatan](/assets/pageran/pemain/penyanyi/laras.jpg)
+![Potret Vokalis Berbakat: Laras dengan Suara Penuh Penghayatan](/assets/pageran/pemain/penyanyi/laras.webp)
 
-![Potret Musisi & Pemain: Alfi](/assets/pageran/pemain/alfi.jpg)
+![Potret Musisi & Pemain: Alfi](/assets/pageran/pemain/alfi.webp)
 
 ## Mengolah Harmonisasi Vokal: Kejernihan Nada di Tengah Dinamika Live
 
@@ -395,7 +395,7 @@ Tantangan bernyanyi di atas panggung pagelaran seni sangat berbeda dengan bernya
 
 Harmonisasi vokal dua suara hingga empat suara (*sopran, alto, tenor, bas*) dieksekusi dengan presisi tinggi. Keseimbangan volume antarpembagian suara dijaga sedemikian rupa sehingga tidak ada satu nada pun yang saling menenggelamkan, melainkan melebur menjadi selimut harmoni yang tebal dan megah di telinga pendengar.
 
-![Cuplikan Video Penampilan Panggung Lokal D](/assets/pageran/penampilan/lokald.mp4)
+![Cuplikan Video Penampilan Panggung Lokal D](/assets/pageran/penampilan/lokald.webm)
 
 ## Seluk-Beluk Sound Engineering: Menjinakkan Akustik Ruang Auditorium
 
@@ -405,9 +405,9 @@ Tim tata suara melakukan kalibrasi akustik ruangan selama berjam-jam sebelum gla
 
 Kecermatan teknis ini sangat terasa saat transisi cepat antara dialog bisikan aktor teater yang membutuhkan sensitivitas gain tinggi, dengan dentuman drum perkusi babak peperangan yang membutuhkan pembatas sinyal (*compressor/limiter*) agar tidak membebani sistem pelantang suara. Mahasiswa divisi audio membuktikan bahwa mereka bukan sekadar menaik-turunkan fader volume, melainkan melukis kanvas pendengaran dengan teliti dan penuh perhitungan sains fisika gelombang bunyi.
 
-![Fokus Musisi dan Sound Engineer di Meja Kontrol Audio](/assets/pageran/momens/18.jpg)
+![Fokus Musisi dan Sound Engineer di Meja Kontrol Audio](/assets/pageran/momens/18.webp)
 
-![Persiapan Instrumen dan Pengecekan Suara (Soundcheck) Sebelum Acara](/assets/pageran/momens/22.jpg)
+![Persiapan Instrumen dan Pengecekan Suara (Soundcheck) Sebelum Acara](/assets/pageran/momens/22.webp)
 
 ## Dialog Emosional Antara Musik dan Aktor di Atas Panggung
 
@@ -417,7 +417,7 @@ Sebaliknya, ketika energi adegan berubah menjadi konfrontasi amarah yang meledak
 
 Keterikatan inilah yang dirasakan langsung oleh penonton. Musik bukan lagi sekadar pelengkap pesta, melainkan roh yang merasuk ke dalam sukma pertunjukan. Ketika lagu tema penutup berkumandang di pengujung malam, banyak penonton yang ikut bersenandung bersama, menandakan bahwa melodi yang dirangkai mahasiswa ini telah berhasil menembus relung sanubari mereka.
 
-![Potret Nuansa Panggung Penuh Sorotan Lampu dan Audio](/assets/pageran/momens/25.jpg)
+![Potret Nuansa Panggung Penuh Sorotan Lampu dan Audio](/assets/pageran/momens/25.webp)
 
 ## Catatan Epilog: Resonansi yang Terus Menggema
 
@@ -427,9 +427,9 @@ Bagi mahasiswa divisi musik dan vokal, pengalaman ini adalah pembuktian jati dir
   'Musik & Audio',
   '["musik","aransemen","vokal","uinantasari","angkatan22","akustik","tatasuara"]'::jsonb,
   'Divisi Musik & Tata Suara',
-  '/assets/pageran/Poster/lokald.jpg',
-  '/assets/pageran/penampilan/lokald.mp4',
-  '["/assets/pageran/Poster/lokald.jpg","/assets/pageran/pemain/penyanyi/laras.jpg","/assets/pageran/pemain/alfi.jpg","/assets/pageran/momens/18.jpg","/assets/pageran/momens/22.jpg","/assets/pageran/momens/25.jpg"]'::jsonb,
+  '/assets/pageran/Poster/lokald.webp',
+  '/assets/pageran/penampilan/lokald.webm',
+  '["/assets/pageran/Poster/lokald.webp","/assets/pageran/pemain/penyanyi/laras.webp","/assets/pageran/pemain/alfi.webp","/assets/pageran/momens/18.webp","/assets/pageran/momens/22.webp","/assets/pageran/momens/25.webp"]'::jsonb,
   '2024-05-18T22:30:00Z'::timestamptz,
   '15 min read',
   true,
@@ -485,7 +485,7 @@ INSERT INTO public.blog_posts (
   'etika-visual-dan-fotografi-panggung-pagelaran-seni-2024',
   'Membekukan Detik Tanpa Merusak Ritme: Etika dan Teknik Fotografi Panggung Live',
   'Menyelami tantangan fotografer panggung kampus: perburuan momen emosional dalam kondisi pencahayaan minim, etika gerak siluman di auditorium gelap, dan estetika visual Pagelaran Seni 2024.',
-  '![Karya Visual Dokumentasi Panggung Pagelaran Seni](/assets/pageran/momens/25.jpg)
+  '![Karya Visual Dokumentasi Panggung Pagelaran Seni](/assets/pageran/momens/25.webp)
 
 ## Berburu Detik di Antara Gelap dan Kilau Lampu Sorot
 
@@ -495,9 +495,9 @@ Kamera yang digunakan harus mampu bekerja pada pengaturan sensitivitas ISO tingg
 
 Oleh karena itu, fotografer panggung bukan hanya mengandalkan kecanggihan tombol rana (*shutter button*), melainkan intuisi ritmis. Seorang fotografer harus menghafal alur cerita naskah dan tempo tarian, sehingga ia tahu persis kapan seorang aktor akan menoleh dengan tatapan sedih atau kapan penari akan melompat di puncak koreografi. Momen terbaik hanya berlangsung selama sepersepuluh detik; terlambat memencet tombol rana berarti kehilangan sejarah selamanya.
 
-![Bidikan Tajam Interaksi Aktor Panggung: Baihaqi](/assets/pageran/pemain/baihaqi.jpg)
+![Bidikan Tajam Interaksi Aktor Panggung: Baihaqi](/assets/pageran/pemain/baihaqi.webp)
 
-![Momen Panggung Dramatis yang Tertangkap Lensa](/assets/pageran/momens/28.jpg)
+![Momen Panggung Dramatis yang Tertangkap Lensa](/assets/pageran/momens/28.webp)
 
 ## Etika Gerak Siluman: Mengabadikan Karya Tanpa Menjadi Distraksi
 
@@ -507,7 +507,7 @@ Lampu bantuan fokus (*AF assist beam*) dan suara bip konfirmasi fokus wajib dima
 
 Keseimbangan antara ambisi artistik mendapatkan sudut bidikan sempurna (*low angle* dari bibir panggung) dengan rasa hormat kepada kenyamanan penonton adalah kode etik tertinggi yang dipegang teguh oleh tim dokumentasi Angkatan 22. Mereka membuktikan bahwa karya visual yang megah lahir dari kerendahan hati dan kedisiplinan ruang gerak.
 
-![Cuplikan Video Teaser Resmi Menjelang Pagelaran Seni](/assets/pageran/trailer/comingsoon.mp4)
+![Cuplikan Video Teaser Resmi Menjelang Pagelaran Seni](/assets/pageran/trailer/comingsoon.webm)
 
 ## Mengurai Bahasa Cahaya: Dari Siluet Kontras hingga Nuansa Hangat
 
@@ -517,9 +517,9 @@ Kondisi spektrum warna ekstrem ini sering kali mengecoh sistem kalkulasi white b
 
 Foto-foto siluet yang dramatis, bayangan tubuh penari yang memanjang di atas lantai kayu, hingga partikel debu halus yang berpendar di bawah sorotan lampu halogen menjadi elemen visual puitis yang berhasil diabadikan dengan luar biasa. Foto bukan lagi sekadar rekaman visual yang dingin, melainkan karya seni baru yang berdiri sejajar dengan pertunjukan di atas panggung itu sendiri.
 
-![Potret Aktor: Fikri dalam Balutan Cahaya Panggung](/assets/pageran/pemain/fikri.jpg)
+![Potret Aktor: Fikri dalam Balutan Cahaya Panggung](/assets/pageran/pemain/fikri.webp)
 
-![Suasana Kebersamaan Para Penggiat Seni di Balik Kamera](/assets/pageran/momens/30.jpg)
+![Suasana Kebersamaan Para Penggiat Seni di Balik Kamera](/assets/pageran/momens/30.webp)
 
 ## Mengarsipkan Kenangan: Warisan Visual yang Bernilai Abadi
 
@@ -529,7 +529,7 @@ Setiap kurasi foto dipilah dengan cermat: potret individual para pemain untuk po
 
 Ribuan frame foto yang berhasil dihimpun menjadi monumen kebanggaan bersama. Mereka telah membuktikan bahwa dengan dedikasi tinggi dan kepekaan rasa, mahasiswa mampu menghasilkan dokumentasi visual berkelas jurnalistik yang layak dipamerkan di galeri seni mana pun.
 
-![Potret Dokumentasi Momens 33](/assets/pageran/momens/33.jpg)
+![Potret Dokumentasi Momens 33](/assets/pageran/momens/33.webp)
 
 ## Catatan Epilog: Lensa yang Menatap dengan Hati
 
@@ -539,9 +539,9 @@ Ketika seluruh lampu auditorium akhirnya dimatikan dan para penonton pulang memb
   'Fotografi & Media',
   '["fotografi","stagephotography","visual","uinantasari","angkatan22","dokumentasi","kameramen"]'::jsonb,
   'Divisi Fotografi & Dokumentasi Visual',
-  '/assets/pageran/momens/25.jpg',
-  '/assets/pageran/trailer/comingsoon.mp4',
-  '["/assets/pageran/momens/25.jpg","/assets/pageran/momens/28.jpg","/assets/pageran/momens/30.jpg","/assets/pageran/momens/33.jpg","/assets/pageran/pemain/baihaqi.jpg","/assets/pageran/pemain/fikri.jpg"]'::jsonb,
+  '/assets/pageran/momens/25.webp',
+  '/assets/pageran/trailer/comingsoon.webm',
+  '["/assets/pageran/momens/25.webp","/assets/pageran/momens/28.webp","/assets/pageran/momens/30.webp","/assets/pageran/momens/33.webp","/assets/pageran/pemain/baihaqi.webp","/assets/pageran/pemain/fikri.webp"]'::jsonb,
   '2024-05-18T23:00:00Z'::timestamptz,
   '14 min read',
   true,
@@ -597,7 +597,7 @@ INSERT INTO public.blog_posts (
   'dampak-sosial-karakter-pagelaran-seni-2024',
   'Ruang Transformatif di Luar Kelas: Bagaimana Kerja Kolektif Seni Membentuk Karakter Mahasiswa',
   'Analisis sosiologis dan pedagogis tentang bagaimana proses berbulan-bulan menyiapkan Pagelaran Seni 2024 menjadi kawah candradimuka pembentukan karakter, empati, dan kepemimpinan mahasiswa Angkatan 22.',
-  '![Kebersamaan Mahasiswa Pagelaran Seni 2024](/assets/pageran/momens/36.jpg)
+  '![Kebersamaan Mahasiswa Pagelaran Seni 2024](/assets/pageran/momens/36.webp)
 
 ## Ketika Ruang Kuliah Formal Menemukan Jantung Kemanusiaannya
 
@@ -607,9 +607,9 @@ Bagi mahasiswa Angkatan 2022 UIN Antasari Banjarmasin, pementasan seni ini adala
 
 Kerja kolektif seni menuntut tingkat kerentanan (*vulnerability*) yang tinggi. Untuk bisa berakting bersama, menari selaras, atau memainkan musik yang harmonis, seseorang harus berani melepaskan arogansi pribadinya dan membuka ruang bagi orang lain untuk melengkapi kekurangannya. Transformasi psikologis inilah yang menjadikan pengalaman pagelaran seni sebagai salah satu tonggak paling berharga dalam perjalanan kedewasaan mereka sebagai manusia.
 
-![Potret Mahasiswi Penuh Inspirasi: Gina](/assets/pageran/pemain/gina.jpg)
+![Potret Mahasiswi Penuh Inspirasi: Gina](/assets/pageran/pemain/gina.webp)
 
-![Momen Refleksi Bersama Seusai Evaluasi Rutin Panitia](/assets/pageran/momens/39.jpg)
+![Momen Refleksi Bersama Seusai Evaluasi Rutin Panitia](/assets/pageran/momens/39.webp)
 
 ## Mengikis Sekat Primordial Melalui Bahasa Universal Estetika
 
@@ -619,7 +619,7 @@ Dalam pementasan ini, tidak ada yang peduli dari daerah mana Anda berasal atau b
 
 Kolaborasi antarlokal (Lokal A, B, C, dan D) yang awalnya berkompetisi secara sehat perlahan-lahan berubah menjadi sebuah aliansi persaudaraan yang kokoh. Ketika Lokal A kekurangan properti kursi antik untuk teater mereka, mahasiswa Lokal C dengan sukarela meminjamkan perlengkapan yang mereka miliki. Semangat saling menopang ini membuktikan bahwa kompetisi yang sehat tidak harus berujung pada permusuhan, melainkan saling memacu untuk mencapai keunggulan bersama.
 
-![Cuplikan Video Penampilan Panggung Penuh Semangat Lokal A](/assets/pageran/penampilan/lokala.mp4)
+![Cuplikan Video Penampilan Panggung Penuh Semangat Lokal A](/assets/pageran/penampilan/lokala.webm)
 
 ## Ketangguhan Menghadapi Tekanan dan Manajemen Emosi Mahasiswa
 
@@ -629,9 +629,9 @@ Bayangkan ketegangan yang dirasakan seorang mahasiswa logistik saat properti uta
 
 Mereka belajar tentang seni memaafkan kesalahan rekan kerja, seni memberikan kritik yang membangun tanpa melukai harga diri orang lain, dan seni merayakan keberhasilan kecil demi menjaga moral tim tetap menyala. Ketangguhan mental yang terlatih selama berbulan-bulan ini akan menjadi aset tak ternilai yang akan membimbing mereka saat melangkah ke dunia profesional dan pengabdian masyarakat setelah wisuda kelak.
 
-![Potret Aktor: Hasbi](/assets/pageran/pemain/hasbi.jpg)
+![Potret Aktor: Hasbi](/assets/pageran/pemain/hasbi.webp)
 
-![Potret Pemeran Panggung: Lulu](/assets/pageran/pemain/lulu.jpg)
+![Potret Pemeran Panggung: Lulu](/assets/pageran/pemain/lulu.webp)
 
 ## Validasi Diri dan Tumbuhnya Kepercayaan Diri Generasi Muda
 
@@ -641,7 +641,7 @@ Mereka menyadari bahwa mereka mampu melakukan hal-hal besar yang sebelumnya mere
 
 Pengalaman ini juga mempererat relasi emosional antara mahasiswa dengan para dosen pengampu mata kuliah. Dosen tidak lagi dipandang sebagai figur otoriter yang hanya memberi tugas dan nilai, melainkan sebagai mentor, sahabat diskusi, dan pendukung utama yang bangga menyaksikan anak-anak didiknya mekar menjadi insan-insan kreatif yang berdaya cipta.
 
-![Dokumentasi Kebersamaan dan Dinamika Tim di Lapangan](/assets/pageran/momens/40.jpg)
+![Dokumentasi Kebersamaan dan Dinamika Tim di Lapangan](/assets/pageran/momens/40.webp)
 
 ## Catatan Epilog: Investasi Kemanusiaan yang Tak Ternilai
 
@@ -651,9 +651,9 @@ Pagelaran Seni 2024 Angkatan 22 UIN Antasari Banjarmasin telah membuktikan bahwa
   'Pendidikan & Sosial',
   '["pendidikan","karakter","kolektif","uinantasari","angkatan22","refleksi","pengembangandiri"]'::jsonb,
   'Tim Riset & Refleksi Budaya Kampus',
-  '/assets/pageran/momens/36.jpg',
-  '/assets/pageran/penampilan/lokala.mp4',
-  '["/assets/pageran/momens/36.jpg","/assets/pageran/momens/39.jpg","/assets/pageran/momens/40.jpg","/assets/pageran/pemain/gina.jpg","/assets/pageran/pemain/hasbi.jpg","/assets/pageran/pemain/lulu.jpg"]'::jsonb,
+  '/assets/pageran/momens/36.webp',
+  '/assets/pageran/penampilan/lokala.webm',
+  '["/assets/pageran/momens/36.webp","/assets/pageran/momens/39.webp","/assets/pageran/momens/40.webp","/assets/pageran/pemain/gina.webp","/assets/pageran/pemain/hasbi.webp","/assets/pageran/pemain/lulu.webp"]'::jsonb,
   '2024-05-18T23:30:00Z'::timestamptz,
   '15 min read',
   true,
@@ -709,7 +709,7 @@ INSERT INTO public.blog_posts (
   'estetika-scenografi-tata-panggung-pagelaran-seni-2024',
   'Menghidupkan Ruang Kosong: Scenografi, Tata Cahaya, dan Artistik Visual Pagelaran Seni 2024',
   'Bagaimana mahasiswa Angkatan 22 menyulap ruang kosong auditorium Kampus 2 UIN Antasari menjadi arena pementasan magis melalui perpaduan scenografi vernakular, ilusi optik tata cahaya, dan instalasi ramah lingkungan.',
-  '![Instalasi Tata Panggung dan Suasana Artistik Pagelaran Seni](/assets/pageran/momens/40.jpg)
+  '![Instalasi Tata Panggung dan Suasana Artistik Pagelaran Seni](/assets/pageran/momens/40.webp)
 
 ## Dari Lantai Semen Dingin Menuju Jagat Penuh Imajinasi
 
@@ -719,9 +719,9 @@ Ketika tim artistik pertama kali melangkah ke dalam gedung pertemuan Kampus 2, y
 
 Konsep scenografi yang diusung adalah perpaduan antara estetika vernakular khas Banjar dengan minimalisme modern. Mengingat sebagian besar cerita mengangkat lanskap sungai, perkampungan pesisir, dan ruang domestik tradisional, tim artistik memutuskan untuk memanfaatkan material lokal yang mudah didaur ulang: bilah-bilah bambu kering, kain blacu bermotif celup Sasirangan buatan sendiri, serta kayu palet bekas peti kemas pelabuhan yang diamplas halus dan disusun bertingkat menjadi panggung modular multilever.
 
-![Pengerjaan Manual Properti dan Latar Artistik Panggung](/assets/pageran/momens/42.JPG)
+![Pengerjaan Manual Properti dan Latar Artistik Panggung](/assets/pageran/momens/42.webp)
 
-![Uji Coba Tata Cahaya dan Penataan Properti Panggung](/assets/pageran/momens/45.JPG)
+![Uji Coba Tata Cahaya dan Penataan Properti Panggung](/assets/pageran/momens/45.webp)
 
 ## Arsitektur Panggung Multilever: Mengatur Sudut Pandang dan Dinamika Gerak
 
@@ -731,7 +731,7 @@ Dengan membagi panggung menjadi tiga tingkat utama—lantai dasar untuk interaks
 
 Setiap properti panggung dirancang multifungsi (*transformable props*). Sebuah balok kayu kotak hitam dengan sedikit pergeseran dapat berubah fungsi dari meja belajar, kursi takhta kerajaan, ranjang pesakitan, hingga menjadi batu karang di tepi sungai. Fleksibilitas ini sangat krusial mengingat waktu jeda pergantian antarbabak hanya dibatasi maksimal 90 detik di bawah kegelapan panggung.
 
-![Cuplikan Video Dokumentasi Lokasi Jalur Kampus 2 UIN Antasari](/assets/pageran/lokasi/jalur.mp4)
+![Cuplikan Video Dokumentasi Lokasi Jalur Kampus 2 UIN Antasari](/assets/pageran/lokasi/jalur.webm)
 
 ## Bahasa Psikologis Tata Cahaya: Memahat Emosi Melalui Spektrum Warna
 
@@ -741,9 +741,9 @@ Operator tata cahaya mahasiswa Angkatan 22 memprogram puluhan lampu panggung—t
 
 Kombinasi antara bayangan tajam (*hard shadows*) dan pendaran lembut (*soft diffusion*) dimanfaatkan secara cermat untuk menciptakan efek chiaroscuro ala lukisan klasik Caravaggio. Wajah para aktor terpahat dengan garis-garis tegas yang memperjelas ekspresi kemarahan, kesedihan, maupun ketakjuban mereka di atas panggung.
 
-![Detil Penataan Tata Ruang Panggung dan Backstage](/assets/pageran/momens/48.JPG)
+![Detil Penataan Tata Ruang Panggung dan Backstage](/assets/pageran/momens/48.webp)
 
-![Potret Pemeran: Mukaramah dalam Balutan Karakter Artistik](/assets/pageran/pemain/mukaramah.jpg)
+![Potret Pemeran: Mukaramah dalam Balutan Karakter Artistik](/assets/pageran/pemain/mukaramah.webp)
 
 ## Mengolah Kejutan Visual: Efek Praktis dan Ilusi Ruang Sederhana
 
@@ -753,7 +753,7 @@ Efek badai sungai, misalnya, diciptakan melalui bentangan kain sutra biru raksas
 
 Kesuksesan efek-efek visual ini adalah bukti bahwa kekuatan seni panggung sejati terletak pada daya magis manipulasi ruang fisik, bukan pada kecanggihan teknologi digital yang mahal. Keringat dan ketelitian tangan mahasiswa telah membuktikan bahwa keindahan autentik selalu memiliki daya pukau yang tak tertandingi.
 
-![Suasana Akhir Penataan Artistik Panggung Siap Pakai](/assets/pageran/momens/50.JPG)
+![Suasana Akhir Penataan Artistik Panggung Siap Pakai](/assets/pageran/momens/50.webp)
 
 ## Catatan Epilog: Runtuhnya Panggung, Abadinya Memori
 
@@ -763,9 +763,9 @@ Ada rasa haru yang mendalam saat menyaksikan dunia magis yang dibangun selama be
   'Seni & Desain',
   '["scenografi","tatapanggung","artistik","lighting","uinantasari","angkatan22","kampus2"]'::jsonb,
   'Divisi Artistik & Tata Panggung',
-  '/assets/pageran/momens/40.jpg',
-  '/assets/pageran/lokasi/jalur.mp4',
-  '["/assets/pageran/momens/40.jpg","/assets/pageran/momens/42.JPG","/assets/pageran/momens/45.JPG","/assets/pageran/momens/48.JPG","/assets/pageran/momens/50.JPG","/assets/pageran/pemain/mukaramah.jpg"]'::jsonb,
+  '/assets/pageran/momens/40.webp',
+  '/assets/pageran/lokasi/jalur.webm',
+  '["/assets/pageran/momens/40.webp","/assets/pageran/momens/42.webp","/assets/pageran/momens/45.webp","/assets/pageran/momens/48.webp","/assets/pageran/momens/50.webp","/assets/pageran/pemain/mukaramah.webp"]'::jsonb,
   '2024-05-19T00:00:00Z'::timestamptz,
   '15 min read',
   true,
@@ -821,7 +821,7 @@ INSERT INTO public.blog_posts (
   'filosofi-busana-tata-rias-tradisi-banjar-pagelaran-seni-2024',
   'Kain, Warna, dan Identitas: Kajian Etnografis Busana dan Rias Karakter Tradisi Banjar',
   'Menelusuri makna simbolik di balik setiap lipatan kain Sasirangan, hiasan kepala keemasan, dan riasan karakter dramatis para penampil Pagelaran Seni 2024 Angkatan 22 UIN Antasari.',
-  '![Pesona Busana Tradisi Penari Pagelaran Seni: Helda](/assets/pageran/pemain/penari/helda.JPG)
+  '![Pesona Busana Tradisi Penari Pagelaran Seni: Helda](/assets/pageran/pemain/penari/helda.webp)
 
 ## Kostum Sebagai Kulit Kedua dan Manifestasi Jiwa Karakter
 
@@ -831,9 +831,9 @@ Dalam Pagelaran Seni 2024 Angkatan 22 UIN Antasari Banjarmasin, divisi tata rias
 
 Tim perias mahasiswa melakukan riset mendalam sebelum menyentuh jarum dan kuas rias. Mereka berkonsultasi dengan para tetua adat, mempelajari literatur museum lambung mangkurat, dan membedah makna di balik setiap palet warna: merah melambangkan keberanian dan darah pejuang, kuning keemasan merefleksikan kemuliaan bangsawan dan spiritualitas kesultanan Banjar, hijau menyimbolkan kesuburan tanah rawa dan keagamaan, serta hitam yang menyiratkan keteguhan budi pekerti yang kokoh.
 
-![Detail Tata Rias dan Mahkota Penari: Nida](/assets/pageran/pemain/penari/nida.JPG)
+![Detail Tata Rias dan Mahkota Penari: Nida](/assets/pageran/pemain/penari/nida.webp)
 
-![Pesona Ekspresi dan Busana Tradisi: Yulia](/assets/pageran/pemain/penari/yulia.JPG)
+![Pesona Ekspresi dan Busana Tradisi: Yulia](/assets/pageran/pemain/penari/yulia.webp)
 
 ## Filosofi Kain Sasirangan: Rajutan Doa di Setiap Jelujur Motif
 
@@ -843,7 +843,7 @@ Dalam busana penari Lokal C yang dibawakan oleh Helda, Nida, Adaw, Danti, dan Yu
 
 Penggunaan kain Sasirangan asli hasil kerajinan pengrajin lokal Banjarmasin ini bukan hanya memberikan nilai estetika visual yang autentik di atas panggung, tetapi juga menjadi wujud nyata komitmen civitas akademika UIN Antasari dalam memberdayakan ekonomi kreatif dan melestarikan warisan adiluhung tanah Banua tercinta.
 
-![Cuplikan Rekaman Video Penampilan Tari Panggung Lokal C](/assets/pageran/penampilan/lokalc.mp4)
+![Cuplikan Rekaman Video Penampilan Tari Panggung Lokal C](/assets/pageran/penampilan/lokalc.webm)
 
 ## Seni Rias Karakter: Memahat Wajah, Menghidupkan Ekspresi
 
@@ -853,9 +853,9 @@ Teknik konturing (*shading and highlighting*) digunakan secara ekstrem untuk mem
 
 Ketelitian tingkat tinggi juga diterapkan pada riasan para penari. Alis dibentuk melengkung anggun (*alis bulan sabit*) khas putri keraton Banjar, kelopak mata dihiasi sapuan warna emas berkilau (*gold shimmer*) yang memantulkan cahaya panggung secara menawan, dan rona merah di bibir diaplikasikan dengan teknik khusus agar tahan terhadap keringat selama bermenit-menit menari di bawah panas lampu panggung tanpa luntur sedikit pun.
 
-![Detail Mahkota Keemasan Penari Tradisional: Adaw](/assets/pageran/pemain/penari/adaw.JPG)
+![Detail Mahkota Keemasan Penari Tradisional: Adaw](/assets/pageran/pemain/penari/adaw.webp)
 
-![Pesona Anggun Penari: Danti](/assets/pageran/pemain/penari/danti.JPG)
+![Pesona Anggun Penari: Danti](/assets/pageran/pemain/penari/danti.webp)
 
 ## Dapur Ruang Rias: Pertarungan Melawan Waktu Menjelang Bel Pembuka
 
@@ -865,7 +865,7 @@ Aroma bedak tabur, semprotan penata rambut (*hairspray*), dan minyak wangi melat
 
 Di tengah kesibukan yang luar biasa tersebut, kehangatan persaudaraan justru terpancar sangat kuat. Mahasiswi yang telah selesai dirias tidak segan membantu memakaikan kain jarik pada rekannya, mengoreksi posisi selendang yang miring, atau memberikan segelas air mineral bagi pemeran yang mulai gemetar menahan gugup. Ruang rias menjadi ruang sakral transformasi di mana kepribadian mahasiswa biasa dilepaskan, dan karakter panggung yang agung dilahirkan ke dunia.
 
-![Potret Kolektif Para Penari dalam Balutan Kostum Lengkap](/assets/pageran/pemain/penari.jpg)
+![Potret Kolektif Para Penari dalam Balutan Kostum Lengkap](/assets/pageran/pemain/penari.webp)
 
 ## Catatan Epilog: Mahkota yang Menjadi Mahakarya
 
@@ -875,9 +875,9 @@ Busana dan rias karakter Pagelaran Seni 2024 membuktikan bahwa tradisi bukan abu
   'Seni & Budaya',
   '["kostum","tatarias","budayabanjar","sasirangan","uinantasari","angkatan22","etnografi"]'::jsonb,
   'Divisi Busana, Tata Rias & Kajian Budaya',
-  '/assets/pageran/pemain/penari/helda.JPG',
-  '/assets/pageran/penampilan/lokalc.mp4',
-  '["/assets/pageran/pemain/penari/helda.JPG","/assets/pageran/pemain/penari/nida.JPG","/assets/pageran/pemain/penari/adaw.JPG","/assets/pageran/pemain/penari/danti.JPG","/assets/pageran/pemain/penari/yulia.JPG","/assets/pageran/pemain/penari.jpg"]'::jsonb,
+  '/assets/pageran/pemain/penari/helda.webp',
+  '/assets/pageran/penampilan/lokalc.webm',
+  '["/assets/pageran/pemain/penari/helda.webp","/assets/pageran/pemain/penari/nida.webp","/assets/pageran/pemain/penari/adaw.webp","/assets/pageran/pemain/penari/danti.webp","/assets/pageran/pemain/penari/yulia.webp","/assets/pageran/pemain/penari.webp"]'::jsonb,
   '2024-05-19T00:30:00Z'::timestamptz,
   '16 min read',
   true,
@@ -933,7 +933,7 @@ INSERT INTO public.blog_posts (
   'strategi-komunikasi-visual-promosi-pagelaran-seni-2024',
   'Dari Briefing ke Feed Instagram: Strategi Komunikasi Visual dan Kampanye Media Sosial',
   'Bedah strategi di balik kampanye media sosial, desain poster serial antarlokal, dan video teaser viral yang berhasil memenuhi tiket auditorium Pagelaran Seni 2024 UIN Antasari Banjarmasin.',
-  '![Poster Pagelaran Seni Lokal B](/assets/pageran/Poster/lokalb%20poster.jpg)
+  '![Poster Pagelaran Seni Lokal B](/assets/pageran/Poster/lokalb%20poster.webp)
 
 ## Mengapa Sebuah Mahakarya Butuh Corong Komunikasi yang Tepat?
 
@@ -943,9 +943,9 @@ Divisi Publikasi dan Desain Komunikasi Visual (DKV) Pagelaran Seni 2024 Angkatan
 
 Tujuan utama dari strategi ini bukan sekadar menjual lembaran tiket masuk, melainkan membangun rasa penasaran (*curiosity*), kebanggaan angkatan (*pride*), dan rasa urgensi (*fear of missing out / FOMO*) di kalangan mahasiswa dan masyarakat umum Banjarmasin bahwa Pagelaran Seni 2024 adalah peristiwa kebudayaan akbar yang tidak boleh dilewatkan.
 
-![Karya Desain Poster Teater Lokal A](/assets/pageran/Poster/lokala.jpg)
+![Karya Desain Poster Teater Lokal A](/assets/pageran/Poster/lokala.webp)
 
-![Karya Desain Poster Tari Tradisi Lokal C](/assets/pageran/Poster/lokalc.jpg)
+![Karya Desain Poster Tari Tradisi Lokal C](/assets/pageran/Poster/lokalc.webp)
 
 ## Anatomi Desain Poster Antarlokal: Menghormati Keberagaman Genre
 
@@ -955,7 +955,7 @@ Poster Lokal A (Teater), misalnya, didominasi oleh palet warna gelap dramatis de
 
 Setiap elemen visual dalam poster diperhitungkan dengan cermat: penempatan hierarki teks (*visual hierarchy*), keterbacaan judul utama dari jarak pandang lima meter, hingga peletakan logo sponsor dan tanggal pementasan yang tidak merusak estetika gambar utama. Hasilnya adalah karya-karya grafis yang tidak hanya berfungsi sebagai media promosi, tetapi juga layak dikoleksi sebagai memorabilia seni.
 
-![Cuplikan Video Promosi Kreatif Mahasiswa](/assets/pageran/Promosi/abcd.mp4)
+![Cuplikan Video Promosi Kreatif Mahasiswa](/assets/pageran/Promosi/abcd.webm)
 
 ## Meracik Konten Media Sosial: Algoritma, Reels, dan Video Teaser Viral
 
@@ -965,9 +965,9 @@ Video-video promosi kreatif seperti video *abcd*, *akumanis*, dan *isuk* dirilis
 
 Pendekatan humanis dan apa adanya (*authentic content*) inilah yang membuat audiens merasa dekat secara personal dengan para penampil. Pengikut akun media sosial acara melonjak drastis, kolom komentar dibanjiri antusiasme ribuan mahasiswa, dan setiap unggahan dibagikan ulang (*reposted*) secara sukarela oleh ratusan akun mahasiswa lintas fakultas.
 
-![Karya Desain Poster Musik Pertunjukan Lokal D](/assets/pageran/Poster/lokald.jpg)
+![Karya Desain Poster Musik Pertunjukan Lokal D](/assets/pageran/Poster/lokald.webp)
 
-![Potret Aktor Panggung: Safii](/assets/pageran/pemain/safii.jpg)
+![Potret Aktor Panggung: Safii](/assets/pageran/pemain/safii.webp)
 
 ## Mengonversi Interaksi Digital Menjadi Tiket Fisik yang Ludes Terjual
 
@@ -977,7 +977,7 @@ Kunci sukses konversi ini terletak pada kemudahan akses informasi yang disajikan
 
 Profesionalisme pengelolaan kampanye ini mendapat apresiasi tinggi dari para pimpinan fakultas dan dosen. Mahasiswa Angkatan 22 telah membuktikan bahwa mereka bukan hanya cakap dalam urusan teknis berkesenian di atas panggung, melainkan juga memiliki literasi digital dan kecakapan komunikasi massa modern yang sangat dibutuhkan di era industri kreatif abad ke-21.
 
-![Dokumentasi Momen Panitia dan Evaluasi Media](/assets/pageran/momens/50.JPG)
+![Dokumentasi Momen Panitia dan Evaluasi Media](/assets/pageran/momens/50.webp)
 
 ## Catatan Epilog: Jejak Visual yang Takkan Usang
 
@@ -987,9 +987,9 @@ Mereka telah membuktikan bahwa komunikasi visual bukan sekadar urusan memilih wa
   'Media & Branding',
   '["branding","desainkomunikasi","mediasosial","poster","uinantasari","angkatan22","kampanyedigital"]'::jsonb,
   'Divisi Publikasi, Dokumentasi & Desain Komunikasi Visual',
-  '/assets/pageran/Poster/lokalb poster.jpg',
-  '/assets/pageran/Promosi/abcd.mp4',
-  '["/assets/pageran/Poster/lokalb poster.jpg","/assets/pageran/Poster/lokala.jpg","/assets/pageran/Poster/lokalc.jpg","/assets/pageran/Poster/lokald.jpg","/assets/pageran/momens/50.JPG","/assets/pageran/pemain/safii.jpg"]'::jsonb,
+  '/assets/pageran/Poster/lokalb poster.webp',
+  '/assets/pageran/Promosi/abcd.webm',
+  '["/assets/pageran/Poster/lokalb poster.webp","/assets/pageran/Poster/lokala.webp","/assets/pageran/Poster/lokalc.webp","/assets/pageran/Poster/lokald.webp","/assets/pageran/momens/50.webp","/assets/pageran/pemain/safii.webp"]'::jsonb,
   '2024-05-19T01:00:00Z'::timestamptz,
   '15 min read',
   true,
@@ -1045,7 +1045,7 @@ INSERT INTO public.blog_posts (
   'refleksi-batin-aktor-suara-pemain-pagelaran-seni-2024',
   'Di Balik Topeng dan Naskah: Narasi Intim, Demam Panggung, dan Refleksi Batin Para Aktor',
   'Suara-suara intim yang tak terdengar dari bibir panggung: perjumpaan aktor dengan ketakutan terbesarnya, demam panggung di balik tirai sayap, dan katarsis emosional yang mengubah hidup mahasiswa Angkatan 22.',
-  '![Potret Kedalaman Karakter Pemeran Panggung: Amel](/assets/pageran/pemain/amel.jpg)
+  '![Potret Kedalaman Karakter Pemeran Panggung: Amel](/assets/pageran/pemain/amel.webp)
 
 ## Mengapa Manusia Memilih Naik ke Atas Panggung?
 
@@ -1055,9 +1055,9 @@ Bagi para mahasiswa pemeran Pagelaran Seni 2024 Angkatan 22 UIN Antasari Banjarm
 
 Sebagian besar dari mahasiswa ini belum pernah sekalipun berakting di panggung pertunjukan umum sebelumnya. Keseharian mereka adalah mahasiswa biasa yang duduk di deretan belakang kelas, berbicara sopan kepada dosen, dan memendam mimpi-mimpi rahasia di dalam kamar kos. Keputusan untuk mengikuti seleksi pemeran dan berkomitmen hingga akhir adalah sebuah tindakan keberanian luar biasa: keberanian untuk keluar dari zona nyaman dan melompat ke dalam ketidakpastian artistik.
 
-![Potret Refleksi Pemeran Panggung: Amin](/assets/pageran/pemain/amin.jpg)
+![Potret Refleksi Pemeran Panggung: Amin](/assets/pageran/pemain/amin.webp)
 
-![Potret Penghayatan Peran: Hasbi](/assets/pageran/pemain/hasbi.jpg)
+![Potret Penghayatan Peran: Hasbi](/assets/pageran/pemain/hasbi.webp)
 
 ## Anatomi Demam Panggung: Ketika Jantung Berdegup Menghantam Rusuk
 
@@ -1067,7 +1067,7 @@ Amel dan kawan-kawannya memiliki ritual rahasia untuk menaklukkan ketakutan ters
 
 Begitu kaki melangkah menyeberangi garis sayap panggung dan sorotan lampu halogen menyilaukan pandangan, keajaiban psikologis pun terjadi. Semua rasa takut seketika lenyap menguap. Demam panggung bermutasi menjadi gelombang adrenalin murni yang mempertajam fokus, memperdalam napas, dan menghidupkan seluruh panca indra. Rasa dingin di telapak tangan berganti menjadi kehangatan gairah seni yang berkobar-kobar.
 
-![Cuplikan Video Trailer Panggung Pagelaran Seni 2024](/assets/pageran/trailer/trailer.mp4)
+![Cuplikan Video Trailer Panggung Pagelaran Seni 2024](/assets/pageran/trailer/trailer.webm)
 
 ## Menanggalkan Diri Sendiri Demi Menghidupkan Jiwa Karakter
 
@@ -1077,9 +1077,9 @@ Proses penjiwaan peran ini sering kali membawa pergulatan batin yang melelahkan.
 
 Namun, di sanalah letak keindahan teater sebagai medium katarsis (*catharsis*). Dengan menangis di atas panggung atas nama karakternya, sang aktor sesungguhnya sedang menyembuhkan luka batinnya sendiri. Dengan berteriak meluapkan kemarahan tokohnya, ia sedang melepaskan kepenatan hidup yang selama ini terperangkap di dalam dadanya. Panggung seni menjadi ruang terapi jiwa yang membebaskan dan mendewasakan.
 
-![Potret Ekspresif Pemeran Panggung: Lulu](/assets/pageran/pemain/lulu.jpg)
+![Potret Ekspresif Pemeran Panggung: Lulu](/assets/pageran/pemain/lulu.webp)
 
-![Potret Penghayatan Peran Karakter: Safii](/assets/pageran/pemain/safii.jpg)
+![Potret Penghayatan Peran Karakter: Safii](/assets/pageran/pemain/safii.webp)
 
 ## Momen Katarsis Terbesar: Tangis Haru di Balik Tirai yang Tertutup
 
@@ -1089,7 +1089,7 @@ Tangis itu bukanlah tangis kesedihan, melainkan tangis pelepasan yang begitu agu
 
 Dosen pembimbing dan para alumni yang masuk ke balik panggung ikut meneteskan air mata menyaksikan pemandangan tersebut. Di ruangan berbau kayu tripleks itu, mereka tidak lagi melihat sekumpulan mahasiswa yang canggung, melainkan insan-insan dewasa yang telah berhasil menaklukkan ketakutan terbesar mereka dan melahirkan sebuah karya agung yang abadi.
 
-![Potret Pemeran Panggung Berkarakter: Silahudin](/assets/pageran/pemain/silahudin.jpg)
+![Potret Pemeran Panggung Berkarakter: Silahudin](/assets/pageran/pemain/silahudin.webp)
 
 ## Catatan Epilog: Topeng Boleh Ditanggalkan, Namun Semangat Abadi
 
@@ -1099,9 +1099,9 @@ Namun, ada sesuatu yang telah berubah selamanya di dalam diri mereka: sebuah bin
   'Seni Pertunjukan',
   '["refleksi","aktor","demampanggung","teater","uinantasari","angkatan22","kisahpribadi"]'::jsonb,
   'Tim Narasi & Antologi Suara Mahasiswa',
-  '/assets/pageran/pemain/amel.jpg',
-  '/assets/pageran/trailer/trailer.mp4',
-  '["/assets/pageran/pemain/amel.jpg","/assets/pageran/pemain/amin.jpg","/assets/pageran/pemain/hasbi.jpg","/assets/pageran/pemain/lulu.jpg","/assets/pageran/pemain/safii.jpg","/assets/pageran/pemain/silahudin.jpg"]'::jsonb,
+  '/assets/pageran/pemain/amel.webp',
+  '/assets/pageran/trailer/trailer.webm',
+  '["/assets/pageran/pemain/amel.webp","/assets/pageran/pemain/amin.webp","/assets/pageran/pemain/hasbi.webp","/assets/pageran/pemain/lulu.webp","/assets/pageran/pemain/safii.webp","/assets/pageran/pemain/silahudin.webp"]'::jsonb,
   '2024-05-19T01:30:00Z'::timestamptz,
   '17 min read',
   true,

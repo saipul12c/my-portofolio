@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import { fetchAllPosts } from "../services/blogSupabase";
 import { getAuthorProfile } from "../services/authorProfileService";
+import { Sparkles } from "lucide-react";
 import {
   FiArrowLeft,
   FiCalendar,
@@ -9,7 +10,7 @@ import {
   FiEye,
   FiHeart,
   FiStar,
-  FiMessageKSquare,
+  FiMessageSquare,
   FiShare2,
   FiMail,
   FiGlobe,
@@ -31,7 +32,6 @@ import {
   FiImage,
   FiLayers,
   FiFileText,
-  FiSparkles,
   FiCheck,
   FiX,
   FiCompass,
@@ -254,7 +254,7 @@ export default function DetailProfile() {
         <div className="text-center p-8 bg-slate-900/60 rounded-3xl border border-white/10 backdrop-blur-xl shadow-2xl">
           <div className="relative w-16 h-16 mx-auto mb-4">
             <div className="w-16 h-16 rounded-full border-2 border-cyan-500/20 border-t-cyan-400 animate-spin" />
-            <FiSparkles className="absolute inset-0 m-auto w-6 h-6 text-cyan-400 animate-pulse" />
+            <Sparkles className="absolute inset-0 m-auto w-6 h-6 text-cyan-400 animate-pulse" />
           </div>
           <p className="text-slate-300 font-medium">Memuat profil penulis...</p>
           <span className="text-xs text-slate-500 mt-1 block">Menyiapkan karya & integrasi portofolio</span>
@@ -1155,7 +1155,7 @@ export default function DetailProfile() {
         {/* BOTTOM CROSS-NAVIGATION PROMOTION BANNER */}
         <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-cyan-950/30 via-slate-900 to-purple-950/30 p-6 sm:p-8 text-center space-y-4">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 to-purple-600 text-white flex items-center justify-center mx-auto shadow-lg shadow-cyan-500/20">
-            <FiSparkles className="w-6 h-6" />
+            <Sparkles className="w-6 h-6" />
           </div>
           <div className="max-w-xl mx-auto space-y-2">
             <h3 className="text-xl sm:text-2xl font-bold text-white">

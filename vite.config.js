@@ -49,7 +49,16 @@ function saipulApiPlugin() {
       const filename = decodeURIComponent(cleanPath);
       const filePath = path.resolve(process.cwd(), 'src/assets/images', filename);
       if (fs.existsSync(filePath)) {
-        res.setHeader('Content-Type', filename.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg');
+        const ext = path.extname(filename).toLowerCase();
+        const mimeTypes = {
+          '.png': 'image/png',
+          '.webp': 'image/webp',
+          '.jpg': 'image/jpeg',
+          '.jpeg': 'image/jpeg',
+          '.svg': 'image/svg+xml',
+          '.gif': 'image/gif'
+        };
+        res.setHeader('Content-Type', mimeTypes[ext] || 'image/jpeg');
         res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
         fs.createReadStream(filePath).pipe(res);
         return;
@@ -103,6 +112,7 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 1200,
     rollupOptions: {
+      external: ['@xenova/transformers'],
       output: {
         manualChunks: {
           'vendor': ['react', 'react-dom', 'react-router-dom'],

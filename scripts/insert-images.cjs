@@ -60,8 +60,8 @@ function readExif(buf) {
 }
 
 const sortedFiles = [...files].sort((a, b) => {
-  if (a === '5R x12.jpg') return -1;
-  if (b === '5R x12.jpg') return 1;
+  if (a.startsWith('5R x12')) return -1;
+  if (b.startsWith('5R x12')) return 1;
   const aEdit = a.includes('SimpleEdit');
   const bEdit = b.includes('SimpleEdit');
   if (aEdit && !bEdit) return -1;
@@ -87,7 +87,7 @@ const newPhotos = sortedFiles.map((filename, index) => {
   const exif = readExif(buf) || {};
   const id = 101 + index;
   
-  const is5R = filename === '5R x12.jpg';
+  const is5R = filename.startsWith('5R x12');
   const isCopy = filename.includes('copy');
   const isSimpleEdit = filename.includes('SimpleEdit');
   const matchNum = filename.match(/\d{4}/);

@@ -4,12 +4,22 @@
     "type": "video",
     "title": "Official Trailer Pagelaran Seni 2024 - Angkatan 22 UIN Antasari",
     "desc": "Trailer resmi Pagelaran Seni 2024 yang dipersembahkan oleh mahasiswa Angkatan 22 UIN Antasari Banjarmasin. Menampilkan kolaborasi megah pertunjukan teater, tari, musik, dan karya seni spektakuler dari seluruh lokal.",
-    "src": "/assets/pageran/trailer/trailer.mp4",
-    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
-    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "src": "/assets/pageran/trailer/trailer.webm",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.webp",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.webp",
     "category": "Pagelaran Seni",
     "duration": "00:02:30",
-    "tags": ["pagelaranseni", "trailer", "official", "angkatan22", "uinantasari", "banjarmasin", "teater", "seni", "event2024"],
+    "tags": [
+      "pagelaranseni",
+      "trailer",
+      "official",
+      "angkatan22",
+      "uinantasari",
+      "banjarmasin",
+      "teater",
+      "seni",
+      "event2024"
+    ],
     "uploaded_at": "2024-05-15T19:00:00Z",
     "creator": {
       "username": "pagelaranseni22",
@@ -33,7 +43,10 @@
         "name": "Kampus UIN Antasari Banjarmasin",
         "city": "Banjarmasin",
         "country": "Indonesia",
-        "geo": { "lat": -3.3194, "lon": 114.5908 }
+        "geo": {
+          "lat": -3.3194,
+          "lon": 114.5908
+        }
       }
     },
     "music": {
@@ -78,12 +91,20 @@
     "type": "video",
     "title": "Coming Soon: Pagelaran Seni Angkatan 22 UIN Antasari",
     "desc": "Teaser video resmi menyambut Pagelaran Seni 2024 Angkatan 22 UIN Antasari Banjarmasin. Cuplikan antusiasme persiapan dan kejutan yang dihadirkan di panggung akbar seni kampus.",
-    "src": "/assets/pageran/trailer/comingsoon.mp4",
-    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
-    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "src": "/assets/pageran/trailer/comingsoon.webm",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.webp",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.webp",
     "category": "Pagelaran Seni",
     "duration": "00:01:15",
-    "tags": ["pagelaranseni", "comingsoon", "angkatan22", "uinantasari", "banjarmasin", "trailer", "teaser"],
+    "tags": [
+      "pagelaranseni",
+      "comingsoon",
+      "angkatan22",
+      "uinantasari",
+      "banjarmasin",
+      "trailer",
+      "teaser"
+    ],
     "uploaded_at": "2024-05-10T10:00:00Z",
     "creator": {
       "username": "pagelaranseni22",
@@ -107,7 +128,10 @@
         "name": "Kampus UIN Antasari Banjarmasin",
         "city": "Banjarmasin",
         "country": "Indonesia",
-        "geo": { "lat": -3.3194, "lon": 114.5908 }
+        "geo": {
+          "lat": -3.3194,
+          "lon": 114.5908
+        }
       }
     },
     "music": {
@@ -149,7 +173,13 @@
     "thumbnail": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80",
     "category": "Education",
     "duration": "00:02:45",
-    "tags": ["kampus", "edukasi", "mahasiswa", "learning", "campus-life"],
+    "tags": [
+      "kampus",
+      "edukasi",
+      "mahasiswa",
+      "learning",
+      "campus-life"
+    ],
     "uploaded_at": "2024-04-02T09:00:00Z",
     "creator": {
       "username": "tim_mediaedu",
@@ -172,7 +202,10 @@
       "location": {
         "city": "Jakarta",
         "country": "Indonesia",
-        "geo": { "lat": -6.2088, "lon": 106.8456 }
+        "geo": {
+          "lat": -6.2088,
+          "lon": 106.8456
+        }
       }
     },
     "music": {
@@ -222,7 +255,13 @@
     "thumbnail": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80",
     "category": "Project",
     "duration": "00:03:10",
-    "tags": ["project", "digital", "education", "animation", "learning"],
+    "tags": [
+      "project",
+      "digital",
+      "education",
+      "animation",
+      "learning"
+    ],
     "uploaded_at": "2024-07-01T14:00:00Z",
     "creator": {
       "username": "media_edutech",
@@ -245,7 +284,10 @@
       "location": {
         "city": "Bandung",
         "country": "Indonesia",
-        "geo": { "lat": -6.9147, "lon": 107.6098 }
+        "geo": {
+          "lat": -6.9147,
+          "lon": 107.6098
+        }
       }
     },
     "music": {

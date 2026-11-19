@@ -879,7 +879,7 @@ export const kknGallery = [
     id: 1,
     title: "Potret Seluruh Anggota Tim KKN UIN Antasari di Haruyan Dayak",
     category: "Tim",
-    image: "/assets/images/5R%20x12.jpg",
+    image: "/assets/images/5R%20x12.webp",
     desc: "Kompilasi kebersamaan hangat seluruh mahasiswa/i KKN Tahap 2 mengenakan rompi dinas kebanggaan.",
     date: "03 Oktober 2026",
     location: "Desa Kundan, Haruyan Dayak"
@@ -888,7 +888,7 @@ export const kknGallery = [
     id: 2,
     title: "Aktivitas Pengajaran dan Diskusi Bersama Murid",
     category: "Pendidikan",
-    image: "/assets/images/IMG_5532%20SimpleEdit.JPG",
+    image: "/assets/images/IMG_5532%20SimpleEdit.webp",
     desc: "Suasana akrab bimbingan belajar dan pendampingan di sekolah (TK, SD, SMP Satu Atap).",
     date: "06 Oktober 2026",
     location: "Ruang Kelas Sekolah"
@@ -897,7 +897,7 @@ export const kknGallery = [
     id: 3,
     title: "Kebersamaan Mengajar Seni Sholawat Habsyi",
     category: "Keagamaan",
-    image: "/assets/images/IMG_5533%20SimpleEdit.JPG",
+    image: "/assets/images/IMG_5533%20SimpleEdit.webp",
     desc: "Latihan rutin tabuhan terbang Habsyi dan pembacaan maulid bersama anak-anak desa.",
     date: "12 Oktober 2026",
     location: "Posko & Masjid Desa"
@@ -906,7 +906,7 @@ export const kknGallery = [
     id: 4,
     title: "Koordinasi Program Kerja & Pelayanan Posyandu",
     category: "Kesehatan",
-    image: "/assets/images/IMG_5535%20SimpleEdit.JPG",
+    image: "/assets/images/IMG_5535%20SimpleEdit.webp",
     desc: "Briefing tim sebelum terjun membantu pelayanan posyandu balita dan posyandu lansia desa.",
     date: "14 Oktober 2026",
     location: "Balai Posyandu Desa"
@@ -915,7 +915,7 @@ export const kknGallery = [
     id: 5,
     title: "Semarak Antusiasme Pemuda pada Lomba HARDAY FEST",
     category: "Festival",
-    image: "/assets/images/IMG_5536%20SimpleEdit.JPG",
+    image: "/assets/images/IMG_5536%20SimpleEdit.webp",
     desc: "Keseruan turnamen futsal dan tawa ceria anak-anak saat lomba Kipas Ikan dan Makan Biskuit.",
     date: "28 Oktober 2026",
     location: "Lapangan Desa Kundan"
@@ -924,7 +924,7 @@ export const kknGallery = [
     id: 6,
     title: "Pembuatan Plang Jalan Penunjuk Arah & Inventaris Masjid",
     category: "Infrastruktur",
-    image: "/assets/images/IMG_5537%20SimpleEdit.JPG",
+    image: "/assets/images/IMG_5537%20SimpleEdit.webp",
     desc: "Proses perakitan plang penunjuk arah desa dan penyediaan kotak amal serta poster edukasi masjid.",
     date: "29 Oktober 2026",
     location: "Halaman Posko KKN"
@@ -933,7 +933,7 @@ export const kknGallery = [
     id: 7,
     title: "Memasak Bersama Warga: Kuliner Khas Ayam Buluh",
     category: "Budaya",
-    image: "/assets/images/IMG_5538%20SimpleEdit.JPG",
+    image: "/assets/images/IMG_5538%20SimpleEdit.webp",
     desc: "Gotong royong memasak hidangan tradisional Ayam Buluh yang dipanggang dalam bambu bersama warga.",
     date: "14 Oktober 2026",
     location: "Dapur Warga Desa"
@@ -942,7 +942,7 @@ export const kknGallery = [
     id: 8,
     title: "Malam Puncak Penutupan & Silaturahmi Pamitan",
     category: "Perpisahan",
-    image: "/assets/images/IMG_5539%20SimpleEdit.JPG",
+    image: "/assets/images/IMG_5539%20SimpleEdit.webp",
     desc: "Malam haru pelepasan mahasiswa KKN, penganugerahan piala HARDAY FEST, dan santap bersama warga.",
     date: "31 Oktober 2026",
     location: "Panggung Utama Desa"

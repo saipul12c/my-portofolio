@@ -4,14 +4,21 @@
     "type": "short",
     "title": "Rapat Perdana Pagelaran Seni 2024",
     "desc": "Keseruan dan antusiasme rapat perdana kepanitiaan Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin dalam merumuskan konsep pentas akbar 🎭✨",
-    "src": "/assets/pageran/rapat/rapatperdana.mp4",
-    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
-    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "src": "/assets/pageran/rapat/rapatperdana.webm",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.webp",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.webp",
     "category": "Behind The Scenes",
     "duration": "00:00:45",
     "date": "2024",
     "location": "UIN Antasari Banjarmasin",
-    "tags": ["pagelaranseni", "angkatan22", "uinantasari", "rapat", "behindthescenes", "banjarmasin"],
+    "tags": [
+      "pagelaranseni",
+      "angkatan22",
+      "uinantasari",
+      "rapat",
+      "behindthescenes",
+      "banjarmasin"
+    ],
     "uploaded_at": "2024-03-10T14:00:00Z",
     "creator": {
       "username": "pagelaranseni22",
@@ -52,14 +59,21 @@
     "type": "short",
     "title": "Koordinasi Divisi Acara & Panggung",
     "desc": "Rapat koordinasi divisi teknis, panggung, tata lampu, dan perlengkapan demi kelancaran malam pagelaran seni 2024.",
-    "src": "/assets/pageran/rapat/rapat1.mp4",
-    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
-    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "src": "/assets/pageran/rapat/rapat1.webm",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.webp",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.webp",
     "category": "Behind The Scenes",
     "duration": "00:00:50",
     "date": "2024",
     "location": "UIN Antasari Banjarmasin",
-    "tags": ["pagelaranseni", "angkatan22", "uinantasari", "koordinasi", "panitia", "rapat"],
+    "tags": [
+      "pagelaranseni",
+      "angkatan22",
+      "uinantasari",
+      "koordinasi",
+      "panitia",
+      "rapat"
+    ],
     "uploaded_at": "2024-03-18T16:30:00Z",
     "creator": {
       "username": "pagelaranseni22",
@@ -100,14 +114,20 @@
     "type": "short",
     "title": "Evaluasi & Progres Acara Pagelaran",
     "desc": "Sesi sharing dan evaluasi perkembangan latihan tiap lokal menjelang penampilan pentas seni akbar mahasiswa 2024.",
-    "src": "/assets/pageran/rapat/rapat2.mp4",
-    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
-    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "src": "/assets/pageran/rapat/rapat2.webm",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.webp",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.webp",
     "category": "Behind The Scenes",
     "duration": "00:01:10",
     "date": "2024",
     "location": "UIN Antasari Banjarmasin",
-    "tags": ["pagelaranseni", "angkatan22", "uinantasari", "evaluasi", "rapat"],
+    "tags": [
+      "pagelaranseni",
+      "angkatan22",
+      "uinantasari",
+      "evaluasi",
+      "rapat"
+    ],
     "uploaded_at": "2024-03-25T15:00:00Z",
     "creator": {
       "username": "pagelaranseni22",
@@ -148,14 +168,21 @@
     "type": "short",
     "title": "Rapat Pemantapan Rundown Pagelaran",
     "desc": "Pemantapan final rundown pagelaran seni, alur lighting, audio, dan kesiapan pengisi acara angkatan 22.",
-    "src": "/assets/pageran/rapat/rapatpemantapan.mp4",
-    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
-    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "src": "/assets/pageran/rapat/rapatpemantapan.webm",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.webp",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.webp",
     "category": "Behind The Scenes",
     "duration": "00:00:40",
     "date": "2024",
     "location": "UIN Antasari Banjarmasin",
-    "tags": ["pagelaranseni", "angkatan22", "uinantasari", "pemantapan", "rundown", "panitia"],
+    "tags": [
+      "pagelaranseni",
+      "angkatan22",
+      "uinantasari",
+      "pemantapan",
+      "rundown",
+      "panitia"
+    ],
     "uploaded_at": "2024-04-05T17:00:00Z",
     "creator": {
       "username": "pagelaranseni22",
@@ -196,14 +223,21 @@
     "type": "short",
     "title": "Gladi Resik Pagelaran Seni 2024",
     "desc": "Persiapan gladi kotor dan gladi resik panggung, memastikan kesiapan tata suara, pencahayaan, dan blocking para talent.",
-    "src": "/assets/pageran/rapat/rapatgladi.mp4",
-    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
-    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "src": "/assets/pageran/rapat/rapatgladi.webm",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.webp",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.webp",
     "category": "Behind The Scenes",
     "duration": "00:00:35",
     "date": "2024",
     "location": "Auditorium UIN Antasari",
-    "tags": ["pagelaranseni", "gladiresik", "angkatan22", "uinantasari", "panggung", "gladi"],
+    "tags": [
+      "pagelaranseni",
+      "gladiresik",
+      "angkatan22",
+      "uinantasari",
+      "panggung",
+      "gladi"
+    ],
     "uploaded_at": "2024-04-12T19:30:00Z",
     "creator": {
       "username": "pagelaranseni22",
@@ -244,14 +278,20 @@
     "type": "short",
     "title": "Promo Seru: Pagelaran Seni Angkatan 22",
     "desc": "Teaser video promosi penuh energi dan keceriaan dari angkatan 22 UIN Antasari Banjarmasin. Ayo ramaikan!",
-    "src": "/assets/pageran/Promosi/abcd.mp4",
-    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
-    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "src": "/assets/pageran/Promosi/abcd.webm",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.webp",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.webp",
     "category": "Promosi",
     "duration": "00:00:30",
     "date": "2024",
     "location": "UIN Antasari Banjarmasin",
-    "tags": ["pagelaranseni", "promosi", "teaser", "angkatan22", "uinantasari"],
+    "tags": [
+      "pagelaranseni",
+      "promosi",
+      "teaser",
+      "angkatan22",
+      "uinantasari"
+    ],
     "uploaded_at": "2024-04-15T11:00:00Z",
     "creator": {
       "username": "pagelaranseni22",
@@ -292,14 +332,20 @@
     "type": "short",
     "title": "Vibes Ceria Promosi Pagelaran",
     "desc": "Keseruan di balik layar panitia dan mahasiswa memeriahkan pra-event Pagelaran Seni 2024.",
-    "src": "/assets/pageran/Promosi/akumanis.mp4",
-    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
-    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "src": "/assets/pageran/Promosi/akumanis.webm",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.webp",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.webp",
     "category": "Promosi",
     "duration": "00:00:28",
     "date": "2024",
     "location": "UIN Antasari Banjarmasin",
-    "tags": ["pagelaranseni", "promosi", "vibes", "angkatan22", "uinantasari"],
+    "tags": [
+      "pagelaranseni",
+      "promosi",
+      "vibes",
+      "angkatan22",
+      "uinantasari"
+    ],
     "uploaded_at": "2024-04-18T13:30:00Z",
     "creator": {
       "username": "pagelaranseni22",
@@ -340,14 +386,20 @@
     "type": "short",
     "title": "Countdown: H-1 Pagelaran Seni Angkatan 22",
     "desc": "Ajakan seru menjelang hari puncak pagelaran seni, siap menyuguhkan karya terbaik mahasiswa angkatan 22.",
-    "src": "/assets/pageran/Promosi/isuk.mp4",
-    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
-    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "src": "/assets/pageran/Promosi/isuk.webm",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.webp",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.webp",
     "category": "Promosi",
     "duration": "00:00:32",
     "date": "2024",
     "location": "UIN Antasari Banjarmasin",
-    "tags": ["pagelaranseni", "countdown", "promosi", "angkatan22", "uinantasari"],
+    "tags": [
+      "pagelaranseni",
+      "countdown",
+      "promosi",
+      "angkatan22",
+      "uinantasari"
+    ],
     "uploaded_at": "2024-04-22T08:00:00Z",
     "creator": {
       "username": "pagelaranseni22",
@@ -388,14 +440,21 @@
     "type": "short",
     "title": "Penampilan Memukau - Lokal A",
     "desc": "Koreografi dan pertunjukan panggung spektakuler persembahan mahasiswa Lokal A dalam Pagelaran Seni 2024.",
-    "src": "/assets/pageran/penampilan/lokala.mp4",
-    "thumbnail": "/assets/pageran/Poster/lokala.jpg",
-    "poster": "/assets/pageran/Poster/lokala.jpg",
+    "src": "/assets/pageran/penampilan/lokala.webm",
+    "thumbnail": "/assets/pageran/Poster/lokala.webp",
+    "poster": "/assets/pageran/Poster/lokala.webp",
     "category": "Performance",
     "duration": "00:00:55",
     "date": "2024",
     "location": "Auditorium UIN Antasari",
-    "tags": ["pagelaranseni", "penampilan", "lokala", "seni", "angkatan22", "uinantasari"],
+    "tags": [
+      "pagelaranseni",
+      "penampilan",
+      "lokala",
+      "seni",
+      "angkatan22",
+      "uinantasari"
+    ],
     "uploaded_at": "2024-04-23T20:00:00Z",
     "creator": {
       "username": "pagelaranseni22",
@@ -436,14 +495,21 @@
     "type": "short",
     "title": "Pentas Seni Teater & Musik - Lokal B",
     "desc": "Drama panggung mendalam dan pertunjukan artistik dari kawan-kawan Lokal B pada Pagelaran Seni Angkatan 22.",
-    "src": "/assets/pageran/penampilan/lokalb.mp4",
-    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
-    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "src": "/assets/pageran/penampilan/lokalb.webm",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.webp",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.webp",
     "category": "Performance",
     "duration": "00:01:05",
     "date": "2024",
     "location": "Auditorium UIN Antasari",
-    "tags": ["pagelaranseni", "penampilan", "lokalb", "teater", "angkatan22", "uinantasari"],
+    "tags": [
+      "pagelaranseni",
+      "penampilan",
+      "lokalb",
+      "teater",
+      "angkatan22",
+      "uinantasari"
+    ],
     "uploaded_at": "2024-04-23T20:30:00Z",
     "creator": {
       "username": "pagelaranseni22",
@@ -484,14 +550,21 @@
     "type": "short",
     "title": "Alunan Nada & Harmoni - Lokal C",
     "desc": "Kombinasi atraksi musikal dan penampilan kreatif mahasiswa Lokal C yang menghipnotis seluruh penonton.",
-    "src": "/assets/pageran/penampilan/lokalc.mp4",
-    "thumbnail": "/assets/pageran/Poster/lokalc.jpg",
-    "poster": "/assets/pageran/Poster/lokalc.jpg",
+    "src": "/assets/pageran/penampilan/lokalc.webm",
+    "thumbnail": "/assets/pageran/Poster/lokalc.webp",
+    "poster": "/assets/pageran/Poster/lokalc.webp",
     "category": "Performance",
     "duration": "00:00:58",
     "date": "2024",
     "location": "Auditorium UIN Antasari",
-    "tags": ["pagelaranseni", "penampilan", "lokalc", "musik", "angkatan22", "uinantasari"],
+    "tags": [
+      "pagelaranseni",
+      "penampilan",
+      "lokalc",
+      "musik",
+      "angkatan22",
+      "uinantasari"
+    ],
     "uploaded_at": "2024-04-23T21:00:00Z",
     "creator": {
       "username": "pagelaranseni22",
@@ -532,14 +605,21 @@
     "type": "short",
     "title": "Ekspresi Budaya & Tari - Lokal D",
     "desc": "Pertunjukan energik tarian kolosal dan kreasi seni tradisi kontemporer dari Lokal D di malam pagelaran.",
-    "src": "/assets/pageran/penampilan/lokald.mp4",
-    "thumbnail": "/assets/pageran/Poster/lokald.jpg",
-    "poster": "/assets/pageran/Poster/lokald.jpg",
+    "src": "/assets/pageran/penampilan/lokald.webm",
+    "thumbnail": "/assets/pageran/Poster/lokald.webp",
+    "poster": "/assets/pageran/Poster/lokald.webp",
     "category": "Performance",
     "duration": "00:01:00",
     "date": "2024",
     "location": "Auditorium UIN Antasari",
-    "tags": ["pagelaranseni", "penampilan", "lokald", "tari", "angkatan22", "uinantasari"],
+    "tags": [
+      "pagelaranseni",
+      "penampilan",
+      "lokald",
+      "tari",
+      "angkatan22",
+      "uinantasari"
+    ],
     "uploaded_at": "2024-04-23T21:30:00Z",
     "creator": {
       "username": "pagelaranseni22",
@@ -580,14 +660,21 @@
     "type": "short",
     "title": "Panduan Jalur & Akses Venue Pagelaran",
     "desc": "Informasi rute jalan, titik masuk kampus UIN Antasari Banjarmasin, dan petunjuk arah ke gedung pagelaran seni.",
-    "src": "/assets/pageran/lokasi/jalur.mp4",
-    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.jpg",
-    "poster": "/assets/pageran/Poster/lokalb%20poster.jpg",
+    "src": "/assets/pageran/lokasi/jalur.webm",
+    "thumbnail": "/assets/pageran/Poster/lokalb%20poster.webp",
+    "poster": "/assets/pageran/Poster/lokalb%20poster.webp",
     "category": "Info Event",
     "duration": "00:01:15",
     "date": "2024",
     "location": "Kampus UIN Antasari Banjarmasin",
-    "tags": ["pagelaranseni", "lokasi", "jalur", "uinantasari", "banjarmasin", "venue"],
+    "tags": [
+      "pagelaranseni",
+      "lokasi",
+      "jalur",
+      "uinantasari",
+      "banjarmasin",
+      "venue"
+    ],
     "uploaded_at": "2024-04-20T10:00:00Z",
     "creator": {
       "username": "pagelaranseni22",
@@ -632,7 +719,13 @@
     "thumbnail": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&h=1067&q=80",
     "category": "Tutorial",
     "duration": "00:00:15",
-    "tags": ["coding", "react", "shorts", "belajarcepat", "devlife"],
+    "tags": [
+      "coding",
+      "react",
+      "shorts",
+      "belajarcepat",
+      "devlife"
+    ],
     "uploaded_at": "2024-04-20T09:15:00Z",
     "creator": {
       "username": "devshort_id",
@@ -677,7 +770,13 @@
     "thumbnail": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&h=1067&q=80",
     "category": "Tutorial",
     "duration": "00:00:15",
-    "tags": ["coding", "javascript", "debugging", "shorts", "tips"],
+    "tags": [
+      "coding",
+      "javascript",
+      "debugging",
+      "shorts",
+      "tips"
+    ],
     "uploaded_at": "2024-05-05T14:45:00Z",
     "creator": {
       "username": "jsninja",
@@ -703,7 +802,9 @@
     "user_behavior": {
       "liked_by_user": true,
       "watched_percentage": 0.95,
-      "interacted": ["liked"]
+      "interacted": [
+        "liked"
+      ]
     }
   },
   {
@@ -715,7 +816,11 @@
     "thumbnail": "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=600&h=1067&q=80",
     "category": "Tutorial",
     "duration": "00:00:30",
-    "tags": ["react", "tutorial", "shorts"],
+    "tags": [
+      "react",
+      "tutorial",
+      "shorts"
+    ],
     "uploaded_at": "2024-08-01T10:00:00Z",
     "creator": {
       "username": "reactguru",
@@ -741,7 +846,9 @@
     "user_behavior": {
       "liked_by_user": false,
       "watched_percentage": 0.7,
-      "interacted": ["paused"]
+      "interacted": [
+        "paused"
+      ]
     }
   },
   {
@@ -753,7 +860,11 @@
     "thumbnail": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&h=1067&q=80",
     "category": "Tutorial",
     "duration": "00:00:20",
-    "tags": ["javascript", "tutorial", "shorts"],
+    "tags": [
+      "javascript",
+      "tutorial",
+      "shorts"
+    ],
     "uploaded_at": "2024-09-01T12:00:00Z",
     "creator": {
       "username": "devshortid",
@@ -779,7 +890,10 @@
     "user_behavior": {
       "liked_by_user": true,
       "watched_percentage": 0.9,
-      "interacted": ["liked", "paused"]
+      "interacted": [
+        "liked",
+        "paused"
+      ]
     }
   }
 ]

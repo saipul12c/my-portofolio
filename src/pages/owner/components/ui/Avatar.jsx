@@ -4,7 +4,7 @@ import { Sparkles, ShieldCheck } from "lucide-react";
 /**
  * Avatar component - displays owner photo with stylish border, verified badge, and fallback to initials
  */
-export const Avatar = ({ initials = "SM", src = "/images/5R x12.jpg", alt = "Muhammad Syaiful Mukmin" }) => {
+export const Avatar = ({ initials = "SM", src = "/assets/images/5R%20x12.webp", alt = "Muhammad Syaiful Mukmin" }) => {
   const [imageError, setImageError] = useState(false);
 
   return (
