@@ -534,26 +534,64 @@ export default function Home() {
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
       >
-        <h2 className="text-2xl font-bold text-center mb-8 text-gray-300">
-          Juga Tersedia 🌐
-        </h2>
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-200">
+              Juga Tersedia 🌐
+            </h2>
+            <p className="text-sm text-gray-400 mt-1">
+              Tools interaktif dan mini aplikasi seru yang bisa dicoba langsung
+            </p>
+          </div>
+          <Link
+            to="/daftar-aplikasi"
+            className="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1.5 transition-colors text-sm px-4 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20"
+          >
+            <span>Buka Semua Aplikasi</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+        <div className="grid sm:grid-cols-3 gap-4">
           <Link to="/zodiak">
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-gradient-to-br from-blue-500/20 to-purple-500/10 border border-blue-500/30 backdrop-blur-xl rounded-xl p-6 hover:shadow-lg transition-all group"
+              whileHover={{ scale: 1.03, y: -4 }}
+              className="bg-gradient-to-br from-blue-500/20 to-purple-500/10 border border-blue-500/30 backdrop-blur-xl rounded-2xl p-6 hover:shadow-lg transition-all group h-full flex flex-col justify-between"
             >
-              <h4 className="font-bold text-lg mb-2">♈ Zodiak Calculator</h4>
-              <p className="text-gray-400 text-sm">Tool interaktif untuk mengetahui zodiak Anda</p>
+              <div>
+                <h4 className="font-bold text-lg mb-2 text-white group-hover:text-cyan-300 transition-colors">♈ Zodiak Calculator</h4>
+                <p className="text-gray-400 text-sm">Tool interaktif untuk membaca horoskop, tarot harian, dan kecocokan zodiak.</p>
+              </div>
+              <div className="mt-4 flex items-center text-xs text-cyan-400 font-semibold">
+                <span>Coba Sekarang &rarr;</span>
+              </div>
             </motion.div>
           </Link>
           <Link to="/qodam">
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/30 backdrop-blur-xl rounded-xl p-6 hover:shadow-lg transition-all group"
+              whileHover={{ scale: 1.03, y: -4 }}
+              className="bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/30 backdrop-blur-xl rounded-2xl p-6 hover:shadow-lg transition-all group h-full flex flex-col justify-between"
             >
-              <h4 className="font-bold text-lg mb-2">🚀 Qodam</h4>
-              <p className="text-gray-400 text-sm">Aplikasi tambahan dengan fitur menarik</p>
+              <div>
+                <h4 className="font-bold text-lg mb-2 text-white group-hover:text-emerald-300 transition-colors">🚀 Cek Qodam Online</h4>
+                <p className="text-gray-400 text-sm">Aplikasi hiburan spiritual persona dengan efek 4 elemen kosmik.</p>
+              </div>
+              <div className="mt-4 flex items-center text-xs text-emerald-400 font-semibold">
+                <span>Coba Sekarang &rarr;</span>
+              </div>
+            </motion.div>
+          </Link>
+          <Link to="/daftar-aplikasi">
+            <motion.div
+              whileHover={{ scale: 1.03, y: -4 }}
+              className="bg-gradient-to-br from-cyan-500/20 to-blue-600/10 border border-cyan-400/30 backdrop-blur-xl rounded-2xl p-6 hover:shadow-lg transition-all group h-full flex flex-col justify-between"
+            >
+              <div>
+                <h4 className="font-bold text-lg mb-2 text-white group-hover:text-cyan-300 transition-colors">✨ Direktori Aplikasi</h4>
+                <p className="text-gray-400 text-sm">Lihat seluruh koleksi aplikasi, tools interaktif, dan proyek dalam satu tempat.</p>
+              </div>
+              <div className="mt-4 flex items-center text-xs text-cyan-300 font-semibold">
+                <span>Lihat Selengkapnya &rarr;</span>
+              </div>
             </motion.div>
           </Link>
         </div>

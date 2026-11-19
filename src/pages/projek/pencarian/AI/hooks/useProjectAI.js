@@ -370,6 +370,7 @@ const classifyIntentAdvanced = (text, doc, context, modifiers) => {
   if (/\b(blog|artikel|tulisan|post|kabar)\b/i.test(norm)) return { type: 'BLOG_INQUIRY', slots: {} };
   if (/\b(faq|tanya|jawab|pertanyaan|bantuan|tanya-jawab)\b/i.test(norm)) return { type: 'FAQ_INQUIRY', slots: {} };
   if (/\b(komitmen|janji|moral|prinsip kerja)\b/i.test(norm)) return { type: 'COMMITMENT_INQUIRY', slots: {} };
+  if (/\b(apps?|daftar\s*aplikasi|tools|web\s*tools|zodiak|qodam|buat\s*kamu)\b/i.test(norm)) return { type: 'APP_DIRECTORY_INQUIRY', slots: {} };
   
   if (/\b(futuristik|edukatif|minimalis|inovatif)\b/i.test(norm)) {
     return { type: 'VIBE_INQUIRY', vibe: Object.keys(VIBE_MAP).find(v => norm.includes(v)) };
@@ -527,6 +528,11 @@ export const useProjectAI = (searchTerm, debounceDelay = 300) => {
       case 'VISION_INQUIRY':
         answers.push(`**Visi Syaiful**: ${PROJECT_WISDOM.vision}\n\n**Filosofi Pengembangan**: ${PROJECT_WISDOM.philosophy}`);
         newTopic = "Visi & Filosofi";
+        break;
+      case 'APP_DIRECTORY_INQUIRY':
+        answers.push(`Syaiful telah mengembangkan lebih dari **18+ aplikasi dan web tools interaktif**, mencakup Zodiak Calculator, Cek Qodam Online, Live Room, Media Gallery, dan berbagai platform digital lainnya.\n\nKunjungi halaman **[Direktori Aplikasi](/daftar-aplikasi)** untuk menjelajahi dan mencoba seluruh aplikasi secara langsung!`);
+        newTopic = "Direktori Aplikasi";
+        ctaSuggestion = true;
         break;
       case 'BLOG_INQUIRY':
       case 'CONTINUE_BLOG_INQUIRY':

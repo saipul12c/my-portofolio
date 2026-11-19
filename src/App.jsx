@@ -29,6 +29,8 @@ import LaunchingPage from "./pages/LaunchingPage";
 // website tambahan
 const Qodam = lazy(() => import("./pages/website/qodam/Qodam.jsx"));
 const Zodiak = lazy(() => import("./pages/website/zodiak/Zodiak.jsx"));
+const BuatKamu = lazy(() => import("./pages/website/seru/BuatKamu.jsx"));
+const DaftarListApp = lazy(() => import("./pages/daftarlistApp/DaftarListApp.jsx"));
 
 // 📄 Semua halaman utama
 import Home from "./pages/Home";
@@ -154,7 +156,9 @@ const DefaultLayout = ({ children }) => {
     "/Live-Discussion",
     "/blog-admin",
     "/blog/secret-login",
-    "/blog/admin"
+    "/blog/admin",
+    "/year-end",
+    "/buat-kamu"
   ];
 
   // If the pathname begins with any of these, hide header/footer (case-insensitive)
@@ -243,6 +247,10 @@ export default function App() {
                     <PageTracker />
                     {/* Notifikasi pembaruan versi website */}
                     <UpdateNotification />
+                    {/* 🎉 Sambutan Tahun Baru Otomatis (Muncul saat Akhir Tahun & 3 Hari Awal Tahun) */}
+                    <Suspense fallback={null}>
+                      <TahunBaru isGlobal={true} />
+                    </Suspense>
                     <GlobalErrorBoundary>
                       <Suspense fallback={
                         <div className="min-h-screen flex items-center justify-center bg-[var(--color-gray-900)]">
@@ -369,9 +377,14 @@ export default function App() {
                                   <Route path="/sidang-skripsi" element={<Sidang />} />
                                   <Route path="/wisuda" element={<Wisuda />} />
 
-                                  {/* website tambahan */}
+                                  {/* website tambahan & daftar aplikasi */}
                                   <Route path="/qodam" element={<Qodam />} />
                                   <Route path="/zodiak" element={<Zodiak />} />
+                                  <Route path="/buat-kamu" element={<BuatKamu />} />
+                                  <Route path="/apps" element={<DaftarListApp />} />
+                                  <Route path="/daftar-aplikasi" element={<DaftarListApp />} />
+                                  <Route path="/daftar-app" element={<DaftarListApp />} />
+                                  <Route path="/daftarlistApp" element={<DaftarListApp />} />
                                   <Route path="/coming-soon" element={<Comingsoon />} />
                                   <Route path="/streming" element={<RequireAuth><Streming /></RequireAuth>} />
 

@@ -65,6 +65,7 @@ export default function Navbar() {
 
   // 2. Karya & Portofolio (Showcase)
   const portfolioLinks = [
+    { to: "/daftar-aplikasi", label: "Apps Hub", icon: <Sparkles size={18} />, desc: "Semua Aplikasi & Tools" },
     { to: "/projects", label: "Projects", icon: <Folder size={18} />, desc: "Aplikasi & Kode" },
     { to: "/photography", label: "Photography", icon: <Camera size={18} />, desc: "Karya Fotografi" },
     { to: "/gallery", label: "Gallery", icon: <Image size={18} />, desc: "Momen & Album" },
@@ -72,7 +73,7 @@ export default function Navbar() {
   ];
 
   // Portfolio items for desktop dropdown (excluding blog as blog is top-level on desktop)
-  const desktopPortfolioLinks = portfolioLinks.slice(0, 3);
+  const desktopPortfolioLinks = portfolioLinks.slice(0, 4);
 
   // 3. Kontak
   const contactLink = { to: "/contact", label: "Contact", icon: <Mail size={18} /> };

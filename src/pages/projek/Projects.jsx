@@ -1,9 +1,10 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Rocket, Star, BookOpen, Award } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Rocket, Star, BookOpen, Award, Sparkles, ArrowRight, ExternalLink } from "lucide-react";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import data from "../../data/projects.json";
 import certificatesData from "../../data/sertif/certificates.json";
+import { APPS_DATA } from "../daftarlistApp/data/appsData";
 import { useErrorAuth } from "../../context/useErrorAuth";
 import ProjectPopup from "./ProjectPopup";
 import CoursePopup from "./CoursePopup";
@@ -287,6 +288,31 @@ export default function Projects() {
           </span>
           .
         </p>
+
+        {/* 🧭 Top Navigation Switcher */}
+        <div className="flex items-center justify-center pt-2">
+          <div className="inline-flex p-1.5 rounded-2xl bg-[#111c34]/90 border border-white/10 backdrop-blur-xl shadow-xl max-w-full overflow-x-auto">
+            <button
+              className="flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-md shadow-cyan-500/25 shrink-0"
+            >
+              <Rocket className="w-4 h-4" />
+              <span>Katalog Proyek</span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-white/20 text-white">
+                {projects.length}
+              </span>
+            </button>
+            <Link
+              to="/daftar-aplikasi"
+              className="flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-gray-300 hover:text-white hover:bg-white/5 transition-all group shrink-0"
+            >
+              <Sparkles className="w-4 h-4 text-cyan-400 group-hover:rotate-12 transition-transform" />
+              <span>Daftar Aplikasi</span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                {APPS_DATA.length}+ Apps ✨
+              </span>
+            </Link>
+          </div>
+        </div>
       </motion.div>
 
       {/* 🤖 Unified AI Search & Category Filter Section */}
@@ -366,6 +392,106 @@ export default function Projects() {
         selectedCourse={selectedCourse}
         onClose={() => setSelectedCourse(null)}
       />
+
+      {/* 🚀 Section Aplikasi & Web Tools Interaktif (App Hub) */}
+      <motion.div
+        className="w-full mt-16 sm:mt-20 md:mt-24 pt-12 sm:pt-16 md:pt-20 border-t border-white/10"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-10 sm:mb-12 max-w-7xl mx-auto">
+          <div className="space-y-2 text-center md:text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 text-xs font-semibold">
+              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Aplikasi & Tools Siap Digunakan</span>
+            </div>
+            <h2 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-cyan-400 via-teal-300 to-blue-500 bg-clip-text text-transparent flex items-center justify-center md:justify-start gap-3">
+              <span>Web Tools & Mini Apps</span>
+            </h2>
+            <p className="text-gray-300 text-xs sm:text-sm md:text-base max-w-2xl">
+              Selain dokumentasi proyek di atas, Anda dapat mencoba langsung berbagai aplikasi interaktif mandiri yang telah dikembangkan secara online.
+            </p>
+          </div>
+
+          <Link
+            to="/daftar-aplikasi"
+            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-cyan-500/25 transition-all hover:scale-105 shrink-0"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>Lihat Semua {APPS_DATA.length}+ Aplikasi</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        {/* Featured App Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-7xl mx-auto">
+          {APPS_DATA.slice(0, 4).map((app) => (
+            <motion.div
+              key={app.id}
+              whileHover={{ y: -6, scale: 1.02 }}
+              className="relative group rounded-2xl bg-gradient-to-b from-[#121d38] to-[#0c1426] border border-white/10 hover:border-cyan-400/50 p-5 sm:p-6 shadow-xl flex flex-col justify-between backdrop-blur-xl transition-all duration-300"
+            >
+              <div>
+                <div className="flex items-start justify-between mb-4">
+                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${app.themeGradient} flex items-center justify-center text-2xl shadow-md group-hover:scale-110 group-hover:rotate-3 transition-transform`}>
+                    {app.emoji}
+                  </div>
+                  {app.badge && (
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${app.badgeColor}`}>
+                      {app.badge}
+                    </span>
+                  )}
+                </div>
+                <h3 className="font-extrabold text-white text-base sm:text-lg group-hover:text-cyan-300 transition-colors line-clamp-1">
+                  {app.title}
+                </h3>
+                <p className="text-xs text-gray-400 line-clamp-2 mt-1.5 leading-relaxed">
+                  {app.description}
+                </p>
+              </div>
+
+              <div className="mt-5 pt-3.5 border-t border-white/5 flex items-center justify-between">
+                <span className="text-[11px] text-cyan-400 font-semibold px-2 py-0.5 rounded-md bg-white/5 border border-white/5">
+                  {app.categoryLabel}
+                </span>
+                <Link
+                  to={app.path}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-white group-hover:text-cyan-300 transition-colors"
+                >
+                  <span>Buka App</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Banner CTA to App Hub */}
+        <div className="mt-8 max-w-7xl mx-auto p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-cyan-950/40 via-blue-950/40 to-indigo-950/40 border border-cyan-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 backdrop-blur-xl shadow-xl">
+          <div className="flex items-center gap-4 text-center sm:text-left">
+            <div className="p-3.5 rounded-2xl bg-cyan-500/20 text-cyan-300 shrink-0 hidden sm:flex">
+              <Sparkles className="w-6 h-6" />
+            </div>
+            <div>
+              <h4 className="text-sm sm:text-base font-bold text-white">
+                Ingin melihat direktori lengkap semua aplikasi?
+              </h4>
+              <p className="text-xs sm:text-sm text-gray-300 mt-0.5">
+                Akses halaman khusus Direktori Aplikasi dengan filter kategori, pencarian canggih, dan pratinjau lengkap setiap fitur.
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/daftar-aplikasi"
+            className="text-xs sm:text-sm font-bold px-5 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-900 transition-all shadow-md shrink-0 flex items-center gap-1.5 hover:scale-105"
+          >
+            <span>Kunjungi App Directory</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </motion.div>
 
       {/* 📚 Section Kursus & Pelatihan Professional */}
       <motion.div

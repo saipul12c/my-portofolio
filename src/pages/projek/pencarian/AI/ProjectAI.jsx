@@ -10,6 +10,7 @@ import {
 import { useProjectAI } from "./hooks/useProjectAI";
 
 const suggestions = [
+  { text: "Buka daftar aplikasi & tools", icon: "✨" },
   { text: "Tampilkan blog Syaiful", icon: "📚" },
   { text: "Tampilkan kursus & pelatihan", icon: "🎓" },
   { text: "Sebutkan soft skill Syaiful", icon: "🧠" },
