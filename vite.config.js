@@ -109,6 +109,9 @@ export default defineConfig({
     compress(),
     compress({ algorithm: 'brotliCompress', ext: '.br' })
   ],
+  optimizeDeps: {
+    exclude: ['@xenova/transformers']
+  },
   build: {
     chunkSizeWarningLimit: 1200,
     rollupOptions: {

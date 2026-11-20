@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   Target,
@@ -8,9 +9,21 @@ import {
   Star,
   Compass,
 } from "lucide-react";
+import { useDeviceCapability } from "../../utils/deviceProfiler";
 
 export default function VisiMisi() {
-  const particles = Array.from({ length: 30 });
+  const { isLowTier } = useDeviceCapability();
+  const particleCount = isLowTier ? 12 : 30;
+
+  // Koordinat partikel stabil dan ter-memoize (0% CPU thrashing saat re-render)
+  const particles = useMemo(() =>
+    Array.from({ length: particleCount }).map((_, i) => ({
+      id: i,
+      top: `${(i * 3.7 + 5) % 95}%`,
+      left: `${(i * 7.3 + 9) % 95}%`,
+    })),
+    [particleCount]
+  );
 
   const minatBakat = [
     {
@@ -77,13 +90,13 @@ export default function VisiMisi() {
     <section className="relative min-h-screen bg-[var(--color-gray-900)] text-gray-100 flex flex-col items-center px-6 py-20 overflow-hidden">
       {/* 🌌 Background Particle & Gradient */}
       <div className="absolute inset-0 -z-20 overflow-hidden">
-        {particles.map((_, i) => (
+        {particles.map((p) => (
           <div
-            key={i}
-            className="absolute w-1.5 h-1.5 bg-white/30 rounded-full animate-pulse"
+            key={p.id}
+            className="absolute w-1.5 h-1.5 bg-white/30 rounded-full animate-pulse pointer-events-none"
             style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
+              top: p.top,
+              left: p.left,
             }}
           />
         ))}

@@ -1,4 +1,5 @@
 import React from 'react';
+import SmartBackgroundVideo from '../../../../components/media/SmartBackgroundVideo';
 
 const Sidang = () => {
   return (
@@ -52,20 +53,8 @@ const Sidang = () => {
       </style>
 
       <div className="relative min-h-screen bg-gray-900 text-white overflow-x-hidden">
-        {/* Video Background */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute top-0 left-0 w-full h-full object-cover z-0"
-        >
-          <source
-            src="https://cdn.coverr.co/videos/coverr-abstract-colored-waves-148/1080p.mp4"
-            type="video/mp4"
-          />
-          Browser kamu tidak mendukung video tag.
-        </video>
+        {/* Smart Video Background (Intersection-Aware & Anti Black-Flash) */}
+        <SmartBackgroundVideo src="https://cdn.coverr.co/videos/coverr-abstract-colored-waves-148/1080p.mp4" />
 
         <div className="absolute inset-0 bg-black bg-opacity-50 z-10"></div>
 

@@ -40,8 +40,11 @@ CREATE TABLE IF NOT EXISTS public.messages (
   username TEXT NOT NULL,
   content TEXT NOT NULL,
   role TEXT NOT NULL,
+  channel TEXT DEFAULT 'umum' NOT NULL,
   reply_to JSONB,
   is_edited BOOLEAN DEFAULT false NOT NULL,
+  is_best_answer BOOLEAN DEFAULT false NOT NULL,
+  poll_data JSONB DEFAULT NULL,
   status TEXT DEFAULT 'sent' NOT NULL,
   is_pinned BOOLEAN DEFAULT false NOT NULL,
   media_url TEXT,
@@ -50,6 +53,11 @@ CREATE TABLE IF NOT EXISTS public.messages (
   timestamp BIGINT NOT NULL,
   CONSTRAINT content_length_check CHECK (char_length(content) <= 3000)
 );
+
+-- Migrasi jika kolom belum ada pada instalasi sebelumnya
+ALTER TABLE public.messages ADD COLUMN IF NOT EXISTS channel TEXT DEFAULT 'umum';
+ALTER TABLE public.messages ADD COLUMN IF NOT EXISTS is_best_answer BOOLEAN DEFAULT false;
+ALTER TABLE public.messages ADD COLUMN IF NOT EXISTS poll_data JSONB DEFAULT NULL;
 
 -- Optimization Indexes
 CREATE INDEX IF NOT EXISTS idx_messages_user_id ON public.messages(user_id);
@@ -252,11 +260,26 @@ DROP POLICY IF EXISTS "Authenticated users can insert messages" ON public.messag
 CREATE POLICY "Authenticated users can insert messages" ON public.messages FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 
 DROP POLICY IF EXISTS "Users can manage own messages" ON public.messages;
-CREATE POLICY "Users can manage own messages" ON public.messages FOR ALL USING (
+DROP POLICY IF EXISTS "Users can delete own messages" ON public.messages;
+CREATE POLICY "Users can delete own messages" ON public.messages FOR DELETE USING (
   auth.uid() = user_id OR EXISTS (
     SELECT 1 FROM public.users me 
     WHERE me.id = auth.uid() 
     AND get_role_level(me.role) >= 5 -- MODERATOR atau lebih tinggi
+  )
+);
+
+DROP POLICY IF EXISTS "Users can update messages" ON public.messages;
+CREATE POLICY "Users can update messages" ON public.messages FOR UPDATE USING (
+  auth.role() = 'authenticated' AND (
+    auth.uid() = user_id 
+    OR EXISTS (
+      SELECT 1 FROM public.users me 
+      WHERE me.id = auth.uid() 
+      AND get_role_level(me.role) >= 5
+    )
+    OR poll_data IS NOT NULL -- Izinkan voting interaktif polling oleh sesama anggota
+    OR channel = 'tanya-coding' -- Izinkan menandai solusi terbaik di room coding
   )
 );
 
@@ -506,26 +529,17 @@ DECLARE
     user_status TEXT;
     user_mute_until TIMESTAMP WITH TIME ZONE;
     caller_role TEXT;
+    caller_level INTEGER;
 BEGIN
     IF auth.uid() IS NULL THEN
         RETURN new;
     END IF;
 
-    -- Kunci metadata agar tidak di-spoof
+    -- Kunci metadata permanen agar tidak di-spoof
     new.id := old.id;
     new.user_id := old.user_id;
     new.timestamp := old.timestamp;
     new.created_at := old.created_at;
-
-    -- Profanity Filter saat update
-    IF new.content ~* '\y(anjing|babi|monyet|bangsat|memek|kontol|jembut|asu|perek|lonte|bajingan|pelacur|pukimak|tolol|goblok|fuck|shit|asshole|bitch|cunt|dick|pussy|bastard)\y' THEN
-        RAISE EXCEPTION 'Pesan Anda mengandung kata-kata yang tidak diperbolehkan. Mohon jaga kesopanan.';
-    END IF;
-
-    -- Validasi Keamanan Media URL
-    IF new.media_url IS NOT NULL AND (new.media_url !~* '^https?://' OR new.media_url ~* 'javascript:') THEN
-        RAISE EXCEPTION 'URL media tidak valid atau tidak aman.';
-    END IF;
 
     -- Cek Status Akun & Mute
     SELECT role, status, mute_until 
@@ -540,7 +554,34 @@ BEGIN
         RAISE EXCEPTION 'Muted: Anda sedang di-mute dan tidak dapat mengubah pesan.';
     END IF;
 
-    new.is_edited := true;
+    caller_level := get_role_level(caller_role);
+
+    -- JIKA YANG UPDATE BUKAN PEMILIK PESAN & BUKAN MOD/ADMIN (Misal: anggota mem-vote polling atau menandai solusi):
+    IF auth.uid() != old.user_id AND caller_level < 5 THEN
+        -- Kunci semua isi pesan agar tidak dapat diubah oleh pihak ketiga
+        new.content := old.content;
+        new.media_url := old.media_url;
+        new.username := old.username;
+        new.role := old.role;
+        new.channel := old.channel;
+        new.is_pinned := old.is_pinned;
+        new.is_edited := old.is_edited; -- Jangan tandai (diedit) jika hanya mem-vote atau toggle solusi
+        RETURN new;
+    END IF;
+
+    -- Profanity Filter saat update content oleh pemilik pesan / admin
+    IF new.content IS DISTINCT FROM old.content THEN
+        IF new.content ~* '\y(anjing|babi|monyet|bangsat|memek|kontol|jembut|asu|perek|lonte|bajingan|pelacur|pukimak|tolol|goblok|fuck|shit|asshole|bitch|cunt|dick|pussy|bastard)\y' THEN
+            RAISE EXCEPTION 'Pesan Anda mengandung kata-kata yang tidak diperbolehkan. Mohon jaga kesopanan.';
+        END IF;
+        new.is_edited := true;
+    END IF;
+
+    -- Validasi Keamanan Media URL
+    IF new.media_url IS NOT NULL AND (new.media_url !~* '^https?://' OR new.media_url ~* 'javascript:') THEN
+        RAISE EXCEPTION 'URL media tidak valid atau tidak aman.';
+    END IF;
+
     RETURN new;
 END;
 $$;

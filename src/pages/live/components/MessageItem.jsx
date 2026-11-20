@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { useState, memo } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Reply, 
@@ -10,7 +10,8 @@ import {
   Check, 
   Clock, 
   Smile, 
-  ExternalLink 
+  ExternalLink,
+  MoreHorizontal
 } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { PollCard } from './PollCard';
@@ -41,6 +42,8 @@ export const MessageItem = memo(({
   onOpenLightbox,
   formatTime
 }) => {
+  const [showMobileActions, setShowMobileActions] = useState(false);
+
   const handleDragEnd = (event, info) => {
     // Swipe-to-reply: If dragged to the right by > 45px
     if (info.offset.x > 45 && onReply) {
@@ -57,7 +60,7 @@ export const MessageItem = memo(({
     <React.Fragment>
       {showDateDivider && (
         <div className="flex items-center justify-center my-3">
-          <span className="px-4 py-1 rounded-full bg-[var(--theme-surface)] border border-[var(--theme-border)] text-[9px] font-black uppercase tracking-widest text-[var(--theme-text-muted)] shadow-sm backdrop-blur-md">
+          <span className="px-3.5 py-1 rounded-full bg-[var(--theme-surface)] border border-[var(--theme-border)] text-[9px] font-black uppercase tracking-widest text-[var(--theme-text-muted)] shadow-sm backdrop-blur-md">
             {currentDate}
           </span>
         </div>
@@ -72,7 +75,7 @@ export const MessageItem = memo(({
           isHighlighted ? 'ring-4 ring-cyan-400/80 rounded-3xl shadow-[0_0_30px_rgba(6,182,212,0.6)] transition-all' : ''
         }`}
       >
-        <div className={`group flex flex-col max-w-[88%] sm:max-w-xl lg:max-w-2xl ${alignRight ? 'items-end' : 'items-start'}`}>
+        <div className={`group flex flex-col max-w-[90%] sm:max-w-xl lg:max-w-2xl ${alignRight ? 'items-end' : 'items-start'}`}>
           {/* Sender Info (Only for others) */}
           {!alignRight && (
             <div className="flex items-center gap-2 mb-1.5 ml-2">
@@ -85,14 +88,43 @@ export const MessageItem = memo(({
             </div>
           )}
 
-          {/* Bubble Container with Swipe-to-Reply */}
-          <div className="relative group/bubble flex items-center gap-2 w-full">
-            {/* Actions Overlay for Own Message */}
+          {/* Bubble Container with Swipe-to-Reply & Actions */}
+          <div className="relative group/bubble flex items-center gap-1.5 sm:gap-2 w-full">
+            {/* Actions Overlay for Own Message (Desktop hover + Mobile toggle) */}
             {isOwnMessage && user && (
-              <div className="opacity-0 group-hover/bubble:opacity-100 focus-within:opacity-100 transition-opacity flex items-center gap-1 mr-1 bg-[var(--theme-surface)] backdrop-blur-md rounded-xl p-1 border border-[var(--theme-border)] order-first shrink-0">
-                <button onClick={() => onCopy(message.content)} className="p-1.5 hover:bg-[var(--theme-surface-hover)] rounded-lg text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors" title="Copy"><Copy className="w-3.5 h-3.5"/></button>
-                <button onClick={() => onStartEdit(message)} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-cyan-400 transition-colors" title="Edit"><Edit2 className="w-3.5 h-3.5"/></button>
-                <button onClick={() => onDelete(message)} className="p-1.5 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors" title="Delete"><Trash2 className="w-3.5 h-3.5"/></button>
+              <div className={`${
+                showMobileActions ? 'flex opacity-100' : 'hidden'
+              } sm:flex sm:opacity-0 sm:group-hover/bubble:opacity-100 sm:focus-within:opacity-100 transition-opacity items-center gap-1 mr-1 bg-[var(--theme-surface)] backdrop-blur-md rounded-xl p-1 border border-[var(--theme-border)] order-first shrink-0 shadow-lg`}>
+                <button 
+                  onClick={() => {
+                    onCopy(message.content);
+                    setShowMobileActions(false);
+                  }} 
+                  className="p-1.5 hover:bg-[var(--theme-surface-hover)] rounded-lg text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors" 
+                  title="Salin Pesan"
+                >
+                  <Copy className="w-3.5 h-3.5"/>
+                </button>
+                <button 
+                  onClick={() => {
+                    onStartEdit(message);
+                    setShowMobileActions(false);
+                  }} 
+                  className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-cyan-400 transition-colors" 
+                  title="Edit Pesan"
+                >
+                  <Edit2 className="w-3.5 h-3.5"/>
+                </button>
+                <button 
+                  onClick={() => {
+                    onDelete(message);
+                    setShowMobileActions(false);
+                  }} 
+                  className="p-1.5 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors" 
+                  title="Hapus Pesan"
+                >
+                  <Trash2 className="w-3.5 h-3.5"/>
+                </button>
               </div>
             )}
 
@@ -102,17 +134,17 @@ export const MessageItem = memo(({
               dragConstraints={{ left: 0, right: 60 }}
               dragElastic={0.15}
               onDragEnd={handleDragEnd}
-              className="relative group/bubble-content cursor-grab active:cursor-grabbing"
+              className="relative group/bubble-content cursor-grab active:cursor-grabbing max-w-full"
             >
               {/* Swipe to reply reveal icon */}
               {!alignRight && (
-                <div className="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 group-active:opacity-80 transition-opacity text-cyan-400">
-                  <Reply className="w-5 h-5 animate-pulse" />
+                <div className="absolute -left-7 top-1/2 -translate-y-1/2 opacity-0 group-active:opacity-80 transition-opacity text-cyan-400">
+                  <Reply className="w-4 h-4 animate-pulse" />
                 </div>
               )}
 
-              {/* Actual Bubble */}
-              <div className={`px-4 sm:px-6 py-3 sm:py-4 rounded-[2rem] shadow-xl transition-colors duration-150 ${
+              {/* Actual Message Bubble */}
+              <div className={`px-3.5 sm:px-6 py-2.5 sm:py-4 rounded-2xl sm:rounded-[2rem] shadow-xl transition-colors duration-150 ${
                 alignRight 
                   ? 'bg-gradient-to-br from-cyan-600 via-blue-600 to-indigo-700 text-white rounded-tr-none border border-cyan-400/20 shadow-[0_4px_20px_rgba(6,182,212,0.2)]' 
                   : 'bg-[var(--theme-surface)]/95 backdrop-blur-md border border-[var(--theme-border)] text-[var(--theme-text)] shadow-md rounded-tl-none hover:border-cyan-500/30'
@@ -127,7 +159,7 @@ export const MessageItem = memo(({
 
                 {/* Role Badge for Others */}
                 {!isOwnMessage && (
-                  <div className="flex items-center gap-1.5 mb-2 pb-2 border-b border-[var(--theme-border)]">
+                  <div className="flex items-center gap-1.5 mb-1.5 pb-1.5 border-b border-[var(--theme-border)]">
                     <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-gradient-to-r ${roleConfig?.color || 'from-gray-500 to-gray-700'} text-white shadow-sm`}>
                       {roleConfig?.badge} {roleConfig?.name}
                     </span>
@@ -138,7 +170,7 @@ export const MessageItem = memo(({
                 {message.media_url && /^https?:\/\//i.test(message.media_url) && !/javascript:/i.test(message.media_url) && (
                   <div 
                     onClick={() => onOpenLightbox(message.media_url)}
-                    className="mb-3 rounded-2xl overflow-hidden border border-[var(--theme-border)] bg-black/20 cursor-pointer group/media relative"
+                    className="mb-2.5 rounded-2xl overflow-hidden border border-[var(--theme-border)] bg-black/20 cursor-pointer group/media relative"
                   >
                     <img 
                       src={message.media_url} 
@@ -154,27 +186,27 @@ export const MessageItem = memo(({
                   </div>
                 )}
 
-                {/* Reply Context */}
+                {/* Reply Context Bar */}
                 {replyData && (
-                  <div className={`mb-3 p-3 rounded-2xl border-l-4 text-xs ${
+                  <div className={`mb-2.5 p-2 sm:p-2.5 rounded-xl border-l-4 text-xs ${
                     alignRight ? 'bg-black/20 border-white/40 text-white/80' : 'bg-[var(--theme-surface-hover)] border-cyan-500/60 text-[var(--theme-text-muted)]'
                   }`}>
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-1.5 mb-0.5">
                       <Reply className="w-3 h-3 text-cyan-400" />
-                      <span className="font-black uppercase tracking-tighter">{replyData.username}</span>
+                      <span className="font-black uppercase tracking-tighter text-[10px]">{replyData.username}</span>
                     </div>
-                    <p className="italic line-clamp-1">{replyData.content}</p>
+                    <p className="italic line-clamp-1 text-[11px]">{replyData.content}</p>
                   </div>
                 )}
                 
                 {/* Markdown & Code Block Formatted Content */}
-                <div className="text-sm sm:text-base leading-relaxed break-words">
+                <div className="text-xs sm:text-base leading-relaxed break-words">
                   <MarkdownRenderer
                     content={message.content}
                     alignRight={alignRight}
                     currentUsername={user?.username}
                   />
-                  {message.is_edited && <span className="text-[10px] italic opacity-50 ml-2">(edited)</span>}
+                  {message.is_edited && <span className="text-[9px] italic opacity-50 ml-1.5">(diedit)</span>}
                 </div>
 
                 {/* Poll Card Display */}
@@ -187,9 +219,10 @@ export const MessageItem = memo(({
                   />
                 )}
                 
-                {/* Delivery Time & Status Checkmarks */}
-                <div className={`mt-2 flex items-center justify-end gap-1.5 text-[10px] font-bold tracking-tighter uppercase ${alignRight ? 'text-white/60' : 'text-[var(--theme-text-muted)]'}`}>
+                {/* Delivery Time, Status Checkmarks & Mobile Menu Trigger */}
+                <div className={`mt-1.5 sm:mt-2 flex items-center justify-end gap-1.5 text-[9px] sm:text-[10px] font-bold tracking-tight uppercase ${alignRight ? 'text-white/60' : 'text-[var(--theme-text-muted)]'}`}>
                   <span>{formatTime(message.timestamp || message.created_at)}</span>
+                  
                   {alignRight && (
                     <span className="inline-flex items-center ml-0.5">
                       {message.status === 'sending' ? (
@@ -204,6 +237,21 @@ export const MessageItem = memo(({
                       )}
                     </span>
                   )}
+
+                  {/* Mobile-only 3-dots Action Toggle Button */}
+                  {user && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowMobileActions(prev => !prev);
+                      }}
+                      className="sm:hidden p-0.5 rounded text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] opacity-70 active:opacity-100 transition-opacity ml-1"
+                      title="Menu Aksi Pesan"
+                    >
+                      <MoreHorizontal className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
 
                 {/* Reactions Display */}
@@ -214,14 +262,15 @@ export const MessageItem = memo(({
                 />
               </div>
 
-              {/* Reaction Trigger Button (Floating on hover) */}
+              {/* Reaction Trigger Button (Accessible on Mobile & Floating on Desktop Hover) */}
               {user && (
-                <div className={`absolute -bottom-2 ${alignRight ? '-left-2' : '-right-2'} opacity-0 group-hover/bubble-content:opacity-100 transition-opacity z-10`}>
+                <div className={`absolute -bottom-2.5 ${alignRight ? '-left-2' : '-right-2'} opacity-80 sm:opacity-0 sm:group-hover/bubble-content:opacity-100 transition-opacity z-10`}>
                   <button 
                     onClick={() => onSetActiveReactionPicker(message.id)}
-                    className="p-1.5 bg-[#1e293b] border border-white/10 rounded-full text-white/40 hover:text-white hover:scale-110 shadow-lg"
+                    className="p-1 sm:p-1.5 bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] rounded-full text-[var(--theme-text-muted)] hover:text-yellow-400 hover:scale-110 shadow-lg active:scale-95 transition-all"
+                    title="Beri Reaksi"
                   >
-                    <Smile className="w-3.5 h-3.5" />
+                    <Smile className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </button>
                   <ReactionPicker 
                     isOpen={activeReactionPicker === message.id}
@@ -233,13 +282,36 @@ export const MessageItem = memo(({
               )}
             </motion.div>
 
-            {/* Actions Overlay for Others */}
+            {/* Actions Overlay for Others (Desktop hover + Mobile toggle) */}
             {!isOwnMessage && user && (
-              <div className="opacity-0 group-hover/bubble:opacity-100 focus-within:opacity-100 transition-opacity flex items-center gap-1 ml-1 bg-[var(--theme-surface)] backdrop-blur-md rounded-xl p-1 border border-[var(--theme-border)] shrink-0">
-                <button onClick={() => onReply(message)} className="p-1.5 hover:bg-[var(--theme-surface-hover)] rounded-lg text-cyan-400 hover:text-[var(--theme-text)] transition-colors" title="Reply"><Reply className="w-3.5 h-3.5"/></button>
-                <button onClick={() => onCopy(message.content)} className="p-1.5 hover:bg-[var(--theme-surface-hover)] rounded-lg text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors" title="Copy"><Copy className="w-3.5 h-3.5"/></button>
+              <div className={`${
+                showMobileActions ? 'flex opacity-100' : 'hidden'
+              } sm:flex sm:opacity-0 sm:group-hover/bubble:opacity-100 sm:focus-within:opacity-100 transition-opacity items-center gap-1 ml-1 bg-[var(--theme-surface)] backdrop-blur-md rounded-xl p-1 border border-[var(--theme-border)] shrink-0 shadow-lg`}>
                 <button 
-                  onClick={() => onToggleBestAnswer(message)} 
+                  onClick={() => {
+                    onReply(message);
+                    setShowMobileActions(false);
+                  }} 
+                  className="p-1.5 hover:bg-[var(--theme-surface-hover)] rounded-lg text-cyan-400 hover:text-[var(--theme-text)] transition-colors" 
+                  title="Balas Pesan"
+                >
+                  <Reply className="w-3.5 h-3.5"/>
+                </button>
+                <button 
+                  onClick={() => {
+                    onCopy(message.content);
+                    setShowMobileActions(false);
+                  }} 
+                  className="p-1.5 hover:bg-[var(--theme-surface-hover)] rounded-lg text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors" 
+                  title="Salin Pesan"
+                >
+                  <Copy className="w-3.5 h-3.5"/>
+                </button>
+                <button 
+                  onClick={() => {
+                    onToggleBestAnswer(message);
+                    setShowMobileActions(false);
+                  }} 
                   className={`p-1.5 rounded-lg transition-colors ${
                     message.is_best_answer 
                       ? 'bg-emerald-500/30 text-emerald-300' 
@@ -249,9 +321,27 @@ export const MessageItem = memo(({
                 >
                   <CheckCircle className="w-3.5 h-3.5"/>
                 </button>
-                <button onClick={() => onReport(message)} className="p-1.5 hover:bg-orange-500/20 rounded-lg text-orange-400 transition-colors" title="Report"><AlertTriangle className="w-3.5 h-3.5"/></button>
+                <button 
+                  onClick={() => {
+                    onReport(message);
+                    setShowMobileActions(false);
+                  }} 
+                  className="p-1.5 hover:bg-orange-500/20 rounded-lg text-orange-400 transition-colors" 
+                  title="Laporkan Pesan"
+                >
+                  <AlertTriangle className="w-3.5 h-3.5"/>
+                </button>
                 {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && (
-                  <button onClick={() => onDelete(message)} className="p-1.5 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors" title="Delete"><Trash2 className="w-3.5 h-3.5"/></button>
+                  <button 
+                    onClick={() => {
+                      onDelete(message);
+                      setShowMobileActions(false);
+                    }} 
+                    className="p-1.5 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors" 
+                    title="Hapus (Admin)"
+                  >
+                    <Trash2 className="w-3.5 h-3.5"/>
+                  </button>
                 )}
               </div>
             )}
@@ -272,6 +362,11 @@ export const MessageItem = memo(({
     prevProps.isHighlighted === nextProps.isHighlighted &&
     prevProps.activeReactionPicker === nextProps.activeReactionPicker &&
     prevProps.reactions === nextProps.reactions &&
-    prevProps.showDateDivider === nextProps.showDateDivider
+    prevProps.showDateDivider === nextProps.showDateDivider &&
+    prevProps.alignRight === nextProps.alignRight &&
+    prevProps.isOwnMessage === nextProps.isOwnMessage &&
+    prevProps.replyData === nextProps.replyData &&
+    prevProps.user?.id === nextProps.user?.id &&
+    prevProps.user?.role === nextProps.user?.role
   );
 });

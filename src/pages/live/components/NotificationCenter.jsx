@@ -11,30 +11,33 @@ export const MentionNotifications = ({ mentions = [], onDismiss }) => {
   if (notifications.length === 0) return null;
 
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2 max-w-md">
+    <div className="fixed top-3 sm:top-4 right-3 sm:right-4 left-3 sm:left-auto z-50 space-y-2 max-w-md">
       {notifications.map((mention, idx) => (
         <div
           key={idx}
-          className="bg-white rounded-lg shadow-lg border-l-4 border-blue-500 p-4 animate-slide-in"
+          className="bg-[var(--theme-surface)] rounded-2xl shadow-2xl border border-[var(--theme-border)] border-l-4 border-l-cyan-500 p-3.5 sm:p-4 backdrop-blur-xl animate-slide-in"
         >
-          <div className="flex items-start justify-between">
-            <div className="flex items-start gap-3 flex-1">
-              <Bell className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start gap-3 flex-1 min-w-0">
+              <div className="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 shrink-0 mt-0.5">
+                <Bell className="w-4 h-4" />
+              </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-gray-900">
-                  <span className="text-blue-600">{mention.fromUser}</span> menyebut Anda
+                <p className="font-bold text-xs sm:text-sm text-[var(--theme-text)]">
+                  <span className="text-cyan-400 font-black">@{mention.fromUser}</span> menyebut Anda
                 </p>
-                <p className="text-sm text-gray-600 mt-1 truncate">
-                  {mention.messagePreview}
+                <p className="text-xs text-[var(--theme-text-muted)] mt-1 truncate italic">
+                  "{mention.messagePreview}"
                 </p>
-                <p className="text-xs text-gray-500 mt-1">{mention.time}</p>
+                <p className="text-[10px] text-[var(--theme-text-muted)] opacity-60 mt-1">{mention.time}</p>
               </div>
             </div>
             <button
               onClick={() => onDismiss?.(idx)}
-              className="ml-2 flex-shrink-0 text-gray-400 hover:text-gray-600"
+              className="p-1 text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] rounded-lg hover:bg-[var(--theme-surface-hover)] transition-colors shrink-0"
+              title="Tutup"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -47,11 +50,12 @@ export const NotificationCenter = ({ unreadCount = 0, onOpen }) => {
   return (
     <button
       onClick={onOpen}
-      className="relative p-2 text-gray-600 hover:text-gray-900 transition-colors"
+      className="relative p-1.5 sm:p-2 text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] rounded-xl transition-colors"
+      title="Pusat Notifikasi"
     >
-      <Bell className="w-6 h-6" />
+      <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
       {unreadCount > 0 && (
-        <span className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+        <span className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-gradient-to-r from-red-500 to-rose-600 text-white text-[9px] sm:text-xs rounded-full flex items-center justify-center font-black shadow-md shadow-red-500/30 animate-pulse">
           {unreadCount > 9 ? '9+' : unreadCount}
         </span>
       )}

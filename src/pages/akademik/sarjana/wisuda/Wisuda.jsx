@@ -50,8 +50,6 @@ const Wisuda = () => {
     <>
       <style>
         {`
-          @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
-
           .font-serif-academic {
             font-family: 'Cinzel', serif;
           }

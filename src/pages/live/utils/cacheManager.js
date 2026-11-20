@@ -22,9 +22,11 @@ export const getCachedMessages = (channel = 'umum') => {
 export const setCachedMessages = (channel = 'umum', messages = []) => {
   if (typeof window === 'undefined') return;
   try {
-    // Only cache recent 40 messages to keep localStorage light (< 150KB)
-    const toCache = messages.slice(0, 40);
-    localStorage.setItem(`${CACHE_PREFIX}${channel}`, JSON.stringify(toCache));
+    // Only cache recent 40 messages specifically for this channel to keep localStorage light (< 100KB)
+    const channelMessages = Array.isArray(messages)
+      ? messages.filter(m => (m.channel || 'umum') === channel).slice(0, 40)
+      : [];
+    localStorage.setItem(`${CACHE_PREFIX}${channel}`, JSON.stringify(channelMessages));
   } catch (err) {
     console.warn('Failed to write cached messages:', err);
   }

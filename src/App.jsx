@@ -33,11 +33,11 @@ const BuatKamu = lazy(() => import("./pages/website/seru/BuatKamu.jsx"));
 const DaftarListApp = lazy(() => import("./pages/daftarlistApp/DaftarListApp.jsx"));
 
 // 📄 Semua halaman utama
-import Home from "./pages/Home";
+const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/tentang/About"));
 const Contact = lazy(() => import("./pages/admin/Contact"));
 const Photography = lazy(() => import("./pages/foto/Photography"));
-import Projects from "./pages/projek/Projects";
+const Projects = lazy(() => import("./pages/projek/Projects"));
 const ProjectDetail = lazy(() => import("./pages/projek/detail/ProjectDetail"));
 const Gallery = lazy(() => import("./pages/kenangan/Gallery"));
 const ShortDetail = lazy(() => import("./pages/kenangan/ShortDetail"));
@@ -214,14 +214,28 @@ export default function App() {
   // State untuk mengontrol tampilan loader
   const [isLoading, setIsLoading] = useState(true);
 
-  // Efek untuk menyembunyikan loader setelah aplikasi siap
+  // Efek transisi cerdas (True Hydration Curtain)
+  // Menjaga animasi loader tetap tampil elegan dan mulus tanpa menahan paksa pengguna selama 3 detik
   useEffect(() => {
-    // Simulasi loading time (bisa disesuaikan)
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000); // 3 detik (memberikan waktu untuk animasi loader berjalan sempurna)
+    let timer;
+    const hideLoader = () => {
+      timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 3000); // Memberikan waktu transisi masuk selesai dengan anggun
+    };
 
-    return () => clearTimeout(timer);
+    if (document.readyState === 'complete') {
+      hideLoader();
+    } else {
+      window.addEventListener('load', hideLoader, { once: true });
+      // Fallback batas waktu maksimal 750ms jika aset lambat
+      timer = setTimeout(() => setIsLoading(false), 3000);
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      window.removeEventListener('load', hideLoader);
+    };
   }, []);
 
   return (
@@ -258,215 +272,215 @@ export default function App() {
                         </div>
                       }>
                         <Routes>
-                        {/* Redirects: direct certain paths to /coming-soon
+                          {/* Redirects: direct certain paths to /coming-soon
                   Disabled temporarily to re-enable development for these routes.
                   Previous redirect lines are kept here (commented) so nothing is deleted. */}
-                        <Route path="/discord" element={<Navigate to="/coming-soon" replace />} />
-                        <Route path="/discord/profile" element={<Navigate to="/coming-soon" replace />} />
-                        <Route path="/komunitas" element={<Navigate to="/coming-soon" replace />} />
-                        <Route path="/streming" element={<Navigate to="/coming-soon" replace />} />
-                        <Route path="/login" element={<Navigate to="/coming-soon" replace />} />
-                        <Route path="/register" element={<Navigate to="/coming-soon" replace />} />
+                          <Route path="/discord" element={<Navigate to="/coming-soon" replace />} />
+                          <Route path="/discord/profile" element={<Navigate to="/coming-soon" replace />} />
+                          <Route path="/komunitas" element={<Navigate to="/coming-soon" replace />} />
+                          <Route path="/streming" element={<Navigate to="/coming-soon" replace />} />
+                          <Route path="/login" element={<Navigate to="/coming-soon" replace />} />
+                          <Route path="/register" element={<Navigate to="/coming-soon" replace />} />
 
-                        {/* 🚀 Halaman Launching — berdiri sendiri */}
-                        <Route path="/launching" element={<LaunchingPage />} />
+                          {/* 🚀 Halaman Launching — berdiri sendiri */}
+                          <Route path="/launching" element={<LaunchingPage />} />
 
-                        {/* 🌍 Route dengan layout default (dengan navbar & footer) */}
-                        <Route
-                          path="/*"
-                          element={
-                            <LaunchGuard>
-                              <DefaultLayout>
-                                <Routes>
-                                  {/* 🌍 Halaman utama */}
-                                  <Route path="/" element={<Home />} />
-                                  <Route path="/about" element={<About />} />
-                                  <Route path="/contact" element={<Contact />} />
-                                  <Route path="/photography" element={<Photography />} />
+                          {/* 🌍 Route dengan layout default (dengan navbar & footer) */}
+                          <Route
+                            path="/*"
+                            element={
+                              <LaunchGuard>
+                                <DefaultLayout>
+                                  <Routes>
+                                    {/* 🌍 Halaman utama */}
+                                    <Route path="/" element={<Home />} />
+                                    <Route path="/about" element={<About />} />
+                                    <Route path="/contact" element={<Contact />} />
+                                    <Route path="/photography" element={<Photography />} />
 
-                                  <Route path="/gallery" element={<Gallery />} />
-                                  <Route path="/gallery/shorts/:id" element={<ShortDetail />} />
-                                  <Route path="/gallery/images/:id" element={<ImageDetail />} />
-                                  <Route path="/gallery/videos/:id" element={<VideoDetail />} />
-                                  <Route path="/gallery/albums/:id" element={<AlbumDetail />} />
+                                    <Route path="/gallery" element={<Gallery />} />
+                                    <Route path="/gallery/shorts/:id" element={<ShortDetail />} />
+                                    <Route path="/gallery/images/:id" element={<ImageDetail />} />
+                                    <Route path="/gallery/videos/:id" element={<VideoDetail />} />
+                                    <Route path="/gallery/albums/:id" element={<AlbumDetail />} />
 
-                                  {/* 💬 Halaman testimoni */}
-                                  <Route path="/testimoni" element={<Testimoni />} />
-                                  <Route path="/testimoni/:id" element={<Testimoni />} />
-                                  <Route path="/testimoni/authors/:slug" element={<DetailPenggunaPage />} />
-                                  <Route path="/testimoni/perusahaan/:slug" element={<DetailPerusahaanPage />} />
+                                    {/* 💬 Halaman testimoni */}
+                                    <Route path="/testimoni" element={<Testimoni />} />
+                                    <Route path="/testimoni/:id" element={<Testimoni />} />
+                                    <Route path="/testimoni/authors/:slug" element={<DetailPenggunaPage />} />
+                                    <Route path="/testimoni/perusahaan/:slug" element={<DetailPerusahaanPage />} />
 
-                                  {/* ❓ Halaman bantuan */}
-                                  <Route path="/help/version" element={<Info />} />
-                                  <Route path="/help/version/:slug" element={<InfoDetail />} />
-                                  <Route path="/help/docs" element={<Doct />} />
-                                  <Route path="/help/docs/ai" element={<AI_Docs />} />
-                                  <Route path="/help/docs/ai/:slug" element={<AI_DocDetail />} />
-                                  <Route path="/help/faq" element={<FAQ />} />
-                                  <Route path="/help/faq/riwayat/ai" element={<HelpFAQriwayat />} />
-                                  <Route path="/help/faq/riwayat/ai/:slug" element={<HelpFAQriwayat />} />
-                                  <Route path="/live-cs/security" element={<Keamanan />} />
-                                  <Route path="/live-cs/privacy" element={<Privasi />} />
+                                    {/* ❓ Halaman bantuan */}
+                                    <Route path="/help/version" element={<Info />} />
+                                    <Route path="/help/version/:slug" element={<InfoDetail />} />
+                                    <Route path="/help/docs" element={<Doct />} />
+                                    <Route path="/help/docs/ai" element={<AI_Docs />} />
+                                    <Route path="/help/docs/ai/:slug" element={<AI_DocDetail />} />
+                                    <Route path="/help/faq" element={<FAQ />} />
+                                    <Route path="/help/faq/riwayat/ai" element={<HelpFAQriwayat />} />
+                                    <Route path="/help/faq/riwayat/ai/:slug" element={<HelpFAQriwayat />} />
+                                    <Route path="/live-cs/security" element={<Keamanan />} />
+                                    <Route path="/live-cs/privacy" element={<Privasi />} />
 
-                                  <Route path="/help/chatbot/settings/:tabId?" element={<ChatbotSettingsRoute />} />
-                                  <Route path="/year-end" element={<TahunBaru />} />
+                                    <Route path="/help/chatbot/settings/:tabId?" element={<ChatbotSettingsRoute />} />
+                                    <Route path="/year-end" element={<TahunBaru />} />
 
-                                  <Route path="/help/commitment" element={<Komit />} />
-                                  <Route path="/help/commitment/:slug" element={<DetailCommitment />} />
+                                    <Route path="/help/commitment" element={<Komit />} />
+                                    <Route path="/help/commitment/:slug" element={<DetailCommitment />} />
 
-                                  {/* 💼 Halaman proyek - DUAL ROUTE SUPPORT */}
-                                  <Route path="/projects" element={<Projects />} />
-                                  <Route path="/projects/:id" element={<Projects />} />
-                                  <Route
-                                    path="/project-detail/:id"
-                                    element={<ProjectDetail />}
-                                  />
+                                    {/* 💼 Halaman proyek - DUAL ROUTE SUPPORT */}
+                                    <Route path="/projects" element={<Projects />} />
+                                    <Route path="/projects/:id" element={<Projects />} />
+                                    <Route
+                                      path="/project-detail/:id"
+                                      element={<ProjectDetail />}
+                                    />
 
-                                  {/* 📘 Halaman tambahan dari About */}
-                                  <Route
-                                    path="/certificates"
-                                    element={<Certificates />}
-                                  />
-                                  <Route path="/SoftSkills" element={<SoftSkills />} />
-                                  <Route path="/softskills" element={<SoftSkills />} />
-                                  {/* 🧠 Detail Soft Skill */}
-                                  <Route path="/SoftSkills/:id" element={<SoftSkills />} />
-                                  <Route path="/softskills/:id" element={<SoftSkills />} />
-                                  <Route path="/education" element={<Education />} />
-                                  <Route path="/cv-saya" element={<CVsaya />} />
-                                  <Route path="/visi" element={<Visi />} />
+                                    {/* 📘 Halaman tambahan dari About */}
+                                    <Route
+                                      path="/certificates"
+                                      element={<Certificates />}
+                                    />
+                                    <Route path="/SoftSkills" element={<SoftSkills />} />
+                                    <Route path="/softskills" element={<SoftSkills />} />
+                                    {/* 🧠 Detail Soft Skill */}
+                                    <Route path="/SoftSkills/:id" element={<SoftSkills />} />
+                                    <Route path="/softskills/:id" element={<SoftSkills />} />
+                                    <Route path="/education" element={<Education />} />
+                                    <Route path="/cv-saya" element={<CVsaya />} />
+                                    <Route path="/visi" element={<Visi />} />
 
-                                  <Route path="/hobbies/:slug" element={<HobbiesDetail />} />
-                                  <Route path="/hobbies" element={<Hobbies />} />
+                                    <Route path="/hobbies/:slug" element={<HobbiesDetail />} />
+                                    <Route path="/hobbies" element={<Hobbies />} />
 
-                                  <Route path="/blog" element={<Blog />} />
-                                  <Route path="/blog/:slug" element={<BlogDetail />} />
-                                  <Route path="/blog/authors/:slug" element={<Detailusers />} />
+                                    <Route path="/blog" element={<Blog />} />
+                                    <Route path="/blog/:slug" element={<BlogDetail />} />
+                                    <Route path="/blog/authors/:slug" element={<Detailusers />} />
 
-                                  {/* 🛡️ Halaman Rahasia: Login & Dashboard Khusus Manajemen Blog */}
-                                  <Route path="/blog-admin/login" element={<BlogAdminLogin />} />
-                                  <Route path="/blog/secret-login" element={<BlogAdminLogin />} />
-                                  <Route path="/blog/admin/login" element={<BlogAdminLogin />} />
-                                  <Route
-                                    path="/blog-admin/dashboard"
-                                    element={
-                                      <BlogAdminProtectedRoute>
-                                        <BlogAdminDashboard />
-                                      </BlogAdminProtectedRoute>
-                                    }
-                                  />
-                                  <Route
-                                    path="/blog/admin/dashboard"
-                                    element={
-                                      <BlogAdminProtectedRoute>
-                                        <BlogAdminDashboard />
-                                      </BlogAdminProtectedRoute>
-                                    }
-                                  />
-                                  <Route path="/blog-admin" element={<Navigate to="/blog-admin/dashboard" replace />} />
-                                  <Route path="/blog/admin" element={<Navigate to="/blog-admin/dashboard" replace />} />
+                                    {/* 🛡️ Halaman Rahasia: Login & Dashboard Khusus Manajemen Blog */}
+                                    <Route path="/blog-admin/login" element={<BlogAdminLogin />} />
+                                    <Route path="/blog/secret-login" element={<BlogAdminLogin />} />
+                                    <Route path="/blog/admin/login" element={<BlogAdminLogin />} />
+                                    <Route
+                                      path="/blog-admin/dashboard"
+                                      element={
+                                        <BlogAdminProtectedRoute>
+                                          <BlogAdminDashboard />
+                                        </BlogAdminProtectedRoute>
+                                      }
+                                    />
+                                    <Route
+                                      path="/blog/admin/dashboard"
+                                      element={
+                                        <BlogAdminProtectedRoute>
+                                          <BlogAdminDashboard />
+                                        </BlogAdminProtectedRoute>
+                                      }
+                                    />
+                                    <Route path="/blog-admin" element={<Navigate to="/blog-admin/dashboard" replace />} />
+                                    <Route path="/blog/admin" element={<Navigate to="/blog-admin/dashboard" replace />} />
 
-                                  <Route path="/bahasa" element={<Bahasa />} />
-                                  <Route path="/bahasa/detail/:slug" element={<DetailBahasa />} />
-                                  <Route path="/owner" element={<Owner />} />
+                                    <Route path="/bahasa" element={<Bahasa />} />
+                                    <Route path="/bahasa/detail/:slug" element={<DetailBahasa />} />
+                                    <Route path="/owner" element={<Owner />} />
 
-                                  <Route path="/S1-PGMI" element={<S1PGMI />} />
-                                  <Route path="/kkn" element={<KKN />} />
-                                  <Route path="/kkn-desa-kundan-haruyan-dayak" element={<KKN />} />
-                                  <Route path="/sempro-skripsi" element={<Sempro />} />
-                                  <Route path="/sidang-skripsi" element={<Sidang />} />
-                                  <Route path="/wisuda" element={<Wisuda />} />
+                                    <Route path="/S1-PGMI" element={<S1PGMI />} />
+                                    <Route path="/kkn" element={<KKN />} />
+                                    <Route path="/kkn-desa-kundan-haruyan-dayak" element={<KKN />} />
+                                    <Route path="/sempro-skripsi" element={<Sempro />} />
+                                    <Route path="/sidang-skripsi" element={<Sidang />} />
+                                    <Route path="/wisuda" element={<Wisuda />} />
 
-                                  {/* website tambahan & daftar aplikasi */}
-                                  <Route path="/qodam" element={<Qodam />} />
-                                  <Route path="/zodiak" element={<Zodiak />} />
-                                  <Route path="/buat-kamu" element={<BuatKamu />} />
-                                  <Route path="/apps" element={<DaftarListApp />} />
-                                  <Route path="/daftar-aplikasi" element={<DaftarListApp />} />
-                                  <Route path="/daftar-app" element={<DaftarListApp />} />
-                                  <Route path="/daftarlistApp" element={<DaftarListApp />} />
-                                  <Route path="/coming-soon" element={<Comingsoon />} />
-                                  <Route path="/streming" element={<RequireAuth><Streming /></RequireAuth>} />
+                                    {/* website tambahan & daftar aplikasi */}
+                                    <Route path="/qodam" element={<Qodam />} />
+                                    <Route path="/zodiak" element={<Zodiak />} />
+                                    <Route path="/buat-kamu" element={<BuatKamu />} />
+                                    <Route path="/apps" element={<DaftarListApp />} />
+                                    <Route path="/daftar-aplikasi" element={<DaftarListApp />} />
+                                    <Route path="/daftar-app" element={<DaftarListApp />} />
+                                    <Route path="/daftarlistApp" element={<DaftarListApp />} />
+                                    <Route path="/coming-soon" element={<Comingsoon />} />
+                                    <Route path="/streming" element={<RequireAuth><Streming /></RequireAuth>} />
 
-                                  {/* Live rooms feature */}
-                                  <Route path="/Live-Discussion" element={<Live />} />
-                                  <Route path="/Live-Discussion/login" element={<LiveLogin />} />
-                                  <Route path="/Live-Discussion/daftar" element={<LiveDaftar />} />
-                                  <Route path="/Live-Discussion/profile" element={<ProfileLive />} />
-                                  <Route path="/Live-Discussion/profile/:email" element={<ProfileLive />} />
-                                  <Route path="/Live-Discussion/dashboard" element={<DashboardLive />} />
+                                    {/* Live rooms feature */}
+                                    <Route path="/Live-Discussion" element={<Live />} />
+                                    <Route path="/Live-Discussion/login" element={<LiveLogin />} />
+                                    <Route path="/Live-Discussion/daftar" element={<LiveDaftar />} />
+                                    <Route path="/Live-Discussion/profile" element={<ProfileLive />} />
+                                    <Route path="/Live-Discussion/profile/:email" element={<ProfileLive />} />
+                                    <Route path="/Live-Discussion/dashboard" element={<DashboardLive />} />
 
-                                  <Route path="/projects" element={<RequireAuth><Projects /></RequireAuth>} />
-                                  <Route path="/login" element={<Login />} />
-                                  <Route path="/register" element={<Register />} />
-                                  <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
-                                  <Route path="/portal" element={<Portal />} />
+                                    <Route path="/projects" element={<RequireAuth><Projects /></RequireAuth>} />
+                                    <Route path="/login" element={<Login />} />
+                                    <Route path="/register" element={<Register />} />
+                                    <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
+                                    <Route path="/portal" element={<Portal />} />
 
-                                  {/* ⚠️ Halaman error */}
-                                  <Route
-                                    path="/401"
-                                    element={
-                                      <ProtectedErrorPage component={Unauthorized} />
-                                    }
-                                  />
-                                  <Route
-                                    path="/403"
-                                    element={<ProtectedErrorPage component={Forbidden} />}
-                                  />
-                                  <Route
-                                    path="/408"
-                                    element={<ProtectedErrorPage component={Timeout} />}
-                                  />
-                                  <Route
-                                    path="/500"
-                                    element={<ProtectedErrorPage component={ServerError} />}
-                                  />
-                                  <Route
-                                    path="/502"
-                                    element={<ProtectedErrorPage component={BadGateway} />}
-                                  />
-                                  <Route
-                                    path="/503"
-                                    element={
-                                      <ProtectedErrorPage component={Maintenance} />
-                                    }
-                                  />
+                                    {/* ⚠️ Halaman error */}
+                                    <Route
+                                      path="/401"
+                                      element={
+                                        <ProtectedErrorPage component={Unauthorized} />
+                                      }
+                                    />
+                                    <Route
+                                      path="/403"
+                                      element={<ProtectedErrorPage component={Forbidden} />}
+                                    />
+                                    <Route
+                                      path="/408"
+                                      element={<ProtectedErrorPage component={Timeout} />}
+                                    />
+                                    <Route
+                                      path="/500"
+                                      element={<ProtectedErrorPage component={ServerError} />}
+                                    />
+                                    <Route
+                                      path="/502"
+                                      element={<ProtectedErrorPage component={BadGateway} />}
+                                    />
+                                    <Route
+                                      path="/503"
+                                      element={
+                                        <ProtectedErrorPage component={Maintenance} />
+                                      }
+                                    />
 
-                                  {/* 🕳️ Fallback 404 */}
-                                  <Route path="*" element={<NotFound />} />
-                                </Routes>
-                              </DefaultLayout>
-                            </LaunchGuard>
-                          }
-                        />
+                                    {/* 🕳️ Fallback 404 */}
+                                    <Route path="*" element={<NotFound />} />
+                                  </Routes>
+                                </DefaultLayout>
+                              </LaunchGuard>
+                            }
+                          />
 
-                        {/* ✅ Route khusus tanpa Navbar & Footer */}
-                        {/* 🛡️ Discord dengan LaunchGuard tapi tanpa layout standar */}
-                        <Route
-                          path="/discord/*"
-                          element={
-                            <LaunchGuard>
-                              <PlainLayout>
-                                <KomonitiWrapper />
-                              </PlainLayout>
-                            </LaunchGuard>
-                          }
-                        />
+                          {/* ✅ Route khusus tanpa Navbar & Footer */}
+                          {/* 🛡️ Discord dengan LaunchGuard tapi tanpa layout standar */}
+                          <Route
+                            path="/discord/*"
+                            element={
+                              <LaunchGuard>
+                                <PlainLayout>
+                                  <KomonitiWrapper />
+                                </PlainLayout>
+                              </LaunchGuard>
+                            }
+                          />
 
-                        {/* 🛡️ Komunitas dengan LaunchGuard tapi tanpa layout standar */}
-                        <Route
-                          path="/komunitas"
-                          element={
-                            <LaunchGuard>
-                              <PlainLayout>
-                                <Komunitas />
-                              </PlainLayout>
-                            </LaunchGuard>
-                          }
-                        />
-                      </Routes>
-                    </Suspense>
-                  </GlobalErrorBoundary>
+                          {/* 🛡️ Komunitas dengan LaunchGuard tapi tanpa layout standar */}
+                          <Route
+                            path="/komunitas"
+                            element={
+                              <LaunchGuard>
+                                <PlainLayout>
+                                  <Komunitas />
+                                </PlainLayout>
+                              </LaunchGuard>
+                            }
+                          />
+                        </Routes>
+                      </Suspense>
+                    </GlobalErrorBoundary>
                   </motion.div>
                 )}
               </div>

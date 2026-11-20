@@ -21,29 +21,28 @@ function VideoCardItem({ vid, onSelect }) {
       {/* Video Poster Thumbnail with Play button overlay */}
       <div className="relative w-full h-64 overflow-hidden rounded-2xl bg-black">
         {isVideoPoster || imgError ? (
-          <video
-            src={`${sanitizeUrl(vid.src)}#t=0.5`}
-            preload="metadata"
-            muted
-            playsInline
-            className="w-full h-full object-cover rounded-2xl opacity-90 group-hover:opacity-100 transition-transform duration-500 group-hover:scale-105 pointer-events-none"
-          />
-        ) : (
-          <img
-            src={sanitizeUrl(posterUrl)}
-            alt={vid.title}
-            loading="lazy"
-            onError={() => setImgError(true)}
-            className="w-full h-full object-cover rounded-2xl opacity-90 group-hover:opacity-100 transition-transform duration-500 group-hover:scale-105"
-          />
-        )}
-
-        {/* Play Button Icon */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-14 h-14 rounded-full bg-purple-600/80 backdrop-blur-sm flex items-center justify-center text-white shadow-xl transform scale-90 group-hover:scale-110 transition-transform">
-            <Play className="w-7 h-7 fill-current ml-1" />
+          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 via-purple-950/50 to-slate-900 p-4 text-center">
+            <div className="w-14 h-14 rounded-full bg-purple-600/80 backdrop-blur-sm flex items-center justify-center text-white shadow-xl transform scale-95 group-hover:scale-110 transition-transform mb-2">
+              <Play className="w-7 h-7 fill-current ml-1" />
+            </div>
+            <span className="text-xs text-purple-300 font-medium line-clamp-1">{vid.title}</span>
           </div>
-        </div>
+        ) : (
+          <>
+            <img
+              src={sanitizeUrl(posterUrl)}
+              alt={vid.title}
+              loading="lazy"
+              onError={() => setImgError(true)}
+              className="w-full h-full object-cover rounded-2xl opacity-90 group-hover:opacity-100 transition-transform duration-500 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-14 h-14 rounded-full bg-purple-600/80 backdrop-blur-sm flex items-center justify-center text-white shadow-xl transform scale-90 group-hover:scale-110 transition-transform">
+                <Play className="w-7 h-7 fill-current ml-1" />
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Overlay saat hover */}

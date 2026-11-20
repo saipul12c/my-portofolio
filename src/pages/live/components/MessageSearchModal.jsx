@@ -7,7 +7,7 @@ export const MessageSearchModal = ({ isOpen, onClose, messages = [], onJumpToMes
   const [mediaOnly, setMediaOnly] = useState(false);
 
   const filteredMessages = useMemo(() => {
-    if (!searchTerm.trim() && !mediaOnly) return [];
+    if (!isOpen || (!searchTerm.trim() && !mediaOnly)) return [];
 
     const query = searchTerm.toLowerCase().trim();
 

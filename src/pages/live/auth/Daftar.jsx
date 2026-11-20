@@ -157,26 +157,14 @@ const Daftar = () => {
 
   return (
     <div className="min-h-screen bg-[var(--color-gray-900)] flex items-center justify-center p-4 sm:p-8 relative overflow-hidden">
-      {/* Immersive Background Orbs */}
-      <motion.div 
-        animate={{ 
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3],
-          x: [0, 50, 0],
-          y: [0, 30, 0]
-        }}
-        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-        className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-500/10 rounded-full mix-blend-screen filter blur-[120px] pointer-events-none"
+      {/* Immersive Background Orbs - Hardware Accelerated */}
+      <div 
+        className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-500/10 rounded-full mix-blend-screen filter blur-[120px] pointer-events-none animate-pulse will-change-transform"
+        style={{ animationDuration: '8s' }}
       />
-      <motion.div 
-        animate={{ 
-          scale: [1, 1.3, 1],
-          opacity: [0.2, 0.4, 0.2],
-          x: [0, -40, 0],
-          y: [0, -60, 0]
-        }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear", delay: 2 }}
-        className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-600/10 rounded-full mix-blend-screen filter blur-[120px] pointer-events-none"
+      <div 
+        className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-600/10 rounded-full mix-blend-screen filter blur-[120px] pointer-events-none animate-pulse will-change-transform"
+        style={{ animationDuration: '10s', animationDelay: '2s' }}
       />
 
       <motion.div 

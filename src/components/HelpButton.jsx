@@ -1,13 +1,48 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { createPortal } from "react-dom";
 import { HelpCircle, X, Wrench, Info } from "lucide-react";
 import HelpMenu from "./helpbutton/HelpMenu";
 import { ErrorBoundary } from "react-error-boundary";
-import { ChatbotWindow } from "./helpbutton/chat/components/ChatbotWindow";
-import { ChatbotSettings } from "./helpbutton/chat/components/ChatbotSettings";
 import { useRecaptcha } from "../context/useRecaptcha";
 import { useNavigate } from "react-router-dom";
-import { getUnifiedKnowledgeBase, getKnowledgeStats } from "../utils/ai/knowledgeBase";
+import { runWhenIdle } from "../utils/deviceProfiler";
+
+// Dynamic imports untuk Chatbot & Settings agar bundle awal ringan di HP
+const ChatbotWindow = lazy(() =>
+  import("./helpbutton/chat/components/ChatbotWindow").then((m) => ({ default: m.ChatbotWindow }))
+);
+const ChatbotSettings = lazy(() =>
+  import("./helpbutton/chat/components/ChatbotSettings").then((m) => ({ default: m.ChatbotSettings }))
+);
+
+// Cache memori lokal untuk KnowledgeBase
+let cachedKB = null;
+let cachedStats = null;
+let kbLoadingPromise = null;
+
+const loadKnowledgeBaseAsync = () => {
+  if (cachedKB) return Promise.resolve({ kb: cachedKB, stats: cachedStats });
+  if (kbLoadingPromise) return kbLoadingPromise;
+
+  kbLoadingPromise = import("../utils/ai/knowledgeBase")
+    .then(({ getUnifiedKnowledgeBase, getKnowledgeStats }) => {
+      cachedKB = getUnifiedKnowledgeBase();
+      cachedStats = getKnowledgeStats();
+      return { kb: cachedKB, stats: cachedStats };
+    })
+    .catch((err) => {
+      console.warn("Gagal memuat KnowledgeBase SaipulAI:", err);
+      return { kb: {}, stats: {} };
+    });
+
+  return kbLoadingPromise;
+};
+
+// Predictive prefetch helper
+const prefetchChatbotAssets = () => {
+  import("./helpbutton/chat/components/ChatbotWindow");
+  loadKnowledgeBaseAsync();
+};
 
 function ChatbotErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -32,8 +67,16 @@ export default function HelpButton() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [showMainTooltip, setShowMainTooltip] = useState(false);
+  const [kbData, setKbData] = useState({ kb: {}, stats: {} });
   const { isRecaptchaVisible } = useRecaptcha();
   const navigate = useNavigate();
+
+  // Predictive background prefetch saat browser HP idle
+  useEffect(() => {
+    runWhenIdle(() => {
+      prefetchChatbotAssets();
+    }, 3500);
+  }, []);
 
   // Listen for navigation events from chatbot components
   useEffect(() => {
@@ -68,11 +111,13 @@ export default function HelpButton() {
     setOpen((s) => !s);
   };
 
-  const openChat = () => {
+  const openChat = async () => {
     // Hanya buka chatbot jika diaktifkan
     if (!isChatbotEnabled) return;
 
     setOpen(false); // Tutup menu bantuan utama
+    const data = await loadKnowledgeBaseAsync();
+    setKbData(data);
     setIsChatOpen(true);
   };
 
@@ -85,12 +130,17 @@ export default function HelpButton() {
 
   const closeSettings = () => setIsSettingsOpen(false);
 
-
+  // Intent prefetching saat kursor mendekat atau jari menyentuh tombol
+  const handleIntentPrefetch = () => {
+    prefetchChatbotAssets();
+  };
 
   return (
     <div
       className="fixed right-6 z-[9999] transition-all duration-300"
       style={{ bottom: isRecaptchaVisible ? '110px' : '20px' }}
+      onMouseEnter={handleIntentPrefetch}
+      onTouchStart={handleIntentPrefetch}
     >
       <div className="relative group">
         {/* Efek cahaya di sekitar tombol */}
@@ -176,19 +226,23 @@ export default function HelpButton() {
       {/* Popup Chatbot - TERPISAH dari menu bantuan */}
       {isChatOpen && (
         <div className="z-[10000]">
-          <ChatbotWindow
-            onClose={closeChat}
-            onOpenSettings={openSettings}
-            knowledgeBase={getUnifiedKnowledgeBase()}
-            knowledgeStats={getKnowledgeStats()}
-          />
+          <Suspense fallback={null}>
+            <ChatbotWindow
+              onClose={closeChat}
+              onOpenSettings={openSettings}
+              knowledgeBase={kbData.kb}
+              knowledgeStats={kbData.stats}
+            />
+          </Suspense>
         </div>
       )}
 
       {/* Popup Settings */}
       {isSettingsOpen && (
         <div className="z-[10000]">
-          <ChatbotSettings onClose={closeSettings} />
+          <Suspense fallback={null}>
+            <ChatbotSettings onClose={closeSettings} />
+          </Suspense>
         </div>
       )}
 

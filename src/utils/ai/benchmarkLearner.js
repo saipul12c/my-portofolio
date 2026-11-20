@@ -5,7 +5,6 @@
  * menganalisis batas kemampuan, dan memperbarui memori pengetahuan AI.
  */
 
-import { all200Situations, situationCategories } from '../../../test/index.js';
 import { smartKBQuery } from '../../components/helpbutton/chat/components/logic/utils/smartKBQuery.js';
 
 const STORAGE_KEY = 'saipul_benchmark_insights_v1';
@@ -47,7 +46,7 @@ export const getLearnedBenchmarkKnowledge = () => {
     if (!raw) return DEFAULT_INSIGHTS;
     const parsed = JSON.parse(raw);
     return { ...DEFAULT_INSIGHTS, ...parsed };
-  } catch (e) {
+  } catch {
     return DEFAULT_INSIGHTS;
   }
 };
@@ -60,7 +59,7 @@ const saveBenchmarkInsights = (data) => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     localStorage.setItem(LAST_RUN_KEY, String(Date.now()));
-  } catch (e) {
+  } catch {
     // Silent fail agar tidak mengganggu pengalaman pengguna
   }
 };
@@ -75,7 +74,7 @@ export const shouldRunMonthlyBenchmark = () => {
     if (!lastRun) return true; // Belum pernah dijalankan
     const elapsed = Date.now() - parseInt(lastRun, 10);
     return elapsed >= MONTH_IN_MS;
-  } catch (e) {
+  } catch {
     return false;
   }
 };
@@ -88,8 +87,18 @@ export const scheduleSilentBenchmarkLearning = (currentKnowledgeBase) => {
   if (typeof window === 'undefined') return;
   if (!shouldRunMonthlyBenchmark()) return;
 
-  const runSilentEval = () => {
+  // Proteksi ponsel & perangkat hemat daya: jangan jalankan jika RAM <= 3GB atau mode hemat kuota aktif
+  if (typeof navigator !== 'undefined') {
+    if (navigator.deviceMemory && navigator.deviceMemory <= 3) return;
+    if (navigator.connection && (navigator.connection.saveData || /2g|3g/.test(navigator.connection.effectiveType))) return;
+  }
+
+  const runSilentEval = async () => {
     try {
+      // Muat data 200 situasi uji secara dinamis agar tidak membebani initial bundle
+      const { all200Situations } = await import('../../../test/index.js');
+      if (!Array.isArray(all200Situations) || all200Situations.length === 0) return;
+
       const kb = currentKnowledgeBase || {};
       let currentIndex = 0;
       const batchSize = 10;
@@ -147,7 +156,7 @@ export const scheduleSilentBenchmarkLearning = (currentKnowledgeBase) => {
 
       // Mulai batch pertama setelah jeda santai awal
       setTimeout(processNextBatch, 5000);
-    } catch (err) {
+    } catch {
       // Senyap tanpa mengganggu pengguna
     }
   };

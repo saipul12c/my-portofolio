@@ -269,10 +269,10 @@ const Profile = () => {
             {/* Stats Bento Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {[
-                { label: 'Signals Sent', val: profileUser.messageCount, icon: MessageSquare, col: 'cyan' },
-                { label: 'Badge Level', val: achievements.length, icon: Trophy, col: 'yellow' },
-                { label: 'Sync Grade', val: profileUser.role === 'USER' ? 'D' : 'A', icon: ShieldCheck, col: 'blue' },
-                { label: 'Reputation', val: `${(profileUser.messageCount * 15) + (achievements.length * 25)} pts`, icon: TrendingUp, col: 'purple' },
+                { label: 'Signals Sent', val: profileUser.messageCount, icon: MessageSquare, iconColor: 'text-cyan-400' },
+                { label: 'Badge Level', val: achievements.length, icon: Trophy, iconColor: 'text-amber-400' },
+                { label: 'Sync Grade', val: profileUser.role === 'USER' ? 'D' : 'A', icon: ShieldCheck, iconColor: 'text-blue-400' },
+                { label: 'Reputation', val: `${(profileUser.messageCount * 15) + (achievements.length * 25)} pts`, icon: TrendingUp, iconColor: 'text-purple-400' },
               ].map((s, i) => (
                 <motion.div 
                   key={s.label}
@@ -281,7 +281,7 @@ const Profile = () => {
                   transition={{ delay: 0.1 + (i * 0.05) }}
                   className="p-8 bg-white/[0.02] backdrop-blur-2xl border border-white/5 rounded-[2.5rem] group hover:bg-white/[0.04] transition-all text-center md:text-left"
                 >
-                  <s.icon className={`w-6 h-6 text-${s.col}-400 mb-4 mx-auto md:mx-0 group-hover:scale-125 transition-all`} />
+                  <s.icon className={`w-6 h-6 ${s.iconColor} mb-4 mx-auto md:mx-0 group-hover:scale-125 transition-all`} />
                   <p className="text-3xl font-black text-white italic tracking-tighter">{s.val}</p>
                   <p className="text-[10px] font-black text-white/30 uppercase tracking-widest mt-1">{s.label}</p>
                 </motion.div>

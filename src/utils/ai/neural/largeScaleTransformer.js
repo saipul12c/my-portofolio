@@ -30,13 +30,13 @@ export async function initLargeScaleTransformer(onProgress = null) {
 
     if (typeof window !== 'undefined') {
       try {
-        // Coba import modul Xenova jika terpasang di node_modules atau browser
-        const transformers = await import(/* @vite-ignore */ '@xenova/transformers').catch(() => null);
-        if (transformers && transformers.pipeline) {
-          pipelineFn = transformers.pipeline;
+        // 1. Cek jika global transformers sudah ada di browser window
+        if (window.transformers && window.transformers.pipeline) {
+          pipelineFn = window.transformers.pipeline;
         } else {
-          // Dynamic CDN fallback untuk browser tanpa npm bundle overhead
-          const cdnModule = await import(/* @vite-ignore */ 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2').catch(() => null);
+          // 2. Dynamic CDN import untuk browser tanpa npm bundle overhead
+          const cdnUrl = 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2';
+          const cdnModule = await import(/* @vite-ignore */ cdnUrl).catch(() => null);
           if (cdnModule && cdnModule.pipeline) {
             pipelineFn = cdnModule.pipeline;
           }
@@ -45,9 +45,10 @@ export async function initLargeScaleTransformer(onProgress = null) {
         console.warn('Transformers dynamic import failed:', err.message);
       }
     } else {
-      // Node.js environment (misal saat testing)
+      // Node.js environment (misal saat testing di server/cli)
       try {
-        const transformers = await import(/* @vite-ignore */ '@xenova/transformers').catch(() => null);
+        const nodePkg = '@xenova/transformers';
+        const transformers = await import(/* @vite-ignore */ nodePkg).catch(() => null);
         if (transformers && transformers.pipeline) {
           pipelineFn = transformers.pipeline;
         }

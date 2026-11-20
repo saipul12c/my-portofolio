@@ -1,27 +1,21 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, Mail, Lock, User, AlertCircle, CheckCircle, Send, Plus, Smile, MessageCircle, LogOut, LayoutDashboard, UserCircle, Copy, Edit2, Trash2, Reply, ArrowLeft, ArrowDown, X } from 'lucide-react';
+import { Lock, AlertCircle, CheckCircle, Plus, MessageCircle, ArrowDown, X, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabaseClient';
-import EmojiPicker from 'emoji-picker-react';
 import GuestCTA from './components/GuestCTA';
-import { useAchievements, ACHIEVEMENTS } from './hooks/useAchievements';
+import { useAchievements } from './hooks/useAchievements';
 import { ProfileEditor } from './components/ProfileEditor';
-import { MentionInput } from './components/MentionInput';
-import { NotificationCenter, MentionNotifications } from './components/NotificationCenter';
-import { useMentions } from './hooks/useMentions';
-import { ReactionPicker, MessageReactions } from './components/ReactionPicker';
+import { MentionNotifications } from './components/NotificationCenter';
 import { MemberSidebar } from './components/MemberSidebar';
 import { ChatHeader } from './components/ChatHeader';
 import { ChatInputArea } from './components/ChatInputArea';
 import { AppealModal } from './components/AppealModal';
-import { MarkdownRenderer } from './components/MarkdownRenderer';
 import { ChannelBar } from './components/ChannelBar';
-import { PollCard } from './components/PollCard';
-import { PollModal } from './components/PollModal';
 import { MessageSearchModal } from './components/MessageSearchModal';
 import { AISummarizerModal } from './components/AISummarizerModal';
 import { LeaderboardModal } from './components/LeaderboardModal';
+import { PollModal } from './components/PollModal';
 import { isAiMentioned, extractAiQuery, generateAiRoomReply } from './utils/saipulRoomIntegration';
 import { MessageItem } from './components/MessageItem';
 import { ImageLightbox } from './components/ImageLightbox';
@@ -35,7 +29,6 @@ import {
 import { compressImageToWebP } from './utils/imageCompressor';
 import { getCachedMessages, setCachedMessages } from './utils/cacheManager';
 import { setDiscussionRoomData } from '../../utils/ai/knowledgeBase';
-import { Paperclip, Image as ImageIcon, Users as UsersIcon, AlertTriangle, Bell, Sun, Moon, Monitor, ShieldAlert } from 'lucide-react';
 import { containsProfanity } from './utils/profanityFilter';
 
 const USER_ROLES = {
@@ -60,6 +53,23 @@ const INITIAL_CONFIG = {
   maintenance_mode: false
 };
 
+// Pure date label helper for date dividers (Zero re-creation overhead)
+const getMessageDateLabel = (dateVal) => {
+  if (!dateVal) return '';
+  const date = new Date(typeof dateVal === 'string' && /^\d+$/.test(dateVal) ? Number(dateVal) : dateVal);
+  if (isNaN(date.getTime())) return '';
+  const now = new Date();
+  
+  const isToday = date.toDateString() === now.toDateString();
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  const isYesterday = date.toDateString() === yesterday.toDateString();
+  
+  if (isToday) return 'Hari Ini';
+  if (isYesterday) return 'Kemarin';
+  return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+};
+
 function Live() {
   const [messages, setMessages] = useState(() => getCachedMessages('umum'));
   const [newMessage, setNewMessage] = useState('');
@@ -68,16 +78,13 @@ function Live() {
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState('');
-  const [showBadWordAlert, setShowBadWordAlert] = useState(false);
   const [success, setSuccess] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [replyTo, setReplyTo] = useState(null);
-  const [messageStats, setMessageStats] = useState({ sent: 0, remaining: 5 });
   const [hasMore, setHasMore] = useState(true);
   const [fetchingMore, setFetchingMore] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState({});
   const [editingMessage, setEditingMessage] = useState(null);
-  const [showHeader, setShowHeader] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState('connecting'); // 'connecting', 'online', 'offline'
 
   // Hook Achievement Internal
@@ -166,6 +173,23 @@ function Live() {
     return messages.filter(m => (m.channel || 'umum') === activeChannel);
   }, [messages, activeChannel]);
 
+  // Pre-calculate chronological order and date dividers once per message set
+  const displayMessages = React.useMemo(() => {
+    const list = [...filteredChannelMessages].reverse();
+    return list.map((message, index) => {
+      const currentDate = getMessageDateLabel(message.created_at || message.timestamp);
+      const prevMsg = list[index - 1];
+      const prevDate = prevMsg ? getMessageDateLabel(prevMsg.created_at || prevMsg.timestamp) : null;
+      const showDateDivider = Boolean(currentDate && currentDate !== prevDate);
+      return {
+        message,
+        index,
+        currentDate,
+        showDateDivider
+      };
+    });
+  }, [filteredChannelMessages]);
+
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const messageInputRef = useRef(null);
@@ -182,13 +206,9 @@ function Live() {
   const [isSubmittingAppeal, setIsSubmittingAppeal] = useState(false);
   const navigate = useNavigate();
   const pollingIntervalRef = useRef(null);
-  const lastScrollY = useRef(0);
   const isPrependingOlderRef = useRef(false);
   const prevScrollHeightRef = useRef(0);
   const isInitialLoadRef = useRef(true);
-
-  // Header state
-  const [scrolled, setScrolled] = useState(false);
 
   // Sync Live CS context with Chatbot settings
   useEffect(() => {
@@ -228,19 +248,6 @@ function Live() {
   useEffect(() => {
     localStorage.setItem('saipul_theme', theme);
   }, [theme]);
-  
-  // Handle scroll for header effect
-  useEffect(() => {
-    const el = messagesContainerRef.current;
-    if (!el) return;
-    
-    const onScroll = () => {
-      const isScrolled = el.scrollTop > 20;
-      setScrolled(prev => (prev !== isScrolled ? isScrolled : prev));
-    };
-    el.addEventListener('scroll', onScroll, { passive: true });
-    return () => el.removeEventListener('scroll', onScroll);
-  }, []);
 
   // Check user status in Database (Security Enhanced)
   const checkUserStatus = useCallback(async () => {
@@ -353,15 +360,6 @@ function Live() {
     }
   }, []);
 
-  // Update message stats whenever user or systemConfig changes
-  useEffect(() => {
-    if (user) {
-      const limit = systemConfig?.message_limits?.[user.role] || 5;
-      const remaining = Math.max(0, limit - (user.messageCount || 0));
-      setMessageStats({ sent: user.messageCount || 0, remaining });
-    }
-  }, [user, systemConfig]);
-
   // Load more messages (Cursor-based pagination with Tie-Breaker)
   const loadMoreMessages = useCallback(async () => {
     if (fetchingMore || !hasMore || messages.length === 0) return;
@@ -373,12 +371,23 @@ function Live() {
         prevScrollHeightRef.current = container.scrollHeight;
         isPrependingOlderRef.current = true;
       }
-      const oldestMessage = messages[messages.length - 1];
-      const { data, error } = await supabase
-        .from('messages')
-        .select('*')
-        // Cursor logic: lt timestamp OR (eq timestamp AND lt id)
-        .or(`timestamp.lt.${oldestMessage.timestamp},and(timestamp.eq.${oldestMessage.timestamp},id.lt.${oldestMessage.id})`)
+      // Find oldest message with valid timestamp
+      const oldestMessage = [...messages].reverse().find(m => m && m.timestamp);
+      if (!oldestMessage) {
+        setHasMore(false);
+        isPrependingOlderRef.current = false;
+        return;
+      }
+
+      let query = supabase.from('messages').select('*');
+
+      if (oldestMessage.id && !String(oldestMessage.id).startsWith('temp-') && !isNaN(Number(oldestMessage.id))) {
+        query = query.or(`timestamp.lt.${oldestMessage.timestamp},and(timestamp.eq.${oldestMessage.timestamp},id.lt.${oldestMessage.id})`);
+      } else {
+        query = query.lt('timestamp', oldestMessage.timestamp);
+      }
+
+      const { data, error } = await query
         .order('timestamp', { ascending: false })
         .order('id', { ascending: false }) // Secondary sort
         .limit(50);
@@ -386,7 +395,11 @@ function Live() {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        setMessages(prev => [...prev, ...data]);
+        setMessages(prev => {
+          const existingIds = new Set(prev.map(m => m.id).filter(Boolean));
+          const newUnique = data.filter(m => !existingIds.has(m.id));
+          return [...prev, ...newUnique];
+        });
         setHasMore(data.length === 50);
         
         // Fetch reactions for new messages
@@ -405,7 +418,7 @@ function Live() {
 
   // Setup Realtime Subscription and Presence
   const setupRealtime = useCallback(() => {
-    // 1. Setup subscription for messages
+    // 1. Setup subscription for messages and reactions (Active for all users & guests)
     let messageSubscription = supabase
       .channel('public:messages')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
@@ -434,6 +447,35 @@ function Live() {
       })
       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages' }, payload => {
         setMessages(prev => prev.filter(m => m.id !== payload.old.id));
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reactions' }, payload => {
+        setReactions(prev => {
+          const msgId = payload.new?.message_id || payload.old?.message_id;
+          if (payload.eventType === 'INSERT' && payload.new) {
+            const currentReactions = prev[payload.new.message_id] || [];
+            if (currentReactions.some(r => r.id === payload.new.id)) return prev;
+            return { ...prev, [payload.new.message_id]: [...currentReactions, payload.new] };
+          }
+          if (payload.eventType === 'DELETE' && payload.old) {
+            if (msgId) {
+              const currentReactions = prev[msgId] || [];
+              return { ...prev, [msgId]: currentReactions.filter(r => r.id !== payload.old.id) };
+            } else {
+              // Fallback when replica identity only yields primary key id
+              const next = { ...prev };
+              let changed = false;
+              for (const k in next) {
+                if (next[k].some(r => r.id === payload.old.id)) {
+                  next[k] = next[k].filter(r => r.id !== payload.old.id);
+                  changed = true;
+                  break;
+                }
+              }
+              return changed ? next : prev;
+            }
+          }
+          return prev;
+        });
       })
       .on('broadcast', { event: 'typing' }, ({ payload }) => {
         if (!userRef.current || payload.id !== userRef.current.id) {
@@ -478,7 +520,6 @@ function Live() {
       if (status === 'CHANNEL_ERROR') setConnectionStatus('offline');
     });
 
-
     // 2. Setup subscription for presence (Online Users)
     let presenceChannel = null;
     if (user?.id) {
@@ -496,22 +537,7 @@ function Live() {
           });
           setOnlineUsers(activeUsers);
         })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'reactions' }, payload => {
-          setReactions(prev => {
-            const msgId = payload.new?.message_id || payload.old?.message_id;
-            if (!msgId) return prev;
-            
-            const currentReactions = prev[msgId] || [];
-            if (payload.eventType === 'INSERT') {
-              return { ...prev, [msgId]: [...currentReactions, payload.new] };
-            }
-            if (payload.eventType === 'DELETE') {
-              return { ...prev, [msgId]: currentReactions.filter(r => r.id !== payload.old.id) };
-            }
-            return prev;
-          });
-      })
-      .subscribe(async (status) => {
+        .subscribe(async (status) => {
           if (status === 'SUBSCRIBED' && userRef.current) {
             await presenceChannel.track({
               id: userRef.current.id,
@@ -745,43 +771,50 @@ function Live() {
     }
   }, [fetchingMore, hasMore, loadMoreMessages]);
 
-  // Cleanup effect for stale typing indicators
+  // Cleanup effect for stale typing indicators (Zero overhead when no one is typing)
   useEffect(() => {
     const interval = setInterval(() => {
       const now = Date.now();
       setTypingUsers(prev => {
+        const keys = Object.keys(prev);
+        if (keys.length === 0) return prev;
         const filtered = {};
         let changed = false;
-        Object.entries(prev).forEach(([id, data]) => {
-          if (now - data.timestamp < 3000) {
-            filtered[id] = data;
+        keys.forEach(id => {
+          if (now - prev[id].timestamp < 3000) {
+            filtered[id] = prev[id];
           } else {
             changed = true;
           }
         });
         return changed ? filtered : prev;
       });
-    }, 1000);
+    }, 1500);
     return () => clearInterval(interval);
   }, []);
 
   // Handle emoji click
-  const handleEmojiClick = (emojiData) => {
+  const handleEmojiClick = useCallback((emojiData) => {
     setNewMessage(prev => prev + emojiData.emoji);
     setShowEmojiPicker(false);
     messageInputRef.current?.focus();
-  };
+  }, []);
 
   // Handle reply
-  const handleReply = (message) => {
+  const handleReply = useCallback((message) => {
     setReplyTo(message);
     messageInputRef.current?.focus();
-  };
+  }, []);
 
   // Cancel reply
-  const cancelReply = () => {
+  const cancelReply = useCallback(() => {
     setReplyTo(null);
-  };
+  }, []);
+
+  // Lightbox handler
+  const handleOpenLightbox = useCallback((url) => {
+    setLightboxMedia({ isOpen: true, url });
+  }, []);
 
   // Send message to Database (Dengan Graceful Fallback jika kolom baru belum dimigrasi di Supabase)
   const sendMessageToDatabase = async (messageData) => {
@@ -808,7 +841,7 @@ function Live() {
   };
 
   // Handle Polling Creation
-  const handleCreatePoll = async (pollData) => {
+  const handleCreatePoll = useCallback(async (pollData) => {
     if (!user) return;
     try {
       const correlationId = `${user.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -833,15 +866,15 @@ function Live() {
     } catch (err) {
       console.error('Failed to create poll message:', err);
     }
-  };
+  }, [user, activeChannel]);
 
   // Handle Polling Vote
-  const handleVotePoll = async (pollId, optionId) => {
+  const handleVotePoll = useCallback(async (pollId, optionId) => {
     if (!user) return;
     const currentUserId = user.id || user.username;
 
     setMessages(prev => prev.map(msg => {
-      if (msg.poll_data && msg.poll_data.id === pollId) {
+      if (msg.poll_data && (msg.poll_data.id === pollId || msg.id === pollId)) {
         const prevVoted = msg.poll_data.votedUsers?.[currentUserId];
         if (prevVoted === optionId) return msg;
 
@@ -874,10 +907,10 @@ function Live() {
       }
       return msg;
     }));
-  };
+  }, [user]);
 
   // Handle Best Answer Toggle
-  const handleToggleBestAnswer = async (message) => {
+  const handleToggleBestAnswer = useCallback(async (message) => {
     if (!user) return;
     const newStatus = !message.is_best_answer;
     setMessages(prev => prev.map(m => m.id === message.id ? { ...m, is_best_answer: newStatus } : m));
@@ -887,7 +920,7 @@ function Live() {
     } catch (err) {
       console.warn('Failed to toggle best answer:', err);
     }
-  };
+  }, [user]);
 
   // Handle Jump to Message (dari hasil Pencarian)
   const handleJumpToMessage = (messageId) => {
@@ -1087,9 +1120,11 @@ function Live() {
     }
   };
 
-  // Format timestamp
-  const formatTime = (timestamp) => {
-    const date = timestamp ? new Date(timestamp) : new Date();
+  // Format timestamp (Memoized)
+  const formatTime = useCallback((timestamp) => {
+    if (!timestamp) return 'Baru saja';
+    const date = new Date(typeof timestamp === 'string' && /^\d+$/.test(timestamp) ? Number(timestamp) : timestamp);
+    if (isNaN(date.getTime())) return 'Baru saja';
     const now = new Date();
     const diff = now - date;
     const seconds = Math.floor(diff / 1000);
@@ -1113,24 +1148,7 @@ function Live() {
     } else {
       return 'Baru saja';
     }
-  };
-
-  // Get date label for date dividers
-  const getMessageDateLabel = (dateVal) => {
-    if (!dateVal) return '';
-    const date = new Date(dateVal);
-    if (isNaN(date.getTime())) return '';
-    const now = new Date();
-    
-    const isToday = date.toDateString() === now.toDateString();
-    const yesterday = new Date(now);
-    yesterday.setDate(now.getDate() - 1);
-    const isYesterday = date.toDateString() === yesterday.toDateString();
-    
-    if (isToday) return 'Hari Ini';
-    if (isYesterday) return 'Kemarin';
-    return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-  };
+  }, []);
 
   // Get role badge
   const getRoleBadge = (role) => {
@@ -1304,32 +1322,68 @@ function Live() {
     }
   };
 
-  const toggleReaction = async (messageId, emoji) => {
+  const toggleReaction = useCallback(async (messageId, emoji) => {
     if (!user) return;
     
     const existing = (reactions[messageId] || []).find(
-      r => r.emoji === emoji && r.user_id === user.id
+      r => r.emoji === emoji && (r.user_id === user.id || r.user_id === user.username)
     );
+
+    // Optimistic Update: Instant feedback without waiting for network
+    setReactions(prev => {
+      const current = prev[messageId] || [];
+      if (existing) {
+        return {
+          ...prev,
+          [messageId]: current.filter(r => !(r.emoji === emoji && (r.user_id === user.id || r.user_id === user.username)))
+        };
+      } else {
+        const optimisticReaction = {
+          id: `temp-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+          message_id: messageId,
+          user_id: user.id,
+          emoji
+        };
+        return {
+          ...prev,
+          [messageId]: [...current, optimisticReaction]
+        };
+      }
+    });
 
     try {
       if (existing) {
-        await supabase
-          .from('reactions')
-          .delete()
-          .eq('id', existing.id);
+        if (existing.id && !String(existing.id).startsWith('temp-')) {
+          await supabase.from('reactions').delete().eq('id', existing.id);
+        } else {
+          await supabase.from('reactions').delete().match({ message_id: messageId, user_id: user.id, emoji });
+        }
       } else {
-        await supabase
+        const { data } = await supabase
           .from('reactions')
           .insert({
             message_id: messageId,
             user_id: user.id,
             emoji: emoji
+          })
+          .select()
+          .maybeSingle();
+
+        if (data) {
+          setReactions(prev => {
+            const current = prev[messageId] || [];
+            return {
+              ...prev,
+              [messageId]: current.map(r => (r.emoji === emoji && r.user_id === user.id ? data : r))
+            };
           });
+        }
       }
     } catch (err) {
       console.error('Error toggling reaction:', err);
+      fetchReactionsForMessages([messageId]);
     }
-  };
+  }, [user, reactions]);
 
   // Media Upload Logic (Auto-Compressed to WebP)
   const handleFileSelect = async (e) => {
@@ -1382,11 +1436,14 @@ function Live() {
     }
   };
 
-  // Delete message
-  const handleDeleteMessage = async (message) => {
+  // Delete message with optimistic removal
+  const handleDeleteMessage = useCallback(async (message) => {
     const messageId = typeof message === 'object' ? message.id : message;
     if (!window.confirm('Yakin ingin menghapus pesan ini?')) return;
     
+    // Optimistic deletion
+    setMessages(prev => prev.filter(m => m.id !== messageId));
+
     try {
       // 1. If has media, delete from storage
       if (typeof message === 'object' && message.media_url) {
@@ -1408,15 +1465,16 @@ function Live() {
     } catch (err) {
       console.error('Error deleting message:', err);
       setError('Gagal menghapus pesan.');
+      fetchMessagesFromDatabase();
     }
-  };
+  }, [fetchMessagesFromDatabase]);
 
   // Start edit message
-  const startEditMessage = (message) => {
+  const startEditMessage = useCallback((message) => {
     setEditingMessage(message);
     setNewMessage(message.content);
     messageInputRef.current?.focus();
-  };
+  }, []);
 
   // Save edited message
   const handleSaveEdit = async () => {
@@ -1447,47 +1505,17 @@ function Live() {
     }
   };
 
-  const cancelEdit = () => {
+  const cancelEdit = useCallback(() => {
     setEditingMessage(null);
     setNewMessage('');
-  };
+  }, []);
 
   // Copy message content
-  const copyToClipboard = (text) => {
+  const copyToClipboard = useCallback((text) => {
     navigator.clipboard.writeText(text);
     setSuccess('Teks disalin!');
     setTimeout(() => setSuccess(''), 2000);
-  };
-
-  // Helper untuk mem-parsing Markdown ringan dan mention pengguna
-  // **bold**, *italic*, dan @username
-  const renderMessageContent = (content) => {
-    if (!content) return null;
-
-    // Pecah berdasarkan regex untuk menangkap marker (**, *, @) dengan teks didalamnya
-    // Regex logic:
-    // **...** -> bold
-    // *...* -> italic
-    // @username -> mention
-    const parts = content.split(/(\*\*.*?\*\*|\*[^*]+\*|@\w+)/g);
-
-    return parts.map((part, i) => {
-      if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
-        return <strong key={i} className="font-bold">{part.slice(2, -2)}</strong>;
-      } else if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
-        return <em key={i} className="italic">{part.slice(1, -1)}</em>;
-      } else if (part.startsWith('@') && part.length > 1) {
-        // Cek apakah username tersebut yang sedang login atau bukan
-        const isSelfMention = user && part.slice(1).toLowerCase() === user.username.toLowerCase();
-        return (
-          <span key={i} className={`font-semibold cursor-pointer px-1 rounded ${isSelfMention ? 'bg-amber-500/30 text-amber-200' : 'text-blue-300 hover:underline'}`}>
-            {part}
-          </span>
-        );
-      }
-      return <span key={i}>{part}</span>;
-    });
-  };
+  }, []);
 
   // Loading state
   if (loading) {
@@ -1558,25 +1586,15 @@ function Live() {
 
   return (
     <div className={`theme-${theme} h-[100dvh] w-full bg-[var(--theme-bg)] text-[var(--theme-text)] relative overflow-hidden flex flex-col font-sans selection:bg-[var(--theme-accent)] selection:text-[var(--theme-bg)]`}>
-      {/* Immersive Background Decor */}
-      <div className="absolute inset-0 pointer-events-none">
-        <motion.div 
-          animate={{ 
-            x: [0, 100, 0],
-            y: [0, 50, 0],
-            opacity: [0.1, 0.2, 0.1]
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute top-[-10%] right-[-5%] w-[800px] h-[800px] bg-blue-600/10 rounded-full blur-[150px]"
+      {/* Immersive Background Decor - Hardware Accelerated with zero JS animation overhead */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div 
+          className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] will-change-transform animate-pulse"
+          style={{ animationDuration: '8s' }}
         />
-        <motion.div 
-          animate={{ 
-            x: [0, -80, 0],
-            y: [0, 120, 0],
-            opacity: [0.1, 0.15, 0.1]
-          }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="absolute bottom-[-10%] left-[-5%] w-[700px] h-[700px] bg-cyan-500/10 rounded-full blur-[150px]"
+        <div 
+          className="absolute bottom-[-10%] left-[-5%] w-[550px] h-[550px] bg-cyan-500/10 rounded-full blur-[120px] will-change-transform animate-pulse"
+          style={{ animationDuration: '10s', animationDelay: '2s' }}
         />
       </div>
 
@@ -1697,7 +1715,7 @@ function Live() {
                     </div>
                   )}
 
-                  {[...filteredChannelMessages].reverse().map((message, index, array) => {
+                  {displayMessages.map(({ message, index, currentDate, showDateDivider }) => {
                     // Standar Chat Universal:
                     // 1. Pesan saya sendiri selalu di KANAN (alignRight = true)
                     // 2. Pesan orang lain / admin / moderator selalu di KIRI (alignRight = false)
@@ -1711,15 +1729,9 @@ function Live() {
                     const alignRight = isOwnMessage;
                     const replyData = message.reply_to || null;
                     
-                    // Date Divider calculation
-                    const currentDate = getMessageDateLabel(message.created_at || message.timestamp);
-                    const prevMsg = array[index - 1];
-                    const prevDate = prevMsg ? getMessageDateLabel(prevMsg.created_at || prevMsg.timestamp) : null;
-                    const showDateDivider = currentDate && currentDate !== prevDate;
-                    
                     return (
                       <MessageItem
-                        key={message.id || message.timestamp || index}
+                        key={message.id || message.correlation_id || message.timestamp || index}
                         message={message}
                         index={index}
                         showDateDivider={showDateDivider}
@@ -1741,7 +1753,7 @@ function Live() {
                         onToggleReaction={toggleReaction}
                         onSetActiveReactionPicker={setActiveReactionPicker}
                         onVotePoll={handleVotePoll}
-                        onOpenLightbox={(url) => setLightboxMedia({ isOpen: true, url })}
+                        onOpenLightbox={handleOpenLightbox}
                         formatTime={formatTime}
                       />
                     );
@@ -1754,7 +1766,7 @@ function Live() {
 
           {/* Interaction Bar Container or Guest CTA (Stabilized Height) */}
           {user && (
-            <div className="p-4 sm:p-6 bg-[var(--theme-surface)] border-t border-[var(--theme-border)] backdrop-blur-xl relative min-h-[120px] sm:min-h-[110px] flex items-center justify-center">
+            <div className="p-2.5 sm:p-5 bg-[var(--theme-surface)] border-t border-[var(--theme-border)] backdrop-blur-xl relative flex items-center justify-center">
               {/* Scroll to Bottom FAB */}
             <AnimatePresence>
               {showScrollToBottom && (
@@ -1763,10 +1775,10 @@ function Live() {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.5, y: 20 }}
                   onClick={scrollToBottom}
-                  className="absolute -top-16 left-1/2 -translate-x-1/2 p-4 bg-cyan-500 rounded-full text-white shadow-2xl shadow-cyan-500/40 hover:scale-110 active:scale-95 transition-all z-20 group"
+                  className="absolute -top-12 sm:-top-16 left-1/2 -translate-x-1/2 p-2.5 sm:p-4 bg-cyan-500 rounded-full text-white shadow-2xl shadow-cyan-500/40 hover:scale-110 active:scale-95 transition-all z-20 group"
                 >
-                  <ArrowDown className="w-6 h-6 group-hover:translate-y-1 transition-transform" />
-                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-md px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Return to signals</div>
+                  <ArrowDown className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-y-0.5 transition-transform" />
+                  <div className="absolute -top-9 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Kembali ke bawah</div>
                 </motion.button>
               )}
             </AnimatePresence>
@@ -1821,15 +1833,19 @@ function Live() {
         <motion.div 
           initial={{ scale: 0.9, y: 20 }}
           animate={{ scale: 1, y: 0 }}
-          className="bg-[#0f172a] border border-white/10 rounded-[2.5rem] w-full max-w-xl p-8 shadow-2xl relative overflow-hidden"
+          className="bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl sm:rounded-[2.5rem] w-full max-w-xl p-5 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-3xl"
         >
-          <div className="absolute top-0 right-0 p-6">
-            <button onClick={() => setShowProfileModal(false)} className="text-white/40 hover:text-white">
-              <Plus className="w-6 h-6 rotate-45" />
+          <div className="absolute top-0 right-0 p-4 sm:p-6">
+            <button 
+              onClick={() => setShowProfileModal(false)} 
+              className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] p-1 rounded-xl hover:bg-[var(--theme-surface-hover)] transition-colors"
+              title="Tutup"
+            >
+              <Plus className="w-5 h-5 sm:w-6 sm:h-6 rotate-45" />
             </button>
           </div>
 
-          <div className="text-white">
+          <div className="text-[var(--theme-text)]">
              <ProfileEditor 
                 profile={profileData}
                 currentUser={user}
@@ -1871,13 +1887,13 @@ function Live() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+        className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm"
       >
         <motion.div 
-          initial={{ scale: 0.9, y: 20 }}
+          initial={{ scale: 0.95, y: 15 }}
           animate={{ scale: 1, y: 0 }}
-          exit={{ scale: 0.9, y: 20 }}
-          className="bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-[2.5rem] w-full max-w-lg p-6 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-3xl"
+          exit={{ scale: 0.95, y: 15 }}
+          className="bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl sm:rounded-[2.5rem] w-full max-w-lg p-5 sm:p-7 shadow-2xl relative overflow-hidden backdrop-blur-3xl"
         >
           <div className="flex items-center justify-between pb-4 border-b border-[var(--theme-border)] mb-6">
             <div className="flex items-center gap-3">

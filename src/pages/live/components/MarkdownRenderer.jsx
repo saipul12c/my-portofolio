@@ -3,16 +3,49 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Copy, Check, Terminal, ExternalLink } from 'lucide-react';
 
-export const MarkdownRenderer = ({ content, alignRight = false, currentUsername = '' }) => {
-  const [copiedIndex, setCopiedIndex] = useState(null);
+const CodeBlock = ({ language, codeString }) => {
+  const [copied, setCopied] = useState(false);
 
-  if (!content) return null;
-
-  const copyCode = (codeText, index) => {
-    navigator.clipboard.writeText(codeText);
-    setCopiedIndex(index);
-    setTimeout(() => setCopiedIndex(null), 2000);
+  const copyCode = () => {
+    navigator.clipboard.writeText(codeString);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
+
+  return (
+    <div className="my-2.5 rounded-2xl overflow-hidden border border-white/10 bg-[#0d1117] text-gray-200 shadow-lg not-prose text-xs">
+      <div className="flex items-center justify-between px-3.5 py-1.5 bg-[#161b22] border-b border-white/10 text-[10px] font-mono text-gray-400">
+        <span className="flex items-center gap-1.5 uppercase font-bold tracking-wider text-cyan-400">
+          <Terminal className="w-3 h-3" />
+          {language || 'code'}
+        </span>
+        <button
+          type="button"
+          onClick={copyCode}
+          className="flex items-center gap-1 px-2 py-0.5 rounded-md hover:bg-white/10 text-gray-300 hover:text-white transition-colors cursor-pointer"
+        >
+          {copied ? (
+            <>
+              <Check className="w-3 h-3 text-emerald-400" />
+              <span className="text-emerald-400 font-sans">Disalin!</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-3 h-3" />
+              <span className="font-sans">Salin</span>
+            </>
+          )}
+        </button>
+      </div>
+      <pre className="p-3.5 overflow-x-auto font-mono text-[11px] leading-relaxed select-text">
+        <code>{codeString}</code>
+      </pre>
+    </div>
+  );
+};
+
+export const MarkdownRenderer = ({ content, alignRight = false, currentUsername = '' }) => {
+  if (!content) return null;
 
   return (
     <div className={`prose prose-sm max-w-none break-words ${alignRight ? 'text-white prose-invert' : 'text-[var(--theme-text)]'
@@ -27,39 +60,7 @@ export const MarkdownRenderer = ({ content, alignRight = false, currentUsername 
             const codeString = String(children).replace(/\n$/, '');
 
             if (!inline && (match || codeString.includes('\n'))) {
-              const blockId = Math.random().toString(36).substring(7);
-              const isCopied = copiedIndex === blockId;
-
-              return (
-                <div className="my-2.5 rounded-2xl overflow-hidden border border-white/10 bg-[#0d1117] text-gray-200 shadow-lg not-prose text-xs">
-                  <div className="flex items-center justify-between px-3.5 py-1.5 bg-[#161b22] border-b border-white/10 text-[10px] font-mono text-gray-400">
-                    <span className="flex items-center gap-1.5 uppercase font-bold tracking-wider text-cyan-400">
-                      <Terminal className="w-3 h-3" />
-                      {language || 'code'}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => copyCode(codeString, blockId)}
-                      className="flex items-center gap-1 px-2 py-0.5 rounded-md hover:bg-white/10 text-gray-300 hover:text-white transition-colors cursor-pointer"
-                    >
-                      {isCopied ? (
-                        <>
-                          <Check className="w-3 h-3 text-emerald-400" />
-                          <span className="text-emerald-400 font-sans">Disalin!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3 h-3" />
-                          <span className="font-sans">Salin</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                  <pre className="p-3.5 overflow-x-auto font-mono text-[11px] leading-relaxed select-text">
-                    <code>{codeString}</code>
-                  </pre>
-                </div>
-              );
+              return <CodeBlock language={language} codeString={codeString} />;
             }
 
             return (

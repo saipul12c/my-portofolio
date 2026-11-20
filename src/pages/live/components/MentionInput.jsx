@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { AtSign, X, Check, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../../lib/supabaseClient';
@@ -9,9 +9,11 @@ export const MentionInput = ({ value, onChange, onMention }) => {
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
+  const containerRef = useRef(null);
+  const debounceTimerRef = useRef(null);
 
-  // Search users in database (Secure profile lookup)
-  const searchUsers = async (query) => {
+  // Search users in database with debounce
+  const searchUsers = useCallback(async (query) => {
     if (!query) {
       setSuggestions([]);
       return;
@@ -30,7 +32,21 @@ export const MentionInput = ({ value, onChange, onMention }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // Click outside listener to dismiss suggestions
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    };
+  }, []);
 
   // Handle input change and detect @
   const handleInputChange = (e) => {
@@ -39,14 +55,17 @@ export const MentionInput = ({ value, onChange, onMention }) => {
 
     const lastAtIndex = text.lastIndexOf('@');
     if (lastAtIndex !== -1) {
-      // Ensure there's no space before @ (except start of string)
       const charBeforeAt = lastAtIndex === 0 ? '' : text[lastAtIndex - 1];
       if (charBeforeAt === '' || /\s/.test(charBeforeAt)) {
         const afterAt = text.substring(lastAtIndex + 1);
         if (/^[a-zA-Z0-9_]*$/.test(afterAt)) {
           setSearchQuery(afterAt);
-          searchUsers(afterAt);
           setShowSuggestions(true);
+          
+          if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+          debounceTimerRef.current = setTimeout(() => {
+            searchUsers(afterAt);
+          }, 180);
           return;
         }
       }
@@ -68,6 +87,11 @@ export const MentionInput = ({ value, onChange, onMention }) => {
   };
 
   const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      setShowSuggestions(false);
+      return;
+    }
+
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       if (showSuggestions && suggestions.length > 0) {
@@ -82,7 +106,7 @@ export const MentionInput = ({ value, onChange, onMention }) => {
   };
 
   return (
-    <div className="relative w-full group/mention">
+    <div ref={containerRef} className="relative w-full group/mention">
       <textarea
         ref={inputRef}
         value={value}

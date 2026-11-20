@@ -22,13 +22,12 @@ function ShortCardItem({ short, index, currentData, onSelect }) {
       {/* Poster Thumbnail */}
       <div className="relative aspect-[9/16] overflow-hidden bg-black">
         {isVideoPoster || imgError ? (
-          <video
-            src={`${sanitizeUrl(short.src)}#t=0.5`}
-            preload="metadata"
-            muted
-            playsInline
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-90 group-hover:opacity-100 pointer-events-none"
-          />
+          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 via-cyan-950/40 to-slate-900 p-4 text-center">
+            <div className="w-14 h-14 rounded-full bg-cyan-500/80 backdrop-blur-sm flex items-center justify-center text-black shadow-xl transform scale-90 group-hover:scale-100 transition-transform mb-2">
+              <Play className="w-7 h-7 fill-current ml-1" />
+            </div>
+            <span className="text-xs text-cyan-300 font-medium line-clamp-1">{short.title}</span>
+          </div>
         ) : (
           <img
             src={sanitizeUrl(posterUrl)}

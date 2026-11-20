@@ -4,9 +4,12 @@ import { Sparkles, X, Users, BookOpen, MessageCircle, Lightbulb } from 'lucide-r
 import { summarizeMessages } from '../utils/saipulRoomIntegration';
 
 export const AISummarizerModal = ({ isOpen, onClose, messages = [], activeChannel = 'umum' }) => {
-  if (!isOpen) return null;
+  const summaryData = React.useMemo(() => {
+    if (!isOpen) return null;
+    return summarizeMessages(messages);
+  }, [isOpen, messages]);
 
-  const summaryData = summarizeMessages(messages);
+  if (!isOpen || !summaryData) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
