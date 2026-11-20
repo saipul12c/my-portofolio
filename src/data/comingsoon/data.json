@@ -2,38 +2,49 @@
   {
     "id": 1,
     "launchDate": "2030-12-31T00:00:00",
+    "themeColor": "orange",
+    "version": "v1.0.0-DEV",
+    "progressPercentage": 78,
+    "status": "SEDANG DALAM TAHAP PENGEMBANGAN",
+    "liveUrl": "/komunitas",
     "brand": {
-      "name": "CreativeHub",
-      "logo": "FaRocket",
-      "slogan": "Where Creativity Meets Innovation"
+      "name": "Komunitas ID",
+      "logo": "FaUsers",
+      "slogan": "Temukan, Jelajahi, & Terhubung dengan Komunitas Se-Indonesia",
+      "tagline": "Platform Direktori Komunitas Terpadu, Kolaborasi Lintas Daerah, & Sinergi Positif"
     },
     "content": {
-      "title": "Platform Konten Kreator Revolusioner",
-      "description": "Sebuah platform terpadu yang menghubungkan kreator dengan audiens mereka melalui fitur komunitas, livestreaming, dan marketplace digital yang lengkap.",
+      "title": "Komunitas Indonesia - Direktori & Hub Kolaborasi Nasional",
+      "description": "Platform direktori dan ruang temu komunitas digital terbesar di Indonesia yang dirancang untuk menghubungkan penggerak komunitas, pegiat sosial, developer, dan komunitas kreatif di seluruh pelosok tanah air dalam satu ekosistem terbuka dan terintegrasi.",
       "features": [
         {
           "icon": "FaUsers",
-          "title": "Komunitas Interaktif",
-          "description": "Tempat berkumpulnya para kreator dan penikmat konten"
+          "title": "Direktori Komunitas Nasional",
+          "badge": "Multi-Kategori",
+          "description": "Eksplorasi ribuan komunitas berbasis bidang: Teknologi, Pendidikan, Sosial, Seni Budaya, Lingkungan, hingga Bisnis & Startup."
         },
         {
-          "icon": "FaVideo",
-          "title": "Livestreaming HD",
-          "description": "Streaming kualitas tinggi dengan interaksi real-time"
+          "icon": "FaGlobe",
+          "title": "Pencarian & Filter Wilayah",
+          "badge": "Filter Cepat",
+          "description": "Temukan komunitas terdekat berdasarkan lokasi kota, kategori minat, keaktifan, dan jumlah anggota secara instan."
         },
         {
-          "icon": "FaShoppingCart",
-          "title": "Marketplace Digital",
-          "description": "Jual beli produk digital dan fisik dengan mudah"
+          "icon": "FaBuilding",
+          "title": "Profil & Kontak Komunitas Lengkap",
+          "badge": "Showcase Terpadu",
+          "description": "Halaman informasi detail komunitas dengan deskripsi kegiatan, kontak resmi, tautan media sosial, serta galeri dokumentasi."
         },
         {
-          "icon": "FaChartBar",
-          "title": "Analytics Mendalam",
-          "description": "Track performance dan insights yang detail"
+          "icon": "FaUserPlus",
+          "title": "Registrasi Komunitas Mandiri",
+          "badge": "Formulir Interaktif",
+          "description": "Pengurus komunitas dapat mendaftarkan dan memperbarui profil komunitas mereka secara mandiri ke dalam direktori publik."
         }
       ]
     },
     "countdownLabels": {
+      "years": "Tahun",
       "days": "Hari",
       "hours": "Jam",
       "minutes": "Menit",
@@ -41,23 +52,104 @@
       "icon": "FaClock"
     },
     "newsletter": {
-      "title": "Dapatkan Pemberitahuan Saat Kami Launch!",
-      "placeholder": "Masukkan email Anda",
-      "buttonText": "Beritahu Saya",
+      "title": "Daftarkan Komunitas Anda ke Whitelist Peluncuran!",
+      "subtitle": "Jadilah bagian dari 500 komunitas perintis pertama yang mendapatkan badge 'Verified Community' dan fitur promosi eksklusif saat rilis resmi.",
+      "placeholder": "Email pengurus / perwakilan komunitas...",
+      "buttonText": "Daftarkan Komunitas",
       "icon": "FaEnvelope",
       "successIcon": "FaCheckCircle",
       "errorIcon": "FaExclamationCircle"
     },
+    "roadmap": [
+      {
+        "phase": "Fase 01",
+        "title": "Riset Direktori & Skema Database",
+        "description": "Perancangan database Supabase untuk metadata komunitas, kategori wilayah, dan integrasi storage bucket media.",
+        "status": "completed",
+        "date": "Selesai"
+      },
+      {
+        "phase": "Fase 02",
+        "title": "UI Direktori & Sistem Filtering",
+        "description": "Pengembangan antarmuka kartu grid komunitas, statistik agregat anggota, dan modal detail interaktif.",
+        "status": "completed",
+        "date": "Selesai"
+      },
+      {
+        "phase": "Fase 03",
+        "title": "Formulir Pengajuan & Moderasi Admin",
+        "description": "Pengembangan formulir registrasi mandiri komunitas, upload media gambar, dan sistem verifikasi data pengurus.",
+        "status": "in_progress",
+        "date": "Saat Ini (Dalam Pengembangan)"
+      },
+      {
+        "phase": "Fase 04",
+        "title": "Peluncuran Publik & Agenda Event Nasional",
+        "description": "Perilisan penuh platform ke domain publik dengan integrasi kalender agenda event dan forum kolaborasi antar komunitas.",
+        "status": "upcoming",
+        "date": "Target Rilis"
+      }
+    ],
+    "perks": [
+      {
+        "icon": "FaAward",
+        "title": "Lencana Verified Community",
+        "description": "Badge resmi tanda verifikasi yang meningkatkan kepercayaan dan visibilitas komunitas di mata calon anggota baru."
+      },
+      {
+        "icon": "FaRocket",
+        "title": "Sorotan di Featured Showcase",
+        "description": "Komunitas perintis akan mendapatkan penempatan istimewa di carousel beranda saat platform resmi dibuka."
+      },
+      {
+        "icon": "FaUsers",
+        "title": "Jejaring Kolaborasi Antar Pengurus",
+        "description": "Akses ke grup pengurus komunitas se-Indonesia untuk saling bertukar gagasan, kolaborasi event, dan sponsor bersama."
+      },
+      {
+        "icon": "FaCalendarAlt",
+        "title": "Publikasi Event Komunitas Gratis",
+        "description": "Unggah dan promosikan poster event, webinar, atau kopi darat komunitas Anda tanpa dipungut biaya."
+      }
+    ],
+    "streamMock": {
+      "title": "Bedah Komunitas: Membangun Jejaring Developer & Kreator di Berbagai Daerah",
+      "streamer": "Saipul Anwar & Pengurus Komunitas",
+      "viewers": 850,
+      "tag": "Komunitas Indonesia",
+      "messages": [
+        {
+          "user": "Andi_Bandung",
+          "text": "Keren banget akhirnya ada direktori komunitas terpusat se-Indonesia!",
+          "time": "15:20"
+        },
+        {
+          "user": "Dewi_Jogja",
+          "text": "Siap daftarin komunitas pegiat open-source Jogja nih 👍",
+          "time": "15:21"
+        },
+        {
+          "user": "Bagus_Surabaya",
+          "text": "Fitur filter kotanya sangat membantu buat nyari rekan satu daerah 🔥",
+          "time": "15:22"
+        },
+        {
+          "user": "Rina_Medan",
+          "text": "Ditunggu tanggal rilis resminya! Gasabar gabung 🙌",
+          "time": "15:23"
+        }
+      ]
+    },
     "pages": {
       "community": {
-        "title": "Komunitas",
-        "description": "Tempat berkumpulnya para kreator dan penikmat konten untuk berbagi ide, berkolaborasi, dan tumbuh bersama.",
+        "title": "Ekosistem Komunitas Indonesia",
+        "description": "Ruang temu antar komunitas lintas bidang: teknologi, edukasi, kerelawanan sosial, seni budaya, dan kewirausahaan di seluruh pelosok negeri.",
         "icon": "FaUsers",
         "sections": {
           "memberStats": {
-            "totalMembers": 12500,
-            "onlineNow": 342,
-            "newToday": 28,
+            "totalMembers": 5400,
+            "onlineNow": 120,
+            "newToday": 35,
             "icons": {
               "total": "FaUserFriends",
               "online": "FaCircle",
@@ -65,78 +157,469 @@
             }
           },
           "forum": {
-            "title": "Forum Diskusi",
+            "title": "Kategori Komunitas Terdaftar",
             "icon": "FaComments",
             "categories": [
               {
-                "name": "Umum",
-                "icon": "FaGlobe",
-                "description": "Diskusi umum seputar platform"
+                "name": "Teknologi & Coding",
+                "icon": "FaCode",
+                "description": "Komunitas programmer, open source, data science, dan pengembang web/mobile",
+                "topics": 156
               },
               {
-                "name": "Kreator Pemula",
-                "icon": "FaUserPlus",
-                "description": "Ruang untuk kreator yang baru memulai"
+                "name": "Pendidikan & Literasi",
+                "icon": "FaGraduationCap",
+                "description": "Komunitas belajar, beasiswa, literasi digital, dan kelompok studi mandiri",
+                "topics": 124
               },
               {
-                "name": "Tips & Trik",
-                "icon": "FaLightbulb",
-                "description": "Berbagi tips dan strategi konten"
+                "name": "Sosial & Kemanusiaan",
+                "icon": "FaHeart",
+                "description": "Gerakan kerelawanan, aksi sosial kemanusiaan, dan pemberdayaan masyarakat",
+                "topics": 98
               },
               {
-                "name": "Kolaborasi",
-                "icon": "FaHandshake",
-                "description": "Temukan partner kolaborasi"
+                "name": "Kreatif & Desain",
+                "icon": "FaPalette",
+                "description": "Wadah desainer grafis, UI/UX, fotografer, videografer, dan kreator konten",
+                "topics": 112
               },
               {
-                "name": "Feedback",
-                "icon": "FaComments",
-                "description": "Minta dan beri feedback konten"
+                "name": "Bisnis & Startup",
+                "icon": "FaBuilding",
+                "description": "Komunitas entrepreneur muda, UMKM digital, dan pegiat ekosistem startup",
+                "topics": 88
               }
             ]
           },
           "events": {
-            "title": "Acara Komunitas",
+            "title": "Agenda & Temu Komunitas",
             "icon": "FaCalendarAlt",
             "upcomingEvents": [
               {
-                "name": "Workshop Konten Kreatif",
-                "date": "2024-11-15T19:00:00",
-                "participants": 150,
-                "icon": "FaMicrophone",
-                "description": "Pelajari cara membuat konten yang engaging"
+                "name": "Indonesia Community Summit 2026: Sinergi untuk Negeri",
+                "date": "2026-12-18T09:00:00",
+                "participants": 450,
+                "icon": "FaUsers",
+                "speaker": "Perwakilan Komunitas Nasional",
+                "description": "Konferensi virtual temu komunitas antar daerah membahas kolaborasi program dan dampak sosial."
               },
               {
-                "name": "Live Q&A dengan Top Creator",
-                "date": "2024-11-20T20:00:00",
-                "participants": 89,
-                "icon": "FaVideo",
-                "description": "Tanya jawab langsung dengan creator berpengalaman"
-              },
-              {
-                "name": "Hackathon Kolaborasi",
-                "date": "2024-11-25T10:00:00",
-                "participants": 45,
-                "icon": "FaCode",
-                "description": "Kompetisi membuat konten kreatif"
+                "name": "Workshop: Tata Kelola Komunitas Berkelanjutan",
+                "date": "2026-12-27T19:30:00",
+                "participants": 280,
+                "icon": "FaAward",
+                "speaker": "Saipul Anwar & Community Leaders",
+                "description": "Strategi merawat keaktifan anggota, regenerasi pengurus, dan manajemen event online."
               }
             ]
           }
         }
       },
       "livestream": {
-        "title": "Livestreaming & Video",
-        "description": "Platform berbagi video dan streaming langsung dengan kualitas terbaik dan fitur interaksi yang lengkap.",
+        "title": "Showcase & Temu Virtual Komunitas",
+        "description": "Sesi siaran langsung perkenalan profil komunitas, talkshow inspiratif, dan peluncuran program kerja bersama.",
         "icon": "FaVideo",
         "features": {
           "videoUpload": {
-            "maxSize": "2GB",
-            "allowedFormats": ["MP4", "MOV", "AVI", "WMV", "FLV"],
+            "maxSize": "5MB (Banner & Logo)",
+            "allowedFormats": [
+              "JPG",
+              "PNG",
+              "WEBP",
+              "SVG"
+            ],
             "icon": "FaUpload"
           },
           "livestream": {
-            "maxDuration": "8 hours",
-            "qualityOptions": ["480p", "720p", "1080p", "4K"],
+            "maxDuration": "Showcase Komunitas Berkala",
+            "qualityOptions": [
+              "HD 1080p",
+              "Interactive Q&A",
+              "Community Spotlights"
+            ],
+            "icon": "FaBroadcastTower"
+          },
+          "interaction": {
+            "liveChat": true,
+            "superChat": false,
+            "polls": true,
+            "qna": true,
+            "icons": {
+              "liveChat": "FaComment",
+              "superChat": "FaDollarSign",
+              "polls": "FaChartBar",
+              "qna": "FaQuestionCircle"
+            }
+          }
+        },
+        "contentCategories": [
+          {
+            "name": "Teknologi & Sains",
+            "subcategories": [
+              "Web & Mobile",
+              "Open Source",
+              "AI & Robotika",
+              "Game Dev"
+            ],
+            "icon": "FaCode"
+          },
+          {
+            "name": "Sosial & Budaya",
+            "subcategories": [
+              "Pelestarian Budaya",
+              "Aksi Lingkungan",
+              "Relawan Mengajar",
+              "Bakti Sosial"
+            ],
+            "icon": "FaHeart"
+          },
+          {
+            "name": "Pendidikan & Karir",
+            "subcategories": [
+              "Bootcamp Bersama",
+              "Persiapan Karir",
+              "Beasiswa Luar Negeri",
+              "Mentoring"
+            ],
+            "icon": "FaGraduationCap"
+          },
+          {
+            "name": "Bisnis & Kreatif",
+            "subcategories": [
+              "UMKM Digital",
+              "Kreator Konten",
+              "Desain Visual",
+              "Kewirausahaan"
+            ],
+            "icon": "FaBuilding"
+          }
+        ],
+        "monetization": {
+          "ads": false,
+          "subscription": false,
+          "donation": true,
+          "merchandise": true,
+          "icons": {
+            "ads": "FaAd",
+            "subscription": "FaCreditCard",
+            "donation": "FaDonate",
+            "merchandise": "FaAward"
+          }
+        }
+      }
+    },
+    "socialLinks": [
+      {
+        "name": "GitHub",
+        "url": "https://github.com",
+        "icon": "FaGithub"
+      },
+      {
+        "name": "Discord",
+        "url": "https://discord.gg",
+        "icon": "FaDiscord"
+      },
+      {
+        "name": "Instagram",
+        "url": "https://instagram.com",
+        "icon": "FaInstagram"
+      },
+      {
+        "name": "YouTube",
+        "url": "https://youtube.com",
+        "icon": "FaYoutube"
+      },
+      {
+        "name": "Twitter / X",
+        "url": "https://twitter.com",
+        "icon": "FaTwitter"
+      },
+      {
+        "name": "LinkedIn",
+        "url": "https://linkedin.com",
+        "icon": "FaLinkedin"
+      }
+    ],
+    "contact": {
+      "email": {
+        "address": "uju355@gmail.com",
+        "icon": "FaEnvelope"
+      },
+      "phone": {
+        "number": "+62 --- --- ---",
+        "icon": "FaPhoneAlt"
+      },
+      "support": {
+        "available": true,
+        "hours": "Layanan Pengurus Komunitas (Senin - Jumat)",
+        "icon": "FaHeadset"
+      }
+    },
+    "technology": {
+      "backend": {
+        "framework": "Supabase Client & REST API",
+        "database": "PostgreSQL (Communities Table)",
+        "authentication": "Supabase Auth with RLS",
+        "cache": "Supabase Edge & In-App Memory",
+        "icons": {
+          "backend": "FaServer",
+          "database": "FaDatabase"
+        }
+      },
+      "frontend": {
+        "framework": "React 19 & Vite",
+        "styling": "Tailwind CSS v4 & Lucide Icons",
+        "animation": "Framer Motion",
+        "icons": {
+          "frontend": "FaReact",
+          "styling": "FaPalette"
+        }
+      },
+      "infrastructure": {
+        "hosting": "Vercel Edge Platform",
+        "cdn": "Cloudflare Global CDN",
+        "storage": "Supabase Storage (Community Media)",
+        "icons": {
+          "hosting": "FaCloud",
+          "cdn": "FaGlobe"
+        }
+      }
+    }
+  },
+  {
+    "id": 2,
+    "launchDate": "2030-03-15T00:00:00",
+    "themeColor": "cyan",
+    "version": "v1.0.0-BETA",
+    "progressPercentage": 95,
+    "status": "SEDANG TAHAP PENGUJIAN BETA (SUDAH DAPAT DIGUNAKAN)",
+    "liveUrl": "/Live-Discussion",
+    "brand": {
+      "name": "Sinyal Live",
+      "logo": "FaBroadcastTower",
+      "slogan": "Ruang Diskusi & Komunitas Real-Time Interaktif",
+      "tagline": "Platform Diskusi Real-Time Multi-Channel, Integrasi AI Saipul, & Moderasi Cerdas"
+    },
+    "content": {
+      "title": "Sinyal Live - Ruang Diskusi Interaktif & Real-Time",
+      "description": "Platform komunikasi dan diskusi langsung yang kini telah memasuki tahap Public Beta dan sudah dapat digunakan secara langsung di rute /Live-Discussion! Menghadirkan obrolan multi-channel (#Umum, #Tanya-Coding, #Showcase, #Santai), asisten bot cerdas @Saipul, sistem peran multi-tier, achievement & leaderboard, serta kompresi media WebP instan.",
+      "features": [
+        {
+          "icon": "FaComments",
+          "title": "Multi-Channel Terstruktur",
+          "badge": "Sudah Dapat Digunakan",
+          "description": "Ruang percakapan terorganisir meliputi channel #Umum, #Tanya-Coding, #Showcase, dan #Santai dengan websocket Supabase latensi ultra rendah."
+        },
+        {
+          "icon": "FaLightbulb",
+          "title": "Integrasi Asisten AI Saipul",
+          "badge": "@Saipul / @ai",
+          "description": "Panggil asisten pintar @saipul langsung di ruang obrolan untuk tanya jawab kode, debugging, hingga ringkasan diskusi otomatis."
+        },
+        {
+          "icon": "FaAward",
+          "title": "Sistem Role & Reputasi",
+          "badge": "Multi-Tier Role",
+          "description": "Struktur hak akses berjenjang mulai dari Super Admin, Admin, Moderator, Premium, hingga Verified dengan lencana pencapaian eksklusif."
+        },
+        {
+          "icon": "FaShieldAlt",
+          "title": "Moderasi Cerdas & Polling",
+          "badge": "Aman & Interaktif",
+          "description": "Filter sensor kata otomatis, sistem banding (appeal) moderasi, polling voting interaktif, dan kompresi gambar WebP hemat data."
+        }
+      ]
+    },
+    "countdownLabels": {
+      "years": "Tahun",
+      "days": "Hari",
+      "hours": "Jam",
+      "minutes": "Menit",
+      "seconds": "Detik",
+      "icon": "FaStopwatch"
+    },
+    "newsletter": {
+      "title": "Sinyal Live Beta Sudah Dibuka — Masuk & Mulai Obrolan!",
+      "subtitle": "Kunjungi /Live-Discussion untuk mencoba langsung fiturnya sekarang. Daftarkan email Anda untuk membuka badge VIP Tester dan kuota pesan prioritas.",
+      "placeholder": "Alamat email Anda...",
+      "buttonText": "Gabung Diskusi Beta",
+      "icon": "FaPaperPlane",
+      "successIcon": "FaThumbsUp",
+      "errorIcon": "FaExclamationCircle"
+    },
+    "roadmap": [
+      {
+        "phase": "Fase 01",
+        "title": "Fondasi WebSocket & Autentikasi",
+        "description": "Integrasi core engine Supabase realtime, sistem auth pendaftaran & login, dan arsitektur database multi-channel.",
+        "status": "completed",
+        "date": "Selesai"
+      },
+      {
+        "phase": "Fase 02",
+        "title": "Hierarki Peran & Moderasi Keamanan",
+        "description": "Penerapan sistem multi-role, dashboard moderator/admin, filter kata terlarang, limit pesan per level, dan sistem banding.",
+        "status": "completed",
+        "date": "Selesai"
+      },
+      {
+        "phase": "Fase 03",
+        "title": "Tahap Pengujian Beta Publik (Dapat Digunakan)",
+        "description": "Rilis beta publik aktif di /Live-Discussion: integrasi bot Saipul AI, polling suara real-time, gamifikasi achievement, dan upload media WebP.",
+        "status": "in_progress",
+        "date": "Aktif Sekarang"
+      },
+      {
+        "phase": "Fase 04",
+        "title": "Rilis Stabil v1.0 & Audio Room",
+        "description": "Peluncuran versi stabil General Availability (GA) dengan fitur voice room interaktif, integrasi custom webhook, dan mobile PWA.",
+        "status": "upcoming",
+        "date": "Mendatang"
+      }
+    ],
+    "perks": [
+      {
+        "icon": "FaAward",
+        "title": "Early Beta Tester Badge",
+        "description": "Lencana pencapaian eksklusif 'Peserta Baru' & 'Pembicara Aktif' otomatis terbuka saat Anda aktif mengirim pesan di room diskusi."
+      },
+      {
+        "icon": "FaBolt",
+        "title": "Batas Pesan Prioritas",
+        "description": "Klaim prioritas kuota pesan harian lebih banyak dan kemampuan mention @everyone untuk member terverifikasi."
+      },
+      {
+        "icon": "FaLightbulb",
+        "title": "Akses Penuh Asisten @Saipul",
+        "description": "Gunakan kapabilitas AI Saipul untuk bedah kode, ringkasan room, dan konsultasi teknis tanpa batasan kuota uji coba."
+      },
+      {
+        "icon": "FaCrown",
+        "title": "Pembuatan Polling & Topik Komunitas",
+        "description": "Akses khusus membuat polling suara komunitas dan mengajukan usulan fitur baru langsung ke tim developer."
+      }
+    ],
+    "streamMock": {
+      "title": "Live Room: Tanya Jawab Coding, Review Bug & Showcase Projek",
+      "streamer": "Saipul Anwar (Super Admin)",
+      "viewers": 384,
+      "tag": "Sinyal Live #Umum",
+      "messages": [
+        {
+          "user": "Rian_Dev",
+          "text": "Keren banget ruang diskusinya di /Live-Discussion udah bisa dipakai!",
+          "time": "14:10"
+        },
+        {
+          "user": "SaipulAI",
+          "text": "@Rian_Dev Halo! Selamat datang di Sinyal Live Beta. Ada kendala coding hari ini?",
+          "time": "14:11"
+        },
+        {
+          "user": "Indah_Frontend",
+          "text": "Channel #Tanya-Coding ngebantu banget pas nemu error React 👍",
+          "time": "14:12"
+        },
+        {
+          "user": "Dimas_Cloud",
+          "text": "Realtime websocket-nya cepet banget ga ada delay sama sekali 🔥",
+          "time": "14:13"
+        }
+      ]
+    },
+    "pages": {
+      "community": {
+        "title": "Komunitas Sinyal Live",
+        "description": "Pusat kolaborasi komunitas developer, pegiat teknologi, dan desainer untuk berdiskusi, memecahkan masalah coding, serta pamer karya secara langsung.",
+        "icon": "FaUsers",
+        "sections": {
+          "memberStats": {
+            "totalMembers": 2850,
+            "onlineNow": 64,
+            "newToday": 19,
+            "icons": {
+              "total": "FaUserFriends",
+              "online": "FaCircle",
+              "new": "FaUserPlus"
+            }
+          },
+          "forum": {
+            "title": "Kategori Channel Sinyal Live",
+            "icon": "FaComments",
+            "categories": [
+              {
+                "name": "#Umum",
+                "icon": "FaGlobe",
+                "description": "Diskusi umum seputar teknologi, pembaruan web, dan sinyal obrolan komunitas",
+                "topics": 320
+              },
+              {
+                "name": "#Tanya-Coding",
+                "icon": "FaCode",
+                "description": "Pusat tanya jawab error coding, debugging script, arsitektur sistem, dan tips framework",
+                "topics": 485
+              },
+              {
+                "name": "#Showcase",
+                "icon": "FaRocket",
+                "description": "Pamerkan karya portofolio, demo proyek aplikasi terbaru, dan mintalah masukan komunitas",
+                "topics": 210
+              },
+              {
+                "name": "#Santai",
+                "icon": "FaHeart",
+                "description": "Lounge rehat santai, obrolan santai non-teknis, dan tempat menjalin relasi antar developer",
+                "topics": 175
+              }
+            ]
+          },
+          "events": {
+            "title": "Sesi Diskusi & Live Sharing Terjadwal",
+            "icon": "FaCalendarAlt",
+            "upcomingEvents": [
+              {
+                "name": "Live Coding: Mengembangkan Fitur Realtime dengan Supabase & React",
+                "date": "2026-12-16T19:30:00",
+                "participants": 240,
+                "icon": "FaCode",
+                "speaker": "Saipul Anwar (Full-Stack Engineer)",
+                "description": "Bedah tuntas implementasi WebSocket, state management reaktif, dan proteksi RLS."
+              },
+              {
+                "name": "Community Review & Q&A: Showcase Portofolio Akhir Tahun",
+                "date": "2026-12-24T20:00:00",
+                "participants": 195,
+                "icon": "FaUsers",
+                "speaker": "Tim Moderator Sinyal Live",
+                "description": "Sesi review portofolio interaktif dan diskusi strategi karir di industri teknologi."
+              }
+            ]
+          }
+        }
+      },
+      "livestream": {
+        "title": "Sinyal Live Room & Audio-Chat Hub",
+        "description": "Sesi interaksi langsung real-time dengan latensi rendah, integrasi bot AI cerdas, upload media WebP terkompresi, dan polling suara.",
+        "icon": "FaBroadcastTower",
+        "features": {
+          "videoUpload": {
+            "maxSize": "5MB (Auto-WebP)",
+            "allowedFormats": [
+              "JPG",
+              "PNG",
+              "WEBP",
+              "GIF"
+            ],
+            "icon": "FaUpload"
+          },
+          "livestream": {
+            "maxDuration": "Aktif 24 Jam Non-stop",
+            "qualityOptions": [
+              "Realtime Sync",
+              "Supabase Broadcast",
+              "Sub-50ms Latency"
+            ],
             "icon": "FaBroadcastTower"
           },
           "interaction": {
@@ -154,106 +637,116 @@
         },
         "contentCategories": [
           {
-            "name": "Hiburan",
-            "subcategories": ["Music", "Gaming", "Comedy", "Talk Show"],
-            "icon": "FaMusic"
-          },
-          {
-            "name": "Pendidikan",
-            "subcategories": ["Tutorial", "Lecture", "Documentary", "Workshop"],
-            "icon": "FaGraduationCap"
-          },
-          {
-            "name": "Gaya Hidup",
-            "subcategories": ["Vlog", "Cooking", "Travel", "Fashion"],
-            "icon": "FaHeart"
-          },
-          {
-            "name": "Teknologi",
-            "subcategories": ["Coding", "Review", "Tutorial Tech"],
+            "name": "Frontend & UI/UX",
+            "subcategories": [
+              "React 19",
+              "Vite",
+              "Tailwind CSS",
+              "Framer Motion"
+            ],
             "icon": "FaCode"
           },
           {
-            "name": "Seni & Kreatif",
-            "subcategories": ["Drawing", "Design", "Photography", "Craft"],
-            "icon": "FaPalette"
+            "name": "Realtime Backend",
+            "subcategories": [
+              "Supabase",
+              "PostgreSQL",
+              "Row Level Security",
+              "WebSockets"
+            ],
+            "icon": "FaServer"
+          },
+          {
+            "name": "Kecerdasan Buatan (AI)",
+            "subcategories": [
+              "Saipul AI Bot",
+              "Knowledge Base",
+              "AI Summarizer",
+              "Smart Reply"
+            ],
+            "icon": "FaLightbulb"
+          },
+          {
+            "name": "Moderasi & Keamanan",
+            "subcategories": [
+              "Profanity Filter",
+              "Role Permission",
+              "Appeal System",
+              "User Badges"
+            ],
+            "icon": "FaLock"
           }
         ],
         "monetization": {
-          "ads": true,
+          "ads": false,
           "subscription": true,
           "donation": true,
-          "merchandise": true,
+          "merchandise": false,
           "icons": {
             "ads": "FaAd",
             "subscription": "FaCreditCard",
             "donation": "FaDonate",
-            "merchandise": "FaTshirt"
+            "merchandise": "FaAward"
           }
         }
       }
     },
     "socialLinks": [
       {
-        "name": "Twitter",
-        "url": "https://twitter.com/creativehub",
-        "icon": "FaTwitter"
-      },
-      {
         "name": "GitHub",
-        "url": "https://github.com/creativehub",
+        "url": "https://github.com",
         "icon": "FaGithub"
       },
       {
+        "name": "Discord",
+        "url": "https://discord.gg",
+        "icon": "FaDiscord"
+      },
+      {
+        "name": "Twitter / X",
+        "url": "https://twitter.com",
+        "icon": "FaTwitter"
+      },
+      {
         "name": "LinkedIn",
-        "url": "https://linkedin.com/company/creativehub",
+        "url": "https://linkedin.com",
         "icon": "FaLinkedin"
       },
       {
-        "name": "Instagram",
-        "url": "https://instagram.com/creativehub",
-        "icon": "FaInstagram"
-      },
-      {
         "name": "YouTube",
-        "url": "https://youtube.com/c/creativehub",
+        "url": "https://youtube.com",
         "icon": "FaYoutube"
-      },
-      {
-        "name": "Discord",
-        "url": "https://discord.gg/creativehub",
-        "icon": "FaDiscord"
       }
     ],
     "contact": {
       "email": {
-        "address": "support@creativehub.com",
-        "icon": "FaEnvelope"
+        "address": "uju355@gmail.com",
+        "icon": "FaEnvelopeOpen"
       },
       "phone": {
-        "number": "+1-234-567-890",
+        "number": "+62 --- --- ---",
         "icon": "FaPhoneAlt"
       },
       "support": {
         "available": true,
-        "hours": "24/7",
-        "icon": "FaHeadset"
+        "hours": "24/7 Komunitas & Diskusi Aktif",
+        "icon": "FaLifeRing"
       }
     },
     "technology": {
       "backend": {
-        "framework": "Node.js",
-        "database": "MongoDB",
-        "authentication": "JWT",
-        "cache": "Redis",
+        "framework": "Supabase Realtime Engine",
+        "database": "PostgreSQL & Row Level Security",
+        "authentication": "Supabase Auth (JWT & Session)",
+        "cache": "IndexedDB & In-Memory Client Cache",
         "icons": {
           "backend": "FaServer",
           "database": "FaDatabase"
         }
       },
       "frontend": {
-        "framework": "React",
-        "styling": "Tailwind CSS",
+        "framework": "React 19 & Vite",
+        "styling": "Tailwind CSS v4 & Lucide Icons",
         "animation": "Framer Motion",
         "icons": {
           "frontend": "FaReact",
@@ -261,9 +754,9 @@
         }
       },
       "infrastructure": {
-        "hosting": "Vercel",
-        "cdn": "Cloudflare",
-        "storage": "AWS S3",
+        "hosting": "Vercel Edge Platform",
+        "cdn": "Cloudflare Global Anycast CDN",
+        "storage": "Supabase Storage Bucket (WebP)",
         "icons": {
           "hosting": "FaCloud",
           "cdn": "FaGlobe"
@@ -272,40 +765,51 @@
     }
   },
   {
-    "id": 2,
-    "launchDate": "2030-03-15T00:00:00",
+    "id": 3,
+    "launchDate": "2030-10-31T00:00:00",
+    "themeColor": "purple",
+    "version": "v1.0.0-DEV",
+    "progressPercentage": 82,
+    "status": "SEDANG DALAM TAHAP PENGEMBANGAN",
+    "liveUrl": "/discord",
     "brand": {
-      "name": "TechInnovate",
-      "logo": "FaCode",
-      "slogan": "Innovating the Future of Technology"
+      "name": "Discond",
+      "logo": "FaDiscord",
+      "slogan": "Platform Obrolan Server, Suara & Komunitas Modern",
+      "tagline": "Ekosistem Server Komunitas Multi-Channel, Voice Room, Auto-Moderasi & Slash Commands"
     },
     "content": {
-      "title": "Platform Teknologi Terdepan",
-      "description": "Solusi teknologi revolusioner yang mengubah cara bisnis dan developer berinovasi dengan tools dan infrastructure terdepan.",
+      "title": "Discond - Ekosistem Server & Komunitas Virtual",
+      "description": "Platform perpesanan real-time berbasis server dan channel terinspirasi dari arsitektur Discord yang saat ini sedang aktif dikembangkan di folder src/pages/discond. Menyediakan sistem multi-server, voice channel, thread percakapan mendalam, auto-moderator, slash commands, polling suara, dan status presensi anggota.",
       "features": [
         {
-          "icon": "FaCloud",
-          "title": "Cloud Storage",
-          "description": "Secure and scalable cloud solutions"
-        },
-        {
-          "icon": "FaMobile",
-          "title": "Mobile First",
-          "description": "Optimized for all devices"
-        },
-        {
           "icon": "FaServer",
-          "title": "Enterprise Grade",
-          "description": "Infrastructure kelas enterprise"
+          "title": "Multi-Server & Kategori Channel",
+          "badge": "Text & Voice",
+          "description": "Jelajahi dan bangun server komunitas sendiri dengan channel teks dan ruang suara terstruktur rapi."
         },
         {
-          "icon": "FaLock",
-          "title": "Security First",
-          "description": "Keamanan tingkat tinggi"
+          "icon": "FaComments",
+          "title": "Thread, Reaksi & Slash Commands",
+          "badge": "Interaktif",
+          "description": "Percakapan bercabang (threads), reaksi emoji cepat, pesan tersemat (pins), dan perintah bot /command."
+        },
+        {
+          "icon": "FaShieldAlt",
+          "title": "Auto-Moderator & Role Tiers",
+          "badge": "Multi-Tier Role",
+          "description": "Sistem proteksi server otomatis anti-spam, peran berjenjang (Supervisor, Admin, User), serta tier Bronze hingga Diamond."
+        },
+        {
+          "icon": "FaBroadcastTower",
+          "title": "Direct Message & Metrik Channel",
+          "badge": "Privat & Real-Time",
+          "description": "Kirim pesan privat langsung (DM), indikator status online/idle/dnd, serta metrik analitik aktivitas channel."
         }
       ]
     },
     "countdownLabels": {
+      "years": "Tahun",
       "days": "Hari",
       "hours": "Jam",
       "minutes": "Menit",
@@ -313,23 +817,104 @@
       "icon": "FaStopwatch"
     },
     "newsletter": {
-      "title": "Dapatkan Update Terbaru",
-      "placeholder": "Alamat email Anda",
-      "buttonText": "Berlangganan",
+      "title": "Dapatkan Akses Pioneer Server Discond!",
+      "subtitle": "Daftarkan email Anda sekarang untuk mendapatkan status perintis, klaim tier Diamond eksklusif, dan undangan server beta awal.",
+      "placeholder": "Ketik alamat email Anda...",
+      "buttonText": "Klaim Undangan Server",
       "icon": "FaPaperPlane",
       "successIcon": "FaThumbsUp",
       "errorIcon": "FaExclamationCircle"
     },
+    "roadmap": [
+      {
+        "phase": "Fase 01",
+        "title": "Arsitektur Server & Multi-Channel",
+        "description": "Pengembangan navigasi sidebar server, channel grouping (teks & suara), dan layout responsif multi-panel.",
+        "status": "completed",
+        "date": "Selesai"
+      },
+      {
+        "phase": "Fase 02",
+        "title": "Messaging Core, Thread & Reaksi",
+        "description": "Sistem WebSocket realtime, thread percakapan terisolasi, attachment media, dan reaction emoji picker.",
+        "status": "completed",
+        "date": "Selesai"
+      },
+      {
+        "phase": "Fase 03",
+        "title": "Auto-Moderasi, Slash Commands & Voice",
+        "description": "Integrasi bot auto-moderator, slash commands, polling interaktif, penjadwalan pesan, dan voice channel room.",
+        "status": "in_progress",
+        "date": "Saat Ini (Dalam Pengembangan)"
+      },
+      {
+        "phase": "Fase 04",
+        "title": "Peluncuran Publik Stabil & Ekosistem Bot",
+        "description": "Perilisan versi stabil Discond dengan dukungan webhook eksternal, custom developer bot API, dan sinkronisasi mobile PWA.",
+        "status": "upcoming",
+        "date": "Target Rilis"
+      }
+    ],
+    "perks": [
+      {
+        "icon": "FaDiscord",
+        "title": "Pioneer Server Owner Badge",
+        "description": "Lencana kehormatan pembuat server generasi pertama dengan slot custom emoji dan batas anggota tak terbatas."
+      },
+      {
+        "icon": "FaCrown",
+        "title": "Instant Diamond Tier Pass",
+        "description": "Tingkatkan akun langsung ke status Diamond dengan warna nama eksklusif dan akses room VIP server."
+      },
+      {
+        "icon": "FaBolt",
+        "title": "Prioritas Audio Bitrate Voice",
+        "description": "Kualitas transmisi audio suara sebening kristal hingga 128kbps dengan latensi minim di setiap voice channel."
+      },
+      {
+        "icon": "FaCode",
+        "title": "Akses Awal Developer Bot API",
+        "description": "Uji coba SDK bot Discond dan hubungkan webhook eksternal ke server komunitas Anda lebih awal."
+      }
+    ],
+    "streamMock": {
+      "title": "Live Server Showcase: Bedah Fitur Discond Komuniti & Voice Hangout",
+      "streamer": "Saipul Anwar (Supervisor)",
+      "viewers": 1150,
+      "tag": "Discond #General",
+      "messages": [
+        {
+          "user": "CyberGamer",
+          "text": "Tampilan UI Discond keren banget, mirip Discord tapi super enteng!",
+          "time": "16:05"
+        },
+        {
+          "user": "DevMaster",
+          "text": "Fitur slash commands dan thread percakapannya rapi banget 👍",
+          "time": "16:06"
+        },
+        {
+          "user": "Alisa_Voice",
+          "text": "Gasabar nyobain voice channel bareng komunitas!",
+          "time": "16:07"
+        },
+        {
+          "user": "KuroBot",
+          "text": "Bot auto-moderator aktif melindungi server dari spam ✅",
+          "time": "16:08"
+        }
+      ]
+    },
     "pages": {
       "community": {
-        "title": "Developer Community",
-        "description": "Komunitas developer dan tech enthusiast untuk berbagi pengetahuan dan kolaborasi.",
-        "icon": "FaUsers",
+        "title": "Ekosistem Server Discond",
+        "description": "Jaringan server komunitas virtual tempat berkumpulnya para gamer, programmer, kreator konten, dan pecinta teknologi untuk berinteraksi tanpa batas.",
+        "icon": "FaDiscord",
         "sections": {
           "memberStats": {
-            "totalMembers": 8500,
-            "onlineNow": 215,
-            "newToday": 18,
+            "totalMembers": 9800,
+            "onlineNow": 430,
+            "newToday": 52,
             "icons": {
               "total": "FaUserFriends",
               "online": "FaCircle",
@@ -337,66 +922,82 @@
             }
           },
           "forum": {
-            "title": "Tech Forum",
+            "title": "Kategori Server Komunitas Populer",
             "icon": "FaComments",
             "categories": [
               {
-                "name": "Web Development",
+                "name": "Gaming & Esports",
+                "icon": "FaDiscord",
+                "description": "Server mabar game online, turnamen komunitas, dan diskusi strategi bermain",
+                "topics": 380
+              },
+              {
+                "name": "Developer & Open Source",
                 "icon": "FaCode",
-                "description": "Diskusi web development"
+                "description": "Kolaborasi proyek coding, showcase repo GitHub, dan bedah bug script",
+                "topics": 420
               },
               {
-                "name": "Mobile Apps",
-                "icon": "FaMobile",
-                "description": "Pengembangan aplikasi mobile"
+                "name": "Musik & Voice Hangout",
+                "icon": "FaBroadcastTower",
+                "description": "Ruang santai ngobrol lewat voice room dan mendengarkan musik bersama",
+                "topics": 195
               },
               {
-                "name": "Cloud & DevOps",
-                "icon": "FaCloud",
-                "description": "Infrastructure dan deployment"
-              },
-              {
-                "name": "AI & Machine Learning",
-                "icon": "FaLightbulb",
-                "description": "Kecerdasan artifisial"
+                "name": "Desain & Kreatif Studio",
+                "icon": "FaPalette",
+                "description": "Kritik karya visual, aset grafis gratis, dan kolaborasi desainer muda",
+                "topics": 210
               }
             ]
           },
           "events": {
-            "title": "Tech Events",
+            "title": "Turnamen & Voice Event Terjadwal",
             "icon": "FaCalendarAlt",
             "upcomingEvents": [
               {
-                "name": "Web Development Workshop",
-                "date": "2024-12-10T14:00:00",
-                "participants": 120,
-                "icon": "FaCode",
-                "description": "Workshop modern web development"
+                "name": "Discond Voice Party: Sharing Session & Game Night",
+                "date": "2026-12-19T20:00:00",
+                "participants": 350,
+                "icon": "FaDiscord",
+                "speaker": "Komunitas Discond Indonesia",
+                "description": "Kumpul santai akhir pekan di voice channel umum dengan giveaway Diamond tier."
               },
               {
-                "name": "Cloud Infrastructure Seminar",
-                "date": "2024-12-18T13:00:00",
-                "participants": 75,
-                "icon": "FaCloud",
-                "description": "Best practices cloud infrastructure"
+                "name": "Developer Hack-Talk: Menulis Bot Discond dengan Node.js",
+                "date": "2026-12-26T19:30:00",
+                "participants": 280,
+                "icon": "FaCode",
+                "speaker": "Saipul Anwar",
+                "description": "Tutorial pembuatan bot slash commands interaktif untuk moderasi server."
               }
             ]
           }
         }
       },
       "livestream": {
-        "title": "Tech Streaming",
-        "description": "Live coding, tech talks, dan tutorial programming secara real-time.",
-        "icon": "FaVideo",
+        "title": "Voice Channel & Screen Share Hub",
+        "description": "Ruang suara real-time dengan latensi rendah, screen sharing resolusi tinggi, dan obrolan teks paralel di dalam channel.",
+        "icon": "FaBroadcastTower",
         "features": {
           "videoUpload": {
-            "maxSize": "1GB",
-            "allowedFormats": ["MP4", "MOV", "WEBM"],
+            "maxSize": "25MB (Attachment Preview)",
+            "allowedFormats": [
+              "PNG",
+              "JPG",
+              "GIF",
+              "WEBP",
+              "MP4"
+            ],
             "icon": "FaUpload"
           },
           "livestream": {
-            "maxDuration": "6 hours",
-            "qualityOptions": ["360p", "480p", "720p", "1080p"],
+            "maxDuration": "Non-stop Voice & Screen Share",
+            "qualityOptions": [
+              "1080p 60FPS Screen Share",
+              "128kbps Crystal Audio",
+              "Sub-30ms RTC"
+            ],
             "icon": "FaBroadcastTower"
           },
           "interaction": {
@@ -404,111 +1005,141 @@
             "superChat": false,
             "polls": true,
             "qna": true,
-            "codeShare": true,
             "icons": {
               "liveChat": "FaComment",
+              "superChat": "FaDollarSign",
               "polls": "FaChartBar",
-              "qna": "FaQuestionCircle",
-              "codeShare": "FaCode"
+              "qna": "FaQuestionCircle"
             }
           }
         },
         "contentCategories": [
           {
-            "name": "Programming",
-            "subcategories": ["JavaScript", "Python", "Java", "Go"],
+            "name": "Server Gaming",
+            "subcategories": [
+              "Valorant",
+              "Mobile Legends",
+              "Minecraft",
+              "Genshin"
+            ],
+            "icon": "FaDiscord"
+          },
+          {
+            "name": "Programming Lounge",
+            "subcategories": [
+              "React",
+              "Python",
+              "Full-Stack",
+              "DevOps"
+            ],
             "icon": "FaCode"
           },
           {
-            "name": "DevOps",
-            "subcategories": ["Docker", "Kubernetes", "CI/CD", "Monitoring"],
-            "icon": "FaServer"
+            "name": "Voice Hangout",
+            "subcategories": [
+              "Lofi Room",
+              "Karaoke Night",
+              "Late Night Talks",
+              "Study With Me"
+            ],
+            "icon": "FaBroadcastTower"
           },
           {
-            "name": "Data Science",
-            "subcategories": ["Machine Learning", "Data Analysis", "Visualization"],
-            "icon": "FaChartBar"
+            "name": "Komunitas Umum",
+            "subcategories": [
+              "Anime & Manga",
+              "Movies",
+              "Tech Talks",
+              "Creative Studio"
+            ],
+            "icon": "FaUsers"
           }
         ],
         "monetization": {
           "ads": false,
           "subscription": true,
           "donation": true,
-          "premiumContent": true,
+          "merchandise": false,
           "icons": {
+            "ads": "FaAd",
             "subscription": "FaCreditCard",
             "donation": "FaDonate",
-            "premiumContent": "FaCrown"
+            "merchandise": "FaAward"
           }
         }
       }
     },
     "socialLinks": [
       {
-        "name": "Twitter",
-        "url": "https://twitter.com/techinnovate",
-        "icon": "FaTwitter"
-      },
-      {
         "name": "GitHub",
-        "url": "https://github.com/techinnovate",
+        "url": "https://github.com",
         "icon": "FaGithub"
       },
       {
-        "name": "LinkedIn",
-        "url": "https://linkedin.com/company/techinnovate",
-        "icon": "FaLinkedin"
-      },
-      {
-        "name": "Facebook",
-        "url": "https://facebook.com/techinnovate",
-        "icon": "FaFacebook"
-      },
-      {
         "name": "Discord",
-        "url": "https://discord.gg/techinnovate",
+        "url": "https://discord.gg",
         "icon": "FaDiscord"
+      },
+      {
+        "name": "Twitter / X",
+        "url": "https://twitter.com",
+        "icon": "FaTwitter"
+      },
+      {
+        "name": "Instagram",
+        "url": "https://instagram.com",
+        "icon": "FaInstagram"
+      },
+      {
+        "name": "YouTube",
+        "url": "https://youtube.com",
+        "icon": "FaYoutube"
+      },
+      {
+        "name": "LinkedIn",
+        "url": "https://linkedin.com",
+        "icon": "FaLinkedin"
       }
     ],
     "contact": {
       "email": {
-        "address": "info@techinnovate.com",
-        "icon": "FaEnvelopeOpen"
+        "address": "uju355@gmail.com",
+        "icon": "FaEnvelope"
       },
       "phone": {
-        "number": "+1-800-TECH-INN",
+        "number": "+62 --- --- ---",
         "icon": "FaPhoneAlt"
       },
       "support": {
         "available": true,
-        "hours": "Mon-Fri 9AM-6PM",
-        "icon": "FaLifeRing"
+        "hours": "24/7 Community Support Server",
+        "icon": "FaHeadset"
       }
     },
     "technology": {
       "backend": {
-        "framework": "Python Django",
-        "database": "PostgreSQL",
-        "cache": "Redis",
-        "search": "Elasticsearch",
+        "framework": "Supabase Realtime & WebSockets",
+        "database": "PostgreSQL (Servers, Channels, Messages)",
+        "authentication": "Supabase Auth with Role RBAC",
+        "cache": "Client-Side In-Memory Cache",
         "icons": {
-          "backend": "FaPython",
+          "backend": "FaServer",
           "database": "FaDatabase"
         }
       },
       "frontend": {
-        "framework": "Vue.js",
-        "styling": "CSS3",
-        "stateManagement": "Pinia",
+        "framework": "React 19 & Vite",
+        "styling": "Tailwind CSS v4 & Discord Theme UI",
+        "animation": "Framer Motion",
         "icons": {
-          "frontend": "FaVuejs",
-          "styling": "FaCss3Alt"
+          "frontend": "FaReact",
+          "styling": "FaPalette"
         }
       },
       "infrastructure": {
-        "hosting": "AWS",
-        "cdn": "CloudFront",
-        "monitoring": "Prometheus",
+        "hosting": "Vercel Edge Platform",
+        "cdn": "Cloudflare Global CDN",
+        "storage": "Supabase Storage (Attachments & Avatars)",
         "icons": {
           "hosting": "FaCloud",
           "cdn": "FaGlobe"

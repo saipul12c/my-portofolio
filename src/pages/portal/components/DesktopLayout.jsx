@@ -1,89 +1,27 @@
-import React, { memo, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { memo, useState } from 'react';
 import {
-  MdEmail, MdShare, MdHome, MdInfo, MdFolderOpen, MdMailOutline,
-  MdStar, MdQrCode, MdContentCopy, MdDownload, MdClose, MdForum, MdChat, MdOpenInNew, MdVerified
+  MdEmail, MdShare, MdQrCode, MdVerified, MdStar, MdOpenInNew
 } from 'react-icons/md';
 import { HiClipboardCheck, HiOutlineClipboardCopy } from 'react-icons/hi';
-import { FaLanguage, FaGithub } from 'react-icons/fa';
-import { GitHubCalendar } from 'react-github-calendar';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell
-} from 'recharts';
-import QRCode from 'qrcode';
+import { FaLanguage } from 'react-icons/fa';
+
 import Avatar from '../ui/Avatar';
 import DesktopPlatformCard from '../ui/DesktopPlatformCard';
-import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import SpecialtyTicker from './SpecialtyTicker';
+import RotatingHobbies from './RotatingHobbies';
+import RotatingCerts from './RotatingCerts';
+import LiveChatPreview from './LiveChatPreview';
+import StatsCharts from './StatsCharts';
+import QRCodeModal from './QRCodeModal';
 
-// Import Hobbies data and icons
-import hobbiesData from '../../../data/hub/hobbiesData.json';
-import { iconMap } from '../../owner/utils/iconMap';
-import { generateSlug } from '../../hub/utils/hobbyUtils';
-import { supabase } from '../../../lib/supabaseClient';
-
-const usesData = [
-  {
-    category: 'Hardware',
-    icon: '🖥️',
-    color: 'cyan',
-    items: [
-      { name: 'MacBook Pro M2', description: 'Primary machine for development and long-term projects.', url: 'https://www.apple.com/macbook-pro/' },
-      { name: 'ASUS VivoBook 14', description: 'Daily driver for quick tasks and Windows-specific development.', url: 'https://www.asus.com/laptops/for-home/vivobook/' },
-      { name: 'iPhone 13', description: 'Testing mobile responsiveness and iOS specific features.', url: 'https://www.apple.com/iphone-13/' }
-    ]
-  },
-  {
-    category: 'Editor',
-    icon: '✏️',
-    color: 'blue',
-    items: [
-      { name: 'Visual Studio Code', description: 'My primary editor for web and full-stack development.', url: 'https://code.visualstudio.com/' },
-      { name: 'Cursor AI', description: 'AI-powered code editor that supercharges productivity.', url: 'https://cursor.sh/' },
-      { name: 'One Dark Pro', description: 'My go-to VS Code color theme — easy on the eyes.', url: 'https://marketplace.visualstudio.com/items?itemName=zhuangtongfa.Material-theme' }
-    ]
-  },
-  {
-    category: 'Terminal',
-    icon: '💻',
-    color: 'green',
-    items: [
-      { name: 'Windows Terminal', description: 'Modern terminal application for command-line users.', url: 'https://apps.microsoft.com/store/detail/windows-terminal/9N0DX20HK701' },
-      { name: 'Warp', description: 'The terminal for the 21st century, with built-in AI.', url: 'https://www.warp.dev/' },
-      { name: 'Oh My Posh', description: 'Prompt theme engine for any shell.', url: 'https://ohmyposh.dev/' }
-    ]
-  },
-  {
-    category: 'Apps',
-    icon: '📱',
-    color: 'purple',
-    items: [
-      { name: 'Figma', description: 'Collaborative interface design tool for all my UI/UX needs.', url: 'https://www.figma.com/' },
-      { name: 'Notion', description: 'All-in-one workspace for notes, tasks, and project management.', url: 'https://www.notion.so/' },
-      { name: 'Postman', description: 'API platform for developers to design, build, and test APIs.', url: 'https://www.postman.com/' }
-    ]
-  },
-  {
-    category: 'Browser',
-    icon: '🌐',
-    color: 'yellow',
-    items: [
-      { name: 'Arc Browser', description: 'A more personal and organized way to browse the web.', url: 'https://arc.net/' },
-      { name: 'Google Chrome', description: 'Essential for testing and using developer tools.', url: 'https://www.google.com/chrome/' },
-      { name: 'React DevTools', description: 'Inspect the React component hierarchy and state.', url: 'https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbhfkeoomakeohkd' }
-    ]
-  },
-  {
-    category: 'Tech Stack',
-    icon: '🚀',
-    color: 'pink',
-    items: [
-      { name: 'React.js + Vite', description: 'The core technologies I use to build modern web apps.', url: 'https://react.dev/' },
-      { name: 'Tailwind CSS', description: 'A utility-first CSS framework for rapid UI development.', url: 'https://tailwindcss.com/' },
-      { name: 'Supabase', description: 'The open-source Firebase alternative for my backends.', url: 'https://supabase.com/' }
-    ]
-  }
-];
+import {
+  skillsData,
+  languagesData,
+  educationData,
+  webNavigationItems,
+  usesData,
+  portfolioSummaryStats
+} from '../modules/portalData';
 
 const DesktopLayout = memo(({
   platformData,
@@ -98,239 +36,20 @@ const DesktopLayout = memo(({
 }) => {
   const [hoveredWebNav, setHoveredWebNav] = useState(null);
   const [showQRModal, setShowQRModal] = useState(false);
-  const [qrCodeUrl, setQrCodeUrl] = useState('');
-  const [isGeneratingQR, setIsGeneratingQR] = useState(false);
-  const [downloadSuccess, setDownloadSuccess] = useState(false);
-  const [qrCopied, setQrCopied] = useState(false);
-  const [recentChats, setRecentChats] = useState([]);
-  const [specialtyIndex, setSpecialtyIndex] = useState(0);
 
-  const specialties = useMemo(() => [
-    "Developer",
-    "Freelancer",
-    "Problem Solver",
-    "Tech Enthusiast",
-    "UI/UX Learner"
-  ], []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSpecialtyIndex((prev) => (prev + 1) % specialties.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [specialties.length]);
-
-  // Fetch recent Live Discussion messages & Realtime Setup
-  useEffect(() => {
-    const fetchRecentChats = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('messages')
-          .select('username, content, role, timestamp')
-          .order('timestamp', { ascending: false })
-          .limit(10);
-
-        if (error) throw error;
-        if (data) setRecentChats(data);
-      } catch (err) {
-        console.warn('Could not fetch chats:', err);
-      }
-    };
-
-    fetchRecentChats();
-
-    // Realtime Subscription for Desktop Preview
-    const channel = supabase
-      .channel('portal-desktop-chat-preview')
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'messages'
-      }, (payload) => {
-        setRecentChats(prev => [payload.new, ...prev].slice(0, 10));
-      })
-      .on('postgres_changes', {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'messages'
-      }, (payload) => {
-        setRecentChats(prev => prev.map(msg => msg.id === payload.new.id ? payload.new : msg));
-      })
-      .on('postgres_changes', {
-        event: 'DELETE',
-        schema: 'public',
-        table: 'messages'
-      }, (payload) => {
-        setRecentChats(prev => prev.filter(msg => msg.id !== payload.old.id));
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  // Pre-process hobbies to include slugs once
-  const hobbiesWithSlugs = useMemo(() => {
-    return hobbiesData.map(h => ({
-      ...h,
-      slug: generateSlug(h.title)
-    }));
-  }, []);
-
-  const [displayedHobbies, setDisplayedHobbies] = useState(hobbiesWithSlugs.slice(0, 6));
-
-  // Rotate hobbies one-by-one every 3 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const indexToReplace = Math.floor(Math.random() * 6);
-
-      const availableHobbies = hobbiesWithSlugs.filter(h =>
-        !displayedHobbies.some(dh => dh.id === h.id)
-      );
-
-      if (availableHobbies.length > 0) {
-        const newHobby = availableHobbies[Math.floor(Math.random() * availableHobbies.length)];
-
-        setDisplayedHobbies(prev => {
-          const next = [...prev];
-          next[indexToReplace] = newHobby;
-          return next;
-        });
-      }
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [displayedHobbies, hobbiesWithSlugs]);
-
-  // Logic for rotating certificates (Max 6 displayed)
-  const [displayedCerts, setDisplayedCerts] = useState([]);
-
-  useEffect(() => {
-    if (certificates.length > 0) {
-      setDisplayedCerts(certificates.slice(0, 6));
-    }
-  }, [certificates]);
-
-  useEffect(() => {
-    if (certificates.length <= 6) return;
-
-    const interval = setInterval(() => {
-      setDisplayedCerts(prev => {
-        const newCerts = [...prev];
-        const indexToReplace = Math.floor(Math.random() * Math.min(prev.length, 6));
-
-        // Find a certificate that is not currently displayed
-        const displayedIds = new Set(prev.map(c => c.id));
-        const availableCerts = certificates.filter(c => !displayedIds.has(c.id));
-
-        if (availableCerts.length > 0) {
-          const randomNewCert = availableCerts[Math.floor(Math.random() * availableCerts.length)];
-          newCerts[indexToReplace] = randomNewCert;
-        }
-
-        return newCerts;
-      });
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, [certificates]);
-
-  // Generate QR Code ketika modal dibuka
-  useEffect(() => {
-    const portalUrl = 'https://syaiful-mukmin.netlify.app/portal';
-
-    if (showQRModal && !qrCodeUrl) {
-      generateQRCode(portalUrl);
-    }
-
-    if (!showQRModal) {
-      setQrCopied(false);
-      setDownloadSuccess(false);
-    }
-  }, [showQRModal, qrCodeUrl]);
-
-  const generateQRCode = async (text) => {
-    try {
-      setIsGeneratingQR(true);
-      const url = await QRCode.toDataURL(text, {
-        width: 280,
-        margin: 2,
-        color: {
-          dark: '#000000',
-          light: '#FFFFFF'
-        },
-        errorCorrectionLevel: 'H'
-      });
-      setQrCodeUrl(url);
-    } catch (err) {
-      console.error('Error generating QR code:', err);
-    } finally {
-      setIsGeneratingQR(false);
-    }
-  };
-
-  const downloadQRCode = useCallback(() => {
-    if (!qrCodeUrl) return;
-
-    const link = document.createElement('a');
-    link.href = qrCodeUrl;
-    link.download = `syaiful-mukmin-portal-qrcode-${new Date().toISOString().slice(0, 10)}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    setDownloadSuccess(true);
-    setTimeout(() => setDownloadSuccess(false), 2000);
-  }, [qrCodeUrl]);
-
-  const copyQRCodeLink = useCallback(() => {
-    const portalUrl = 'https://syaiful-mukmin.netlify.app/portal';
-    navigator.clipboard.writeText(portalUrl).then(() => {
-      setQrCopied(true);
-      setTimeout(() => setQrCopied(false), 2000);
-    });
-  }, []);
-
-  const webNavigationItems = [
-    { id: 'home', label: 'Home', icon: MdHome, color: 'from-cyan-600/20 to-blue-600/20', hoverColor: 'border-cyan-500/50', tooltip: 'Kembali ke halaman utama' },
-    { id: 'about', label: 'Tentang', icon: MdInfo, color: 'bg-gray-800/50', hoverColor: 'border-gray-600', tooltip: 'Pelajari tentang saya' },
-    { id: 'portfolio', label: 'Portfolio', icon: MdFolderOpen, color: 'bg-gray-800/50', hoverColor: 'border-gray-600', tooltip: 'Lihat proyek saya' },
-    { id: 'contact', label: 'Kontak', icon: MdMailOutline, color: 'bg-gray-800/50', hoverColor: 'border-gray-600', tooltip: 'Hubungi saya' },
-  ];
-
-  const platformStats = [
-    { name: 'Instagram', value: 35, color: '#A78BFA', engagement: '2.5M', change: '+12.5%', icon: '📸' },
-    { name: 'TikTok', value: 28, color: '#60A5FA', engagement: '1.8M', change: '+8.3%', icon: '🎵' },
-    { name: 'YouTube', value: 22, color: '#34D399', engagement: '1.2M', change: '+5.7%', icon: '▶️' },
-    { name: 'Twitter', value: 10, color: '#FBBF24', engagement: '850K', change: '+2.1%', icon: '🐦' },
-    { name: 'Facebook', value: 5, color: '#F87171', engagement: '350K', change: '-1.2%', icon: '👥' }
-  ];
-
-  const monthlyData = [
-    { month: 'Jan', connections: 150, reach: 800, engagements: 320, posts: 12 },
-    { month: 'Feb', connections: 180, reach: 950, engagements: 380, posts: 15 },
-    { month: 'Mar', connections: 200, reach: 1100, engagements: 440, posts: 18 },
-    { month: 'Apr', connections: 220, reach: 1200, engagements: 480, posts: 20 },
-    { month: 'May', connections: 245, reach: 1300, engagements: 520, posts: 22 },
-    { month: 'Jun', connections: 280, reach: 1400, engagements: 560, posts: 19 },
-    { month: 'Jul', connections: 310, reach: 1550, engagements: 620, posts: 24 },
-    { month: 'Aug', connections: 340, reach: 1700, engagements: 680, posts: 26 },
-    { month: 'Sep', connections: 380, reach: 1850, engagements: 740, posts: 28 },
-    { month: 'Oct', connections: 420, reach: 2000, engagements: 800, posts: 25 },
-    { month: 'Nov', connections: 460, reach: 2150, engagements: 860, posts: 30 },
-    { month: 'Dec', connections: 500, reach: 2300, engagements: 920, posts: 32 }
-  ];
+  const totalPlatforms = Object.keys(platformData).length;
+  const connectedCount = Object.values(checkedItems).filter(Boolean).length;
+  const connectionPercent = totalPlatforms > 0 ? (connectedCount / totalPlatforms) * 100 : 0;
 
   return (
     <>
       <div className="min-h-screen bg-gradient-to-br from-[var(--color-gray-900)] via-[#0f1d32] to-[var(--color-gray-900)] p-8">
         {/* Background grid */}
-        <div className="fixed inset-0 bg-grid-white/5 bg-grid-16" />
+        <div className="fixed inset-0 bg-grid-white/5 bg-grid-16 pointer-events-none" />
 
         {/* Glow effects */}
-        <div className="fixed top-1/4 -left-40 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
-        <div className="fixed bottom-1/4 -right-40 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
+        <div className="fixed top-1/4 -left-40 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="fixed bottom-1/4 -right-40 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto">
           {/* Header */}
@@ -342,26 +61,14 @@ const DesktopLayout = memo(({
                   Muhammad Syaiful Mukmin
                   <span className="relative group/verified inline-flex group-hover:scale-110 transition-transform">
                     <MdVerified className="w-6 h-6 text-blue-500 fill-blue-500 cursor-help" />
-                    {/* Tooltip info */}
                     <span className="absolute left-1/2 -top-10 -translate-x-1/2 px-3 py-1.5 bg-gray-900/95 backdrop-blur-md border border-gray-800 rounded-lg text-xs text-white opacity-0 group-hover/verified:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl z-50">
                       Terverifikasi Official
                     </span>
                   </span>
                 </h1>
-                <p className="text-gray-400 mb-1 flex items-center gap-1.5 justify-center lg:justify-start h-6">
+                <p className="text-gray-400 mb-1 flex items-center gap-1.5 h-6">
                   <span>Digital Creator &</span>
-                  <AnimatePresence mode="wait">
-                    <motion.span
-                      key={specialtyIndex}
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -5 }}
-                      transition={{ duration: 0.5 }}
-                      className="text-yellow-400 font-medium"
-                    >
-                      {specialties[specialtyIndex]}
-                    </motion.span>
-                  </AnimatePresence>
+                  <SpecialtyTicker />
                 </p>
                 <p className="text-gray-500 text-sm">Manage all your social connections in one place</p>
               </div>
@@ -370,7 +77,8 @@ const DesktopLayout = memo(({
             <div className="flex items-center gap-4">
               <button
                 onClick={handleCopyEmail}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 hover:border-purple-500 transition-colors group"
+                className="flex items-center gap-2 px-4 py-2 bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 hover:border-purple-500 transition-colors group cursor-pointer"
+                title="Salin Email"
               >
                 <MdEmail className="w-4 h-4 text-purple-400 group-hover:animate-pulse" />
                 <span className="text-white">uju355@gmail.com</span>
@@ -383,7 +91,7 @@ const DesktopLayout = memo(({
 
               <button
                 onClick={() => setShowQRModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 to-green-600 rounded-lg border border-emerald-500/50 font-medium text-white hover:opacity-90 transition-opacity hover:scale-105 active:scale-95"
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 to-green-600 rounded-lg border border-emerald-500/50 font-medium text-white hover:opacity-90 transition-opacity hover:scale-105 active:scale-95 cursor-pointer"
                 title="Generate QR Code"
               >
                 <MdQrCode className="w-4 h-4" />
@@ -392,7 +100,7 @@ const DesktopLayout = memo(({
 
               <button
                 onClick={handleShare}
-                className="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg font-medium text-white hover:opacity-90 transition-opacity hover:scale-105 active:scale-95"
+                className="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg font-medium text-white hover:opacity-90 transition-opacity hover:scale-105 active:scale-95 cursor-pointer"
               >
                 Share
               </button>
@@ -400,25 +108,22 @@ const DesktopLayout = memo(({
           </div>
 
           <div className="flex gap-8">
-            {/* Left sidebar - Profile & Stats */}
-            <div className="w-80 space-y-6">
+            {/* Left sidebar - Profile & Details */}
+            <div className="w-80 space-y-6 flex-shrink-0">
               {/* Profile card */}
               <div className="bg-gray-900/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
-                {/* Stats */}
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-3 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors cursor-pointer">
-                    <span className="text-gray-400">Total Platforms</span>
-                    <span className="text-white font-semibold">{Object.keys(platformData).length}</span>
+                  <div className="flex justify-between items-center p-3 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors">
+                    <span className="text-gray-400 text-sm">Total Platforms</span>
+                    <span className="text-white font-semibold">{totalPlatforms}</span>
                   </div>
-                  <div className="flex justify-between items-center p-3 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors cursor-pointer">
-                    <span className="text-gray-400">Connected</span>
-                    <span className="text-green-400 font-semibold">
-                      {Object.values(checkedItems).filter(Boolean).length}
-                    </span>
+                  <div className="flex justify-between items-center p-3 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors">
+                    <span className="text-gray-400 text-sm">Connected</span>
+                    <span className="text-green-400 font-semibold">{connectedCount}</span>
                   </div>
-                  <div className="flex justify-between items-center p-3 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors cursor-pointer">
-                    <span className="text-gray-400">Profile Views</span>
-                    <span className="text-white font-semibold">1.2K</span>
+                  <div className="flex justify-between items-center p-3 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors">
+                    <span className="text-gray-400 text-sm">Total Karya Riil</span>
+                    <span className="text-cyan-400 font-semibold">{portfolioSummaryStats.totalWorks}+</span>
                   </div>
                 </div>
 
@@ -426,21 +131,21 @@ const DesktopLayout = memo(({
                 <div className="mt-6 space-y-3">
                   <button
                     onClick={() => navigate("/cv-saya")}
-                    className="w-full py-3 bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 rounded-lg text-white font-medium hover:border-purple-500/50 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    className="w-full py-3 bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 rounded-lg text-white font-medium hover:border-purple-500/50 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                   >
                     Liat CV saya
                   </button>
 
                   <button
                     onClick={() => navigate("/testimoni")}
-                    className="w-full py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white font-medium hover:border-gray-600 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    className="w-full py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white font-medium hover:border-gray-600 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                   >
                     Liat Testimoni
                   </button>
 
                   <button
                     onClick={() => setShowQRModal(true)}
-                    className="w-full py-3 bg-gradient-to-r from-emerald-600/20 to-green-600/20 border border-emerald-500/30 rounded-lg text-white font-medium hover:border-emerald-500/50 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+                    className="w-full py-3 bg-gradient-to-r from-emerald-600/20 to-green-600/20 border border-emerald-500/30 rounded-lg text-white font-medium hover:border-emerald-500/50 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <MdQrCode className="w-4 h-4" />
                     Generate QR Code
@@ -450,16 +155,16 @@ const DesktopLayout = memo(({
 
               {/* Connection Status */}
               <div className="bg-gray-900/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
-                <h3 className="text-lg font-semibold text-white mb-4">Connection Status</h3>
+                <h3 className="text-base font-semibold text-white mb-3">Connection Status</h3>
                 <div className="space-y-2">
-                  <div className="flex justify-between">
+                  <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Active Connections</span>
                     <span className="text-green-400 font-medium">Excellent</span>
                   </div>
                   <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
                     <div
-                      className="bg-gradient-to-r from-green-500 to-emerald-400 h-2 rounded-full w-3/4 transition-all duration-1000 ease-out"
-                      style={{ width: `${(Object.values(checkedItems).filter(Boolean).length / Object.keys(checkedItems).length) * 100}%` }}
+                      className="bg-gradient-to-r from-green-500 to-emerald-400 h-2 rounded-full transition-all duration-700 ease-out"
+                      style={{ width: `${connectionPercent}%` }}
                     />
                   </div>
                 </div>
@@ -467,42 +172,29 @@ const DesktopLayout = memo(({
 
               {/* Top Skills */}
               <div className="bg-gray-900/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <h3 className="text-base font-semibold text-white mb-4 flex items-center gap-2">
                   <MdStar className="w-5 h-5 text-yellow-400 animate-pulse" />
                   Top Skills
                 </h3>
                 <div className="space-y-3">
-                  <div>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm text-gray-300">Komunikasi Efektif</span>
-                      <span className="text-xs text-gray-400">95%</span>
+                  {skillsData.map((skill) => (
+                    <div key={skill.name}>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-xs text-gray-300">{skill.name}</span>
+                        <span className="text-xs text-gray-400">{skill.percentage}%</span>
+                      </div>
+                      <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
+                        <div
+                          className={`bg-gradient-to-r ${skill.color} h-1.5 rounded-full transition-all duration-700 ease-out`}
+                          style={{ width: `${skill.percentage}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
-                      <div className="bg-gradient-to-r from-pink-500 to-pink-400 h-1.5 rounded-full w-[95%] transition-all duration-1000 ease-out" />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm text-gray-300">Kreativitas</span>
-                      <span className="text-xs text-gray-400">90%</span>
-                    </div>
-                    <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
-                      <div className="bg-gradient-to-r from-yellow-500 to-yellow-400 h-1.5 rounded-full w-[90%] transition-all duration-1000 ease-out" />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm text-gray-300">Kolaborasi Tim</span>
-                      <span className="text-xs text-gray-400">85%</span>
-                    </div>
-                    <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
-                      <div className="bg-gradient-to-r from-green-500 to-green-400 h-1.5 rounded-full w-[85%] transition-all duration-1000 ease-out" />
-                    </div>
-                  </div>
+                  ))}
                 </div>
                 <button
                   onClick={() => navigate("/softskills")}
-                  className="w-full mt-4 py-2 text-xs text-gray-300 hover:text-white transition-colors hover:underline"
+                  className="w-full mt-4 py-2 text-xs text-gray-400 hover:text-white transition-colors hover:underline cursor-pointer"
                 >
                   Lihat semua →
                 </button>
@@ -510,42 +202,29 @@ const DesktopLayout = memo(({
 
               {/* Languages */}
               <div className="bg-gray-900/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <h3 className="text-base font-semibold text-white mb-4 flex items-center gap-2">
                   <FaLanguage className="w-5 h-5 text-blue-400" />
                   Languages
                 </h3>
                 <div className="space-y-3">
-                  <div>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm text-gray-300">🇮🇩 Indonesia</span>
-                      <span className="text-xs text-green-400 font-medium">Native</span>
+                  {languagesData.map((lang) => (
+                    <div key={lang.name}>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-xs text-gray-300">{lang.name}</span>
+                        <span className={`text-xs ${lang.badgeColor} font-medium`}>{lang.level}</span>
+                      </div>
+                      <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
+                        <div
+                          className={`bg-gradient-to-r ${lang.color} h-1.5 rounded-full transition-all duration-700 ease-out`}
+                          style={{ width: `${lang.percentage}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
-                      <div className="bg-gradient-to-r from-red-500 to-red-400 h-1.5 rounded-full w-full transition-all duration-1000 ease-out" />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm text-gray-300">🇺🇸 English</span>
-                      <span className="text-xs text-blue-400 font-medium">Advanced</span>
-                    </div>
-                    <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
-                      <div className="bg-gradient-to-r from-blue-500 to-blue-400 h-1.5 rounded-full w-[80%] transition-all duration-1000 ease-out" />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm text-gray-300">🎭 Jawa</span>
-                      <span className="text-xs text-yellow-400 font-medium">Intermediate</span>
-                    </div>
-                    <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
-                      <div className="bg-gradient-to-r from-yellow-600 to-yellow-500 h-1.5 rounded-full w-[60%] transition-all duration-1000 ease-out" />
-                    </div>
-                  </div>
+                  ))}
                 </div>
                 <button
                   onClick={() => navigate("/bahasa")}
-                  className="w-full mt-4 py-2 text-xs text-gray-300 hover:text-white transition-colors hover:underline"
+                  className="w-full mt-4 py-2 text-xs text-gray-400 hover:text-white transition-colors hover:underline cursor-pointer"
                 >
                   Lihat semua →
                 </button>
@@ -553,25 +232,22 @@ const DesktopLayout = memo(({
 
               {/* Education */}
               <div className="bg-gray-900/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <h3 className="text-base font-semibold text-white mb-4 flex items-center gap-2">
                   <span className="text-lg">🎓</span>
                   Education
                 </h3>
                 <div className="space-y-3">
-                  <div className="text-sm hover:bg-gray-800/30 p-2 rounded-lg transition-colors cursor-pointer">
-                    <p className="text-white font-medium text-sm">S1 Pendidikan Guru</p>
-                    <p className="text-gray-400 text-xs">Universitas Pendidikan Indonesia</p>
-                    <p className="text-gray-500 text-xs mt-1">2017 - 2021 | GPA: 3.85</p>
-                  </div>
-                  <div className="text-sm hover:bg-gray-800/30 p-2 rounded-lg transition-colors cursor-pointer">
-                    <p className="text-white font-medium text-sm">Magister Pendidikan Dasar</p>
-                    <p className="text-gray-400 text-xs">Universitas Negeri Jakarta</p>
-                    <p className="text-gray-500 text-xs mt-1">2023 - Sekarang</p>
-                  </div>
+                  {educationData.map((edu, idx) => (
+                    <div key={idx} className="text-sm hover:bg-gray-800/30 p-2 rounded-lg transition-colors cursor-pointer">
+                      <p className="text-white font-medium text-xs">{edu.title}</p>
+                      <p className="text-gray-400 text-[11px]">{edu.institution}</p>
+                      <p className="text-gray-500 text-[10px] mt-0.5">{edu.period} | {edu.note}</p>
+                    </div>
+                  ))}
                 </div>
                 <button
                   onClick={() => navigate("/pendidikan")}
-                  className="w-full mt-4 py-2 text-xs text-gray-300 hover:text-white transition-colors hover:underline"
+                  className="w-full mt-4 py-2 text-xs text-gray-400 hover:text-white transition-colors hover:underline cursor-pointer"
                 >
                   Lihat semua →
                 </button>
@@ -579,31 +255,14 @@ const DesktopLayout = memo(({
 
               {/* Certificates */}
               <div className="bg-gray-900/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <h3 className="text-base font-semibold text-white mb-4 flex items-center gap-2">
                   <span className="text-lg">🏆</span>
                   Certificates
                 </h3>
-                <div className="space-y-2">
-                  {displayedCerts.map((cert) => (
-                    <div
-                      key={cert.id}
-                      onClick={() => openCertModal(cert)}
-                      className="text-xs flex items-center justify-between hover:bg-gray-800/50 p-2.5 rounded-xl transition-all cursor-pointer border border-transparent hover:border-gray-700 active:scale-95 group"
-                    >
-                      <div className="flex flex-col">
-                        <span className="text-gray-300 font-medium group-hover:text-white transition-colors">{cert.title}</span>
-                        <span className="text-[10px] text-gray-500">{cert.issuer}</span>
-                      </div>
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full ${cert.themeColor ? '' : 'bg-blue-500/10 text-blue-400'
-                        }`} style={cert.themeColor ? { backgroundColor: `${cert.themeColor}20`, color: cert.themeColor } : {}}>
-                        {cert.year}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                <RotatingCerts certificates={certificates} openCertModal={openCertModal} maxDisplay={6} />
                 <button
                   onClick={() => navigate("/sertifikat")}
-                  className="w-full mt-4 py-2 text-xs text-gray-300 hover:text-white transition-colors hover:underline"
+                  className="w-full mt-4 py-2 text-xs text-gray-400 hover:text-white transition-colors hover:underline cursor-pointer"
                 >
                   Lihat semua →
                 </button>
@@ -611,117 +270,52 @@ const DesktopLayout = memo(({
 
               {/* Hobbies */}
               <div className="bg-gray-900/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <h3 className="text-base font-semibold text-white mb-4 flex items-center gap-2">
                   <span className="text-lg">🎨</span>
                   Hobbies
                 </h3>
-                <div className="space-y-3">
-                  {displayedHobbies.map((hobby) => {
-                    const IconComponent = iconMap[hobby.icon];
-                    return (
-                      <div
-                        key={hobby.id}
-                        onClick={() => navigate(`/hobbies/${hobby.slug}`)}
-                        className="group text-xs hover:bg-gray-800/50 p-2.5 rounded-xl transition-all cursor-pointer border border-transparent hover:border-gray-700 active:scale-95"
-                      >
-                        <div className="flex items-center justify-between mb-1.5">
-                          <div className="flex items-center gap-2">
-                            <span className="p-1.5 rounded-lg bg-gray-800 group-hover:bg-gray-700 transition-colors">
-                              {IconComponent && <IconComponent className={`w-3.5 h-3.5 ${hobby.iconColor || 'text-gray-400'}`} />}
-                            </span>
-                            <span className="text-gray-300 font-medium group-hover:text-white transition-colors">{hobby.title}</span>
-                          </div>
-                          <MdOpenInNew className="w-3 h-3 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
-                            <div
-                              className={`h-1.5 rounded-full bg-gradient-to-r ${hobby.color || 'from-blue-500 to-cyan-400'} transition-all duration-1000 ease-in-out`}
-                              style={{ width: `${hobby.stats?.completion || 0}%` }}
-                            />
-                          </div>
-                          <span className="text-gray-500 text-[10px] w-8 text-right font-mono">{hobby.stats?.completion || 0}%</span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                <RotatingHobbies navigate={navigate} />
                 <button
                   onClick={() => navigate("/hobbies")}
-                  className="w-full mt-4 py-2.5 bg-gray-800/30 hover:bg-gray-800/50 rounded-xl text-xs text-gray-400 hover:text-white transition-all border border-gray-700/50 hover:border-gray-600 font-medium"
+                  className="w-full mt-4 py-2.5 bg-gray-800/30 hover:bg-gray-800/50 rounded-xl text-xs text-gray-400 hover:text-white transition-all border border-gray-700/50 hover:border-gray-600 font-medium cursor-pointer"
                 >
                   Lihat semua →
                 </button>
               </div>
 
               {/* Live Discussion Preview */}
-              <div className="bg-gray-900/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                  <MdChat className="w-5 h-5 text-cyan-400" />
-                  Live Discussion
-                </h3>
-                <div className="space-y-3">
-                  {recentChats.length > 0 ? recentChats.map((chat, i) => (
-                    <div key={i} className="flex items-start gap-2 p-2 rounded-lg hover:bg-gray-800/30 transition-colors">
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex-shrink-0 flex items-center justify-center text-[9px] font-bold text-white mt-0.5">
-                        {chat.username?.[0]?.toUpperCase() || '?'}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-xs font-semibold text-white truncate">{chat.username || 'Anonim'}</span>
-                          <span className="text-[9px] text-gray-500">{chat.role || 'USER'}</span>
-                        </div>
-                        <p className="text-xs text-gray-400 line-clamp-1">{chat.content || '...'}</p>
-                      </div>
-                    </div>
-                  )) : (
-                    <div className="text-center py-6 space-y-2">
-                      <MdForum className="w-8 h-8 text-cyan-500/30 mx-auto" />
-                      <p className="text-sm text-gray-400 font-medium">Belum ada percakapan</p>
-                      <p className="text-[11px] text-gray-500 leading-relaxed">Jadilah yang pertama memulai diskusi!<br />Bergabung dan bagikan pemikiranmu bersama komunitas.</p>
-                    </div>
-                  )}
-                </div>
-                <button
-                  onClick={() => navigate("/Live-Discussion")}
-                  className="w-full mt-4 py-2.5 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 border border-cyan-500/30 rounded-lg text-cyan-400 text-xs font-semibold hover:border-cyan-500/60 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
-                >
-                  <MdForum className="w-4 h-4" />
-                  Gabung Diskusi →
-                </button>
-              </div>
+              <LiveChatPreview navigate={navigate} />
             </div>
 
-            {/* Main content - Platforms grid */}
-            <div className="flex-1">
+            {/* Main content - Platforms grid & Details */}
+            <div className="flex-1 min-w-0">
               <div className="bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800 p-6">
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
                   <h2 className="text-2xl font-bold text-white">Social Platforms</h2>
                   <div className="flex gap-2">
                     <button
                       onClick={() => navigate("/projects")}
-                      className="px-4 py-2 bg-gray-800 rounded-lg text-white text-sm font-medium hover:bg-gray-700 transition-colors hover:scale-105 active:scale-95"
+                      className="px-4 py-2 bg-gray-800 rounded-lg text-white text-sm font-medium hover:bg-gray-700 transition-colors hover:scale-105 active:scale-95 cursor-pointer"
                     >
                       Projek
                     </button>
 
                     <button
                       onClick={() => navigate("/contact")}
-                      className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-opacity hover:scale-105 active:scale-95"
+                      className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-opacity hover:scale-105 active:scale-95 cursor-pointer"
                     >
                       Hubungi Admin Sekarang
                     </button>
                     <button
                       onClick={() => navigate("/Live-Discussion")}
-                      className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-opacity hover:scale-105 active:scale-95 flex items-center gap-2"
+                      className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-opacity hover:scale-105 active:scale-95 flex items-center gap-2 cursor-pointer"
                     >
-                      <MdForum className="w-4 h-4" />
                       Diskusi Bersama
                     </button>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {Object.entries(platformData).map(([key, data]) => (
                     <DesktopPlatformCard
                       key={key}
@@ -735,25 +329,26 @@ const DesktopLayout = memo(({
                 </div>
 
                 {/* Website Navigation Section */}
-                <div className="mt-6 pt-6 border-t border-gray-800">
+                <div className="mt-8 pt-8 border-t border-gray-800">
                   <div className="mb-4">
-                    <p className="text-gray-400 text-sm font-medium mb-4">Navigasi Website</p>
+                    <p className="text-gray-400 text-sm font-medium">Navigasi Website</p>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {webNavigationItems.map((item) => (
                       <div key={item.id} className="relative group">
                         <button
                           onMouseEnter={() => setHoveredWebNav(item.id)}
                           onMouseLeave={() => setHoveredWebNav(null)}
-                          onClick={() => navigate(`/${item.id === 'home' ? '' : item.id}`)}
-                          className={`w-full px-4 py-3 ${item.color} border ${item.id === 'home' ? 'border-cyan-500/30 hover:border-cyan-500/50' : 'border-gray-700 hover:border-gray-600'
-                            } rounded-lg text-white font-medium transition-all hover:scale-[1.02] active:scale-[0.98] text-sm flex items-center justify-center gap-2`}
+                          onClick={() => navigate(item.path)}
+                          className={`w-full px-4 py-3 ${item.color} border ${
+                            item.id === 'home' ? 'border-cyan-500/30 hover:border-cyan-500/50' : 'border-gray-700 hover:border-gray-600'
+                          } rounded-lg text-white font-medium transition-all hover:scale-[1.02] active:scale-[0.98] text-sm flex items-center justify-center gap-2 cursor-pointer`}
                         >
                           <item.icon className="w-4 h-4 group-hover:animate-bounce" />
                           {item.label}
                         </button>
                         {hoveredWebNav === item.id && (
-                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap border border-gray-700 shadow-lg z-10">
+                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap border border-gray-700 shadow-lg z-10 pointer-events-none">
                             {item.tooltip}
                           </div>
                         )}
@@ -763,7 +358,7 @@ const DesktopLayout = memo(({
                 </div>
 
                 {/* About Syaiful Mukmin Section */}
-                <div className="mt-6 pt-6 border-t border-gray-800">
+                <div className="mt-8 pt-8 border-t border-gray-800">
                   <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/30 hover:border-purple-500/60 transition-colors">
                     <h3 className="text-white font-semibold text-base mb-3">👋 Tentang Syaiful Mukmin</h3>
                     <p className="text-gray-300 text-sm leading-relaxed mb-4">
@@ -771,7 +366,7 @@ const DesktopLayout = memo(({
                     </p>
                     <button
                       onClick={() => navigate("/about")}
-                      className="px-4 py-2 bg-purple-600/30 border border-purple-500/50 rounded-lg text-white text-sm font-medium hover:border-purple-500 transition-all hover:scale-105 active:scale-95"
+                      className="px-4 py-2 bg-purple-600/30 border border-purple-500/50 rounded-lg text-white text-sm font-medium hover:border-purple-500 transition-all hover:scale-105 active:scale-95 cursor-pointer"
                     >
                       Selengkapnya →
                     </button>
@@ -779,7 +374,7 @@ const DesktopLayout = memo(({
                 </div>
 
                 {/* Uses & Setup Section */}
-                <div className="mt-6 pt-6 border-t border-gray-800">
+                <div className="mt-8 pt-8 border-t border-gray-800">
                   <div className="mb-6">
                     <h3 className="text-lg font-bold text-white flex items-center gap-2">
                       <span className="text-lg">⚙️</span> Uses & Setup
@@ -789,9 +384,9 @@ const DesktopLayout = memo(({
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {usesData.map((category, idx) => (
-                      <div key={idx} className={`bg-gray-900/50 backdrop-blur-sm rounded-2xl p-5 border border-gray-800 hover:border-${category.color}-500/30 transition-all group`}>
-                        <div className="flex items-center gap-3 mb-5 border-b border-gray-800 pb-3">
-                          <div className={`p-2 rounded-lg bg-${category.color}-500/10 text-${category.color}-400 group-hover:scale-110 transition-transform`}>
+                      <div key={idx} className="bg-gray-900/50 backdrop-blur-sm rounded-2xl p-5 border border-gray-800 hover:border-gray-700 transition-all group">
+                        <div className="flex items-center gap-3 mb-4 border-b border-gray-800 pb-3">
+                          <div className="p-2 rounded-lg bg-gray-800 text-white group-hover:scale-110 transition-transform">
                             <span className="text-base">{category.icon}</span>
                           </div>
                           <h4 className="font-bold text-white text-sm uppercase tracking-wider">{category.category}</h4>
@@ -822,530 +417,24 @@ const DesktopLayout = memo(({
                     ))}
                   </div>
                 </div>
-                {/* Stats overview */}
-                <div className="mt-6 pt-6 border-t border-gray-800">
-                  <h3 className="text-lg font-bold text-white mb-6">📊 Statistics Overview</h3>
 
-                  {/* GitHub Contribution Graph */}
-                  <div className="bg-gray-900/30 backdrop-blur-sm rounded-2xl p-6 border border-gray-800 mb-6 hover:border-cyan-500/30 transition-all duration-300">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-gray-800">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2.5 rounded-xl bg-gray-800/80 border border-gray-700 text-white flex-shrink-0">
-                          <FaGithub className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <h4 className="text-white font-semibold text-base flex items-center gap-2">
-                            GitHub Contribution Graph
-                            <span className="text-xs font-medium text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-0.5 rounded-full">
-                              @saipul12c
-                            </span>
-                          </h4>
-                          <p className="text-gray-400 text-xs mt-0.5">
-                            Grafik aktivitas komit & kontribusi kode terbuka di GitHub dalam 1 tahun terakhir
-                          </p>
-                        </div>
-                      </div>
-
-                      <a
-                        href="https://github.com/saipul12c"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs text-cyan-300 hover:text-cyan-200 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 px-3 py-1.5 rounded-lg transition-all duration-200 self-start sm:self-auto"
-                      >
-                        Buka GitHub
-                        <MdOpenInNew className="w-3.5 h-3.5" />
-                      </a>
-                    </div>
-
-                    <div className="w-full overflow-x-auto pb-2 flex justify-center custom-scrollbar">
-                      <GitHubCalendar
-                        username="saipul12c"
-                        colorScheme="dark"
-                        blockSize={13}
-                        blockMargin={4}
-                        fontSize={12}
-                        theme={{
-                          dark: ['#1e293b', '#065f46', '#059669', '#10b981', '#34d399'],
-                        }}
-                        labels={{
-                          totalCount: '{{count}} kontribusi di GitHub dalam setahun terakhir',
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Bar Chart - Monthly Growth */}
-                  <div className="bg-gray-900/30 backdrop-blur-sm rounded-2xl p-6 border border-gray-800 mb-6 hover:border-gray-700 transition-colors">
-                    <h4 className="text-white font-semibold mb-4 text-sm">Monthly Growth (Trend year to year)</h4>
-                    <ResponsiveContainer width="100%" height={320}>
-                      <BarChart data={monthlyData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                        <XAxis dataKey="month" stroke="#9CA3AF" />
-                        <YAxis stroke="#9CA3AF" />
-                        <Tooltip
-                          contentStyle={{
-                            backgroundColor: '#1F2937',
-                            border: '1px solid #4B5563',
-                            borderRadius: '8px',
-                            padding: '12px'
-                          }}
-                          labelStyle={{ color: '#FFF', fontWeight: 'bold' }}
-                          formatter={(value, name) => {
-                            if (name === 'reach' || name === 'engagements') return [`${value}K`, name];
-                            if (name === 'connections') return [value, 'Connections'];
-                            if (name === 'posts') return [value, 'Posts'];
-                            return [value, name];
-                          }}
-                        />
-                        <Legend />
-                        <Bar dataKey="connections" fill="#A78BFA" radius={[8, 8, 0, 0]} name="Connections" />
-                        <Bar dataKey="reach" fill="#60A5FA" radius={[8, 8, 0, 0]} name="Reach (K)" />
-                        <Bar dataKey="engagements" fill="#10B981" radius={[8, 8, 0, 0]} name="Engagements (K)" />
-                        <Bar dataKey="posts" fill="#F59E0B" radius={[8, 8, 0, 0]} name="Posts" />
-                      </BarChart>
-                    </ResponsiveContainer>
-
-                    {/* Additional Stats Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-                      <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
-                        <div className="text-gray-400 text-sm mb-1">Total Growth</div>
-                        <div className="text-2xl font-bold text-white">233%</div>
-                        <div className="text-green-500 text-xs flex items-center mt-1">
-                          <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                          </svg>
-                          +12.5% from last year
-                        </div>
-                      </div>
-
-                      <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
-                        <div className="text-gray-400 text-sm mb-1">Avg. Engagement</div>
-                        <div className="text-2xl font-bold text-white">4.8%</div>
-                        <div className="text-green-500 text-xs flex items-center mt-1">
-                          <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                          </svg>
-                          +1.2% from last month
-                        </div>
-                      </div>
-
-                      <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
-                        <div className="text-gray-400 text-sm mb-1">Best Month</div>
-                        <div className="text-2xl font-bold text-white">December</div>
-                        <div className="text-gray-400 text-xs mt-1">920K engagements</div>
-                      </div>
-
-                      <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
-                        <div className="text-gray-400 text-sm mb-1">Total Posts</div>
-                        <div className="text-2xl font-bold text-white">271</div>
-                        <div className="text-blue-400 text-xs mt-1">+32 from last year</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Engagement Metrics Grid */}
-                  <div className="grid grid-cols-3 gap-4 mb-6">
-                    <div className="bg-gradient-to-br from-purple-600/20 to-transparent backdrop-blur-sm rounded-2xl p-6 border border-purple-500/30 hover:border-purple-500/60 transition-all hover:scale-[1.02] cursor-pointer">
-                      <p className="text-3xl font-bold text-white mb-2">{stats.connections}</p>
-                      <p className="text-gray-400 text-sm">Total Connections</p>
-                      <div className="mt-3 text-xs text-green-400 flex items-center gap-1">
-                        <span className="animate-pulse">↑</span> 12.5% dari bulan lalu
-                      </div>
-                    </div>
-                    <div className="bg-gradient-to-br from-blue-600/20 to-transparent backdrop-blur-sm rounded-2xl p-6 border border-blue-500/30 hover:border-blue-500/60 transition-all hover:scale-[1.02] cursor-pointer">
-                      <p className="text-3xl font-bold text-white mb-2">{stats.reach}</p>
-                      <p className="text-gray-400 text-sm">Total Reach</p>
-                      <div className="mt-3 text-xs text-green-400 flex items-center gap-1">
-                        <span className="animate-pulse">↑</span> 9.1% dari bulan lalu
-                      </div>
-                    </div>
-                    <div className="bg-gradient-to-br from-pink-600/20 to-transparent backdrop-blur-sm rounded-2xl p-6 border border-pink-500/30 hover:border-pink-500/60 transition-all hover:scale-[1.02] cursor-pointer">
-                      <p className="text-3xl font-bold text-white mb-2">{stats.engagement}</p>
-                      <p className="text-gray-400 text-sm">Engagement Rate</p>
-                      <div className="mt-3 text-xs text-green-400 flex items-center gap-1">
-                        <span className="animate-pulse">↑</span> 2.3% dari bulan lalu
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Engagement Pie Chart - Enhanced */}
-                  <div className="bg-gray-900/30 backdrop-blur-sm rounded-2xl p-6 border border-gray-800 hover:border-gray-700 transition-all duration-300 group hover:scale-[1.02]">
-                    <div className="flex justify-between items-center mb-6">
-                      <div>
-                        <h4 className="text-white font-semibold text-lg group-hover:text-white flex items-center gap-2">
-                          <svg className="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                          </svg>
-                          Engagement Distribution
-                          <span className="text-xs font-normal text-gray-400 ml-2">Last 30 days</span>
-                        </h4>
-                        <p className="text-gray-400 text-sm mt-1">Total engagement across all platforms</p>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="flex items-center text-sm text-gray-400">
-                          <div className="w-3 h-3 rounded-full bg-purple-500 mr-2"></div>
-                          <span>Social Media</span>
-                        </div>
-                        <button className="text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-gray-800">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v14m7-7H5" />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
-                      {/* Chart Container */}
-                      <div className="relative">
-                        <ResponsiveContainer width="100%" height={280}>
-                          <PieChart>
-                            <defs>
-                              <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                                <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="rgba(167, 139, 250, 0.3)" />
-                              </filter>
-                            </defs>
-
-                            <Pie
-                              data={platformStats}
-                              cx="50%"
-                              cy="50%"
-                              labelLine={false}
-                              label={({ cx, cy, midAngle, innerRadius, outerRadius, value }) => {
-                                const RADIAN = Math.PI / 180;
-                                const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-                                const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                                const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-                                if (value > 15) {
-                                  return (
-                                    <text
-                                      x={x}
-                                      y={y}
-                                      fill="white"
-                                      textAnchor={x > cx ? 'start' : 'end'}
-                                      dominantBaseline="central"
-                                      className="font-bold text-sm"
-                                    >
-                                      {value}%
-                                    </text>
-                                  );
-                                }
-                                return null;
-                              }}
-                              outerRadius={95}
-                              innerRadius={60}
-                              paddingAngle={2}
-                              cornerRadius={8}
-                              dataKey="value"
-                              animationDuration={1500}
-                              animationBegin={500}
-                              animationEasing="ease-out"
-                              filter="url(#shadow)"
-                            >
-                              {platformStats.map((entry, index) => (
-                                <Cell
-                                  key={`cell-${index}`}
-                                  fill={entry.color}
-                                  stroke="#1F2937"
-                                  strokeWidth={2}
-                                  className="transition-all duration-300 hover:opacity-80 cursor-pointer"
-                                />
-                              ))}
-                            </Pie>
-
-                            {/* Center text */}
-                            <text
-                              x="50%"
-                              y="45%"
-                              textAnchor="middle"
-                              dominantBaseline="middle"
-                              className="text-2xl font-bold fill-white"
-                            >
-                              100%
-                            </text>
-                            <text
-                              x="50%"
-                              y="55%"
-                              textAnchor="middle"
-                              dominantBaseline="middle"
-                              className="text-sm fill-gray-400"
-                            >
-                              Total Engagement
-                            </text>
-
-                            <Tooltip
-                              content={({ active, payload }) => {
-                                if (active && payload && payload.length) {
-                                  const data = payload[0].payload;
-                                  return (
-                                    <div className="bg-gray-900 border border-gray-700 rounded-xl p-4 shadow-2xl">
-                                      <div className="flex items-center gap-3 mb-2">
-                                        <div
-                                          className="w-4 h-4 rounded-full"
-                                          style={{ backgroundColor: data.color }}
-                                        />
-                                        <span className="font-bold text-white">{data.name}</span>
-                                        <span className="ml-auto font-bold text-lg" style={{ color: data.color }}>
-                                          {data.value}%
-                                        </span>
-                                      </div>
-                                      <div className="text-sm text-gray-300">
-                                        <div className="flex justify-between mb-1">
-                                          <span>Engagement:</span>
-                                          <span className="font-semibold">{data.engagement}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                          <span>Share:</span>
-                                          <span className="font-semibold">{data.value}% of total</span>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  );
-                                }
-                                return null;
-                              }}
-                            />
-
-                            <Legend
-                              verticalAlign="bottom"
-                              height={36}
-                              formatter={(value) => (
-                                <span className="text-sm text-gray-300 pl-1">{value}</span>
-                              )}
-                              iconType="circle"
-                              iconSize={10}
-                            />
-                          </PieChart>
-                        </ResponsiveContainer>
-                      </div>
-
-                      {/* Platform Stats List */}
-                      <div className="space-y-4">
-                        {platformStats.map((platform) => (
-                          <div
-                            key={platform.name}
-                            className="flex items-center justify-between p-3 rounded-lg bg-gray-800/50 hover:bg-gray-800 transition-colors cursor-pointer group/item"
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className="text-lg">{platform.icon}</div>
-                              <div>
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium text-white">{platform.name}</span>
-                                  <span
-                                    className={`text-xs px-2 py-1 rounded-full ${platform.change.startsWith('+') ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}
-                                  >
-                                    {platform.change}
-                                  </span>
-                                </div>
-                                <div className="text-sm text-gray-400">{platform.engagement} engagements</div>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                              <div className="text-right">
-                                <div className="text-2xl font-bold text-white">{platform.value}%</div>
-                                <div className="text-xs text-gray-400">share</div>
-                              </div>
-                              <div
-                                className="w-3 h-3 rounded-full transition-transform group-hover/item:scale-125"
-                                style={{ backgroundColor: platform.color }}
-                              />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Footer Stats */}
-                    <div className="mt-6 pt-6 border-t border-gray-800 flex flex-wrap gap-6 text-sm">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                        <span className="text-gray-400">Highest:</span>
-                        <span className="text-white font-medium">Instagram (2.5M)</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                        <span className="text-gray-400">Fastest Growing:</span>
-                        <span className="text-white font-medium">TikTok (+8.3%)</span>
-                      </div>
-                      <div className="flex items-center gap-2 ml-auto">
-                        <span className="text-gray-400">Updated:</span>
-                        <span className="text-white">Just now</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                {/* Statistics Overview (Isolated & Memoized Recharts) */}
+                <StatsCharts stats={stats} />
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* QR Code Modal for Desktop - LANDSCAPE LAYOUT */}
-      {showQRModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-lg flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-gray-900 to-gray-950 rounded-2xl border border-gray-800 max-w-5xl w-full overflow-hidden shadow-2xl">
-            {/* Header */}
-            <div className="flex justify-between items-center p-6 border-b border-gray-800">
-              <div>
-                <h3 className="text-xl font-bold text-white">Portal Profile QR Code</h3>
-                <p className="text-gray-400 text-sm">Scan untuk mengunjungi portal di perangkat mobile</p>
-              </div>
-              <button
-                onClick={() => setShowQRModal(false)}
-                className="text-gray-400 hover:text-white p-2 hover:bg-gray-800 rounded-lg transition-colors"
-              >
-                <MdClose className="w-6 h-6" />
-              </button>
-            </div>
-
-            {/* Content - Landscape Layout */}
-            <div className="flex flex-col md:flex-row">
-              {/* Left Side - QR Code */}
-              <div className="md:w-1/2 p-8 border-r border-gray-800 flex flex-col items-center justify-center">
-                <div className="relative bg-white p-4 rounded-xl mb-6 w-64 h-64 flex items-center justify-center">
-                  {isGeneratingQR ? (
-                    <div className="flex flex-col items-center justify-center">
-                      <div className="w-12 h-12 border-4 border-gray-300 border-t-emerald-500 rounded-full animate-spin mb-4"></div>
-                      <p className="text-gray-600 text-sm">Generating QR Code...</p>
-                    </div>
-                  ) : qrCodeUrl ? (
-                    <>
-                      <img
-                        src={qrCodeUrl}
-                        alt="QR Code Portal Muhammad Syaiful Mukmin"
-                        className="w-full h-full"
-                      />
-                      {/* Logo overlay */}
-                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-md">
-                        <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                          <span className="text-lg font-bold text-white">
-                            SM
-                          </span>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
-                        <MdQrCode className="w-8 h-8 text-white" />
-                      </div>
-                      <p className="text-gray-600 text-sm">Preparing QR Code...</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Title under QR Code */}
-                <div className="text-center mb-2">
-                  <div className="text-2xl font-bold text-white mb-1">SM</div>
-                  <div className="text-gray-400 text-sm">Portal Muhammad Syaiful Mukmin</div>
-                </div>
-              </div>
-
-              {/* Right Side - Info and Actions */}
-              <div className="md:w-1/2 p-8">
-                {/* Link Display */}
-                <div className="mb-8">
-                  <div className="text-gray-400 text-sm font-medium mb-3">LINK PORTAL:</div>
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 bg-gray-800/50 rounded-lg p-3 border border-gray-700">
-                      <p className="text-white text-sm font-mono break-all">https://syaiful-mukmin.netlify.app/portal</p>
-                    </div>
-                    <button
-                      onClick={copyQRCodeLink}
-                      className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-medium hover:opacity-90 transition-opacity min-w-[100px] justify-center"
-                    >
-                      {qrCopied ? (
-                        <>
-                          <HiClipboardCheck className="w-5 h-5 text-green-400" />
-                          <span className="text-green-400">Copied!</span>
-                        </>
-                      ) : (
-                        <>
-                          <MdContentCopy className="w-5 h-5" />
-                          <span>Copy</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="space-y-4">
-                  <button
-                    onClick={downloadQRCode}
-                    disabled={!qrCodeUrl}
-                    className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${qrCodeUrl
-                        ? 'bg-gradient-to-r from-emerald-600/20 to-green-600/20 border-emerald-500/30 hover:border-emerald-500/60 hover:bg-emerald-600/30 cursor-pointer'
-                        : 'bg-gray-800/50 border-gray-700 cursor-not-allowed'
-                      }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-lg ${qrCodeUrl ? 'bg-emerald-500/20' : 'bg-gray-700'}`}>
-                        <MdDownload className={`w-5 h-5 ${qrCodeUrl ? 'text-emerald-400' : 'text-gray-500'}`} />
-                      </div>
-                      <div className="text-left">
-                        <div className={`font-medium ${qrCodeUrl ? 'text-white' : 'text-gray-400'}`}>
-                          {downloadSuccess ? 'Downloaded!' : 'Download PNG'}
-                        </div>
-                        <div className="text-xs text-gray-400">High Quality 320x320px</div>
-                      </div>
-                    </div>
-                    {qrCodeUrl && (
-                      <div className="text-emerald-400 text-sm font-medium">→</div>
-                    )}
-                  </button>
-
-                  <button
-                    onClick={handleShare}
-                    className="w-full flex items-center justify-between p-4 rounded-xl border border-purple-500/30 bg-gradient-to-r from-purple-600/20 to-blue-600/20 hover:border-purple-500/60 hover:bg-purple-600/30 transition-all cursor-pointer"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-purple-500/20">
-                        <MdShare className="w-5 h-5 text-purple-400" />
-                      </div>
-                      <div className="text-left">
-                        <div className="font-medium text-white">Share Portal</div>
-                        <div className="text-xs text-gray-400">Via Social Media</div>
-                      </div>
-                    </div>
-                    <div className="text-purple-400 text-sm font-medium">→</div>
-                  </button>
-                </div>
-
-                {/* Instructions */}
-                <div className="mt-8 pt-6 border-t border-gray-800">
-                  <div className="text-gray-400 text-sm font-medium mb-3">📱 Cara Menggunakan:</div>
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="text-center p-3 bg-gray-800/30 rounded-lg">
-                      <div className="text-lg font-bold text-white mb-1">1</div>
-                      <p className="text-gray-400 text-xs">Buka kamera atau scanner QR</p>
-                    </div>
-                    <div className="text-center p-3 bg-gray-800/30 rounded-lg">
-                      <div className="text-lg font-bold text-white mb-1">2</div>
-                      <p className="text-gray-400 text-xs">Arahkan ke QR Code</p>
-                    </div>
-                    <div className="text-center p-3 bg-gray-800/30 rounded-lg">
-                      <div className="text-lg font-bold text-white mb-1">3</div>
-                      <p className="text-gray-400 text-xs">Klik link yang muncul</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="p-4 bg-gray-900/50 border-t border-gray-800">
-              <p className="text-gray-500 text-xs text-center">
-                QR Code ini mengarah ke portal utama: <span className="text-emerald-400">syaiful-mukmin.netlify.app/portal</span>
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* QR Code Modal */}
+      <QRCodeModal
+        isOpen={showQRModal}
+        onClose={() => setShowQRModal(false)}
+        onShare={handleShare}
+      />
     </>
   );
 });
 
 DesktopLayout.displayName = 'DesktopLayout';
-
 export default DesktopLayout;

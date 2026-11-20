@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import { motion } from "framer-motion";
 
 const ProgressBarComponent = ({ level, showLabel = true }) => {
   const colorClass = useMemo(() => {
@@ -13,18 +12,15 @@ const ProgressBarComponent = ({ level, showLabel = true }) => {
   return (
     <div className="w-full">
       {showLabel && (
-        <div className="flex justify-between text-sm text-gray-300 mb-2">
+        <div className="flex justify-between text-xs sm:text-sm text-gray-300 mb-1.5">
           <span>Kemahiran</span>
           <span className="font-bold">{level}%</span>
         </div>
       )}
-      <div className="w-full bg-gray-700/30 rounded-full h-2.5 overflow-hidden backdrop-blur-sm">
-        <motion.div 
-          className={`h-2.5 rounded-full bg-gradient-to-r ${colorClass} shadow-lg`}
-          initial={{ width: 0 }}
-          animate={{ width: `${level}%` }}
-          transition={{ duration: 1, ease: "easeOut", delay: 0.1 }}
-          style={{ willChange: "width" }}
+      <div className="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden border border-white/5">
+        <div 
+          className={`h-full rounded-full bg-gradient-to-r ${colorClass} transition-all duration-500 ease-out`}
+          style={{ width: `${Math.min(100, Math.max(0, level))}%` }}
         />
       </div>
     </div>
@@ -32,4 +28,4 @@ const ProgressBarComponent = ({ level, showLabel = true }) => {
 };
 
 export const ProgressBar = React.memo(ProgressBarComponent);
-ProgressBar.displayName = "ProgressBar";
+ProgressBarComponent.displayName = "ProgressBar";

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import dataBahasa from "../../../data/bahasa/data.json";
 import { motion } from "framer-motion";
+import { getRelatedProjectsAndApps } from "../../../utils/techRouteHelper";
 
 const slugify = (text = "") =>
   text
@@ -59,6 +60,7 @@ const DetailBahasa = () => {
   }
 
   const isProgramming = item.type === "teknologi";
+  const { projects: relatedProjects, apps: relatedApps } = getRelatedProjectsAndApps(item?.nama);
 
   const renderInfoCard = (icon, title, content, color = "cyan") => {
     const colorClasses = {
@@ -285,6 +287,106 @@ const DetailBahasa = () => {
                   "green"
                 )}
               </>
+            )}
+
+            {/* 🚀 Proyek Portofolio Terkait */}
+            {renderSection(
+              "🚀 Proyek Portofolio Terkait",
+              <Briefcase size={20} />,
+              <div className="space-y-3">
+                {relatedProjects.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {relatedProjects.map((proj) => (
+                      <Link
+                        key={proj.id}
+                        to={`/project-detail/${proj.id}`}
+                        state={{ fromProjects: true }}
+                        className="group block p-3.5 rounded-xl bg-[#1e293b]/70 hover:bg-[#1e293b]/95 border border-cyan-500/20 hover:border-cyan-400/50 transition-all shadow-sm hover:shadow-cyan-500/10"
+                      >
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <h4 className="font-bold text-white text-sm group-hover:text-cyan-300 transition-colors line-clamp-1">
+                            {proj.title}
+                          </h4>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-semibold border border-cyan-500/30 shrink-0">
+                            {proj.category}
+                          </span>
+                        </div>
+                        <p className="text-gray-400 text-xs line-clamp-2 mb-2.5">
+                          {proj.description}
+                        </p>
+                        <div className="flex items-center justify-between text-xs text-cyan-400 font-medium">
+                          <span>Lihat Detail Proyek</span>
+                          <span className="group-hover:translate-x-1 transition-transform">→</span>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-3.5 rounded-xl bg-slate-800/40 border border-slate-700/50 text-gray-400 text-xs">
+                    Belum ada proyek spesifik yang ditautkan langsung dengan tag ini. Anda dapat melihat proyek lainnya di katalog utama.
+                  </div>
+                )}
+                <div className="pt-1 flex justify-end">
+                  <Link
+                    to="/projects"
+                    className="text-xs text-cyan-400 hover:text-cyan-300 font-medium inline-flex items-center gap-1 hover:underline"
+                  >
+                    Buka Semua Proyek di Halaman /projects →
+                  </Link>
+                </div>
+              </div>,
+              "blue"
+            )}
+
+            {/* 📱 Aplikasi & Tools Terkait */}
+            {renderSection(
+              "📱 Aplikasi & Tools Terkait",
+              <TrendingUp size={20} />,
+              <div className="space-y-3">
+                {relatedApps.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {relatedApps.map((app) => (
+                      <Link
+                        key={app.id}
+                        to={app.path}
+                        className="group block p-3.5 rounded-xl bg-[#1e293b]/70 hover:bg-[#1e293b]/95 border border-cyan-500/20 hover:border-cyan-400/50 transition-all shadow-sm hover:shadow-cyan-500/10"
+                      >
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="text-xl shrink-0">{app.emoji || "✨"}</span>
+                            <h4 className="font-bold text-white text-sm group-hover:text-cyan-300 transition-colors truncate">
+                              {app.title}
+                            </h4>
+                          </div>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 font-semibold border border-teal-500/30 shrink-0">
+                            {app.categoryLabel}
+                          </span>
+                        </div>
+                        <p className="text-gray-400 text-xs line-clamp-2 mb-2.5">
+                          {app.description}
+                        </p>
+                        <div className="flex items-center justify-between text-xs text-teal-400 font-medium">
+                          <span>Buka Aplikasi</span>
+                          <span className="group-hover:translate-x-1 transition-transform">→</span>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-3.5 rounded-xl bg-slate-800/40 border border-slate-700/50 text-gray-400 text-xs">
+                    Lihat katalog lengkap semua aplikasi dan tools di Apps Hub.
+                  </div>
+                )}
+                <div className="pt-1 flex justify-end">
+                  <Link
+                    to="/daftar-aplikasi"
+                    className="text-xs text-teal-400 hover:text-teal-300 font-medium inline-flex items-center gap-1 hover:underline"
+                  >
+                    Buka Katalog Lengkap di /daftar-aplikasi →
+                  </Link>
+                </div>
+              </div>,
+              "cyan"
             )}
           </div>
 

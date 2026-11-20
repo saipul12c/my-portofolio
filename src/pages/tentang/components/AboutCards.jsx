@@ -1,7 +1,7 @@
 // AboutCards.jsx
+import React, { useRef, memo, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { useRef, useState, useEffect } from "react";
 import {
   Code2,
   Camera,
@@ -11,6 +11,8 @@ import {
   Users,
   Award,
   Heart,
+  ArrowRight,
+  CheckCircle,
 } from "lucide-react";
 
 const iconMap = {
@@ -24,326 +26,217 @@ const iconMap = {
   Heart,
 };
 
-// Mapping warna untuk menghindari class dinamis Tailwind
+// Complete palette mappings with full support for cyan, blue, purple, etc.
 const colorClasses = {
-  pink: {
-    border: "border-pink-400/20 hover:border-pink-400",
-    text: "group-hover:text-pink-300",
-    icon: "text-pink-400",
-    gradient: "from-pink-500 via-purple-500 to-indigo-500",
-  },
-  purple: {
-    border: "border-purple-400/20 hover:border-purple-400",
-    text: "group-hover:text-purple-300",
-    icon: "text-purple-400",
-    gradient: "from-purple-500 via-pink-500 to-blue-500",
+  cyan: {
+    border: "border-cyan-500/20 group-hover:border-cyan-400/60",
+    badge: "bg-cyan-500/10 text-cyan-300 border-cyan-500/30",
+    text: "group-hover:text-cyan-300",
+    icon: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20",
+    glow: "rgba(6, 182, 212, 0.15)",
+    gradient: "from-cyan-500 via-sky-500 to-blue-500",
   },
   blue: {
-    border: "border-blue-400/20 hover:border-blue-400",
+    border: "border-blue-500/20 group-hover:border-blue-400/60",
+    badge: "bg-blue-500/10 text-blue-300 border-blue-500/30",
     text: "group-hover:text-blue-300",
-    icon: "text-blue-400",
-    gradient: "from-blue-500 via-cyan-500 to-green-500",
+    icon: "text-blue-400 bg-blue-500/10 border-blue-500/20",
+    glow: "rgba(59, 130, 246, 0.15)",
+    gradient: "from-blue-500 via-indigo-500 to-purple-500",
+  },
+  purple: {
+    border: "border-purple-500/20 group-hover:border-purple-400/60",
+    badge: "bg-purple-500/10 text-purple-300 border-purple-500/30",
+    text: "group-hover:text-purple-300",
+    icon: "text-purple-400 bg-purple-500/10 border-purple-500/20",
+    glow: "rgba(168, 85, 247, 0.15)",
+    gradient: "from-purple-500 via-fuchsia-500 to-pink-500",
+  },
+  pink: {
+    border: "border-pink-500/20 group-hover:border-pink-400/60",
+    badge: "bg-pink-500/10 text-pink-300 border-pink-500/30",
+    text: "group-hover:text-pink-300",
+    icon: "text-pink-400 bg-pink-500/10 border-pink-500/20",
+    glow: "rgba(236, 72, 153, 0.15)",
+    gradient: "from-pink-500 via-rose-500 to-red-500",
   },
   green: {
-    border: "border-green-400/20 hover:border-green-400",
-    text: "group-hover:text-green-300",
-    icon: "text-green-400",
-    gradient: "from-green-500 via-emerald-500 to-teal-500",
+    border: "border-emerald-500/20 group-hover:border-emerald-400/60",
+    badge: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
+    text: "group-hover:text-emerald-300",
+    icon: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+    glow: "rgba(16, 185, 129, 0.15)",
+    gradient: "from-emerald-500 via-teal-500 to-cyan-500",
   },
   yellow: {
-    border: "border-yellow-400/20 hover:border-yellow-400",
-    text: "group-hover:text-yellow-300",
-    icon: "text-yellow-400",
-    gradient: "from-yellow-500 via-orange-500 to-red-500",
-  },
-  indigo: {
-    border: "border-indigo-400/20 hover:border-indigo-400",
-    text: "group-hover:text-indigo-300",
-    icon: "text-indigo-400",
-    gradient: "from-indigo-500 via-purple-500 to-pink-500",
+    border: "border-amber-500/20 group-hover:border-amber-400/60",
+    badge: "bg-amber-500/10 text-amber-300 border-amber-500/30",
+    text: "group-hover:text-amber-300",
+    icon: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+    glow: "rgba(245, 158, 11, 0.15)",
+    gradient: "from-amber-500 via-orange-500 to-red-500",
   },
 };
 
-// Variants untuk animasi
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.15,
+      staggerChildren: 0.12,
       delayChildren: 0.1,
-    }
-  }
+    },
+  },
 };
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 15
-    }
-  }
+      duration: 0.5,
+      ease: "easeOut",
+    },
+  },
 };
 
-const imageVariants = {
-  hidden: { opacity: 0, x: 80 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      type: "spring",
-      stiffness: 80,
-      damping: 20,
-      delay: 0.4
-    }
-  }
-};
-
-// Text Generate Effect Component - Smooth typing animation without state thrashing
-const TextGenerateEffect = ({ words = "", className = "" }) => {
-  const [displayedText, setDisplayedText] = useState("");
-
-  useEffect(() => {
-    if (!words) return;
-    let index = 0;
-    const interval = setInterval(() => {
-      index += 1;
-      setDisplayedText(words.slice(0, index));
-      if (index >= words.length) {
-        clearInterval(interval);
-      }
-    }, 25);
-
-    return () => clearInterval(interval);
-  }, [words]);
-
-  return <span className={className}>{displayedText}</span>;
-};
-
-// Evervault Card Component - 60 FPS GPU-accelerated glow without React re-render
-const EvervaultCard = ({ 
-  children, 
-  className = "", 
-  colors,
-  showGradient = true 
-}) => {
+// Optimized GPU-accelerated interactive Card Container
+const InteractiveCard = ({ children, className = "", colors }) => {
   const cardRef = useRef(null);
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = useCallback((e) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     cardRef.current.style.setProperty("--mouse-x", `${x}px`);
     cardRef.current.style.setProperty("--mouse-y", `${y}px`);
-  };
+  }, []);
 
   return (
     <div
       ref={cardRef}
-      className={`relative rounded-2xl border border-white/10 bg-black/20 backdrop-blur-xl overflow-hidden group/card ${className}`}
       onMouseMove={handleMouseMove}
+      className={`relative h-full rounded-2xl border bg-[#111c34]/70 hover:bg-[#132242]/85 backdrop-blur-xl transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-2xl overflow-hidden ${colors.border} ${className}`}
       style={{
-        "--mouse-x": "150px",
-        "--mouse-y": "150px",
+        "--mouse-x": "50%",
+        "--mouse-y": "50%",
       }}
     >
-      {/* Animated gradient border */}
-      {showGradient && (
-        <div
-          className="absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 pointer-events-none"
-          style={{
-            background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(120,119,198,0.15), transparent 40%)`,
-          }}
-        />
-      )}
-      
-      {/* Dynamic border gradient */}
+      {/* Dynamic Cursor Spotlight Radial Glow */}
       <div
-        className="absolute inset-0 rounded-2xl opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 pointer-events-none"
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
         style={{
-          background: `radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), ${
-            colors ? `rgba(120,119,198,0.3)` : 'rgba(255,255,255,0.1)'
-          }, transparent 40%)`,
+          background: `radial-gradient(350px circle at var(--mouse-x) var(--mouse-y), ${colors.glow}, transparent 70%)`,
         }}
       />
-      
-      {/* Main content */}
-      <div className="relative z-10 h-full">
+
+      {/* Card Content */}
+      <div className="relative z-10 h-full p-7 flex flex-col justify-between">
         {children}
       </div>
-      
-      {/* Shine effect */}
-      <div
-        className="absolute inset-0 rounded-2xl opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 pointer-events-none"
-        style={{
-          background: `radial-gradient(300px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.1), transparent 40%)`,
-        }}
-      />
     </div>
   );
 };
 
-// Hover Effect Component - GPU-accelerated 3D tilt without layout thrashing
-const HoverEffect = ({ 
-  children, 
-  className = "",
-  intensity = 1 
-}) => {
-  const containerRef = useRef(null);
-  const rafRef = useRef(null);
-
-  const handleMouseMove = (e) => {
-    if (rafRef.current) return;
-    const clientX = e.clientX;
-    const clientY = e.clientY;
-
-    rafRef.current = requestAnimationFrame(() => {
-      rafRef.current = null;
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
-      
-      const rotateY = ((-1 / 5) * x + 20) * intensity;
-      const rotateX = ((4 / 30) * y - 20) * intensity;
-      
-      containerRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-      containerRef.current.style.setProperty("--hover-x", `${x}px`);
-      containerRef.current.style.setProperty("--hover-y", `${y}px`);
-    });
-  };
-  
-  const handleMouseLeave = () => {
-    if (rafRef.current) {
-      cancelAnimationFrame(rafRef.current);
-      rafRef.current = null;
-    }
-    if (containerRef.current) {
-      containerRef.current.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
-    }
-  };
+function AboutCards({ cards = [], imageSrc }) {
+  if (!cards.length) return null;
 
   return (
-    <div
-      ref={containerRef}
-      className={`transition-transform duration-200 ease-out will-change-transform ${className}`}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-    >
-      {children}
-    </div>
-  );
-};
+    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+      {/* Section Header */}
+      <div className="text-center mb-10">
+        <h2 className="text-xs uppercase tracking-widest text-cyan-400 font-semibold mb-2">
+          Fokus & Dedikasi
+        </h2>
+        <p className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          Pilar Profesional & Akademik
+        </p>
+      </div>
 
-export default function AboutCards({ cards, imageSrc }) {
-  return (
-    <section className="mt-16 flex flex-col lg:flex-row items-center justify-between w-full max-w-7xl mx-auto gap-10 px-4">
-      {/* Bagian Kiri - Kartu */}
       <motion.div
-        className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 flex-1"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-stretch"
         variants={containerVariants}
         initial="hidden"
-        animate="visible"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-60px" }}
       >
-        {cards.map((card, i) => {
-          const Icon = iconMap[card.icon];
-          const colors = colorClasses[card.color] || colorClasses.pink;
-          
+        {cards.map((card, idx) => {
+          const Icon = iconMap[card.icon] || Sparkles;
+          const colors = colorClasses[card.color] || colorClasses.cyan;
+
           return (
             <motion.div
-              key={i}
+              key={card.id || idx}
               variants={cardVariants}
-              className={`group ${card.id === 3 ? "sm:col-span-2 lg:col-span-1" : ""}`}
+              className={`group flex flex-col h-full ${
+                card.id === 3 ? "md:col-span-2 lg:col-span-1" : ""
+              }`}
             >
               <Link
-                to={card.link}
-                className="block h-full focus:outline-none focus:ring-2 focus:ring-white/50 rounded-2xl"
+                to={card.link || "#"}
+                className="block h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-2xl"
               >
-                <HoverEffect className="h-full">
-                  <EvervaultCard 
-                    className="h-full p-8 transition-all duration-300 group-hover:scale-[1.02]"
-                    colors={colors}
-                  >
-                    <div className="flex flex-col h-full">
-                      {Icon && (
-                        <Icon 
-                          className={`w-10 h-10 ${colors.icon} mb-4 transition-all duration-300 group-hover:scale-110`} 
-                        />
-                      )}
-                      
-                      <h2 className={`text-xl font-semibold mb-3 ${colors.text} transition-colors duration-300`}>
-                        <TextGenerateEffect 
-                          words={card.title} 
-                          className="inline-block" 
-                        />
-                      </h2>
-
-                      {card.type === "list" ? (
-                        <ul className="text-gray-300 text-sm space-y-2 flex-1">
-                          {card.content.map((item, idx) => (
-                            <li key={idx} className="flex items-start transition-all duration-300 group-hover:translate-x-1">
-                              <span className={`${colors.icon} mr-2 mt-1`}>•</span>
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="text-gray-300 text-sm leading-relaxed flex-1">
-                          <TextGenerateEffect 
-                            words={card.content} 
-                            className="inline-block" 
-                          />
-                        </p>
-                      )}
-                      
-                      {/* Animated arrow indicator */}
-                      <div className="mt-4 flex items-center justify-between">
-                        <div className={`w-6 h-6 ${colors.icon} transform group-hover:translate-x-2 transition-all duration-300 opacity-0 group-hover:opacity-100`}>
-                          →
-                        </div>
-                        <div className="flex-1 border-t border-white/20 group-hover:border-white/40 transition-colors duration-300 ml-4" />
+                <InteractiveCard colors={colors}>
+                  <div>
+                    {/* Card Top: Icon & Action hint */}
+                    <div className="flex items-center justify-between mb-5">
+                      <div
+                        className={`w-12 h-12 rounded-xl border flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-sm ${colors.icon}`}
+                      >
+                        <Icon className="w-6 h-6" />
                       </div>
+                      <span className="text-xs font-mono text-slate-500 group-hover:text-slate-300 transition-colors">
+                        0{idx + 1}
+                      </span>
                     </div>
-                  </EvervaultCard>
-                </HoverEffect>
+
+                    {/* Card Title */}
+                    <h3
+                      className={`text-xl font-bold text-white mb-3 transition-colors duration-300 ${colors.text}`}
+                    >
+                      {card.title}
+                    </h3>
+
+                    {/* Card Body */}
+                    {card.type === "list" && Array.isArray(card.content) ? (
+                      <ul className="space-y-2.5 text-sm text-slate-300">
+                        {card.content.map((item, itemIdx) => (
+                          <li
+                            key={itemIdx}
+                            className="flex items-start gap-2.5 transition-transform duration-200 group-hover:translate-x-1"
+                          >
+                            <CheckCircle className={`w-4 h-4 mt-0.5 shrink-0 ${colors.badge}`} />
+                            <span className="leading-snug">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-sm text-slate-300 leading-relaxed font-normal">
+                        {card.content}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Card Bottom: Action Link */}
+                  <div className="pt-6 mt-6 border-t border-white/10 flex items-center justify-between text-xs font-semibold text-slate-400 group-hover:text-white transition-colors">
+                    <span className="flex items-center gap-1.5">
+                      Pelajari Selengkapnya
+                    </span>
+                    <div className="flex items-center gap-1 text-cyan-400 transform group-hover:translate-x-1.5 transition-transform">
+                      <span>Buka</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
+                  </div>
+                </InteractiveCard>
               </Link>
             </motion.div>
           );
         })}
       </motion.div>
-
-      {/* Bagian Kanan - Foto */}
-      {imageSrc && (
-        <motion.div
-          className="relative flex-shrink-0 w-full max-w-sm lg:max-w-md"
-          variants={imageVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <HoverEffect className="rounded-3xl">
-            <div className="relative rounded-3xl shadow-2xl overflow-hidden border border-white/20 bg-gradient-to-br from-white/5 to-white/10">
-              <img
-                src={imageSrc}
-                alt="About Illustration"
-                className="w-full h-auto object-cover transition-transform duration-700"
-                loading="lazy"
-              />
-              {/* Overlay gradient */}
-              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-black/10 to-black/20" />
-            </div>
-          </HoverEffect>
-          
-          {/* Enhanced decorative effects */}
-          <div className="absolute -inset-4 rounded-3xl bg-gradient-to-tr from-pink-500/30 via-purple-500/20 to-indigo-500/20 blur-3xl -z-10 animate-pulse-slow" />
-          <div className="absolute -inset-2 rounded-3xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 blur-xl -z-5 opacity-60" />
-          <div className="absolute inset-0 rounded-3xl border border-white/5 -z-1" />
-        </motion.div>
-      )}
     </section>
   );
 }
+
+export default memo(AboutCards);

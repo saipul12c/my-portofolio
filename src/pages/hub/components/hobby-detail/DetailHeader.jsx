@@ -1,18 +1,17 @@
+import { memo } from "react";
 import { m } from "framer-motion";
-import * as Icons from "lucide-react";
+import HobbyIcon from "../shared/HobbyIcon";
 
-export default function DetailHeader({ hobby }) {
-  const Icon = Icons[hobby.icon];
-
+function DetailHeader({ hobby }) {
   return (
     <m.div
-      initial={{ opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
+      transition={{ duration: 0.6 }}
       className="text-center mb-12"
     >
       <div className="flex justify-center mb-6">
-        <IconSection hobby={hobby} Icon={Icon} />
+        <IconSection hobby={hobby} />
       </div>
 
       <CategoryBadge category={hobby.category} />
@@ -32,12 +31,12 @@ export default function DetailHeader({ hobby }) {
   );
 }
 
-function IconSection({ hobby, Icon }) {
+function IconSection({ hobby }) {
   return (
     <div className="relative">
-      <div className={`p-5 rounded-3xl ${hobby.color} shadow-xl ring-1 ring-white/5 transform-gpu`}>
+      <div className={`p-5 rounded-3xl ${hobby.color || "from-teal-400/30 to-sky-500/10"} shadow-xl ring-1 ring-white/5 transform-gpu`}>
         <div className="bg-black/20 p-3 rounded-2xl backdrop-blur-sm inline-flex items-center justify-center">
-          <Icon size={56} className={`${hobby.iconColor} drop-shadow-sm`} />
+          <HobbyIcon name={hobby.icon} size={56} className={`${hobby.iconColor || "text-cyan-400"} drop-shadow-sm`} />
         </div>
       </div>
       <div className="absolute -inset-0.5 rounded-3xl pointer-events-none" />
@@ -52,3 +51,5 @@ function CategoryBadge({ category }) {
     </span>
   );
 }
+
+export default memo(DetailHeader);

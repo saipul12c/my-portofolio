@@ -1,192 +1,200 @@
 // SoftSkills.jsx
-import { useState, useEffect, useCallback } from "react";
+import { useState, useMemo, useCallback, lazy, Suspense } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import SoftSkillsHeader from "./components/SoftSkillsHeader";
 import SoftSkillsSearch from "./components/SoftSkillsSearch";
 import SoftSkillsCardGrid from "./components/SoftSkillsCardGrid";
 import SoftSkillsPopup from "./components/SoftSkillsPopup";
-import SoftSkillsAI from "./AI/SoftSkillsAI";
-import { highlightText } from "./components/SoftSkillsUtils";
 import fallbackSkillsData from "../../data/skills/softskills.json";
 
-/**
- * Parent component:
- * - Memuat softskills.json
- * - Memproses daftar skills (labels, colors, gradients)
- * - Menyimpan filteredSkills yang dikirim dari SoftSkillsSearch via onFilterChange
- * - Menangani popup berdasarkan route param id
- * - Menangani fitur Tanya AI
- */
+// Lazy load heavy AI module (NLP, Compromise, Sentiment, ReactMarkdown)
+// This saves hundreds of kilobytes on initial page load!
+const SoftSkillsAI = lazy(() => import("./AI/SoftSkillsAI"));
+
+const COLOR_PALETTES = {
+  label: [
+    "bg-cyan-500/20 text-cyan-300 border border-cyan-400/30",
+    "bg-blue-500/20 text-blue-300 border border-blue-400/30",
+    "bg-purple-500/20 text-purple-300 border border-purple-400/30",
+    "bg-emerald-500/20 text-emerald-300 border border-emerald-400/30",
+    "bg-indigo-500/20 text-indigo-300 border border-indigo-400/30",
+  ],
+  level: [
+    "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30",
+    "bg-purple-500/20 text-purple-300 border border-purple-500/30",
+    "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30",
+    "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
+  ],
+  card: [
+    "from-slate-900/90 via-slate-800/80 to-cyan-950/40 hover:border-cyan-500/50 hover:shadow-cyan-500/10",
+    "from-slate-900/90 via-slate-800/80 to-blue-950/40 hover:border-blue-500/50 hover:shadow-blue-500/10",
+    "from-slate-900/90 via-slate-800/80 to-purple-950/40 hover:border-purple-500/50 hover:shadow-purple-500/10",
+    "from-slate-900/90 via-slate-800/80 to-indigo-950/40 hover:border-indigo-500/50 hover:shadow-indigo-500/10",
+  ],
+};
+
 export default function SoftSkills() {
-  const [skillsData, setSkillsData] = useState(fallbackSkillsData);
-  const [skills, setSkills] = useState([]);
-  const [filteredSkills, setFilteredSkills] = useState([]);
-  const [selectedSkill, setSelectedSkill] = useState(null);
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [isAIOpen, setIsAIOpen] = useState(false);
-  const [aiQuery, setAiQuery] = useState("");
-
-  const handleOpenAI = (query = "") => {
-    setAiQuery(query);
-    setIsAIOpen(true);
-  };
-
-  // Memoize onFilterChange to prevent unnecessary re-renders in SoftSkillsSearch
-  const handleFilterChange = useCallback((newFilteredSkills, searchValue) => {
-    setFilteredSkills(newFilteredSkills);
-    setSearchKeyword(searchValue || "");
-  }, []);
-
   const navigate = useNavigate();
   const { id } = useParams();
 
-  // 🔹 Proses data skill (labels, colors, gradients) - dioptimasi dengan useMemo
-  useEffect(() => {
-    if (!skillsData || !Array.isArray(skillsData.skills)) return;
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [isAIOpen, setIsAIOpen] = useState(false);
+  const [aiQuery, setAiQuery] = useState("");
+  const [selectedSkill, setSelectedSkill] = useState(null);
+
+  // Synchronous skill pre-processing with useMemo (deterministic, zero-delay on mount)
+  const skills = useMemo(() => {
+    if (!fallbackSkillsData || !Array.isArray(fallbackSkillsData.skills)) return [];
 
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
-    const colors = {
-      label: [
-        "bg-cyan-500/20 text-cyan-300 border border-cyan-400/30",
-        "bg-blue-500/20 text-blue-300 border border-blue-400/30",
-        "bg-purple-500/20 text-purple-300 border border-purple-400/30",
-        "bg-emerald-500/20 text-emerald-300 border border-emerald-400/30",
-        "bg-indigo-500/20 text-indigo-300 border border-indigo-400/30",
-      ],
-      level: [
-        "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30",
-        "bg-purple-500/20 text-purple-300 border border-purple-500/30",
-        "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30",
-        "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
-      ],
-      card: [
-        "from-slate-900/90 via-slate-800/80 to-cyan-950/40 hover:border-cyan-500/50 hover:shadow-cyan-500/10",
-        "from-slate-900/90 via-slate-800/80 to-blue-950/40 hover:border-blue-500/50 hover:shadow-blue-500/10",
-        "from-slate-900/90 via-slate-800/80 to-purple-950/40 hover:border-purple-500/50 hover:shadow-purple-500/10",
-        "from-slate-900/90 via-slate-800/80 to-indigo-950/40 hover:border-indigo-500/50 hover:shadow-indigo-500/10",
-      ],
-    };
-
-    const processed = skillsData.skills
-      .filter(
-        (skill) =>
-          skill &&
-          typeof skill === "object" &&
-          skill.name &&
-          skill.category &&
-          skill.level
-      )
+    const processed = fallbackSkillsData.skills
+      .filter((skill) => skill && typeof skill === "object" && skill.name && skill.category && skill.level)
       .map((skill) => {
         const labels = [...(skill.labels || [])];
 
         if (skill.dateAdded) {
           const addedDate = new Date(skill.dateAdded);
-          if (addedDate > oneYearAgo && !labels.includes("Baru"))
+          if (addedDate > oneYearAgo && !labels.includes("Baru")) {
             labels.push("Baru");
+          }
         }
 
         const labelColorMap = {};
         labels.forEach((label) => {
-          // Gunakan seed stabil (index id atau name) agar warna tidak acak setiap re-render
-          const seed = (label.length + (skill.id || 0)) % colors.label.length;
-          labelColorMap[label] = colors.label[seed];
+          const seed = (label.length + (Number(skill.id) || 0)) % COLOR_PALETTES.label.length;
+          labelColorMap[label] = COLOR_PALETTES.label[seed];
         });
 
-        const levelSeed = (skill.level.length + (skill.id || 0)) % colors.level.length;
-        const cardSeed = ((skill.name?.length || 0) + (skill.id || 0)) % colors.card.length;
+        const levelSeed = (skill.level.length + (Number(skill.id) || 0)) % COLOR_PALETTES.level.length;
+        const cardSeed = ((skill.name?.length || 0) + (Number(skill.id) || 0)) % COLOR_PALETTES.card.length;
 
         return {
           ...skill,
           labels,
           labelColorMap,
-          levelColor: colors.level[levelSeed],
-          cardGradient: colors.card[cardSeed],
+          levelColor: COLOR_PALETTES.level[levelSeed],
+          cardGradient: COLOR_PALETTES.card[cardSeed],
         };
       });
 
+    // Sort by label priority
     processed.sort((a, b) => (b.labels?.length || 0) - (a.labels?.length || 0));
+    return processed;
+  }, []);
 
-    setSkills(processed);
-    setFilteredSkills(processed);
-  }, [skillsData]);
+  // Filter skills synchronously with useMemo (unidirectional, predictable data flow)
+  const filteredSkills = useMemo(() => {
+    const q = searchKeyword.trim().toLowerCase();
 
-  // 🧭 Sinkronisasi popup berdasarkan route id
-  useEffect(() => {
+    return skills.filter((skill) => {
+      const matchSearch =
+        !q ||
+        (skill.name || "").toLowerCase().includes(q) ||
+        (skill.description || "").toLowerCase().includes(q) ||
+        (skill.category || "").toLowerCase().includes(q) ||
+        (skill.tags || []).some((t) => t.toLowerCase().includes(q)) ||
+        (skill.labels || []).some((l) => String(l).toLowerCase().includes(q));
+
+      const matchCategory =
+        selectedCategory === "All" ||
+        (skill.category || "").toLowerCase() === selectedCategory.toLowerCase();
+
+      return matchSearch && matchCategory;
+    });
+  }, [skills, searchKeyword, selectedCategory]);
+
+  // Sync popup state when route param id changes
+  useMemo(() => {
     if (!id || skills.length === 0) {
-      setSelectedSkill(null);
+      if (selectedSkill !== null) setSelectedSkill(null);
       return;
     }
     const found = skills.find((s) => String(s.id) === String(id));
     setSelectedSkill(found || null);
-  }, [id, skills]);
+  }, [id, skills]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!skillsData)
-    return (
-      <div className="text-white text-center mt-20 animate-pulse">
-        Loading data skill...
-      </div>
-    );
+  const handleOpenAI = useCallback((query = "") => {
+    setAiQuery(query);
+    setIsAIOpen(true);
+  }, []);
 
-  if (skillsData.error)
-    return (
-      <div className="text-red-400 text-center mt-20">
-        {skillsData.message || "Terjadi kesalahan saat memuat data skill."}
-      </div>
-    );
+  const handleCloseAI = useCallback(() => {
+    setIsAIOpen(false);
+    setAiQuery("");
+  }, []);
+
+  const handleSearchChange = useCallback((value) => {
+    setSearchKeyword(value || "");
+  }, []);
+
+  const handleCategoryChange = useCallback((category) => {
+    setSelectedCategory(category || "All");
+  }, []);
 
   return (
-    <main className="min-h-screen bg-[var(--color-gray-900)] text-white flex flex-col items-center px-6 py-20 relative overflow-hidden">
+    <main className="min-h-screen bg-[var(--color-gray-900)] text-white flex flex-col items-center px-4 sm:px-6 py-16 sm:py-20 relative overflow-hidden">
       {/* Background Glow */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-10 left-10 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-10 right-10 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute inset-0 -z-10 pointer-events-none">
+        <div className="absolute top-10 left-10 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-10 right-10 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
       </div>
 
       <Helmet>
-        <title>{skillsData.sectionTitle || "Soft Skills"} | Portofolio M. Syaiful Rahman</title>
+        <title>{fallbackSkillsData.sectionTitle || "Soft Skills"} | Portofolio Muhammad Syaiful Mukmin</title>
         <meta
           name="description"
-          content="Eksplorasi nilai profesional, kompetensi interpersonal, dan soft skills yang dimiliki oleh M. Syaiful Rahman."
+          content="Eksplorasi nilai profesional, kompetensi interpersonal, dan soft skills yang dimiliki oleh Muhammad Syaiful Mukmin."
         />
-        <meta property="og:title" content={`${skillsData.sectionTitle || "Soft Skills"} | Portofolio M. Syaiful Rahman`} />
+        <meta
+          property="og:title"
+          content={`${fallbackSkillsData.sectionTitle || "Soft Skills"} | Portofolio Muhammad Syaiful Mukmin`}
+        />
         <meta
           property="og:description"
-          content="Eksplorasi nilai profesional, kompetensi interpersonal, dan soft skills yang dimiliki oleh M. Syaiful Rahman."
+          content="Eksplorasi nilai profesional, kompetensi interpersonal, dan soft skills yang dimiliki oleh Muhammad Syaiful Mukmin."
         />
       </Helmet>
 
       {/* Header */}
-      <SoftSkillsHeader 
-        title={skillsData.sectionTitle} 
-      />
+      <SoftSkillsHeader title={fallbackSkillsData.sectionTitle} />
 
       {/* Search & Filter */}
       <SoftSkillsSearch
         skills={skills}
-        onFilterChange={handleFilterChange}
-        highlightText={highlightText}
+        searchValue={searchKeyword}
+        categoryValue={selectedCategory}
+        onSearchChange={handleSearchChange}
+        onCategoryChange={handleCategoryChange}
         onOpenAI={handleOpenAI}
       />
 
-      {/* Specialized AI Chat (Inline Results) */}
-      <SoftSkillsAI 
-        isOpen={isAIOpen}
-        onClose={() => {
-          setIsAIOpen(false);
-          setAiQuery("");
-        }}
-        skills={skills}
-        initialQuery={aiQuery}
-      />
+      {/* Specialized AI Chat (Lazy-loaded with Suspense for optimal bundle performance) */}
+      {isAIOpen && (
+        <Suspense
+          fallback={
+            <div className="w-full max-w-5xl py-8 flex items-center justify-center text-cyan-400 bg-gray-900/40 rounded-3xl border border-cyan-500/20 mb-8">
+              <div className="w-6 h-6 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin mr-3" />
+              <span className="text-sm font-semibold">Menghubungkan Asisten AI...</span>
+            </div>
+          }
+        >
+          <SoftSkillsAI
+            isOpen={isAIOpen}
+            onClose={handleCloseAI}
+            skills={skills}
+            initialQuery={aiQuery}
+          />
+        </Suspense>
+      )}
 
-      {/* Skill Cards */}
+      {/* Skill Cards Grid */}
       <SoftSkillsCardGrid
         filteredSkills={filteredSkills}
         search={searchKeyword}
-        highlightText={highlightText}
         navigate={navigate}
       />
 
@@ -196,7 +204,6 @@ export default function SoftSkills() {
         setSelectedSkill={setSelectedSkill}
         navigate={navigate}
       />
-
     </main>
   );
 }

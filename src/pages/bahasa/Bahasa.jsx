@@ -1,7 +1,8 @@
-import React, { useState, useRef, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import dataBahasa from "../../data/bahasa/data.json";
-import { motion, AnimatePresence, useInView } from "framer-motion";
 import { ArrowUp } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 
 // Import komponen dan hooks
 import { useScroll } from "./hooks/useScroll";
@@ -11,95 +12,121 @@ import { QuickStats } from "./components/QuickStats";
 import { LanguageSection } from "./components/LanguageSection";
 import { PageConnections } from "./components/PageConnections";
 
+// Slug generator helper
+const slugify = (text = "") =>
+  text
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "")
+    .replace(/-+/g, "-");
+
+// ⚡ LONG-TERM SCALABILITY: Pre-index and normalize search keywords at module load
+// This prevents running .toLowerCase() repeatedly across all items on every search keystroke
+const indexData = (list = []) =>
+  list.map((item) => ({
+    ...item,
+    _slug: slugify(item.nama),
+    _searchKey: `${item.nama} ${item.tingkat} ${(item.kemampuan || []).join(" ")}`.toLowerCase(),
+  }));
+
+const indexedSehariHari = indexData(dataBahasa.bahasaSehariHari || []);
+const indexedPemrograman = indexData(dataBahasa.bahasaPemrograman || []);
+const totalCount = indexedSehariHari.length + indexedPemrograman.length;
+
 const Bahasa = () => {
-  const { bahasaSehariHari, bahasaPemrograman } = dataBahasa;
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchParams] = useSearchParams();
+  const queryFromUrl = searchParams.get("q") || "";
+  const [searchTerm, setSearchTerm] = useState(queryFromUrl);
   const [filterLevel, setFilterLevel] = useState("all");
+
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q !== null) {
+      setSearchTerm(q);
+    }
+  }, [searchParams]);
   const [viewMode, setViewMode] = useState("grid");
   const [expandedTags, setExpandedTags] = useState({});
-  const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: true, margin: "-50px" });
   const { showScrollTop } = useScroll();
 
-  // Debounce search untuk mengurangi re-renders
-  const debouncedSearchTerm = useDebounce(searchTerm, 200);
+  // Debounce search term to prevent excessive re-renders while typing
+  const debouncedSearchTerm = useDebounce(searchTerm, 180);
 
-  // Optimized filtering dengan useMemo
+  // High-performance filter using pre-computed search keys
   const filteredData = useMemo(() => {
-    const filterCondition = (bahasa) => {
-      const matchesSearch = bahasa.nama.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-                           bahasa.tingkat.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-                           (bahasa.kemampuan && bahasa.kemampuan.some(skill => 
-                             skill.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-                           ));
-      const matchesLevel = 
-        filterLevel === "all" ||
-        (filterLevel === "beginner" && bahasa.level < 70) ||
-        (filterLevel === "intermediate" && bahasa.level >= 70 && bahasa.level < 85) ||
-        (filterLevel === "advanced" && bahasa.level >= 85);
-      
-      return matchesSearch && matchesLevel;
+    const term = debouncedSearchTerm.trim().toLowerCase();
+
+    const matches = (item) => {
+      // 1. Level filter check (fast numeric comparison)
+      if (filterLevel === "beginner" && item.level >= 70) return false;
+      if (filterLevel === "intermediate" && (item.level < 70 || item.level >= 85)) return false;
+      if (filterLevel === "advanced" && item.level < 85) return false;
+
+      // 2. Search check (single substring check against pre-indexed key)
+      if (term && !item._searchKey.includes(term)) return false;
+
+      return true;
     };
 
     return {
-      sehariHari: bahasaSehariHari.filter(filterCondition),
-      pemrograman: bahasaPemrograman.filter(filterCondition)
+      sehariHari: indexedSehariHari.filter(matches),
+      pemrograman: indexedPemrograman.filter(matches),
     };
-  }, [bahasaSehariHari, bahasaPemrograman, debouncedSearchTerm, filterLevel]);
+  }, [debouncedSearchTerm, filterLevel]);
 
   const scrollToTop = useCallback(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  // Toggle expanded tags dengan optimized state update
   const toggleExpandedTags = useCallback((skillId) => {
-    setExpandedTags(prev => ({
+    setExpandedTags((prev) => ({
       ...prev,
-      [skillId]: !prev[skillId]
+      [skillId]: !prev[skillId],
     }));
   }, []);
 
-  // Animation variants yang lebih ringan dengan transition yang di-optimize
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { 
-        staggerChildren: 0.08,
-        duration: 0.6
-      }
-    }
-  };
+  const totalShown = filteredData.sehariHari.length + filteredData.pemrograman.length;
 
   return (
-    <div className="min-h-screen bg-[#0f172a]/80 backdrop-blur-md py-4 sm:py-8 px-3 sm:px-4 relative overflow-hidden text-gray-300">
-      {/* Optimized Background Elements dengan will-change untuk performa */}
-      <div className="absolute top-10 left-5 sm:left-10 w-48 h-48 sm:w-72 sm:h-72 bg-cyan-500/10 rounded-full blur-2xl sm:blur-3xl animate-pulse" style={{willChange: "transform"}}></div>
-      <div className="absolute bottom-10 right-5 sm:right-10 w-64 h-64 sm:w-96 sm:h-96 bg-blue-500/10 rounded-full blur-2xl sm:blur-3xl animate-pulse delay-700" style={{willChange: "transform"}}></div>
+    <div className="min-h-screen bg-[#0f172a] py-4 sm:py-8 px-3 sm:px-4 relative overflow-hidden text-gray-300">
+      {/* 🚀 GPU-friendly Ambient Glows - Zero continuous repaint overhead */}
+      <div 
+        className="absolute top-0 left-10 w-[300px] sm:w-[450px] h-[300px] sm:h-[450px] rounded-full pointer-events-none opacity-20"
+        style={{
+          background: 'radial-gradient(circle, rgba(6, 182, 212, 0.35) 0%, rgba(6, 182, 212, 0) 70%)',
+          transform: 'translate3d(0, 0, 0)',
+        }}
+        aria-hidden="true"
+      />
+      <div 
+        className="absolute bottom-10 right-10 w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] rounded-full pointer-events-none opacity-20"
+        style={{
+          background: 'radial-gradient(circle, rgba(59, 130, 246, 0.35) 0%, rgba(59, 130, 246, 0) 70%)',
+          transform: 'translate3d(0, 0, 0)',
+        }}
+        aria-hidden="true"
+      />
 
-      <div className="max-w-7xl mx-auto relative z-10" ref={sectionRef}>
-        
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-8 sm:mb-12"
-        >
-          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-4 sm:mb-6">
+        <div className="text-center mb-6 sm:mb-10">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-2.5 sm:mb-4 tracking-tight">
             Kemampuan Bahasa & Teknologi
           </h1>
-          <p className="text-gray-300 text-sm sm:text-lg md:text-xl max-w-4xl mx-auto leading-relaxed font-light px-2">
+          <p className="text-gray-300 text-xs sm:text-base md:text-lg max-w-3xl mx-auto leading-relaxed font-light px-2">
             Jelajahi berbagai bahasa dan teknologi yang saya kuasai, dari komunikasi sehari-hari 
-            hingga stack pengembangan software modern dengan pengalaman nyata
+            hingga stack pengembangan perangkat lunak modern.
           </p>
-        </motion.div>
+        </div>
 
+        {/* Quick Stats */}
         <QuickStats 
-          bahasaSehariHari={bahasaSehariHari} 
-          bahasaPemrograman={bahasaPemrograman} 
+          bahasaSehariHari={indexedSehariHari} 
+          bahasaPemrograman={indexedPemrograman} 
         />
         
+        {/* Search & Filter Bar */}
         <SearchFilterBar 
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -107,18 +134,12 @@ const Bahasa = () => {
           setFilterLevel={setFilterLevel}
           viewMode={viewMode}
           setViewMode={setViewMode}
-          filteredData={filteredData}
-          bahasaSehariHari={bahasaSehariHari}
-          bahasaPemrograman={bahasaPemrograman}
+          totalShown={totalShown}
+          totalItems={totalCount}
         />
 
-        {/* Main Content */}
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="space-y-8 sm:space-y-12"
-        >
+        {/* Language & Technology Sections */}
+        <div className="space-y-6 sm:space-y-10">
           <LanguageSection 
             title="Bahasa Sehari-hari"
             data={filteredData.sehariHari}
@@ -142,55 +163,42 @@ const Bahasa = () => {
             searchTerm={searchTerm}
             filterLevel={filterLevel}
           />
-        </motion.div>
+        </div>
 
         {/* Empty State */}
-        {filteredData.sehariHari.length === 0 && filteredData.pemrograman.length === 0 && 
-         (searchTerm || filterLevel !== "all") && (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-12 sm:py-16"
-          >
-            <div className="text-4xl sm:text-6xl mb-3 sm:mb-4">🔍</div>
-            <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">Tidak ada hasil</h3>
-            <p className="text-gray-300 mb-4 sm:mb-6 text-sm sm:text-base">
+        {totalShown === 0 && (searchTerm || filterLevel !== "all") && (
+          <div className="text-center py-10 sm:py-14">
+            <div className="text-4xl sm:text-5xl mb-3">🔍</div>
+            <h3 className="text-lg sm:text-xl font-bold text-white mb-1.5">Tidak ada hasil</h3>
+            <p className="text-gray-400 mb-4 text-xs sm:text-sm">
               Tidak ada item yang sesuai dengan pencarian dan filter Anda
             </p>
             <button
               onClick={() => { setSearchTerm(""); setFilterLevel("all"); }}
-              className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 text-sm sm:text-base"
+              className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-2.5 rounded-xl font-medium hover:shadow-lg transition-transform active:scale-95 text-xs sm:text-sm"
             >
               Tampilkan Semua
             </button>
-          </motion.div>
+          </div>
         )}
 
-        {/* Call to Action */}
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-center mt-12 sm:mt-16"
-        >
-          <div className="bg-gradient-to-br from-[#1e293b]/80 to-[#0f172a]/80 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-cyan-500/30 relative overflow-hidden">
-            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-3 sm:mb-4">Siap Berkolaborasi?</h3>
-            <p className="text-gray-300 text-sm sm:text-lg mb-4 sm:mb-6 max-w-2xl mx-auto">
-              Dengan beragam kemampuan bahasa dan teknologi, saya siap membantu mewujudkan 
-              ide kreatif Anda.
+        {/* Call to Action - Fix SPA navigation: use Link instead of window.location.href */}
+        <div className="text-center mt-10 sm:mt-14">
+          <div className="bg-gradient-to-br from-[#1e293b]/80 to-[#0f172a]/80 backdrop-blur-md rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-cyan-500/25 relative overflow-hidden">
+            <h3 className="text-lg sm:text-2xl font-bold text-white mb-2 sm:mb-3">Siap Berkolaborasi?</h3>
+            <p className="text-gray-300 text-xs sm:text-base mb-4 max-w-xl mx-auto">
+              Dengan beragam kemampuan bahasa dan teknologi, saya siap membantu mewujudkan proyek Anda.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-              <motion.button 
-                onClick={() => (window.location.href = "/contact")}
-                className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 text-sm sm:text-base"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.98 }}
+            <div className="flex justify-center">
+              <Link 
+                to="/contact"
+                className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 sm:px-6 py-2.5 rounded-xl font-semibold shadow-md hover:shadow-cyan-500/20 hover:scale-[1.02] active:scale-95 transition-transform text-xs sm:text-sm inline-flex items-center gap-1.5"
               >
                 ✨ Hubungi Saya
-              </motion.button>
+              </Link>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Page Connections */}
         <PageConnections />
@@ -200,41 +208,18 @@ const Bahasa = () => {
       <AnimatePresence>
         {showScrollTop && (
           <motion.button
-            initial={{ opacity: 0, scale: 0 }}
+            initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.15 }}
             onClick={scrollToTop}
-            className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-gradient-to-r from-cyan-500 to-blue-600 text-white p-2.5 sm:p-3 rounded-xl shadow-lg z-40"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-gradient-to-r from-cyan-500 to-blue-600 text-white p-2.5 sm:p-3 rounded-xl shadow-lg z-40 active:scale-95"
+            aria-label="Kembali ke atas"
           >
             <ArrowUp className="w-4 h-4 sm:w-5 sm:h-5" />
           </motion.button>
         )}
       </AnimatePresence>
-
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(6, 182, 212, 0.1);
-          border-radius: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: linear-gradient(to bottom, #06b6d4, #3b82f6);
-          border-radius: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(to bottom, #0891b2, #2563eb);
-        }
-        
-        @media (max-width: 640px) {
-          .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
-          }
-        }
-      `}</style>
     </div>
   );
 };

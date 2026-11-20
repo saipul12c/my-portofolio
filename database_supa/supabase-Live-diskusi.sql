@@ -995,6 +995,9 @@ CREATE INDEX IF NOT EXISTS idx_messages_brin_timestamp ON public.messages USING 
 -- Akun: superadmin@test.com, admin@test.com, mod@test.com, user@test.com
 -- Password Default: LiveTest123! (Semua akun menggunakan password ini)
 
+-- Pastikan ekstensi pgcrypto tersedia untuk hashing password Supabase
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA extensions;
+
 INSERT INTO auth.users (
   id, 
   instance_id, 
@@ -1009,13 +1012,15 @@ INSERT INTO auth.users (
   updated_at
 )
 VALUES 
-  ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'superadmin@test.com', '$2a$10$7EqIF5sPH6z62cv0wS1h7.t7.nZ2X9m3sW8UpxuY4m3Y5v6/5r7qG', now(), '{"provider":"email","providers":["email"]}', '{"nama":"Sang Arsitek"}', now(), now()),
-  ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'admin@test.com', '$2a$10$7EqIF5sPH6z62cv0wS1h7.t7.nZ2X9m3sW8UpxuY4m3Y5v6/5r7qG', now(), '{"provider":"email","providers":["email"]}', '{"nama":"Penjaga Gerbang"}', now(), now()),
-  ('00000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'mod@test.com', '$2a$10$7EqIF5sPH6z62cv0wS1h7.t7.nZ2X9m3sW8UpxuY4m3Y5v6/5r7qG', now(), '{"provider":"email","providers":["email"]}', '{"nama":"Moderator Alpha"}', now(), now()),
-  ('00000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'premium@test.com', '$2a$10$7EqIF5sPH6z62cv0wS1h7.t7.nZ2X9m3sW8UpxuY4m3Y5v6/5r7qG', now(), '{"provider":"email","providers":["email"]}', '{"nama":"Sultan Diskusi"}', now(), now()),
-  ('00000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'verified@test.com', '$2a$10$7EqIF5sPH6z62cv0wS1h7.t7.nZ2X9m3sW8UpxuY4m3Y5v6/5r7qG', now(), '{"provider":"email","providers":["email"]}', '{"nama":"Warga Terverifikasi"}', now(), now()),
-  ('00000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'user@test.com', '$2a$10$7EqIF5sPH6z62cv0wS1h7.t7.nZ2X9m3sW8UpxuY4m3Y5v6/5r7qG', now(), '{"provider":"email","providers":["email"]}', '{"nama":"Pengunjung Baru"}', now(), now())
-ON CONFLICT (id) DO NOTHING;
+  ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'superadmin@test.com', extensions.crypt('LiveTest123!', extensions.gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}', '{"nama":"Sang Arsitek"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'admin@test.com', extensions.crypt('LiveTest123!', extensions.gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}', '{"nama":"Penjaga Gerbang"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'mod@test.com', extensions.crypt('LiveTest123!', extensions.gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}', '{"nama":"Moderator Alpha"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'premium@test.com', extensions.crypt('LiveTest123!', extensions.gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}', '{"nama":"Sultan Diskusi"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'verified@test.com', extensions.crypt('LiveTest123!', extensions.gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}', '{"nama":"Warga Terverifikasi"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'user@test.com', extensions.crypt('LiveTest123!', extensions.gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}', '{"nama":"Pengunjung Baru"}', now(), now())
+ON CONFLICT (id) DO UPDATE SET
+  encrypted_password = EXCLUDED.encrypted_password,
+  email_confirmed_at = COALESCE(auth.users.email_confirmed_at, now());
 
 -- Sinkronisasi / Insert ke public.users
 INSERT INTO public.users (id, email, nama, role)

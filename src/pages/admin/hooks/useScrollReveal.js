@@ -4,7 +4,11 @@ import { useInView } from "react-intersection-observer";
 
 export const useScrollReveal = (delay = 0) => {
   const controls = useAnimation();
-  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [ref, inView] = useInView({ 
+    triggerOnce: true, 
+    threshold: 0.05,
+    rootMargin: "0px 0px -30px 0px"
+  });
 
   useEffect(() => {
     if (inView) {
@@ -17,15 +21,14 @@ export const useScrollReveal = (delay = 0) => {
     animate: controls,
     initial: "hidden",
     variants: {
-      hidden: { opacity: 0, y: 60, scale: 0.95 },
+      hidden: { opacity: 0, y: 20 },
       visible: { 
         opacity: 1, 
         y: 0, 
-        scale: 1, 
         transition: { 
-          duration: 0.8, 
+          duration: 0.45, 
           delay,
-          ease: [0.25, 0.46, 0.45, 0.94]
+          ease: "easeOut"
         } 
       },
     },

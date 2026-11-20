@@ -1259,30 +1259,175 @@ function searchExactMatch(query, knowledgeBase) {
     });
   }
 
-  // 3. Search di Kemampuan Bahasa (/bahasa)
-  const isLanguageQuery = lowerQuery.includes('bahasa') || lowerQuery.includes('language') || (lowerQuery.includes('kuasai') && !lowerQuery.includes('koding'));
-  if (isLanguageQuery) {
-    const langList = Array.isArray(knowledgeBase.languages) && knowledgeBase.languages.length > 0
-      ? knowledgeBase.languages.map(l => `• **${l.name || l.title || l.bahasa}** (${l.level || l.proficiency || 'Aktif'}): ${l.desc || l.description || ''}`).join('\n')
-      : '• **Bahasa Indonesia** (Native / Utama)\n• **Bahasa Banjar** (Bahasa Daerah / Sangat Fasih)\n• **Bahasa Inggris** (Teknis & Komunikasi Profesional / Menengah)\n• **Bahasa Arab** (Dasar & Studi Akademik Keagamaan)';
+  // 3. Search di Kemampuan Bahasa & Teknologi (/bahasa)
+  const isGeneralLanguageQuery = (
+    lowerQuery.includes('bahasa') ||
+    lowerQuery.includes('language') ||
+    lowerQuery.includes('bahasa pemrograman') ||
+    lowerQuery.includes('bahasa koding') ||
+    lowerQuery.includes('bahasa apa saja') ||
+    lowerQuery.includes('teknologi apa saja') ||
+    (lowerQuery.includes('kuasai') && (lowerQuery.includes('teknologi') || lowerQuery.includes('bahasa')))
+  );
+
+  const allLangList = Array.isArray(knowledgeBase.languages) ? knowledgeBase.languages : [];
+
+  if (isGeneralLanguageQuery) {
+    const spoken = allLangList.filter(l => l.category === 'bahasa_sehari_hari');
+    const coding = allLangList.filter(l => l.category === 'bahasa_pemrograman');
+
+    let langAnswer = `🌐 **Kemampuan Bahasa & Teknologi Muhammad Syaiful Mukmin**\n\n`;
+
+    if (spoken.length > 0) {
+      langAnswer += `🗣️ **Bahasa Komunikasi Sehari-hari**:\n`;
+      langAnswer += spoken.map(l => `• **${l.nama || l.name}** (${l.tingkat || 'Aktif'} - ${l.level}%): ${l.deskripsi || l.penjelasan || ''}`).join('\n');
+      langAnswer += `\n\n`;
+    } else {
+      langAnswer += `🗣️ **Bahasa Komunikasi**: Bahasa Indonesia (Native), Bahasa Banjar (Fasih), Bahasa Inggris (Teknis), Bahasa Arab (Dasar).\n\n`;
+    }
+
+    if (coding.length > 0) {
+      langAnswer += `💻 **Bahasa Pemrograman & Stack Teknologi Utama**:\n`;
+      langAnswer += coding.slice(0, 8).map(c => `• **${c.nama || c.name}** (${c.tingkat} - ${c.level}%)${c.framework ? ` — Framework: ${c.framework.slice(0, 3).join(', ')}` : ''}`).join('\n');
+      langAnswer += `\n\n`;
+    }
+
+    langAnswer += `🔗 *Jelajahi seluruh detail penguasaan teknologi & bukti proyek di*: \`/bahasa\``;
+
     results.push({
-      source: 'language',
-      question: 'Kemampuan Bahasa Syaiful',
-      answer: `🌐 **Kemampuan Bahasa Muhammad Syaiful Mukmin**\n\nSyaiful menguasai beberapa bahasa untuk komunikasi profesional, akademik, dan daerah:\n\n${langList}\n\n• **Kompetensi**: Mampu berkomunikasi dalam Bahasa Indonesia, Banjar, Inggris, dan Arab secara adaptif.`,
-      relevanceScore: 0.97,
+      source: 'language_overview',
+      question: 'Kemampuan Bahasa & Teknologi Syaiful',
+      answer: langAnswer,
+      relevanceScore: 0.98,
       matchedWords: queryWords.length,
       matchType: 'exact'
     });
   }
 
+  // 3b. Search Spesifik Entitas Bahasa / Teknologi Tertentu dari /bahasa
+  if (allLangList.length > 0) {
+    for (const item of allLangList) {
+      const nameLower = (item.nama || item.name || '').toLowerCase();
+      const slugLower = (item.slug || '').toLowerCase();
+      
+      // Match jika query menyebutkan nama bahasa/teknologi secara presisi
+      const isMatched = 
+        (nameLower && (lowerQuery.includes(nameLower) || (nameLower.length > 2 && queryWords.includes(nameLower)))) ||
+        (slugLower && lowerQuery.includes(slugLower));
+
+      if (isMatched) {
+        const isProg = item.category === 'bahasa_pemrograman' || item.type === 'teknologi';
+        const typeIcon = isProg ? '💻' : '🌐';
+        const categoryName = item.categoryLabel || (isProg ? 'Teknologi & Pemrograman' : 'Bahasa Sehari-hari');
+
+        let specAnswer = `${typeIcon} **${item.nama || item.name} (${categoryName})**\n\n`;
+        specAnswer += `• **Tingkat Kemahiran**: ${item.level}% (${item.tingkat || 'Aktif'})\n`;
+        if (item.deskripsi) specAnswer += `• **Ringkasan**: ${item.deskripsi}\n`;
+        if (item.penjelasan && item.penjelasan !== item.deskripsi) specAnswer += `• **Penjelasan**: ${item.penjelasan}\n`;
+        
+        if (Array.isArray(item.kemampuan) && item.kemampuan.length > 0) {
+          specAnswer += `• **Kemampuan Utama**: ${item.kemampuan.join(', ')}\n`;
+        }
+        if (Array.isArray(item.framework) && item.framework.length > 0) {
+          specAnswer += `• **Framework & Libraries**: ${item.framework.join(', ')}\n`;
+        }
+        if (Array.isArray(item.tools) && item.tools.length > 0) {
+          specAnswer += `• **Tools & Ekosistem**: ${item.tools.join(', ')}\n`;
+        }
+        if (item.projectContoh) {
+          specAnswer += `• **Contoh Implementasi**: ${item.projectContoh}\n`;
+        }
+        if (item.sertifikasi) {
+          specAnswer += `• **Sertifikasi**: ${item.sertifikasi.nama} (${item.sertifikasi.equivalent || ''}, Skor: ${item.sertifikasi.score || '-'})\n`;
+        }
+        if (item.kelebihan) {
+          specAnswer += `• **Kelebihan**: ${item.kelebihan}\n`;
+        }
+
+        const targetSlug = item.slug || (item.nama || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-');
+        specAnswer += `\n🔗 *Lihat halaman detail, framework, dan proyek terkait di*: \`/bahasa/detail/${targetSlug}\``;
+
+        results.push({
+          source: 'language_detail',
+          question: `Detail ${item.nama || item.name}`,
+          answer: specAnswer,
+          relevanceScore: 0.99,
+          matchedWords: queryWords.length,
+          matchType: 'exact'
+        });
+      }
+    }
+  }
+
   // 4. Search di Hobi & Minat Personal (/hobbies)
-  const isHobbyQuery = lowerQuery.includes('hobi') || lowerQuery.includes('minat personal') || lowerQuery.includes('kegemaran') || (lowerQuery.includes('di luar') && lowerQuery.includes('ngoding'));
-  if (isHobbyQuery) {
+  const isHobbyQuery = lowerQuery.includes('hobi') || lowerQuery.includes('hobby') || lowerQuery.includes('minat personal') || lowerQuery.includes('kegemaran') || (lowerQuery.includes('di luar') && (lowerQuery.includes('ngoding') || lowerQuery.includes('koding') || lowerQuery.includes('kerja')));
+  const rawHobbies = Array.isArray(knowledgeBase.hobbies) ? knowledgeBase.hobbies : [];
+
+  if (isHobbyQuery && rawHobbies.length > 0) {
+    // Check if query targets a specific category (Kreatif, Pembelajaran, Teknologi, Relaksasi, Eksplorasi, Sosial, Produktivitas)
+    const categoryKeywords = {
+      'Kreatif': ['kreatif', 'seni', 'desain', 'art'],
+      'Pembelajaran': ['belajar', 'pembelajaran', 'buku', 'baca', 'literasi'],
+      'Teknologi': ['teknologi', 'tech', 'ai', 'koding', 'web', 'komputer'],
+      'Relaksasi': ['relaksasi', 'santai', 'lofi', 'musik santai'],
+      'Eksplorasi': ['eksplorasi', 'jalan', 'alam', 'travel', 'citywalk'],
+      'Sosial': ['sosial', 'mengajar', 'komunitas', 'volunteer'],
+      'Produktivitas': ['produktivitas', 'catatan', 'notion', 'jurnal']
+    };
+
+    let matchedCategory = null;
+    for (const [cat, words] of Object.entries(categoryKeywords)) {
+      if (words.some(w => lowerQuery.includes(w))) {
+        matchedCategory = cat;
+        break;
+      }
+    }
+
+    if (matchedCategory) {
+      const catHobbies = rawHobbies.filter(h => h.category?.toLowerCase() === matchedCategory.toLowerCase());
+      if (catHobbies.length > 0) {
+        const hobbyList = catHobbies.map(h => 
+          `• **${h.title}** (${h.metadata?.difficulty || 'Fleksibel'} | ⏱️ ${h.metadata?.timeRequired || 'Fleksibel'})\n  ${h.desc || ''}\n  🛠️ *Tools*: ${h.metadata?.tools?.join(', ') || 'Standar'}`
+        ).join('\n\n');
+
+        results.push({
+          source: 'hobby_category',
+          question: `Daftar Hobi Kategori ${matchedCategory}`,
+          answer: `🎯 **Hobi & Minat Syaiful — Kategori ${matchedCategory}**\n\nBerikut beberapa aktivitas hobi dalam kategori **${matchedCategory}**:\n\n${hobbyList}\n\n🔗 *Jelajahi seluruh koleksi dan detail interaktif di halaman*: \`/hobbies\``,
+          relevanceScore: 0.98,
+          matchedWords: queryWords.length,
+          matchType: 'exact'
+        });
+      }
+    }
+
+    // Check if query targets a specific hobby item by title or keyword
+    const specificHobby = rawHobbies.find(h => {
+      const titleLower = (h.title || '').toLowerCase();
+      return queryWords.some(w => w.length > 3 && titleLower.includes(w));
+    });
+
+    if (specificHobby) {
+      const slug = specificHobby.slug || specificHobby.title?.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-');
+      results.push({
+        source: 'hobby_detail',
+        question: `Detail Hobi: ${specificHobby.title}`,
+        answer: `🎯 **Hobi: ${specificHobby.title}** (${specificHobby.category || 'Personal'})\n\n${specificHobby.desc || ''}\n\n• **Tingkat Kesulitan**: ${specificHobby.metadata?.difficulty || 'Menengah'}\n• **Waktu yang Dibutuhkan**: ${specificHobby.metadata?.timeRequired || 'Fleksibel'}\n• **Alat/Tools**: ${specificHobby.metadata?.tools?.join(', ') || '-'}\n• **Rating Kepuasan**: ⭐ ${specificHobby.stats?.rating || 4.5}/5.0 (${specificHobby.stats?.hoursPerWeek || 3} jam/minggu)\n\n🔗 *Lihat halaman detail*: \`/hobbies/${slug}\``,
+        relevanceScore: 0.99,
+        matchedWords: queryWords.length,
+        matchType: 'exact'
+      });
+    }
+
+    // General hobbies overview with grouped representation
+    const categoriesSet = [...new Set(rawHobbies.map(h => h.category).filter(Boolean))];
+    const topPicks = rawHobbies.slice(0, 6).map(h => `• **${h.title}** (*${h.category}*): ${h.desc}`).join('\n');
+
     results.push({
-      source: 'hobby',
-      question: 'Hobi & Minat Personal di Luar Ngoding',
-      answer: `🎨 **Hobi & Minat Personal di Luar Ngoding**\n\nDi luar aktivitas rekayasa perangkat lunak, Syaiful aktif dalam beberapa minat kreatif:\n\n• **Fotografi & Visual Storytelling**: Mengabadikan momen estetis dan portrait studio 5R.\n• **Membaca Buku & Literasi**: Mendalami buku arsitektur software dan metodologi pendidikan.\n• **Riset Eksperimental**: Mengeksplorasi kecerdasan buatan lokal dan teknologi web mutakhir.`,
-      relevanceScore: 0.96,
+      source: 'hobby_overview',
+      question: 'Hobi & Minat Personal Muhammad Syaiful Mukmin',
+      answer: `🎨 **Hobi & Minat Personal Muhammad Syaiful Mukmin**\n\nDi luar aktivitas rekayasa web dan ngoding, Syaiful memiliki **${rawHobbies.length} aktivitas minat & hobi** terkurasi dalam kategori: *${categoriesSet.join(', ')}*.\n\nBeberapa aktivitas unggulan:\n${topPicks}\n\n• **Eksplorasi Lengkap**: Anda dapat melihat filter kategori, tingkat kesulitan, estimasi waktu, dan alat yang digunakan di halaman khusus hobi.\n\n🔗 *Buka halaman hobi*: \`/hobbies\``,
+      relevanceScore: 0.97,
       matchedWords: queryWords.length,
       matchType: 'exact'
     });

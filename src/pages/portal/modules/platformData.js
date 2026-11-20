@@ -1,5 +1,5 @@
 import { FaInstagram, FaFacebookF, FaTwitter, FaGlobe, FaTiktok, FaYoutube, FaLinkedin, FaWhatsapp, FaTelegram, FaDiscord } from 'react-icons/fa';
-
+import { portfolioSummaryStats } from './portalData';
 export const platformData = {
   instagram: { 
     icon: FaInstagram, 
@@ -77,7 +77,9 @@ export const initialCheckedItems = {
 };
 
 export const statsData = {
-  connections: 245,
-  reach: '1.2M',
-  engagement: '4.8%'
+  ...portfolioSummaryStats,
+  // Backward compatibility keys
+  connections: portfolioSummaryStats.totalProjects,
+  reach: `${portfolioSummaryStats.totalWorks}+`,
+  engagement: `${portfolioSummaryStats.averageRating}★`
 };

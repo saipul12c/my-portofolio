@@ -199,6 +199,13 @@ export const PERSONA_KNOWLEDGE = [
     category: "Conversational & Persona"
   },
   {
+    id: "persona_hobbies_lifestyle",
+    title: "Hobi, Minat & Aktivitas Kreatif Personal",
+    keywords: ["hobi", "minat", "fotografi", "kegemaran", "santai", "waktu luang", "aktivitas"],
+    text: "Di luar rekayasa perangkat lunak dan pemrograman, Muhammad Syaiful Mukmin aktif dalam 20 kegiatan minat dan hobi lintas kategori seperti Fotografi & Visual Storytelling, Membaca Buku Pengembangan Diri, Editing Video Pendidikan, Desain Grafis, Riset AI Kreatif, dan Menulis Blog Edukatif. Seluruh portofolio aktivitas hobi ini dapat dijelajahi secara interaktif di rute /hobbies.",
+    category: "Conversational & Persona"
+  },
+  {
     id: "persona_creator",
     title: "Pembuat SaipulAI",
     keywords: ["muhammad syaiful mukmin", "arsitektur", "pengembang", "siapa yang membuat", "creator"],
@@ -803,6 +810,20 @@ export const LINGUISTICS_KNOWLEDGE = [
     title: "English Contact Information",
     keywords: ["linkedin", "instagram", "email", "contact"],
     text: "You can contact Syaiful for freelance projects or professional inquiries via LinkedIn (Muhammad Syaiful Mukmin), Instagram (@saipul16_), or email at syaifulmukmin.dev@gmail.com.",
+    category: "Linguistics & Typos"
+  },
+  {
+    id: "ling_bahasa_multilingual",
+    title: "Kemampuan Bahasa Komunikasi Syaiful",
+    keywords: ["bahasa", "bahasa sehari-hari", "multilingual", "inggris", "arab", "banjar", "jepang", "jawa"],
+    text: "Syaiful memiliki penguasaan multibahasa: Bahasa Indonesia (Utama/Native), Bahasa Banjar (Fasih Daerah), Bahasa Inggris (Skor TOEFL 520 / B2 Upper-Intermediate untuk komunikasi teknis), Bahasa Jawa (Dasar), dan Bahasa Jepang (Pemula N5). Kunjungi rute /bahasa untuk detailnya.",
+    category: "Linguistics & Typos"
+  },
+  {
+    id: "ling_bahasa_programming",
+    title: "Keahlian Bahasa Pemrograman & Stack Teknologi",
+    keywords: ["bahasa pemrograman", "coding", "javascript", "python", "typescript", "react", "golang", "docker", "tech stack"],
+    text: "Di halaman /bahasa, Syaiful mendokumentasikan 31+ teknologi dan bahasa pemrograman yang dikuasainya, mulai dari JavaScript (Mahir 90%), Python (Lanjutan 85%), React (Mahir 88%), TypeScript (Mahir 88%), SQL (80%), PHP (75%), Docker (87%), hingga Go, Rust, dan Kotlin lengkap dengan framework dan proyek terkait.",
     category: "Linguistics & Typos"
   }
 ];

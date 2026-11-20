@@ -123,9 +123,13 @@ const Daftar = () => {
           throw new Error('Email ini sudah terdaftar. Silakan langsung masuk di halaman Login.');
         }
 
+        const isEmailConfirmationRequired = !data.session;
+
         setMessage({
           type: 'success',
-          text: 'Pendaftaran berhasil! Mengalihkan ke halaman login...'
+          text: isEmailConfirmationRequired
+            ? 'Pendaftaran berhasil! Jika aktivasi email aktif di Supabase, silakan konfirmasi email Anda terlebih dahulu sebelum login.'
+            : 'Pendaftaran berhasil! Mengalihkan ke halaman login...'
         });
 
         localStorage.setItem('rememberedEmail', cleanEmail);
@@ -137,10 +141,10 @@ const Daftar = () => {
           konfirmasiPassword: ''
         });
 
-        // Beri jeda waktu agar pesan sukses terlihat oleh pengguna
+        // Beri jeda waktu agar pesan sukses terbaca oleh pengguna
         setTimeout(() => {
           navigate('/Live-Discussion/login');
-        }, 1800);
+        }, isEmailConfirmationRequired ? 2600 : 1800);
       } else {
         throw new Error('Gagal membuat akun');
       }

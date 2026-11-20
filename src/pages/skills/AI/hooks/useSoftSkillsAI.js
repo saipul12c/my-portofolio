@@ -10,10 +10,9 @@ fetchAllPosts().then((posts) => {
   if (Array.isArray(posts) && posts.length > 0) {
     activeBlogData = posts;
   }
-}).catch(() => {});
+}).catch(() => { });
 import faqsData from '../../../../data/helpbutton/faq/faqs.json';
 import commitmentsData from '../../../../data/helpbutton/komit/commitments.json';
-import { cleanText, extractKeywords, mapSynonyms, detectIntents } from '../../../../utils/ai/nlpCore';
 import { findRelatedEntities } from '../../../../utils/ai/knowledgeBase';
 import { recordAITopic, getCrossAgentGreeting } from '../../../../utils/ai/sessionMemory';
 
@@ -140,7 +139,7 @@ function handleJobMatching(query, skillList = []) {
     }
   });
 
-  ((activeBlogData || blogData) || []).forEach(b => {
+  (activeBlogData || []).forEach(b => {
     const bTitle = (b.title || '').toLowerCase();
     if (bTitle.includes(targetRole.toLowerCase()) || (b.tags && b.tags.some(t => targetRole.toLowerCase().includes(t.toLowerCase())))) {
       matchScore += 15;
@@ -248,6 +247,242 @@ const DIFFICULTY_MAP = {
   'Easy': '🟢 Mudah'
 };
 
+const calculateIntentScores = (text, doc) => {
+  const scores = {};
+  Object.keys(INTENT_CONFIG).forEach(intent => {
+    let score = 0;
+    const config = INTENT_CONFIG[intent];
+
+    // Keyword match
+    config.keywords.forEach(kw => {
+      if (text.includes(kw)) score += config.weight;
+    });
+
+    // NLP Match patterns
+    if (intent === 'greeting' && doc.match('(halo|hai|hi|hello|p|permisi|pagi|siang|sore|malam)').found) score += 2;
+    if (intent === 'help' && doc.match('(bantuan|tolong|help|bisa apa|fitur)').found) score += 2;
+    if (intent === 'math' && doc.match('(selisih|beda|total|gabungan|plus|minus|difference|sum)').found) score += 2;
+    if (intent === 'compare' && doc.match('(bandingkan|vs|bedanya|perbedaan|urutkan|ranking|sort)').found) score += 2;
+
+    scores[intent] = score;
+  });
+  return scores;
+};
+
+const resolveEntities = (query, context, skills = []) => {
+  const found = [];
+  const normalizedQuery = normalizeInput(query);
+  const doc = nlp(normalizedQuery);
+
+  // Explicit mention & Tag matching
+  skills.forEach(s => {
+    const nameMatch = normalizedQuery.includes(s.name.toLowerCase());
+    const tagMatch = s.tags?.some(tag => normalizedQuery.includes(tag.toLowerCase()));
+    const categoryMatch = normalizedQuery.includes(s.category.toLowerCase());
+
+    if (nameMatch || tagMatch || categoryMatch) {
+      found.push(s);
+    }
+  });
+
+  // Pronoun resolution
+  const hasPronoun = doc.match('(itu|tersebut|terakhir|kemarin|tadi|pertama|semuanya|both|keduanya|ia|dia|ini)').found;
+
+  if ((found.length === 0 || hasPronoun) && context.entities.length > 0) {
+    if (normalizedQuery.includes('semuanya') || normalizedQuery.includes('all')) return skills;
+    if (normalizedQuery.includes('pertama')) return [context.entities[0]];
+
+    // Intelligent fallback: Use recently talked about entities
+    const relevantContext = context.entities.slice(-2);
+    if (found.length === 0) return relevantContext;
+
+    // Merge found with context if pronoun exists
+    return Array.from(new Set([...found, ...relevantContext]));
+  }
+
+  // Fuzzy as fallback
+  if (found.length === 0) {
+    const match = findBestFuzzyMatch(normalizedQuery, skills);
+    if (match) found.push(match);
+  }
+
+  return Array.from(new Set(found));
+};
+
+const getSingleResponse = (querySegment, context, skills = []) => {
+  const normalizedQuery = normalizeInput(querySegment);
+  if (!normalizedQuery) return null;
+
+  const doc = nlp(normalizedQuery);
+
+  // 0. Negation Check
+  const isNegative = doc.match('(bukan|tidak|jangan|bukanlah|no)').found;
+
+  // 0.1 Implicit Context Check (Situational Logic)
+  const isImplicit = IMPLICIT_CONFIG.keywords.some(kw => normalizedQuery === kw || normalizedQuery.startsWith(kw + ' '));
+  if (isImplicit) {
+    if (context.entities.length > 0) {
+      const lastEntity = context.entities[context.entities.length - 1];
+      const additionalInfo = lastEntity.examples?.length > 1 ? `\n\n**Implementasi Lainnya:**\n• ${lastEntity.examples.slice(1).join('\n• ')}` : "";
+      return `Melanjutkan pembahasan mengenai **${lastEntity.name}**:\n${lastEntity.description}${additionalInfo}\n\n*Ada hal spesifik lain tentang ${lastEntity.name} yang ingin Anda ketahui?*`;
+    } else {
+      // Bootstrap Logic: If session is empty but user says "Lagi/More"
+      const topEntity = skills[0] || { name: 'Soft Skill' };
+      return `Sepertinya kita baru saja memulai sesi ini! Bagaimana jika kita membahas **${topEntity.name}** sebagai langkah awal analisis kita?`;
+    }
+  }
+
+  // 1. Intent Analysis
+  const scores = calculateIntentScores(normalizedQuery, doc);
+  const bestIntent = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+
+  // --- PREDICTIVE CONTEXT (Lazy Trigger) ---
+  let predictivePrefix = "";
+  if (!context?.history || context.history.length === 0) {
+    const lastTopicStr = localStorage.getItem('saipul_ai_last_topic');
+    if (lastTopicStr) {
+      try {
+        const lastTopic = JSON.parse(lastTopicStr);
+        const fiveMinutes = 5 * 60 * 1000;
+        if (Date.now() - lastTopic.timestamp < fiveMinutes) {
+          predictivePrefix = `*Btw, saya lihat Anda baru saja tertarik dengan topik **${lastTopic.name}** di Blog. Senang bisa berdiskusi lebih lanjut!* \n\n`;
+          localStorage.removeItem('saipul_ai_last_topic');
+        }
+      } catch {
+        // ignore invalid JSON
+      }
+    }
+  }
+
+  // --- JOB MATCHING ENGINE ---
+  if (bestIntent === 'jobMatching' && scores.jobMatching > 0.6) {
+    return predictivePrefix + handleJobMatching(normalizedQuery, skills);
+  }
+
+  // 1.1 Out-of-Scope (OOS) & Cross-Context Detection
+  const genericKeywords = ['presiden', 'cuaca', 'berita', 'politik', 'makan', 'resep', 'lokasi', 'alamat', 'jam', 'tanggal', 'dunia', 'negara'];
+  const isGeneric = genericKeywords.some(kw => normalizedQuery.includes(kw));
+
+  // --- CROSS-CONTEXT LOOKUP ---
+  const matchBlog = (activeBlogData || []).find(b => b.title.toLowerCase().includes(normalizedQuery) || (b.tags && b.tags.some(t => normalizedQuery.includes(t.toLowerCase()))));
+  const matchFAQ = faqsData.find(f => f.question.toLowerCase().includes(normalizedQuery) || f.answer.toLowerCase().includes(normalizedQuery));
+  const matchCommit = (commitmentsData.commitments || []).find(c => c.title.toLowerCase().includes(normalizedQuery) || c.desc.toLowerCase().includes(normalizedQuery));
+
+  if (isGeneric || (scores[bestIntent] < 0.5 && !normalizedQuery.includes('saipul') && !normalizedQuery.includes('kamu'))) {
+    if (matchBlog || matchFAQ || matchCommit) {
+      let response = `Saya tidak menemukan data spesifik di kategori **Soft Skill**, tapi saya menemukan info yang relevan di bagian lain:\n\n`;
+      if (matchBlog) response += `> 📝 **Blog:** Ada artikel menarik berjudul **"${matchBlog.title}"** yang mungkin menjawab rasa penasaran Anda.\n\n`;
+      if (matchFAQ) response += `> ❓ **FAQ:** Masalah ini dibahas di FAQ: *"${matchFAQ.answer.substring(0, 150)}..."*\n\n`;
+      if (matchCommit) response += `> 🤝 **Komitmen:** Ini berkaitan dengan komitmen Saipul: *"${matchCommit.desc}"*\n\n`;
+      response += `*Ingin saya bantu carikan info lebih lanjut tentang itu di Google?* [Klik di sini](https://www.google.com/search?q=${encodeURIComponent(querySegment)})`;
+      return response;
+    }
+    const searchLink = `https://www.google.com/search?q=${encodeURIComponent(querySegment)}`;
+    return `Maaf, sebagai asisten cerdas portofolio Saipul, saya memiliki keterbatasan dalam menjawab pertanyaan umum tersebut.\n\nNamun, Anda dapat menemukan jawabannya di sini: [Cari di Google](${searchLink})`;
+  }
+
+  // 2. Context Extraction
+  const targets = resolveEntities(querySegment, context, skills);
+
+  // If negative and has targets, filter them OUT or handle specifically
+  if (isNegative && targets.length > 0) {
+    return `Saya mengerti Anda ingin mengecualikan **${targets.map(t => t.name).join(', ')}**. Ada yang lain yang ingin ditanyakan?`;
+  }
+
+  // Sentiment check
+  const sentiment = sentimentAnalyzer.analyze(normalizedQuery).score;
+  let tonePrefix = "";
+  if (sentiment < -1) tonePrefix = "Saya mengerti ini mungkin membingungkan. ";
+  if (sentiment > 2) tonePrefix = "Wow, saya senang sekali Anda bertanya! ";
+
+  // --- PIPELINE HANDLERS ---
+  if (bestIntent === 'greeting') return tonePrefix + pickTemplate('greeting');
+  if (bestIntent === 'thanks') return pickTemplate('thanks');
+  if (bestIntent === 'identity') return pickTemplate('identity');
+  if (bestIntent === 'help') return "Saya bisa membantu Anda dengan:\n1. **Statistik**: Rata-rata atau ranking skill per kategori.\n2. **Kalkulasi**: Menghitung selisih pengalaman antar skill.\n3. **Detail**: Tips, alasan pentingnya (Why), dan contoh penerapan.\n4. **Perbandingan**: Analisis head-to-head 2 unit atau lebih.";
+
+  // MATH ENGINE
+  if (bestIntent === 'math' && targets.length >= 2) {
+    const s1 = targets[0];
+    const s2 = targets[1];
+    if (normalizedQuery.includes('selisih') || normalizedQuery.includes('beda') || normalizedQuery.includes('minus')) {
+      const diff = Math.abs((s1.experience || 0) - (s2.experience || 0));
+      return `Selisih pengalaman antara **${s1.name}** dan **${s2.name}** adalah **${diff}%**.`;
+    }
+    return `Total skor gabungan **${s1.name}** & **${s2.name}** adalah **${(s1.experience || 0) + (s2.experience || 0)}%**.`;
+  }
+
+  // RANKING / COMPARISON
+  if (bestIntent === 'compare' || (bestIntent === 'stats' && targets.length >= 3)) {
+    if (targets.length >= 3) {
+      const sorted = [...targets].sort((a, b) => (b.experience || 0) - (a.experience || 0));
+      return `**Ranking ${targets.length} Skill Teratas:**\n` + sorted.map((s, i) => `${i + 1}. **${s.name}** (${s.experience}%)`).join('\n');
+    }
+    if (targets.length === 2) {
+      const [s1, s2] = targets;
+      return `**Analisis Perbandingan: ${s1.name} vs ${s2.name}**\n` +
+        `• Penguasaan: ${s1.experience}% vs ${s2.experience}%\n` +
+        `• Level: ${s1.level} vs ${s2.level}\n` +
+        `• Kesulitan: ${DIFFICULTY_MAP[s1.difficulty] || s1.difficulty} vs ${DIFFICULTY_MAP[s2.difficulty] || s2.difficulty}\n\n` +
+        `*Kesimpulan: Saipul sedikit lebih unggul di bidang ${s1.experience > s2.experience ? s1.name : s2.name}.*`;
+    }
+  }
+
+  // STATS
+  if (bestIntent === 'stats') {
+    const sourceData = skills || [];
+    const activeData = targets.length > 2 ? targets : sourceData;
+    if (activeData.length === 0) return "Tidak ditemukan data untuk statistik tersebut.";
+    const sorted = [...activeData].sort((a, b) => (b.experience || 0) - (a.experience || 0));
+    const avg = (activeData.reduce((acc, s) => acc + (s.experience || 0), 0) / activeData.length).toFixed(1);
+    const targetCategory = targets.length > 0 && targets[0].category ? targets[0].category : null;
+    const loc = targetCategory ? `dalam kategori **${targetCategory}**` : "keseluruhan";
+
+    if (normalizedQuery.includes('tersulit') || normalizedQuery.includes('sulit')) {
+      const hardest = activeData.find(s => s.difficulty === 'Hard') || sorted[sorted.length - 1];
+      return `Berdasarkan data, skill paling menantang ${loc} adalah **${hardest.name}**.`;
+    }
+    return `**Statistik ${loc}:**\n• Rata-rata: ${avg}%\n• Tertinggi: ${sorted[0].name} (${sorted[0].experience}%)\n• Jumlah: ${activeData.length} skill.`;
+  }
+
+  // COUNT & WHO
+  if (bestIntent === 'count') return `Saya mendeteksi terdapat **${(skills || []).length}** skill yang relevan dalam data portofolio ini.`;
+  if (bestIntent === 'who') return `**Saipul** adalah pemilik portofolio ini. Ia mengintegrasikan keahlian teknis dengan soft skill yang solid.`;
+
+  // INDIVIDUAL SKILL DETAILS
+  if (targets.length > 0) {
+    const s = targets[0];
+    const recallPrefix = context.entities.some(e => e.name === s.name) ? pickTemplate('contextRecall', { entity: s.name }) + "\n\n" : "";
+
+    if (bestIntent === 'why') return `${recallPrefix}**Mengapa ${s.name} Penting?**\n${s.description}\n\n*Dalam ekosistem kerja, ${s.name} membantu Saipul dalam mitigasi masalah dan kolaborasi tim.*`;
+    if (bestIntent === 'how') return `${recallPrefix}**Strategi Pengembangan ${s.name}:**\n1. Eksperimen: "${s.examples?.[0]}"\n2. Refleksi diri secara berkala.\n3. Kursus atau literatur terkait.`;
+    if (bestIntent === 'example') return `${recallPrefix}**Contoh Implementasi ${s.name}:**\n${s.examples?.map(ex => `• ${ex}`).join('\n')}`;
+
+    // Default: Comprehensive Details
+    const expBar = createExpBar(s.experience);
+    const tags = s.tags?.map(t => `#${t}`).join(' ') || "";
+
+    let baseResponse = `${recallPrefix}### **${s.name}**\n` +
+      `*${s.category}*\n\n` +
+      `**Visi:** ${s.description}\n\n` +
+      `**Level:** ✨ ${s.level}\n` +
+      `**Kesulitan:** ${DIFFICULTY_MAP[s.difficulty] || s.difficulty}\n` +
+      `**Penguasaan:** \`${expBar}\` ${s.experience}%\n` +
+      `${tags ? `\n> ${tags}\n` : ""}` +
+      `\n*Anda bisa bertanya tentang "Tips" atau "Contoh" untuk skill ini.*`;
+
+    // CROSS-CONTEXT ENRICHMENT
+    const relatedBlog = (activeBlogData || []).find(b => (b.tags || []).some(t => t.toLowerCase() === s.name.toLowerCase()));
+    if (relatedBlog) {
+      baseResponse += `\n\n---\n💡 **Bacaan Terkait (Blog):**\nSyaiful juga menulis tentang ini di artikel **"${relatedBlog.title}"**. [Lihat Blog](/blog)`;
+    }
+
+    return baseResponse;
+  }
+
+  return pickTemplate('notFound');
+};
+
 export function useSoftSkillsAI(skills = []) {
   const [messages, setMessages] = useState([WELCOME_MESSAGE]);
   const [isTyping, setIsTyping] = useState(false);
@@ -258,243 +493,6 @@ export function useSoftSkillsAI(skills = []) {
     sentiment: 0
   });
 
-  const calculateIntentScores = (text, doc) => {
-    const scores = {};
-    Object.keys(INTENT_CONFIG).forEach(intent => {
-      let score = 0;
-      const config = INTENT_CONFIG[intent];
-
-      // Keyword match
-      config.keywords.forEach(kw => {
-        if (text.includes(kw)) score += config.weight;
-      });
-
-      // NLP Match patterns
-      if (intent === 'greeting' && doc.match('(halo|hai|hi|hello|p|permisi|pagi|siang|sore|malam)').found) score += 2;
-      if (intent === 'help' && doc.match('(bantuan|tolong|help|bisa apa|fitur)').found) score += 2;
-      if (intent === 'math' && doc.match('(selisih|beda|total|gabungan|plus|minus|difference|sum)').found) score += 2;
-      if (intent === 'compare' && doc.match('(bandingkan|vs|bedanya|perbedaan|urutkan|ranking|sort)').found) score += 2;
-
-      scores[intent] = score;
-    });
-    return scores;
-  };
-
-  const resolveEntities = (query, context) => {
-    const found = [];
-    const normalizedQuery = normalizeInput(query);
-    const doc = nlp(normalizedQuery);
-
-    // Explicit mention & Tag matching
-    skills.forEach(s => {
-      const nameMatch = normalizedQuery.includes(s.name.toLowerCase());
-      const tagMatch = s.tags?.some(tag => normalizedQuery.includes(tag.toLowerCase()));
-      const categoryMatch = normalizedQuery.includes(s.category.toLowerCase());
-
-      if (nameMatch || tagMatch || categoryMatch) {
-        found.push(s);
-      }
-    });
-
-    // Pronoun resolution
-    const hasPronoun = doc.match('(itu|tersebut|terakhir|kemarin|tadi|pertama|semuanya|both|keduanya|ia|dia|ini)').found;
-
-    if ((found.length === 0 || hasPronoun) && context.entities.length > 0) {
-      if (normalizedQuery.includes('semuanya') || normalizedQuery.includes('all')) return skills;
-      if (normalizedQuery.includes('pertama')) return [context.entities[0]];
-
-      // Intelligent fallback: Use recently talked about entities
-      const relevantContext = context.entities.slice(-2);
-      if (found.length === 0) return relevantContext;
-
-      // Merge found with context if pronoun exists
-      return Array.from(new Set([...found, ...relevantContext]));
-    }
-
-    // Fuzzy as fallback
-    if (found.length === 0) {
-      const match = findBestFuzzyMatch(normalizedQuery, skills);
-      if (match) found.push(match);
-    }
-
-    return Array.from(new Set(found));
-  };
-
-  const getSingleResponse = (querySegment, context) => {
-    const normalizedQuery = normalizeInput(querySegment);
-    if (!normalizedQuery) return null;
-
-    const doc = nlp(normalizedQuery);
-
-    // 0. Negation Check
-    const isNegative = doc.match('(bukan|tidak|jangan|bukanlah|no)').found;
-
-    // 0.1 Implicit Context Check (Situational Logic)
-    const isImplicit = IMPLICIT_CONFIG.keywords.some(kw => normalizedQuery === kw || normalizedQuery.startsWith(kw + ' '));
-    if (isImplicit) {
-      if (context.entities.length > 0) {
-        const lastEntity = context.entities[context.entities.length - 1];
-        const additionalInfo = lastEntity.examples?.length > 1 ? `\n\n**Implementasi Lainnya:**\n• ${lastEntity.examples.slice(1).join('\n• ')}` : "";
-        return `Melanjutkan pembahasan mengenai **${lastEntity.name}**:\n${lastEntity.description}${additionalInfo}\n\n*Ada hal spesifik lain tentang ${lastEntity.name} yang ingin Anda ketahui?*`;
-      } else {
-        // Bootstrap Logic: If session is empty but user says "Lagi/More"
-        const topEntity = skills[0] || { name: 'Soft Skill' };
-        return `Sepertinya kita baru saja memulai sesi ini! Bagaimana jika kita membahas **${topEntity.name}** sebagai langkah awal analisis kita?`;
-      }
-    }
-
-    // 1. Intent Analysis
-    const scores = calculateIntentScores(normalizedQuery, doc);
-    const bestIntent = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
-
-    // --- NEW: PREDICTIVE CONTEXT (Lazy Trigger) ---
-    let predictivePrefix = "";
-    if (!context?.history || context.history.length === 0) {
-      const lastTopicStr = localStorage.getItem('saipul_ai_last_topic');
-      if (lastTopicStr) {
-        try {
-          const lastTopic = JSON.parse(lastTopicStr);
-          const fiveMinutes = 5 * 60 * 1000;
-          if (Date.now() - lastTopic.timestamp < fiveMinutes) {
-            predictivePrefix = `*Btw, saya lihat Anda baru saja tertarik dengan topik **${lastTopic.name}** di Blog. Senang bisa berdiskusi lebih lanjut!* \n\n`;
-            // Clear to avoid repeating
-            localStorage.removeItem('saipul_ai_last_topic');
-          }
-        } catch (e) { }
-      }
-    }
-
-    // --- NEW: JOB MATCHING ENGINE ---
-    if (bestIntent === 'jobMatching' && scores.jobMatching > 0.6) {
-      return predictivePrefix + handleJobMatching(normalizedQuery, skills);
-    }
-
-    // 1.1 Out-of-Scope (OOS) & Cross-Context Detection
-    const genericKeywords = ['presiden', 'cuaca', 'berita', 'politik', 'makan', 'resep', 'lokasi', 'alamat', 'jam', 'tanggal', 'dunia', 'negara'];
-    const isGeneric = genericKeywords.some(kw => normalizedQuery.includes(kw));
-
-    // --- NEW: CROSS-CONTEXT LOOKUP ---
-    const matchBlog = (activeBlogData || blogData).find(b => b.title.toLowerCase().includes(normalizedQuery) || (b.tags && b.tags.some(t => normalizedQuery.includes(t.toLowerCase()))));
-    const matchFAQ = faqsData.find(f => f.question.toLowerCase().includes(normalizedQuery) || f.answer.toLowerCase().includes(normalizedQuery));
-    const matchCommit = (commitmentsData.commitments || []).find(c => c.title.toLowerCase().includes(normalizedQuery) || c.desc.toLowerCase().includes(normalizedQuery));
-
-    if (isGeneric || (scores[bestIntent] < 0.5 && !normalizedQuery.includes('saipul') && !normalizedQuery.includes('kamu'))) {
-      if (matchBlog || matchFAQ || matchCommit) {
-        let response = `Saya tidak menemukan data spesifik di kategori **Soft Skill**, tapi saya menemukan info yang relevan di bagian lain:\n\n`;
-        if (matchBlog) response += `> 📝 **Blog:** Ada artikel menarik berjudul **"${matchBlog.title}"** yang mungkin menjawab rasa penasaran Anda.\n\n`;
-        if (matchFAQ) response += `> ❓ **FAQ:** Masalah ini dibahas di FAQ: *"${matchFAQ.answer.substring(0, 150)}..."*\n\n`;
-        if (matchCommit) response += `> 🤝 **Komitmen:** Ini berkaitan dengan komitmen Saipul: *"${matchCommit.desc}"*\n\n`;
-        response += `*Ingin saya bantu carikan info lebih lanjut tentang itu di Google?* [Klik di sini](https://www.google.com/search?q=${encodeURIComponent(querySegment)})`;
-        return response;
-      }
-      const searchLink = `https://www.google.com/search?q=${encodeURIComponent(querySegment)}`;
-      return `Maaf, sebagai asisten cerdas portofolio Saipul, saya memiliki keterbatasan dalam menjawab pertanyaan umum tersebut.\n\nNamun, Anda dapat menemukan jawabannya di sini: [Cari di Google](${searchLink})`;
-    }
-
-    // 2. Context Extraction
-    const targets = resolveEntities(querySegment, context);
-
-    // If negative and has targets, filter them OUT or handle specifically
-    if (isNegative && targets.length > 0) {
-      return `Saya mengerti Anda ingin mengecualikan **${targets.map(t => t.name).join(', ')}**. Ada yang lain yang ingin ditanyakan?`;
-    }
-
-    // Sentiment check
-    const sentiment = sentimentAnalyzer.analyze(normalizedQuery).score;
-    let tonePrefix = "";
-    if (sentiment < -1) tonePrefix = "Saya mengerti ini mungkin membingungkan. ";
-    if (sentiment > 2) tonePrefix = "Wow, saya senang sekali Anda bertanya! ";
-
-    // --- PIPELINE HANDLERS ---
-
-    // GREETING & SIMPLE RESPONSES
-    if (bestIntent === 'greeting') return tonePrefix + pickTemplate('greeting');
-    if (bestIntent === 'thanks') return pickTemplate('thanks');
-    if (bestIntent === 'identity') return pickTemplate('identity');
-    if (bestIntent === 'help') return "Saya bisa membantu Anda dengan:\n1. **Statistik**: Rata-rata atau ranking skill per kategori.\n2. **Kalkulasi**: Menghitung selisih pengalaman antar skill.\n3. **Detail**: Tips, alasan pentingnya (Why), dan contoh penerapan.\n4. **Perbandingan**: Analisis head-to-head 2 unit atau lebih.";
-
-    // MATH ENGINE
-    if (bestIntent === 'math' && targets.length >= 2) {
-      const s1 = targets[0];
-      const s2 = targets[1];
-      if (normalizedQuery.includes('selisih') || normalizedQuery.includes('beda') || normalizedQuery.includes('minus')) {
-        const diff = Math.abs((s1.experience || 0) - (s2.experience || 0));
-        return `Selisih pengalaman antara **${s1.name}** dan **${s2.name}** adalah **${diff}%**.`;
-      }
-      return `Total skor gabungan **${s1.name}** & **${s2.name}** adalah **${(s1.experience || 0) + (s2.experience || 0)}%**.`;
-    }
-
-    // RANKING / COMPARISON
-    if (bestIntent === 'compare' || (bestIntent === 'stats' && targets.length >= 3)) {
-      if (targets.length >= 3) {
-        const sorted = [...targets].sort((a, b) => (b.experience || 0) - (a.experience || 0));
-        return `**Ranking ${targets.length} Skill Teratas:**\n` + sorted.map((s, i) => `${i + 1}. **${s.name}** (${s.experience}%)`).join('\n');
-      }
-      if (targets.length === 2) {
-        const [s1, s2] = targets;
-        return `**Analisis Perbandingan: ${s1.name} vs ${s2.name}**\n` +
-          `• Penguasaan: ${s1.experience}% vs ${s2.experience}%\n` +
-          `• Level: ${s1.level} vs ${s2.level}\n` +
-          `• Kesulitan: ${DIFFICULTY_MAP[s1.difficulty] || s1.difficulty} vs ${DIFFICULTY_MAP[s2.difficulty] || s2.difficulty}\n\n` +
-          `*Kesimpulan: Saipul sedikit lebih unggul di bidang ${s1.experience > s2.experience ? s1.name : s2.name}.*`;
-      }
-    }
-
-    // STATS
-    if (bestIntent === 'stats') {
-      const sourceData = skills || [];
-      const activeData = targets.length > 2 ? targets : sourceData;
-      if (activeData.length === 0) return "Tidak ditemukan data untuk statistik tersebut.";
-      const sorted = [...activeData].sort((a, b) => (b.experience || 0) - (a.experience || 0));
-      const avg = (activeData.reduce((acc, s) => acc + (s.experience || 0), 0) / activeData.length).toFixed(1);
-      const targetCategory = targets.length > 0 && targets[0].category ? targets[0].category : null;
-      const loc = targetCategory ? `dalam kategori **${targetCategory}**` : "keseluruhan";
-
-      if (normalizedQuery.includes('tersulit') || normalizedQuery.includes('sulit')) {
-        const hardest = activeData.find(s => s.difficulty === 'Hard') || sorted[sorted.length - 1];
-        return `Berdasarkan data, skill paling menantang ${loc} adalah **${hardest.name}**.`;
-      }
-      return `**Statistik ${loc}:**\n• Rata-rata: ${avg}%\n• Tertinggi: ${sorted[0].name} (${sorted[0].experience}%)\n• Jumlah: ${activeData.length} skill.`;
-    }
-
-    // COUNT & WHO
-    if (bestIntent === 'count') return `Saya mendeteksi terdapat **${(skills || []).length}** skill yang relevan dalam data portofolio ini.`;
-    if (bestIntent === 'who') return `**Saipul** adalah pemilik portofolio ini. Ia mengintegrasikan keahlian teknis dengan soft skill yang solid.`;
-
-    // INDIVIDUAL SKILL DETAILS
-    if (targets.length > 0) {
-      const s = targets[0];
-      const recallPrefix = context.entities.some(e => e.name === s.name) ? pickTemplate('contextRecall', { entity: s.name }) + "\n\n" : "";
-
-      if (bestIntent === 'why') return `${recallPrefix}**Mengapa ${s.name} Penting?**\n${s.description}\n\n*Dalam ekosistem kerja, ${s.name} membantu Saipul dalam mitigasi masalah dan kolaborasi tim.*`;
-      if (bestIntent === 'how') return `${recallPrefix}**Strategi Pengembangan ${s.name}:**\n1. Eksperimen: "${s.examples?.[0]}"\n2. Refleksi diri secara berkala.\n3. Kursus atau literatur terkait.`;
-      if (bestIntent === 'example') return `${recallPrefix}**Contoh Implementasi ${s.name}:**\n${s.examples?.map(ex => `• ${ex}`).join('\n')}`;
-
-      // Default: Comprehensive Details
-      const expBar = createExpBar(s.experience);
-      const tags = s.tags?.map(t => `#${t}`).join(' ') || "";
-
-      let baseResponse = `${recallPrefix}### **${s.name}**\n` +
-        `*${s.category}*\n\n` +
-        `**Visi:** ${s.description}\n\n` +
-        `**Level:** ✨ ${s.level}\n` +
-        `**Kesulitan:** ${DIFFICULTY_MAP[s.difficulty] || s.difficulty}\n` +
-        `**Penguasaan:** \`${expBar}\` ${s.experience}%\n` +
-        `${tags ? `\n> ${tags}\n` : ""}` +
-        `\n*Anda bisa bertanya tentang "Tips" atau "Contoh" untuk skill ini.*`;
-
-      // --- CROSS-CONTEXT ENRICHMENT (Enriching skill with Blogs/FAQ) ---
-      const relatedBlog = (activeBlogData || blogData).find(b => (b.tags || []).some(t => t.toLowerCase() === s.name.toLowerCase()));
-      if (relatedBlog) {
-        baseResponse += `\n\n---\n💡 **Bacaan Terkait (Blog):**\nSyaiful juga menulis tentang ini di artikel **"${relatedBlog.title}"**. [Lihat Blog](/blog)`;
-      }
-
-      return baseResponse;
-    }
-
-    return pickTemplate('notFound');
-  };
-
   const getResponse = useCallback((input) => {
     const rawText = input.toLowerCase();
 
@@ -503,32 +501,26 @@ export function useSoftSkillsAI(skills = []) {
     const results = [];
     let currentEntities = [...sessionContext.entities];
 
-    // Handling "kecuali" in a simple way
+    // Handling "kecuali"
     const exclusionMatch = rawText.match(/kecuali\s+(.+)/i);
     const excludedNames = exclusionMatch ? exclusionMatch[1].split(/,|dan/).map(n => n.trim().toLowerCase()) : [];
 
     // 2. Iteration
     segments.forEach(segment => {
-      // Logic for "Analisis semua" or similar broad queries
-      const isBroadQuery = segment.includes('semua') || segment.includes('seluruh') || segment.includes('list');
+      let targets = resolveEntities(segment, { entities: currentEntities }, skills);
 
-      let targets = resolveEntities(segment, { entities: currentEntities });
-
-      // Filter out excluded entities
       if (excludedNames.length > 0) {
         targets = targets.filter(t => !excludedNames.some(name => t.name.toLowerCase().includes(name)));
       }
 
-      const res = getSingleResponse(segment, { entities: currentEntities, history: sessionContext.historyLog || [] });
+      const res = getSingleResponse(segment, { entities: currentEntities, history: sessionContext.historyLog || [] }, skills);
       if (res) {
         results.push(res);
         currentEntities = Array.from(new Set([...currentEntities, ...targets])).slice(-10);
       }
     });
 
-    // Handle Broad Queries if results are empty or redundant
     if (rawText.includes('kecuali') && results.length > 0) {
-      // Add a small hint about what was excluded
       results[0] = `(Menampilkan data dengan mengecualikan **${excludedNames.join(', ')}**)\n\n` + results[0];
     }
 
@@ -539,7 +531,7 @@ export function useSoftSkillsAI(skills = []) {
     setSessionContext(prev => ({
       ...prev,
       entities: currentEntities,
-      historyLog: [...prev.historyLog, input].slice(-20), // Sliding window for history
+      historyLog: [...prev.historyLog, input].slice(-20),
       sentiment: (prev.sentiment + sent) / 2
     }));
 

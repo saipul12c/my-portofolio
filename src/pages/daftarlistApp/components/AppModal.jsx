@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   ArrowRight
 } from "lucide-react";
+import { getTechLanguageInfo } from "../../../utils/techRouteHelper";
 
 export default function AppModal({ app, onClose }) {
   const [copied, setCopied] = useState(false);
@@ -189,19 +190,29 @@ export default function AppModal({ app, onClose }) {
             {/* Tech Stack */}
             {app.techStack && app.techStack.length > 0 && (
               <div>
-                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2.5 flex items-center gap-2">
-                  <Code2 className="w-4 h-4 text-cyan-400" />
-                  Teknologi & Framework
-                </h4>
+                <div className="flex items-center justify-between mb-2.5">
+                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                    <Code2 className="w-4 h-4 text-cyan-400" />
+                    Teknologi & Framework
+                  </h4>
+                  <span className="text-[10px] text-cyan-400/80">Klik badge untuk lihat detail bahasa</span>
+                </div>
                 <div className="flex flex-wrap gap-2">
-                  {app.techStack.map((tech, idx) => (
-                    <span
-                      key={idx}
-                      className="px-3 py-1 rounded-xl text-xs font-medium bg-cyan-950/60 text-cyan-300 border border-cyan-500/30"
-                    >
-                      {tech}
-                    </span>
-                  ))}
+                  {app.techStack.map((tech, idx) => {
+                    const techInfo = getTechLanguageInfo(tech);
+                    return (
+                      <Link
+                        key={idx}
+                        to={techInfo.url}
+                        onClick={onClose}
+                        className="px-3 py-1 rounded-xl text-xs font-medium bg-cyan-950/60 hover:bg-cyan-900/80 text-cyan-300 hover:text-white border border-cyan-500/30 hover:border-cyan-400 inline-flex items-center gap-1.5 transition-all shadow-sm"
+                        title={techInfo.found ? `Buka detail ${tech} di halaman Bahasa` : `Cari ${tech} di halaman Bahasa`}
+                      >
+                        <span>{tech}</span>
+                        <span className="text-[10px] opacity-70">↗</span>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             )}

@@ -4,12 +4,17 @@ export const useScroll = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
+    let currentShow = false;
     let ticking = false;
     
     const handleScroll = () => {
       if (!ticking) {
         requestAnimationFrame(() => {
-          setShowScrollTop(window.scrollY > 500);
+          const shouldShow = window.scrollY > 400;
+          if (shouldShow !== currentShow) {
+            currentShow = shouldShow;
+            setShowScrollTop(shouldShow);
+          }
           ticking = false;
         });
         ticking = true;

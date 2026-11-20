@@ -57,6 +57,7 @@ export function getKnowledgeResponse(userInput, safeKnowledgeBase, settings) {
     // Fallback ke pencarian kategori spesifik (hobbies, skills, dll) jika smartKBQuery belum mencakupnya
     // Query 3: Other Knowledge Sources (hobbies, skills, certificates, etc)
     const knowledgeSources = [
+      { data: safeKnowledgeBase?.languages, type: 'bahasa', emoji: '🌐' },
       { data: safeKnowledgeBase?.hobbies, type: 'hobi', emoji: '🎯' },
       { data: safeKnowledgeBase?.softskills, type: 'skill', emoji: '🌟' },
       { data: safeKnowledgeBase?.certificates, type: 'sertifikat', emoji: '🏆' },
@@ -68,22 +69,59 @@ export function getKnowledgeResponse(userInput, safeKnowledgeBase, settings) {
         if (Array.isArray(source.data) && source.data.length > 0) {
           for (const item of source.data) {
             try {
-              // Check by name or title
-              const itemName = String(item?.name || item?.title || '').toLowerCase();
-              const itemTitle = String(item?.title || item?.name || '').toLowerCase();
+              // Check by name or title or slug
+              const itemName = String(item?.nama || item?.name || item?.title || '').toLowerCase();
+              const itemTitle = String(item?.title || item?.nama || item?.name || '').toLowerCase();
               
-              if ((item?.name && input.includes(itemName)) || 
-                  (item?.title && input.includes(itemTitle))) {
+              if ((itemName && input.includes(itemName)) || 
+                  (itemTitle && input.includes(itemTitle))) {
                 
-                let responseText = `${source.emoji} **${item.name || item.title}**`;
-                if (item?.category) responseText += ` (${item.category})`;
-                if (item?.description) responseText += `\n\n${item.description}`;
-                if (item?.level) responseText += `\n\n**Level**: ${item.level}`;
+                let responseText = `${source.emoji} **${item.nama || item.name || item.title}**`;
+                if (item?.tingkat || item?.categoryLabel) {
+                  responseText += ` (${item.categoryLabel || item.tingkat})`;
+                } else if (item?.category) {
+                  responseText += ` (${item.category})`;
+                }
+
+                if (item?.level) responseText += `\n\n• **Tingkat Kemahiran**: ${item.level}% (${item.tingkat || 'Aktif'})`;
+                if (item?.deskripsi) responseText += `\n\n${item.deskripsi}`;
+                if (item?.penjelasan && item.penjelasan !== item.deskripsi) responseText += `\n\n${item.penjelasan}`;
+                if (item?.description && !item?.deskripsi) responseText += `\n\n${item.description}`;
+                if (item?.desc && !item?.deskripsi && !item?.description) responseText += `\n\n${item.desc}`;
+
+                if (source.type === 'hobi') {
+                  if (item?.metadata?.difficulty) responseText += `\n\n• **Tingkat Kesulitan**: ${item.metadata.difficulty}`;
+                  if (item?.metadata?.timeRequired) responseText += `\n• **Waktu yang Dibutuhkan**: ${item.metadata.timeRequired}`;
+                  if (Array.isArray(item?.metadata?.tools) && item.metadata.tools.length > 0) {
+                    responseText += `\n• **Alat & Tools**: ${item.metadata.tools.join(', ')}`;
+                  }
+                  if (item?.stats?.rating) responseText += `\n• **Rating**: ⭐ ${item.stats.rating}/5.0`;
+                  const targetSlug = item.slug || (item.title || item.nama || '').toString().toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-');
+                  responseText += `\n\n🔗 *Lihat detail hobi ini di*: \`/hobbies/${targetSlug}\``;
+                }
+
+                if (Array.isArray(item?.kemampuan) && item.kemampuan.length > 0) {
+                  responseText += `\n\n• **Kemampuan Utama**: ${item.kemampuan.join(', ')}`;
+                }
+                if (Array.isArray(item?.framework) && item.framework.length > 0) {
+                  responseText += `\n• **Framework & Ekosistem**: ${item.framework.join(', ')}`;
+                }
+                if (Array.isArray(item?.tools) && item.tools.length > 0) {
+                  responseText += `\n• **Tools**: ${item.tools.join(', ')}`;
+                }
+                if (item?.projectContoh) {
+                  responseText += `\n• **Contoh Projek**: ${item.projectContoh}`;
+                }
+
+                if (source.type === 'bahasa') {
+                  const targetSlug = item.slug || (item.nama || item.name || '').toString().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-');
+                  responseText += `\n\n🔗 *Lihat detail lengkap di halaman*: \`/bahasa/detail/${targetSlug}\``;
+                }
                 
                 return {
                   text: responseText,
-                  source: { type: `kb_${source.type}`, id: item.name || item.title },
-                  confidence: 0.88
+                  source: { type: `kb_${source.type}`, id: item.nama || item.name || item.title },
+                  confidence: 0.92
                 };
               }
             } catch (e) {

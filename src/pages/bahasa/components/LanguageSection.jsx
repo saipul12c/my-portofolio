@@ -1,5 +1,4 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { memo } from "react";
 import { SkillCard } from "./SkillCard";
 
 const LanguageSectionComponent = ({
@@ -16,33 +15,28 @@ const LanguageSectionComponent = ({
   if (data.length === 0 && !searchTerm && filterLevel === "all") return null;
 
   return (
-    <section className="space-y-4 sm:space-y-6">
-      <motion.div
-        initial={{ opacity: 0, x: -10 }}
-        animate={{ opacity: 1, x: 0 }}
-        className="flex items-center space-x-2 sm:space-x-3"
-      >
+    <section className="space-y-3 sm:space-y-4">
+      <div className="flex items-center space-x-2.5">
         <div className="text-2xl sm:text-3xl">{icon}</div>
         <div>
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">{title}</h2>
-          <p className="text-gray-300 text-sm sm:text-base">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white">{title}</h2>
+          <p className="text-gray-400 text-xs sm:text-sm">
             {data.length} item ditampilkan
           </p>
         </div>
-      </motion.div>
+      </div>
 
       <div className={viewMode === "grid" ?
         "grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4" :
-        "space-y-2 sm:space-y-3"
+        "space-y-2.5 sm:space-y-3"
       }>
-        {data.map((item, index) => {
+        {data.map((item) => {
           const skillId = `${item.nama}-${isProgramming ? 'prog' : 'lang'}`;
           return (
             <SkillCard
               key={skillId}
               bahasa={item}
               isProgramming={isProgramming}
-              delay={index * 50}
               isList={viewMode === "list"}
               isExpanded={!!expandedTags[skillId]}
               onToggle={() => toggleExpandedTags(skillId)}
@@ -52,17 +46,13 @@ const LanguageSectionComponent = ({
       </div>
 
       {data.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center py-8 sm:py-12"
-        >
-          <div className="text-gray-300 text-lg">Tidak ada item yang sesuai dengan filter</div>
-        </motion.div>
+        <div className="text-center py-6 sm:py-8 text-gray-400 text-sm">
+          Tidak ada item yang sesuai dengan filter
+        </div>
       )}
     </section>
   );
 };
 
-export const LanguageSection = React.memo(LanguageSectionComponent);
+export const LanguageSection = memo(LanguageSectionComponent);
 LanguageSectionComponent.displayName = "LanguageSection";

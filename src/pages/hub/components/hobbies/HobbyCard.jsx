@@ -1,54 +1,53 @@
+import { memo } from "react";
 import { m } from "framer-motion";
 import { Link } from "react-router-dom";
-import * as Icons from "lucide-react";
+import HobbyIcon from "../shared/HobbyIcon";
 import { getLabelStyles } from "../../utils/hobbyUtils";
 
-export default function HobbyCard({ hobby, label }) {
-  const Icon = Icons[hobby.icon];
-  
+function HobbyCard({ hobby, label }) {
   return (
     <m.div
-      layoutId={`hobby-${hobby.id}`}
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
-      whileHover={{ scale: 1.03, y: -4 }}
-      className="relative group bg-[#141a28]/60 p-7 rounded-2xl border border-white/10 backdrop-blur-md hover:border-cyan-400/30 transition-all duration-400 shadow-[0_0_15px_rgba(0,0,0,0.2)]"
+      exit={{ opacity: 0, y: 15 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      style={{ contentVisibility: "auto", containIntrinsicSize: "0 260px" }}
+      className="relative group bg-[#141a28]/80 p-7 rounded-2xl border border-white/10 hover:border-cyan-400/40 transform-gpu hover:-translate-y-1 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_10px_25px_rgba(34,211,238,0.12)] flex flex-col justify-between"
     >
-      {/* Floating Label */}
-      {label && (
-        <m.span
-          initial={{ opacity: 0, scale: 0.8, y: -10 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className={`absolute -top-3 left-4 text-[11px] font-semibold px-3 py-1 rounded-full tracking-wide shadow-md backdrop-blur-sm ${getLabelStyles(label)}`}
-        >
-          {label}
-        </m.span>
-      )}
+      <div>
+        {/* Floating Label */}
+        {label && (
+          <span
+            className={`absolute -top-3 left-4 text-[11px] font-semibold px-3 py-1 rounded-full tracking-wide shadow-md backdrop-blur-sm ${getLabelStyles(label)}`}
+          >
+            {label}
+          </span>
+        )}
 
-      {/* Icon and Category */}
-      <div className="mb-5 flex items-center justify-between">
-        <Icon size={32} className={hobby.iconColor} />
-        <span className="text-xs uppercase tracking-wide text-white/50">
-          {hobby.category}
-        </span>
+        {/* Icon and Category */}
+        <div className="mb-5 flex items-center justify-between">
+          <HobbyIcon name={hobby.icon} size={32} className={hobby.iconColor || "text-cyan-400"} />
+          <span className="text-xs uppercase tracking-wide text-white/50 font-medium">
+            {hobby.category}
+          </span>
+        </div>
+
+        {/* Title and Description */}
+        <h2 className="text-lg font-semibold mb-2 text-white/90 group-hover:text-cyan-300 transition-colors">
+          {hobby.title}
+        </h2>
+
+        <p className="text-gray-400 text-[14px] leading-relaxed line-clamp-3">
+          {hobby.desc}
+        </p>
       </div>
 
-      {/* Title and Description */}
-      <h2 className="text-lg font-semibold mb-2 text-white/90 group-hover:text-cyan-300 transition-colors">
-        {hobby.title}
-      </h2>
-
-      <p className="text-gray-400 text-[14px] leading-relaxed">
-        {hobby.desc}
-      </p>
-
       {/* Action Links */}
-      <div className="mt-4 flex items-center justify-between">
-        {hobby.link && (
-          <ExternalLink href={hobby.link} label={hobby.linkLabel} />
+      <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between">
+        {hobby.link ? (
+          <ExternalLink href={hobby.link} label={hobby.linkLabel || "Kunjungi"} />
+        ) : (
+          <span />
         )}
         <DetailLink slug={hobby.slug} />
       </div>
@@ -63,7 +62,7 @@ function ExternalLink({ href, label }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-block text-sm text-cyan-300 font-medium hover:underline"
+      className="inline-flex items-center text-sm text-cyan-300 font-medium hover:underline focus:outline-none focus:ring-1 focus:ring-cyan-400 rounded"
       onClick={(e) => e.stopPropagation()}
     >
       {label} →
@@ -75,9 +74,11 @@ function DetailLink({ slug }) {
   return (
     <Link
       to={`/hobbies/${slug}`}
-      className="inline-block text-sm text-gray-400 font-medium hover:text-white transition-colors"
+      className="inline-flex items-center text-sm text-gray-400 font-medium hover:text-white transition-colors focus:outline-none focus:ring-1 focus:ring-cyan-400 rounded"
     >
       Lihat detail →
     </Link>
   );
 }
+
+export default memo(HobbyCard);

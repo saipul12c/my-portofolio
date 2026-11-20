@@ -23,6 +23,7 @@ export function loadDataFromKnowledgeBase(knowledgeBase = {}) {
     uploadedData: [],
     experiences: [],
     specializations: [],
+    languages: [],
     authorProfiles: [],
     gallery: [],
     discussionRoom: [],
@@ -98,6 +99,13 @@ export function loadDataFromKnowledgeBase(knowledgeBase = {}) {
       data.specializations = knowledgeBase.specializations;
     }
 
+    // Load languages & technologies (/bahasa)
+    if (knowledgeBase.languages && Array.isArray(knowledgeBase.languages)) {
+      data.languages = knowledgeBase.languages;
+    } else if (knowledgeBase.languagesDetail?.all && Array.isArray(knowledgeBase.languagesDetail.all)) {
+      data.languages = knowledgeBase.languagesDetail.all;
+    }
+
     // Load authorProfiles
     if (knowledgeBase.authorProfiles) {
       data.authorProfiles = Array.isArray(knowledgeBase.authorProfiles)
@@ -142,6 +150,7 @@ export function loadDataFromKnowledgeBase(knowledgeBase = {}) {
       data.uploadedData.length +
       data.experiences.length +
       data.specializations.length +
+      data.languages.length +
       data.authorProfiles.length +
       data.gallery.length +
       data.discussionRoom.length +
@@ -173,6 +182,7 @@ export function searchAcrossDataSources(query, knowledgeBase = {}) {
     collaborations: [],
     experiences: [],
     specializations: [],
+    languages: [],
     authorProfiles: [],
     gallery: [],
     discussionRoom: [],
@@ -277,6 +287,15 @@ export function searchAcrossDataSources(query, knowledgeBase = {}) {
     if (specText.includes(normalizedQuery)) {
       results.specializations.push(spec);
       results.allMatches.push({ ...spec, type: 'specialization', score: 1 });
+    }
+  }
+
+  // Search in languages & technologies (/bahasa)
+  for (const lang of (data.languages || [])) {
+    const langText = `${lang.nama || lang.name || ''} ${lang.tingkat || ''} ${lang.deskripsi || ''} ${lang.penjelasan || ''} ${(lang.kemampuan || []).join(' ')} ${(lang.framework || []).join(' ')} ${(lang.tools || []).join(' ')}`.toLowerCase();
+    if (langText.includes(normalizedQuery)) {
+      results.languages.push(lang);
+      results.allMatches.push({ ...lang, type: 'language', score: 1 });
     }
   }
 
@@ -392,6 +411,41 @@ export function getFormattedSkills(knowledgeBase = {}) {
 }
 
 /**
+ * Get formatted languages & tech stack summary (/bahasa)
+ */
+export function getLanguagesSummary(knowledgeBase = {}) {
+  const languages = Array.isArray(knowledgeBase.languages)
+    ? knowledgeBase.languages
+    : (knowledgeBase.languagesDetail?.all || []);
+
+  if (!languages || languages.length === 0) return null;
+
+  const spoken = languages.filter(l => l.category === 'bahasa_sehari_hari');
+  const coding = languages.filter(l => l.category === 'bahasa_pemrograman');
+
+  let text = '🌐 **Kemampuan Bahasa & Teknologi Muhammad Syaiful Mukmin**:\n\n';
+
+  if (spoken.length > 0) {
+    text += '🗣️ **Bahasa Komunikasi**:\n';
+    spoken.forEach(s => {
+      text += `• **${s.nama || s.name}** (${s.tingkat || 'Aktif'} - ${s.level}%): ${s.deskripsi || s.penjelasan || ''}\n`;
+    });
+    text += '\n';
+  }
+
+  if (coding.length > 0) {
+    text += '💻 **Teknologi & Bahasa Pemrograman Utama**:\n';
+    coding.slice(0, 8).forEach(c => {
+      const fw = Array.isArray(c.framework) && c.framework.length > 0 ? ` (Framework: ${c.framework.slice(0, 3).join(', ')})` : '';
+      text += `• **${c.nama || c.name}** (${c.tingkat} - ${c.level}%)${fw}\n`;
+    });
+  }
+
+  text += '\n🔗 *Lihat penjelasan lengkap setiap bahasa di halaman*: `/bahasa`';
+  return text;
+}
+
+/**
  * Get certificate summary
  */
 export function getCertificateSummary(knowledgeBase = {}) {
@@ -491,6 +545,7 @@ export function suggestDataBasedOnQuery(query) {
     showAI: false,
     showInterests: false,
     showCollaborations: false,
+    showLanguages: false,
     showData: []
   };
 
@@ -498,6 +553,10 @@ export function suggestDataBasedOnQuery(query) {
   if (/siapa|tentang|profile|portofolio|resume|cv/.test(normalizedQuery)) {
     suggestions.showProfile = true;
     suggestions.showCertificates = true;
+  }
+
+  if (/bahasa|language|pemrograman|coding|koding|tech stack|teknologi|javascript|react|python|typescript|docker|vue|sql|golang|rust|php|java/.test(normalizedQuery)) {
+    suggestions.showLanguages = true;
   }
 
   if (/keahlian|skill|mampu|bisa|dapat|kemampuan/.test(normalizedQuery)) {
@@ -603,12 +662,23 @@ export function generateComprehensiveAnswer(query, knowledgeBase = {}) {
       }
     }
 
+    // Add languages & tech stack
+    if (suggestions.showLanguages && (searchResults.languages.length > 0 || (knowledgeBase.languages && knowledgeBase.languages.length > 0))) {
+      const langInfo = getLanguagesSummary(knowledgeBase);
+      if (langInfo) {
+        answer += (answer ? '\n\n' : '') + langInfo;
+        used.push('languages');
+      }
+    }
+
     // Add all matched search results if not already covered
     if (searchResults.allMatches.length > 0 && used.length === 0) {
       answer += `**Hasil Pencarian:**\n\n`;
       for (const match of searchResults.allMatches.slice(0, 5)) {
         if (match.type === 'ai_concept') {
           answer += `• **${match.question}**: ${match.answer}\n`;
+        } else if (match.type === 'language') {
+          answer += `• **${match.nama || match.name}** (${match.tingkat || 'Aktif'} - ${match.level}%): ${match.deskripsi || match.penjelasan || ''}\n`;
         } else if (match.type === 'skill') {
           answer += `• **${match.name}**: ${match.description}\n`;
         } else if (match.type === 'card') {

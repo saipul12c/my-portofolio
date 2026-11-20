@@ -1,375 +1,382 @@
 // AboutCertificates.jsx
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Award, ExternalLink } from "lucide-react";
-import { Link } from "react-router-dom"; 
+import {
+  Award,
+  ExternalLink,
+  X,
+  Calendar,
+  CheckCircle2,
+  Sparkles,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
-// Palet warna tags/skills dengan text yang sesuai
-const tagColors = [
-  { bg: "bg-white/90", text: "text-black" },
-  { bg: "bg-blue-400", text: "text-black" },
-  { bg: "bg-yellow-400", text: "text-black" },
-];
-
-const modalTagColors = [
-  "bg-pink-400/80",
-  "bg-purple-400/80",
-  "bg-green-400/80",
-  "bg-blue-400/80",
-  "bg-yellow-400/80",
-  "bg-orange-400/80",
-];
-
-// Palet warna level badge
 const levelColors = {
-  Pemula: "bg-green-400 text-black",
-  Menengah: "bg-yellow-400 text-black",
-  Lanjutan: "bg-red-400 text-white",
+  Pemula: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+  Beginner: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+  Menengah: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+  Intermediate: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+  Lanjutan: "bg-rose-500/20 text-rose-300 border-rose-500/30",
+  Advanced: "bg-rose-500/20 text-rose-300 border-rose-500/30",
 };
 
-export default function AboutCertificates({ certificates }) {
+function AboutCertificates({ certificates }) {
   const [selectedCert, setSelectedCert] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [isHovered, setIsHovered] = useState(false);
 
-  const certList = certificates?.certificates || [];
+  const certList = useMemo(() => {
+    return certificates?.certificates || [];
+  }, [certificates]);
 
-  // State untuk menyimpan maksimal 3 kartu aktif
+  // Extract unique categories
+  const categories = useMemo(() => {
+    const cats = new Set(["Semua"]);
+    certList.forEach((c) => {
+      if (c.category) cats.add(c.category);
+    });
+    return Array.from(cats);
+  }, [certList]);
+
+  // Filtered certificates
+  const filteredCerts = useMemo(() => {
+    if (selectedCategory === "Semua") return certList;
+    return certList.filter((c) => c.category === selectedCategory);
+  }, [certList, selectedCategory]);
+
+  // State untuk 3 slot kartu aktif
   const [displayedCerts, setDisplayedCerts] = useState(() => {
-    return certList.slice(0, 3);
+    return filteredCerts.slice(0, 3);
   });
 
   const activeSlotRef = useRef(0);
   const nextIndexRef = useRef(3);
 
-  // Inisialisasi awal saat data certificates selesai dimuat
+  // Sinkronkan saat filter kategori berubah
   useEffect(() => {
-    if (certList.length > 0 && displayedCerts.length === 0) {
-      setDisplayedCerts(certList.slice(0, 3));
-      nextIndexRef.current = 3 % certList.length;
-      activeSlotRef.current = 0;
-    }
-  }, [certList, displayedCerts.length]);
+    setDisplayedCerts(filteredCerts.slice(0, 3));
+    activeSlotRef.current = 0;
+    nextIndexRef.current = 3 % Math.max(1, filteredCerts.length);
+  }, [filteredCerts]);
 
-  // Rotasi: Hanya 1 kartu yang berganti setiap 2 detik secara bergiliran (slot 0 -> 1 -> 2 -> 0...)
+  // Rotasi: 1 kartu berganti setiap 3 detik secara bergiliran (slot 0 -> 1 -> 2 -> 0...)
   useEffect(() => {
-    if (certList.length <= 3 || isHovered) return;
+    if (filteredCerts.length <= 3 || isHovered) return;
 
     const interval = setInterval(() => {
       setDisplayedCerts((prev) => {
-        if (prev.length === 0) return certList.slice(0, 3);
+        if (!prev || prev.length === 0) return filteredCerts.slice(0, 3);
 
-        const slotToUpdate = activeSlotRef.current;
-        const nextCert = certList[nextIndexRef.current % certList.length];
+        const slotToUpdate = activeSlotRef.current % prev.length;
+        const nextCert = filteredCerts[nextIndexRef.current % filteredCerts.length];
 
-        // Majukan giliran cert dan slot berikutnya
-        nextIndexRef.current = (nextIndexRef.current + 1) % certList.length;
-        activeSlotRef.current = (activeSlotRef.current + 1) % 3;
+        nextIndexRef.current = (nextIndexRef.current + 1) % filteredCerts.length;
+        activeSlotRef.current = (activeSlotRef.current + 1) % prev.length;
 
         const updated = [...prev];
         updated[slotToUpdate] = nextCert;
         return updated;
       });
-    }, 2000);
+    }, 3000); // ⏱️ Tepat setiap 3 detik sekali
 
     return () => clearInterval(interval);
-  }, [certList, isHovered]);
+  }, [filteredCerts, isHovered]);
 
-  const navigateCert = (dir) => {
-    if (!selectedCert || certList.length === 0) return;
-    const idx = certList.findIndex((c) => c.id === selectedCert.id);
-    const nextIdx = (idx + dir + certList.length) % certList.length;
-    setSelectedCert(certList[nextIdx]);
-  };
+  // Modal navigation
+  useEffect(() => {
+    if (!selectedCert) return;
 
-  const hoverVariants = {
-    hover: {
-      y: -5,
-      boxShadow: "0 20px 40px rgba(236, 72, 153, 0.2)",
-      transition: {
-        duration: 0.3,
-        ease: "easeInOut"
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setSelectedCert(null);
+      } else if (e.key === "ArrowLeft") {
+        const idx = certList.findIndex((c) => c.id === selectedCert.id);
+        if (idx !== -1) {
+          const prevIdx = (idx - 1 + certList.length) % certList.length;
+          setSelectedCert(certList[prevIdx]);
+        }
+      } else if (e.key === "ArrowRight") {
+        const idx = certList.findIndex((c) => c.id === selectedCert.id);
+        if (idx !== -1) {
+          const nextIdx = (idx + 1) % certList.length;
+          setSelectedCert(certList[nextIdx]);
+        }
       }
-    }
-  };
+    };
 
-  const headerVariants = {
-    hidden: { opacity: 0, y: 25 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" }
-    }
-  };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedCert, certList]);
 
   return (
-    <section className="mt-24 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      {/* Header Section dengan Animasi sama seperti AboutCollaborations */}
-      <motion.div
-        className="flex flex-col items-center mb-12"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-50px" }}
-        variants={headerVariants}
-      >
-        <Link to="/certificates" className="group block focus:outline-none">
-          <div className="relative inline-block mb-4">
-            <div className="absolute inset-0 bg-pink-400/20 blur-xl rounded-full"></div>
-            <Award className="w-12 h-12 text-pink-400 relative z-10 p-2 bg-gray-900/80 rounded-2xl border border-pink-400/30 group-hover:scale-110 transition-transform duration-300 animate-pulse" />
+    <section className="mt-28 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      {/* Header Section */}
+      <div className="flex flex-col items-center mb-10">
+        <div className="relative inline-block mb-3">
+          <div className="absolute inset-0 bg-pink-500/20 blur-xl rounded-full" />
+          <div className="relative z-10 p-3 bg-[#111c34]/90 rounded-2xl border border-pink-500/30 shadow-lg shadow-pink-950/20">
+            <Award className="w-8 h-8 text-pink-400" />
           </div>
+        </div>
 
-          <h3 className="text-3xl sm:text-4xl font-extrabold text-pink-400 group-hover:text-pink-300 transition duration-300">
-            {certificates?.sectionTitle || "Sertifikat & Penghargaan"}
-          </h3>
-        </Link>
-        <div className="w-24 h-1 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full my-3"></div>
-        <p className="text-gray-400 max-w-2xl mx-auto text-sm sm:text-base">
-          Dokumentasi pencapaian, sertifikasi kompetensi, dan penghargaan profesional
+        <h2 className="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-300 to-indigo-300">
+          {certificates?.sectionTitle || "Sertifikat & Penghargaan"}
+        </h2>
+        <div className="w-20 h-1 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full my-3" />
+        <p className="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base">
+          Dokumentasi sertifikasi kompetensi, pelatihan resmi, dan pencapaian profesional
         </p>
-      </motion.div>
 
-      {/* Grid Layout: Maksimal 3 kartu di mana 1 kartu berganti setiap 2 detik secara bergiliran */}
-      <div 
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 min-h-[300px]"
+        {/* Category Filter Chips */}
+        {categories.length > 2 && (
+          <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
+            {categories.slice(0, 5).map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                  selectedCategory === cat
+                    ? "bg-pink-500 text-white shadow-md shadow-pink-500/25"
+                    : "bg-white/5 text-slate-300 hover:bg-white/10 border border-white/10"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Grid: 3 Kartu berganti satu per satu setiap 3 detik */}
+      <div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left items-stretch min-h-[300px]"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {displayedCerts.map((cert, slotIndex) => (
-          <div key={slotIndex} className="h-full relative">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={cert?.id || `slot-${slotIndex}`}
-                initial={{ opacity: 0, y: 15, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -15, scale: 0.98 }}
-                transition={{ duration: 0.45, ease: "easeOut" }}
-                whileHover="hover"
-                className="h-full"
-              >
+        {displayedCerts.map((cert, slotIndex) => {
+          if (!cert) return null;
+          const levelBadgeStyle =
+            levelColors[cert?.level] ||
+            levelColors[cert?.difficulty] ||
+            "bg-slate-800 text-slate-300 border-slate-700";
+
+          return (
+            <div key={`cert-slot-${slotIndex}`} className="h-full relative">
+              <AnimatePresence mode="wait">
                 <motion.div
+                  key={cert.id}
+                  initial={{ opacity: 0, y: 15, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -15, scale: 0.96 }}
+                  transition={{ duration: 0.45, ease: "easeOut" }}
                   onClick={() => setSelectedCert(cert)}
-                  className="h-full flex flex-col justify-between relative bg-gradient-to-tr from-pink-600/20 to-purple-600/20 backdrop-blur-2xl border border-white/20 rounded-3xl p-6 hover:shadow-xl transition-all cursor-pointer group"
-                  variants={hoverVariants}
+                  className="group relative flex flex-col justify-between h-full bg-[#111c34]/60 hover:bg-[#132242]/90 backdrop-blur-xl border border-blue-900/40 hover:border-pink-500/40 rounded-3xl p-6 cursor-pointer shadow-lg hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-300"
                 >
                   <div>
-                    <div className="flex items-center justify-center mb-3">
-                      <img
-                        src={cert?.organization?.logo || cert?.image}
-                        alt={cert?.organization?.name || cert?.issuer}
-                        className="w-10 h-10 rounded-full object-cover"
-                        loading="lazy"
-                      />
+                    {/* Top Organization Header */}
+                    <div className="flex items-start justify-between gap-3 mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-11 h-11 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
+                          {cert?.organization?.logo || cert?.image ? (
+                            <img
+                              src={cert?.organization?.logo || cert?.image}
+                              alt={cert?.organization?.name || cert?.issuer}
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <Award className="w-6 h-6 text-pink-400" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-slate-400 line-clamp-1">
+                            {cert?.organization?.name || cert?.issuer}
+                          </p>
+                          <span
+                            className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full border mt-0.5 ${levelBadgeStyle}`}
+                          >
+                            {cert?.level || cert?.difficulty || "Sertifikasi"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <span className="text-xs font-mono text-slate-400 bg-white/5 px-2.5 py-1 rounded-lg border border-white/10 shrink-0">
+                        {cert?.year || (cert?.dateIssued ? cert.dateIssued.split("-")[0] : "2024")}
+                      </span>
                     </div>
-                    <h4 className="text-lg font-bold text-white mb-1 line-clamp-1">{cert?.name || cert?.title}</h4>
-                    <p className="text-gray-300 text-sm mb-2 line-clamp-1">{cert?.organization?.name || cert?.issuer}</p>
 
-                    <span
-                      className={`inline-block text-xs font-semibold px-3 py-1 rounded-full mb-2 ${levelColors[cert?.level] || levelColors[cert?.difficulty] || "bg-gray-400 text-black"}`}
-                    >
-                      {cert?.level || cert?.difficulty}
-                    </span>
+                    {/* Certificate Title */}
+                    <h3 className="text-lg font-bold text-white group-hover:text-pink-300 transition-colors line-clamp-2 mb-2">
+                      {cert?.name || cert?.title}
+                    </h3>
 
-                    <p className="text-gray-200 text-sm mt-2 line-clamp-3">{cert?.description}</p>
+                    {/* Description preview */}
+                    <p className="text-xs text-slate-300 line-clamp-3 leading-relaxed mb-4 font-normal">
+                      {cert?.description}
+                    </p>
 
-                    <div className="mt-3 flex flex-wrap gap-1 justify-center">
-                      {cert?.tags?.slice(0, 3).map((tag, idx) => {
-                        const color = tagColors[(idx + slotIndex) % tagColors.length];
-                        return (
-                          <span
-                            key={idx}
-                            className={`inline-block text-xs font-semibold px-2 py-1 rounded-full ${color.bg} ${color.text}`}
-                          >
-                            #{tag}
-                          </span>
-                        );
-                      })}
-                      {cert?.skills?.slice(0, 2).map((skill, idx) => {
-                        const color = tagColors[(idx + (cert?.tags?.length || 0) + slotIndex) % tagColors.length];
-                        return (
-                          <span
-                            key={idx + (cert?.tags?.length || 0)}
-                            className={`inline-block text-xs font-semibold px-2 py-1 rounded-full ${color.bg} ${color.text}`}
-                          >
-                            {skill}
-                          </span>
-                        );
-                      })}
+                    {/* Skills / Tags */}
+                    <div className="flex flex-wrap gap-1.5 mb-2">
+                      {(cert?.tags || cert?.skills || []).slice(0, 3).map((tag, idx) => (
+                        <span
+                          key={idx}
+                          className="text-[11px] px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-slate-300"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t border-white/10 mt-4 flex items-center justify-between">
-                    <span className="text-pink-300 text-xs font-semibold group-hover:underline flex items-center gap-1">
-                      Lihat Detail
-                      <motion.span
-                        initial={{ x: 0 }}
-                        whileHover={{ x: 3 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        →
-                      </motion.span>
-                    </span>
-                    <span className="text-xs bg-pink-400/20 text-pink-300 px-2.5 py-0.5 rounded-full border border-pink-400/30">
-                      {cert?.year || (cert?.dateIssued ? cert.dateIssued.split("-")[0] : "Sertifikat")}
-                    </span>
+                  {/* Card Footer CTA */}
+                  <div className="pt-4 mt-2 border-t border-white/10 flex items-center justify-between text-xs font-semibold text-pink-400 group-hover:text-pink-300 transition-colors">
+                    <span className="flex items-center gap-1">Lihat Detail Kredensial</span>
+                    <span className="transform group-hover:translate-x-1 transition-transform">→</span>
                   </div>
                 </motion.div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        ))}
+              </AnimatePresence>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Footer CTA Button */}
-      <motion.div
-        className="mt-12"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-      >
+      {/* Footer CTA */}
+      <div className="mt-10">
         <Link
           to={certificates?.link || "/certificates"}
-          className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25"
+          className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 hover:opacity-95 text-white font-bold rounded-xl transition-all hover:scale-105 shadow-lg shadow-pink-500/20 active:scale-95"
         >
           <Award className="w-5 h-5" />
-          Lihat Semua Sertifikat
-          <ExternalLink className="w-4 h-4" />
+          Lihat Semua ({certList.length}) Sertifikat
+          <ExternalLink className="w-4 h-4 ml-1" />
         </Link>
-      </motion.div>
+      </div>
 
-      {/* Modal / Pop-Up dengan Navigasi */}
+      {/* Modal Dialog */}
       <AnimatePresence>
         {selectedCert && (
-          <motion.div
-            className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+            onClick={() => setSelectedCert(null)}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="cert-modal-title"
           >
             <motion.div
-              key={selectedCert.id}
-              className="bg-gradient-to-br from-pink-700 via-purple-700 to-indigo-700 rounded-3xl p-6 max-w-lg w-full text-white relative shadow-2xl ring-1 ring-pink-500/30 overflow-y-auto max-h-[90vh]"
-              initial={{ x: 50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -50, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ duration: 0.25 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-[#0d1629] border border-pink-500/30 rounded-3xl p-6 sm:p-8 text-left text-white shadow-2xl"
             >
               <button
+                type="button"
                 onClick={() => setSelectedCert(null)}
-                className="absolute top-4 right-4 text-white hover:text-pink-300"
+                className="absolute top-5 right-5 p-2 rounded-full bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-colors"
+                aria-label="Tutup dialog"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5" />
               </button>
 
-              {certList.length > 1 && (
-                <>
-                  <button
-                    onClick={() => navigateCert(-1)}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-pink-300 p-2 text-xl"
-                  >
-                    &#8592;
-                  </button>
-                  <button
-                    onClick={() => navigateCert(1)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-pink-300 p-2 text-xl"
-                  >
-                    &#8594;
-                  </button>
-                </>
+              <div className="flex items-center gap-3.5 mb-5">
+                <div className="w-14 h-14 rounded-2xl bg-slate-800 border border-white/10 flex items-center justify-center overflow-hidden shrink-0 shadow-md">
+                  {selectedCert.organization?.logo || selectedCert.image ? (
+                    <img
+                      src={selectedCert.organization?.logo || selectedCert.image}
+                      alt={selectedCert.organization?.name || selectedCert.issuer}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Award className="w-8 h-8 text-pink-400" />
+                  )}
+                </div>
+                <div>
+                  <span className="text-xs font-semibold text-pink-400 uppercase tracking-wider">
+                    {selectedCert.category || "Sertifikat Resmi"}
+                  </span>
+                  <h3 id="cert-modal-title" className="text-xl font-extrabold text-white leading-tight">
+                    {selectedCert.name || selectedCert.title}
+                  </h3>
+                  <p className="text-xs text-slate-300 mt-0.5">
+                    {selectedCert.organization?.name || selectedCert.issuer}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 mb-4 text-xs font-semibold">
+                <span className="px-3 py-1 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30">
+                  {selectedCert.level || selectedCert.difficulty || "Kompetensi"}
+                </span>
+                <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Terverifikasi
+                </span>
+                {selectedCert.year && (
+                  <span className="px-3 py-1 rounded-full bg-white/5 text-slate-300 border border-white/10 flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5" /> {selectedCert.year}
+                  </span>
+                )}
+              </div>
+
+              <div className="bg-[#091122]/80 p-4 rounded-2xl border border-white/10 mb-5 text-sm text-slate-300 leading-relaxed font-normal">
+                {selectedCert.description}
+              </div>
+
+              {(selectedCert.tags || selectedCert.skills) && (
+                <div className="mb-6">
+                  <p className="text-xs uppercase font-semibold tracking-wider text-slate-400 mb-2">
+                    Keahlian Terkait
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[...(selectedCert.tags || []), ...(selectedCert.skills || [])].map(
+                      (skill, sIdx) => (
+                        <span
+                          key={sIdx}
+                          className="text-xs px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-200"
+                        >
+                          {skill}
+                        </span>
+                      )
+                    )}
+                  </div>
+                </div>
               )}
 
-              <div className="flex items-center justify-center mb-4">
-                <img
-                  src={selectedCert.organization?.logo || selectedCert.image}
-                  alt={selectedCert.organization?.name || selectedCert.issuer}
-                  className="w-12 h-12 rounded-full shadow-lg object-cover"
-                  loading="lazy"
-                />
-              </div>
-
-              <h4 className="text-2xl font-extrabold mb-1 text-pink-200">{selectedCert.name || selectedCert.title}</h4>
-              <p className="text-gray-200 font-semibold mb-1">{selectedCert.organization?.name || selectedCert.issuer}</p>
-              <p className="text-gray-300 text-sm mb-2">
-                {selectedCert.dateIssued ? new Date(selectedCert.dateIssued).toLocaleDateString() : selectedCert.year}
-              </p>
-
-              <div className="flex flex-wrap gap-2 mb-3">
-                <span
-                  className="inline-block text-black text-xs font-semibold px-4 py-1 rounded-full"
-                  style={{ backgroundColor: selectedCert.ui?.badgeColor || selectedCert.themeColor || "#F59E0B" }}
-                >
-                  {selectedCert.level || selectedCert.difficulty}
-                </span>
-                <span
-                  className={`inline-block text-xs font-semibold px-3 py-1 rounded-full ${
-                    selectedCert.status === "active"
-                      ? "bg-green-500/60 text-black"
-                      : "bg-gray-500/60 text-white"
-                  }`}
-                >
-                  {selectedCert.status === "active" ? "Aktif" : "Expired"}
-                </span>
-                <span className="inline-block bg-purple-600/40 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                  {selectedCert.category}
-                </span>
-              </div>
-
-              <p className="text-white/90 mb-4">{selectedCert.description}</p>
-
-              <div className="mb-4 flex flex-wrap gap-2">
-                {selectedCert.tags?.map((tag, idx) => (
-                  <span
-                    key={idx}
-                    className={`inline-block text-black text-xs font-bold px-3 py-1 rounded-full ${modalTagColors[idx % modalTagColors.length]}`}
-                  >
-                    #{tag}
-                  </span>
-                ))}
-                {selectedCert.skills?.map((skill, idx) => (
-                  <span
-                    key={idx + (selectedCert.tags?.length || 0)}
-                    className={`inline-block text-black text-xs font-bold px-3 py-1 rounded-full ${modalTagColors[(idx + (selectedCert.tags?.length || 0)) % modalTagColors.length]}`}
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-
-              <div className="flex flex-wrap gap-2 mb-2">
+              <div className="flex flex-wrap gap-3 pt-3 border-t border-white/10">
                 {(selectedCert.certificateLinks?.certificate || selectedCert.urlCertificate) && (
                   <a
                     href={selectedCert.certificateLinks?.certificate || selectedCert.urlCertificate}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 bg-pink-400 text-black font-bold px-5 py-2 rounded-full hover:bg-pink-500 transition duration-300 shadow-md"
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-pink-500 hover:bg-pink-600 text-white font-bold text-sm transition-all shadow-md"
                   >
-                    Buka Sertifikat
+                    Buka Sertifikat Asli
+                    <ExternalLink className="w-4 h-4" />
                   </a>
                 )}
-                {selectedCert.certificateLinks?.portfolio && (
-                  <a
-                    href={selectedCert.certificateLinks.portfolio}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 bg-indigo-400 text-black font-bold px-5 py-2 rounded-full hover:bg-indigo-500 transition duration-300 shadow-md"
-                  >
-                    Portfolio
-                  </a>
-                )}
-                {selectedCert.certificateLinks?.video && (
-                  <a
-                    href={selectedCert.certificateLinks.video}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 bg-green-400 text-black font-bold px-5 py-2 rounded-full hover:bg-green-500 transition duration-300 shadow-md"
-                  >
-                    Video
-                  </a>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setSelectedCert(null)}
+                  className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-sm font-medium transition-colors"
+                >
+                  Tutup
+                </button>
               </div>
             </motion.div>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </section>
   );
 }
+
+export default memo(AboutCertificates);

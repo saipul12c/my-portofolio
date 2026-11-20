@@ -107,7 +107,8 @@ export const sitePagesDirectory = [
   { path: "/help/version", title: "Versi & Changelog", category: "Bantuan", desc: "Riwayat pembaruan fitur, perbaikan sistem, dan roadmap versi aplikasi." },
   { path: "/live-cs/security", title: "Keamanan Sistem", category: "Keamanan", desc: "Standar keamanan data, proteksi privasi, dan transparansi pemrosesan AI lokal." },
   { path: "/hobbies", title: "Minat & Hobi", category: "Personal", desc: "Aktivitas kegemaran seperti fotografi, coding eksperimental, dan literasi teknologi." },
-  { path: "/bahasa", title: "Kemampuan Bahasa", category: "Personal", desc: "Penguasaan multibahasa meliputi Bahasa Indonesia, Bahasa Banjar, Inggris, dan Arab." },
+  { path: "/bahasa", title: "Kemampuan Bahasa & Teknologi", category: "Personal", desc: "Katalog penguasaan bahasa komunikasi (Indonesia, Inggris, Jawa, Jepang) dan ekosistem teknologi modern (React, JavaScript, Python, TypeScript, Docker, Vue, Go, SQL, dll.) dengan penjelasan detail penguasaan." },
+  { path: "/bahasa/detail/:slug", title: "Detail Bahasa & Teknologi", category: "Personal", desc: "Halaman spesifik yang memuat tingkat kemahiran, framework, tools, kelebihan, kekurangan, serta proyek nyata terkait." },
   { path: "/coming-soon", title: "Fitur Mendatang (Roadmap)", category: "Inovasi", desc: "Platform baru yang sedang dikembangkan seperti CreativeHub dan livestreaming." },
   { path: "/contact", title: "Hubungi Penulis / Admin", category: "Kontak", desc: "Formulir interaktif untuk mengirimkan pesan, tawaran kolaborasi, atau feedback." }
 ];
@@ -168,6 +169,36 @@ export const getUnifiedKnowledgeBase = () => {
   const galleryShorts = extractArray(galleryShortsData);
   const galleryVideos = extractArray(galleryVideosData);
 
+  const slugifyHelper = (text = '') =>
+    text.toString().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-');
+
+  const bahasaSehariHariList = extractArray(languagesData?.bahasaSehariHari);
+  const bahasaPemrogramanList = extractArray(languagesData?.bahasaPemrograman);
+  const allLanguagesList = [
+    ...bahasaSehariHariList.map((item) => ({
+      ...item,
+      category: 'bahasa_sehari_hari',
+      categoryLabel: 'Bahasa Sehari-hari',
+      type: 'bahasa',
+      name: item.nama,
+      title: item.nama,
+      slug: slugifyHelper(item.nama),
+      detailUrl: `/bahasa/detail/${slugifyHelper(item.nama)}`,
+      desc: item.deskripsi || item.penjelasan,
+    })),
+    ...bahasaPemrogramanList.map((item) => ({
+      ...item,
+      category: 'bahasa_pemrograman',
+      categoryLabel: 'Teknologi & Pemrograman',
+      type: 'teknologi',
+      name: item.nama,
+      title: item.nama,
+      slug: slugifyHelper(item.nama),
+      detailUrl: `/bahasa/detail/${slugifyHelper(item.nama)}`,
+      desc: item.deskripsi || item.penjelasan,
+    })),
+  ];
+
   return {
     profile: profileData || {},
     authorProfiles: authorProfilesList,
@@ -186,7 +217,13 @@ export const getUnifiedKnowledgeBase = () => {
     interests: interestsData || {},
     aiBase: aiBaseData || {},
     testimonials: extractArray(testimonialsData, 'testimonials'),
-    languages: extractArray(languagesData, 'bahasa'),
+    languages: allLanguagesList,
+    languagesDetail: {
+      sehariHari: bahasaSehariHariList,
+      pemrograman: bahasaPemrogramanList,
+      all: allLanguagesList,
+      metadata: languagesData?.metadata || {}
+    },
     education: extractArray(educationData, 'courses'),
     blogs: runtimeBlogs.length > 0 ? runtimeBlogs : extractArray(blogsData, 'blogs'),
     photos: extractArray(photosData, 'photos'),
@@ -375,16 +412,28 @@ export const findRelatedEntities = (keyword = '') => {
     }
   }
 
-  // 15. Site Pages Directory
+  // 15. Languages & Technologies (Kemampuan Bahasa & Teknologi /bahasa)
+  const matchedLanguages = (kb.languages || []).filter(l => 
+    matchText(l.nama) || matchText(l.name) || matchText(l.deskripsi) || matchText(l.penjelasan) ||
+    matchArray(l.kemampuan) || matchArray(l.framework) || matchArray(l.tools)
+  );
+
+  // 16. Site Pages Directory
   const matchedPages = (kb.sitePages || []).filter(p => 
     matchText(p.title) || matchText(p.desc) || matchText(p.path) || matchText(p.category)
+  );
+
+  // 17. Hobbies & Minat Personal (/hobbies)
+  const matchedHobbies = (kb.hobbies || []).filter(h => 
+    matchText(h.title) || matchText(h.desc) || matchText(h.category) ||
+    matchArray(h.metadata?.tools) || matchText(h.metadata?.difficulty)
   );
 
   const totalMatches = matchedProjects.length + matchedBlogs.length + matchedSkills.length + 
                        matchedCertificates.length + matchedTestimonials.length + matchedEducation.length +
                        matchedExperiences.length + matchedSpecializations.length + matchedAuthorProfiles.length +
                        matchedGallery.length + matchedDiscussion.length + kknMatches.length + visiMatches.length + 
-                       matchedPages.length + matchedFAQ.length;
+                       matchedLanguages.length + matchedPages.length + matchedHobbies.length + matchedFAQ.length;
 
   return {
     keyword: k,
@@ -394,6 +443,8 @@ export const findRelatedEntities = (keyword = '') => {
     blogs: matchedBlogs,
     skills: matchedSkills,
     specializations: matchedSpecializations,
+    languages: matchedLanguages,
+    hobbies: matchedHobbies,
     experiences: matchedExperiences,
     authorProfiles: matchedAuthorProfiles,
     gallery: matchedGallery,

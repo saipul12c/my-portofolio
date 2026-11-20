@@ -1,20 +1,44 @@
 // SoftSkillsSearch.jsx
-import { useState, useEffect, useRef, useMemo, memo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Clock, Sparkles, ArrowRight, Bot, History, Trash2 } from "lucide-react";
+import { highlightText } from "./SoftSkillsUtils";
 
-const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onOpenAI }) => {
+const AI_SUGGESTIONS = [
+  { text: "Bagaimana menilai keberhasilan pembelajaran digital?", color: "from-cyan-400 to-blue-500" },
+  { text: "Teknologi apa yang paling efektif untuk mengajar?", color: "from-purple-400 to-pink-500" },
+  { text: "Bagaimana menjadi guru yang kreatif di era digital?", color: "from-orange-400 to-yellow-500" },
+];
+
+const TYPEWRITER_PHRASES = [
+  "Bagaimana menjadi guru yang kreatif?",
+  "Cara meningkatkan kemampuan komunikasi...",
+  "Cari kreativitas...",
+  "Tips mengelola waktu dengan efektif...",
+  "Cari teamwork...",
+  "Apa itu growth mindset?",
+  "Cari kepemimpinan...",
+];
+
+const SoftSkillsSearch = memo(({
+  skills = [],
+  searchValue = "",
+  categoryValue = "All",
+  onSearchChange,
+  onCategoryChange,
+  onOpenAI
+}) => {
   const searchRef = useRef(null);
   const historyRef = useRef(null);
-  const [search, setSearch] = useState("");
+  const [localSearch, setLocalSearch] = useState(searchValue);
   const [suggestions, setSuggestions] = useState([]);
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
-  const [categoryFilter, setCategoryFilter] = useState("All");
-  const [placeholderText, setPlaceholderText] = useState("");
   const [ghostText, setGhostText] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+
   const [recentSearch, setRecentSearch] = useState(() => {
+    if (typeof window === "undefined") return [];
     try {
       const v = localStorage.getItem("ss_recent_search");
       return v ? JSON.parse(v) : [];
@@ -23,63 +47,55 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
     }
   });
 
-  const typeTimeoutRef = useRef(null);
-  const typeStateRef = useRef({ currentPhrase: 0, currentChar: 0, deleting: false });
-  const debounceRef = useRef(null);
-
-  // Suggestions for AI (from Header)
-  const aiSuggestions = [
-    { text: "Bagaimana menilai keberhasilan pembelajaran digital?", color: "from-cyan-400 to-blue-500" },
-    { text: "Teknologi apa yang paling efektif untuk mengajar?", color: "from-purple-400 to-pink-500" },
-    { text: "Bagaimana menjadi guru yang kreatif di era digital?", color: "from-orange-400 to-yellow-500" },
-  ];
-
-  // Combined typewriter phrases
+  // Sync with prop if changed from outside
   useEffect(() => {
-    const phrases = [
-      "Bagaimana menjadi guru yang kreatif?",
-      "Cara meningkatkan kemampuan komunikasi...",
-      "Cari kreativitas...",
-      "Tips mengelola waktu dengan efektif...",
-      "Cari teamwork...",
-      "Apa itu growth mindset?",
-      "Cari kepemimpinan...",
-    ];
+    setLocalSearch(searchValue);
+  }, [searchValue]);
+
+  // HIGH-PERFORMANCE TYPEWRITER EFFECT:
+  // Directly updates input.placeholder via DOM ref so ZERO React re-renders occur!
+  useEffect(() => {
+    let currentPhrase = 0;
+    let currentChar = 0;
+    let deleting = false;
+    let timer = null;
 
     const type = () => {
-      const state = typeStateRef.current;
-      const fullText = phrases[state.currentPhrase];
-
-      if (!state.deleting) {
-        setPlaceholderText(fullText.slice(0, state.currentChar + 1));
-        state.currentChar++;
-        if (state.currentChar === fullText.length) {
-          state.deleting = true;
-          typeTimeoutRef.current = setTimeout(type, 1800);
+      const fullText = TYPEWRITER_PHRASES[currentPhrase];
+      if (!deleting) {
+        currentChar++;
+        if (searchRef.current && !searchRef.current.value) {
+          searchRef.current.placeholder = fullText.slice(0, currentChar);
+        }
+        if (currentChar === fullText.length) {
+          deleting = true;
+          timer = setTimeout(type, 2000);
           return;
         }
       } else {
-        setPlaceholderText(fullText.slice(0, state.currentChar - 1));
-        state.currentChar--;
-        if (state.currentChar === 0) {
-          state.deleting = false;
-          state.currentPhrase = (state.currentPhrase + 1) % phrases.length;
+        currentChar--;
+        if (searchRef.current && !searchRef.current.value) {
+          searchRef.current.placeholder = fullText.slice(0, currentChar) || "Cari skill...";
+        }
+        if (currentChar === 0) {
+          deleting = false;
+          currentPhrase = (currentPhrase + 1) % TYPEWRITER_PHRASES.length;
         }
       }
-      typeTimeoutRef.current = setTimeout(type, state.deleting ? 100 : 150);
+      timer = setTimeout(type, deleting ? 80 : 130);
     };
 
-    type();
+    timer = setTimeout(type, 150);
 
     return () => {
-      if (typeTimeoutRef.current) clearTimeout(typeTimeoutRef.current);
+      if (timer) clearTimeout(timer);
     };
   }, []);
 
-  // Keyboard Shortcut: Ctrl/Cmd+F untuk fokus ke search bar
+  // Keyboard Shortcut: Ctrl/Cmd + F to focus search bar
   useEffect(() => {
     const handleShortcut = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "f") {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "f") {
         e.preventDefault();
         searchRef.current?.focus();
       }
@@ -88,96 +104,76 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
     return () => window.removeEventListener("keydown", handleShortcut);
   }, []);
 
-  // Filter with debounce (performance)
+  // Debounced search notification to parent
   useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      const q = search.trim().toLowerCase();
+    const handler = setTimeout(() => {
+      onSearchChange?.(localSearch);
 
-      const filtered = skills.filter((skill) => {
-        if (!skill) return false;
-        const name = (skill.name || "").toLowerCase();
-        const desc = (skill.description || "").toLowerCase();
-        const cat = (skill.category || "").toLowerCase();
-        const labels = (skill.labels || []).map((l) => String(l).toLowerCase());
-
-        const matchSearch =
-          q.length === 0 ||
-          name.includes(q) ||
-          desc.includes(q) ||
-          cat.includes(q) ||
-          labels.some((l) => l.includes(q));
-
-        const matchCategory =
-          categoryFilter === "All" ||
-          (skill.category || "").toLowerCase() === categoryFilter.toLowerCase();
-
-        return matchSearch && matchCategory;
-      });
-
-      onFilterChange?.(filtered, search);
-
-      // Ghost text auto-complete (first suggestion)
+      // Compute ghost text
+      const q = localSearch.trim().toLowerCase();
       if (q.length > 0) {
-        const exactSuggestion = skills.find((s) =>
-          (s.name || "").toLowerCase().startsWith(q)
-        );
-        setGhostText(exactSuggestion ? exactSuggestion.name : "");
+        const match = skills.find((s) => (s.name || "").toLowerCase().startsWith(q));
+        setGhostText(match ? match.name : "");
       } else {
         setGhostText("");
       }
-    }, 220);
+    }, 200);
 
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [search, categoryFilter, skills, onFilterChange]);
+    return () => clearTimeout(handler);
+  }, [localSearch, onSearchChange, skills]);
 
-  // Suggestions (top 6) based on name matching
+  // Suggestions (top 6 matches)
   useEffect(() => {
-    if (search.trim().length === 0) {
+    const q = localSearch.trim().toLowerCase();
+    if (!q) {
       setSuggestions([]);
       setActiveSuggestion(-1);
       return;
     }
     const matched = skills
-      .filter((s) => (s.name || "").toLowerCase().includes(search.toLowerCase()))
+      .filter((s) => (s.name || "").toLowerCase().includes(q))
       .slice(0, 6);
     setSuggestions(matched);
     setActiveSuggestion(matched.length > 0 ? 0 : -1);
-  }, [search, skills]);
+  }, [localSearch, skills]);
 
-  // Persist recentSearch to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem("ss_recent_search", JSON.stringify(recentSearch));
-    } catch {
-      // intentionally left blank
-    }
-  }, [recentSearch]);
+  // Persist recent search
+  const saveRecentSearch = useCallback((text) => {
+    if (!text || typeof text !== "string") return;
+    const clean = text.trim();
+    if (!clean) return;
 
-  // Suggestion selection helper
-  const handleSelectSuggestion = (text) => {
-    setSearch(text);
+    setRecentSearch((prev) => {
+      const filtered = prev.filter((item) => item.toLowerCase() !== clean.toLowerCase());
+      const updated = [clean, ...filtered.slice(0, 4)];
+      try {
+        localStorage.setItem("ss_recent_search", JSON.stringify(updated));
+      } catch {
+        // ignore
+      }
+      return updated;
+    });
+  }, []);
+
+  const handleSelectSuggestion = useCallback((text) => {
+    setLocalSearch(text);
+    onSearchChange?.(text);
     setSuggestions([]);
     setShowSuggestions(false);
     setGhostText("");
-    if (!recentSearch.includes(text)) {
-      setRecentSearch((prev) => [text, ...prev.slice(0, 4)]);
-    }
+    saveRecentSearch(text);
     setTimeout(() => searchRef.current?.blur(), 40);
-  };
+  }, [onSearchChange, saveRecentSearch]);
 
-  // Tutup riwayat saat klik di luar
+  // Click outside to close history dropdown
   useEffect(() => {
+    if (!showHistory) return;
     const handleClickOutside = (e) => {
       if (historyRef.current && !historyRef.current.contains(e.target)) {
         setShowHistory(false);
       }
     };
-    if (showHistory) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
+    document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showHistory]);
 
@@ -191,15 +187,17 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
       setActiveSuggestion((p) => Math.max(p - 1, 0));
     } else if (e.key === "Enter") {
       if (activeSuggestion >= 0 && suggestions[activeSuggestion]) {
+        e.preventDefault();
         handleSelectSuggestion(suggestions[activeSuggestion].name);
-      } else {
-        handleSelectSuggestion(search);
+      } else if (localSearch.trim()) {
+        saveRecentSearch(localSearch);
+        setShowSuggestions(false);
       }
     } else if (e.key === "Escape") {
       setShowSuggestions(false);
       setShowHistory(false);
     } else if (e.key === "Tab") {
-      if (ghostText && ghostText.toLowerCase().startsWith(search.toLowerCase())) {
+      if (ghostText && ghostText.toLowerCase().startsWith(localSearch.toLowerCase())) {
         e.preventDefault();
         handleSelectSuggestion(ghostText);
       } else if (suggestions[0]) {
@@ -219,7 +217,7 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
 
   return (
     <div className="w-full max-w-5xl flex flex-col gap-6 mb-12">
-      <div className="relative flex flex-col sm:flex-row items-center gap-6">
+      <div className="relative flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
         {/* Search Input Layer */}
         <div className="relative w-full sm:w-2/3">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 z-20 pointer-events-none" />
@@ -227,37 +225,38 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
           {/* Main Input Container */}
           <div className="relative w-full">
             {/* Ghost text overlay */}
-            {ghostText && search && ghostText.toLowerCase().startsWith(search.toLowerCase()) && (
+            {ghostText && localSearch && ghostText.toLowerCase().startsWith(localSearch.toLowerCase()) && (
               <div className="absolute inset-0 pl-12 pr-[140px] py-3.5 text-sm pointer-events-none flex items-center overflow-hidden font-normal z-10 select-none">
-                <span className="invisible">{search}</span>
-                <span className="text-gray-500/50">{ghostText.slice(search.length)}</span>
+                <span className="invisible">{localSearch}</span>
+                <span className="text-gray-500/50">{ghostText.slice(localSearch.length)}</span>
               </div>
             )}
             <input
               ref={searchRef}
               type="text"
-              placeholder={placeholderText || "Cari skill..."}
+              placeholder="Cari skill..."
               className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-[140px] py-3.5 text-sm text-white focus:border-cyan-400 outline-none z-10 transition-all relative"
               style={{ caretColor: "#22d3ee" }}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={localSearch}
+              onChange={(e) => setLocalSearch(e.target.value)}
               onKeyDown={handleKeyDown}
               onFocus={() => setShowSuggestions(true)}
               onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-              aria-label="Cari skill"
+              aria-label="Cari soft skill"
             />
 
             {/* Action Buttons inside Search Bar */}
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5 z-20">
-              {search && (
+              {localSearch && (
                 <button
                   type="button"
                   onClick={() => {
-                    setSearch("");
+                    setLocalSearch("");
+                    onSearchChange?.("");
                     setSuggestions([]);
                     setGhostText("");
                   }}
-                  className="px-2 py-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors text-xs"
+                  className="px-2 py-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors text-xs cursor-pointer"
                   aria-label="Bersihkan pencarian"
                 >
                   ✕
@@ -266,8 +265,9 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
 
               <button
                 type="button"
-                onClick={() => onOpenAI?.(search)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 hover:text-white transition-all border border-cyan-500/30 shadow-sm"
+                onClick={() => onOpenAI?.(localSearch)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 hover:text-white transition-all border border-cyan-500/30 shadow-sm cursor-pointer"
+                title="Tanyakan kepada Asisten AI"
               >
                 <Bot className="w-3.5 h-3.5" />
                 <span className="font-semibold text-[10px] uppercase tracking-wider">Tanya AI</span>
@@ -287,7 +287,6 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
                 {suggestions.map((s, i) => (
                   <motion.li
                     key={s.id || `${s.name}-${i}`}
-                    layout
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => handleSelectSuggestion(s.name)}
                     onMouseEnter={() => setActiveSuggestion(i)}
@@ -305,7 +304,7 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
                       )}
                       <span
                         dangerouslySetInnerHTML={{
-                          __html: highlightText(s.name, search),
+                          __html: highlightText(s.name, localSearch),
                         }}
                       />
                     </div>
@@ -324,8 +323,8 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
         <div className="relative w-full sm:w-1/3">
           <select
             className="w-full p-3.5 rounded-2xl bg-gray-800 border border-white/10 text-white focus:border-cyan-400 outline-none cursor-pointer text-sm"
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
+            value={categoryValue}
+            onChange={(e) => onCategoryChange?.(e.target.value)}
             aria-label="Filter kategori"
           >
             <option value="All">🔥 Semua Kategori</option>
@@ -340,26 +339,26 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
         </div>
       </div>
 
-      {/* Suggestions & History (from Header) */}
+      {/* Suggestions & History */}
       <motion.div 
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full flex flex-wrap items-center justify-between gap-4 px-2"
+        className="w-full flex flex-wrap items-center justify-between gap-4 px-1"
       >
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 text-yellow-400/80">
-            <Sparkles className="w-4 h-4" />
+          <div className="flex items-center gap-1.5 text-yellow-400/80 select-none">
+            <Sparkles className="w-3.5 h-3.5" />
             <span className="text-[11px] font-bold uppercase tracking-wider opacity-70">Saran:</span>
           </div>
           
           <div className="flex flex-wrap gap-2">
-            {aiSuggestions.map((s, i) => (
+            {AI_SUGGESTIONS.map((s, i) => (
               <button
                 key={i}
                 onClick={() => onOpenAI?.(s.text)}
-                className={`text-[11px] font-medium px-4 py-2 rounded-full bg-gradient-to-r ${s.color} text-white shadow-lg hover:scale-105 transition-transform truncate max-w-[200px] sm:max-w-none`}
+                className={`text-[11px] font-medium px-3.5 py-1.5 rounded-full bg-gradient-to-r ${s.color} text-white shadow-md hover:scale-105 transition-transform truncate max-w-[200px] sm:max-w-none cursor-pointer`}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                    <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
                    {s.text}
                 </div>
@@ -373,13 +372,13 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
           <button 
             type="button"
             onClick={() => setShowHistory((prev) => !prev)}
-            className={`flex items-center gap-2 transition-colors py-1 px-2 rounded-lg ${
+            className={`flex items-center gap-1.5 transition-colors py-1 px-2.5 rounded-lg cursor-pointer ${
               showHistory ? "text-cyan-400 bg-cyan-500/10" : "text-gray-500 hover:text-gray-300"
             }`}
             aria-expanded={showHistory}
             aria-label="Riwayat pencarian"
           >
-            <History className="w-4 h-4" />
+            <History className="w-3.5 h-3.5" />
             <span className="text-[11px] font-bold uppercase tracking-wider">Riwayat</span>
             {recentSearch.length > 0 && (
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
@@ -404,9 +403,13 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
                       type="button"
                       onClick={() => {
                         setRecentSearch([]);
-                        localStorage.removeItem("ss_recent_search");
+                        try {
+                          localStorage.removeItem("ss_recent_search");
+                        } catch {
+                          // ignore
+                        }
                       }}
-                      className="text-[10px] text-red-400 hover:text-red-300 flex items-center gap-1"
+                      className="text-[10px] text-red-400 hover:text-red-300 flex items-center gap-1 cursor-pointer"
                     >
                       <Trash2 className="w-3 h-3" />
                       Hapus
@@ -425,10 +428,11 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
                         <button
                           type="button"
                           onClick={() => {
-                            setSearch(item);
+                            setLocalSearch(item);
+                            onSearchChange?.(item);
                             setShowHistory(false);
                           }}
-                          className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs text-gray-300 hover:bg-cyan-500/20 hover:text-white transition-colors truncate flex items-center gap-2"
+                          className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs text-gray-300 hover:bg-cyan-500/20 hover:text-white transition-colors truncate flex items-center gap-2 cursor-pointer"
                         >
                           <Clock className="w-3 h-3 text-gray-500 shrink-0" />
                           <span className="truncate">{item}</span>
@@ -446,4 +450,5 @@ const SoftSkillsSearch = memo(({ skills = [], onFilterChange, highlightText, onO
   );
 });
 
+SoftSkillsSearch.displayName = "SoftSkillsSearch";
 export default SoftSkillsSearch;

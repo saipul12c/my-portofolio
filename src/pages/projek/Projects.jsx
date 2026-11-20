@@ -1,84 +1,12 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Rocket, Star, BookOpen, Award, Sparkles, ArrowRight, ExternalLink } from "lucide-react";
+import { Rocket, Star, Sparkles, ArrowRight } from "lucide-react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import data from "../../data/projects.json";
-import certificatesData from "../../data/sertif/certificates.json";
 import { APPS_DATA } from "../daftarlistApp/data/appsData";
 import { useErrorAuth } from "../../context/useErrorAuth";
 import ProjectPopup from "./ProjectPopup";
-import CoursePopup from "./CoursePopup";
 import ProjectAI from "./pencarian/AI/ProjectAI";
-
-// Memoized CourseCard component untuk menampilkan kartu kursus
-const CourseCard = ({ course, index, onSelect }) => (
-  <motion.div
-    key={index}
-    layout
-    className="relative group bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/10 rounded-xl sm:rounded-2xl overflow-hidden hover:border-cyan-400 transition-all duration-300 shadow-lg h-full hover:shadow-cyan-400/20 cursor-pointer"
-    whileHover={{ scale: 1.03, y: -5 }}
-    onClick={() => onSelect(course)}
-  >
-    {/* Header dengan gradient */}
-    <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-b border-white/10 p-4 sm:p-6">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1">
-          <h3 className="text-base sm:text-lg font-bold text-white line-clamp-2 group-hover:text-cyan-300 transition-colors">
-            {course.title || course.name}
-          </h3>
-          <p className="text-xs sm:text-sm text-cyan-300 mt-1">{course.provider || course.issuer}</p>
-        </div>
-        <div className="text-2xl sm:text-3xl flex-shrink-0">{course.logo || "🎓"}</div>
-      </div>
-    </div>
-
-    {/* Content */}
-    <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-      {/* Duration & Level */}
-      <div className="flex flex-wrap gap-2">
-        <span className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 bg-cyan-500/20 text-cyan-300 text-xs sm:text-sm rounded-full border border-cyan-400/30 font-medium">
-          ⏱️ {course.duration}
-        </span>
-        <span className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 bg-blue-500/20 text-blue-300 text-xs sm:text-sm rounded-full border border-blue-400/30 font-medium">
-          📚 {course.level}
-        </span>
-      </div>
-
-      {/* Tahun */}
-      <p className="text-xs sm:text-sm text-gray-400">Tahun: <span className="text-cyan-300 font-semibold">{course.year}</span></p>
-
-      {/* Deskripsi */}
-      <p className="text-xs sm:text-sm text-gray-300 line-clamp-3">
-        {course.description}
-      </p>
-
-      {/* Skills */}
-      <div className="space-y-2">
-        <p className="text-xs font-semibold text-gray-300 uppercase tracking-wider">Keahlian yang dipelajari:</p>
-        <div className="flex flex-wrap gap-1.5">
-          {course.skills_learned.slice(0, 3).map((skill, idx) => (
-            <span key={idx} className="text-xs px-2 py-1 bg-purple-500/20 text-purple-300 rounded-md border border-purple-400/20">
-              {skill}
-            </span>
-          ))}
-          {course.skills_learned.length > 3 && (
-            <span className="text-xs px-2 py-1 bg-gray-500/20 text-gray-300 rounded-md border border-gray-400/20">
-              +{course.skills_learned.length - 3} lagi
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Certificate Badge */}
-      {(course.certificate || course.verified) && (
-        <div className="flex items-center gap-2 pt-2 border-t border-white/10">
-          <Award className="w-4 h-4 text-yellow-400" />
-          <span className="text-xs sm:text-sm text-yellow-300 font-semibold">Bersertifikat</span>
-        </div>
-      )}
-    </div>
-  </motion.div>
-);
 
 // Memoized ProjectCard component untuk prevent unnecessary re-renders
 const ProjectCard = ({ project, isSelected, labelColors, onSelect, renderStars }) => (
@@ -131,7 +59,6 @@ export default function Projects() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [selectedProject, setSelectedProject] = useState(null);
-  const [selectedCourse, setSelectedCourse] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isFromUrl, setIsFromUrl] = useState(false);
 
@@ -139,7 +66,6 @@ export default function Projects() {
   const { id } = useParams();
   const { setAuthorizedError } = useErrorAuth();
   const { projects = [], categories = [], labelColors = {} } = data;
-  const coursesList = useMemo(() => certificatesData.certificates || [], []);
 
   const isMaintenance = false;
 
@@ -387,12 +313,6 @@ export default function Projects() {
         renderStars={renderStars}
       />
 
-      {/* 📚 CoursePopup untuk detail kursus */}
-      <CoursePopup
-        selectedCourse={selectedCourse}
-        onClose={() => setSelectedCourse(null)}
-      />
-
       {/* 🚀 Section Aplikasi & Web Tools Interaktif (App Hub) */}
       <motion.div
         className="w-full mt-16 sm:mt-20 md:mt-24 pt-12 sm:pt-16 md:pt-20 border-t border-white/10"
@@ -491,104 +411,6 @@ export default function Projects() {
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
-      </motion.div>
-
-      {/* 📚 Section Kursus & Pelatihan Professional */}
-      <motion.div
-        className="w-full mt-16 sm:mt-20 md:mt-24 pt-12 sm:pt-16 md:pt-20 border-t border-white/10"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-      >
-        {/* Header Section Kursus */}
-        <motion.div
-          className="text-center max-w-3xl mx-auto space-y-3 sm:space-y-4 md:space-y-6 mb-10 sm:mb-12 md:mb-16"
-          initial={{ opacity: 0, y: -30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
-          <h2 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold bg-gradient-to-r from-blue-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent flex justify-center items-center gap-2 sm:gap-3 flex-wrap">
-            <BookOpen className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10 text-blue-400 flex-shrink-0" />
-            <span>Kursus & Pelatihan Professional</span>
-          </h2>
-          <p className="text-gray-300 text-xs sm:text-sm md:text-lg lg:text-xl leading-relaxed px-2">
-            Koleksi <span className="text-cyan-400 font-semibold">pelatihan profesional</span> dan{" "}
-            <span className="text-blue-400 font-semibold">sertifikasi</span> yang telah saya
-            {" "}<span className="text-emerald-400 font-semibold">ikuti</span> untuk pengembangan diri berkelanjutan.
-          </p>
-        </motion.div>
-
-        {/* Grid Kursus */}
-        {coursesList && coursesList.length > 0 ? (
-          <motion.div
-            className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 w-full max-w-7xl mx-auto"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            {coursesList.map((course, index) => (
-              <CourseCard key={course.id || index} course={course} index={index} onSelect={setSelectedCourse} />
-            ))}
-          </motion.div>
-        ) : (
-          <p className="text-gray-400 text-center mt-12 sm:mt-16 text-sm sm:text-base">
-            Data kursus tidak tersedia 😢
-          </p>
-        )}
-
-        {/* Stats Cards */}
-        {coursesList && coursesList.length > 0 && (
-          <motion.div
-            className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mt-10 sm:mt-12 md:mt-16 max-w-7xl mx-auto"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <motion.div
-              className="bg-gradient-to-br from-blue-500/20 to-blue-500/10 border border-blue-400/30 rounded-lg sm:rounded-xl p-4 sm:p-6 text-center"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="text-2xl sm:text-3xl font-bold text-blue-300">
-                {coursesList.length}
-              </div>
-              <p className="text-xs sm:text-sm text-gray-300 mt-2">Total Kursus</p>
-            </motion.div>
-
-            <motion.div
-              className="bg-gradient-to-br from-cyan-500/20 to-cyan-500/10 border border-cyan-400/30 rounded-lg sm:rounded-xl p-4 sm:p-6 text-center"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="text-2xl sm:text-3xl font-bold text-cyan-300">
-                {coursesList.filter(c => c.certificate || c.verified).length}
-              </div>
-              <p className="text-xs sm:text-sm text-gray-300 mt-2">Bersertifikat</p>
-            </motion.div>
-
-            <motion.div
-              className="bg-gradient-to-br from-purple-500/20 to-purple-500/10 border border-purple-400/30 rounded-lg sm:rounded-xl p-4 sm:p-6 text-center"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="text-2xl sm:text-3xl font-bold text-purple-300">
-                {new Set(coursesList.flatMap(c => c.skills_learned || c.tags || [])).size}
-              </div>
-              <p className="text-xs sm:text-sm text-gray-300 mt-2">Keahlian Dipelajari</p>
-            </motion.div>
-
-            <motion.div
-              className="bg-gradient-to-br from-emerald-500/20 to-emerald-500/10 border border-emerald-400/30 rounded-lg sm:rounded-xl p-4 sm:p-6 text-center"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="text-2xl sm:text-3xl font-bold text-emerald-300">
-                {Math.ceil(coursesList.reduce((sum, c) => sum + (parseInt(c.duration) || 0), 0) / 10)}0h
-              </div>
-              <p className="text-xs sm:text-sm text-gray-300 mt-2">Total Jam Pelatihan</p>
-            </motion.div>
-          </motion.div>
-        )}
       </motion.div>
     </main>
   );

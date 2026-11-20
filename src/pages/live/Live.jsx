@@ -260,11 +260,31 @@ function Live() {
         return;
       }
 
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from('users')
         .select('*')
         .eq('id', authUser.id)
         .maybeSingle();
+
+      // Self-Healing: Jika profil di public.users belum ada, sinkronkan otomatis
+      if (!data) {
+        try {
+          const { data: healed } = await supabase
+            .from('users')
+            .upsert({
+              id: authUser.id,
+              email: authUser.email,
+              nama: authUser.user_metadata?.nama || authUser.email.split('@')[0],
+              role: 'USER',
+              status: 'aktif'
+            }, { onConflict: 'id' })
+            .select()
+            .maybeSingle();
+          if (healed) data = healed;
+        } catch (healErr) {
+          console.warn('Auto-healing profile in Live.jsx failed:', healErr);
+        }
+      }
 
       // Handle banned or deactivated account (ONLY if profile data is available)
       if (data) {

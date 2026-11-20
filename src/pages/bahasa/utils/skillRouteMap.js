@@ -43,7 +43,7 @@ export const skillRouteMap = {
 
   // Teknologi & Pemrograman
   "JavaScript": {
-    relatedPages: ["/projects", "/blog"],
+    relatedPages: ["/projects", "/daftar-aplikasi", "/blog"],
     category: "programming",
     resourceLinks: {
       documentation: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
@@ -52,7 +52,7 @@ export const skillRouteMap = {
     }
   },
   "Python": {
-    relatedPages: ["/projects", "/blog"],
+    relatedPages: ["/projects", "/daftar-aplikasi", "/blog"],
     category: "programming",
     resourceLinks: {
       documentation: "https://docs.python.org/",
@@ -61,7 +61,7 @@ export const skillRouteMap = {
     }
   },
   "React": {
-    relatedPages: ["/projects", "/blog"],
+    relatedPages: ["/projects", "/daftar-aplikasi", "/blog"],
     category: "programming",
     resourceLinks: {
       documentation: "https://react.dev",
@@ -70,7 +70,7 @@ export const skillRouteMap = {
     }
   },
   "Java": {
-    relatedPages: ["/projects", "/blog"],
+    relatedPages: ["/projects", "/daftar-aplikasi", "/blog"],
     category: "programming",
     resourceLinks: {
       documentation: "https://docs.oracle.com/javase/",
@@ -79,7 +79,7 @@ export const skillRouteMap = {
     }
   },
   "PHP": {
-    relatedPages: ["/projects", "/blog"],
+    relatedPages: ["/projects", "/daftar-aplikasi", "/blog"],
     category: "programming",
     resourceLinks: {
       documentation: "https://www.php.net/manual/",
@@ -88,7 +88,7 @@ export const skillRouteMap = {
     }
   },
   "SQL": {
-    relatedPages: ["/projects"],
+    relatedPages: ["/projects", "/daftar-aplikasi"],
     category: "database",
     resourceLinks: {
       documentation: "https://www.w3schools.com/sql/",
@@ -103,7 +103,7 @@ export const skillRouteMap = {
  */
 export const getSkillMapping = (skillName) => {
   return skillRouteMap[skillName] || {
-    relatedPages: ["/projects", "/blog"],
+    relatedPages: ["/projects", "/daftar-aplikasi", "/blog"],
     category: "general",
     resourceLinks: {
       documentation: null,

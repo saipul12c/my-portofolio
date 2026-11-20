@@ -1,6 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import { X, ExternalLink, Code, Users, Calendar, ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
+import { getTechLanguageInfo } from "../../utils/techRouteHelper";
 
 const ProjectPopup = ({
   selectedProject,
@@ -326,18 +328,28 @@ const ProjectPopup = ({
                           <h4 className="text-sm font-semibold text-white">Teknologi</h4>
                         </div>
                         <div className="flex gap-2 flex-wrap">
-                          {selectedProject.tech.map((tech, i) => (
-                            <motion.span
-                              key={i}
-                              className="px-2 py-1 text-xs rounded-full border border-cyan-400/30 bg-cyan-500/20 text-cyan-300 backdrop-blur-sm"
-                              initial={{ opacity: 0, scale: 0.8 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              transition={{ delay: 0.6 + i * 0.05 }}
-                              whileHover={{ scale: 1.05 }}
-                            >
-                              {tech}
-                            </motion.span>
-                          ))}
+                          {selectedProject.tech.map((tech, i) => {
+                            const techInfo = getTechLanguageInfo(tech);
+                            return (
+                              <motion.div
+                                key={i}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.6 + i * 0.05 }}
+                                whileHover={{ scale: 1.05 }}
+                              >
+                                <Link
+                                  to={techInfo.url}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="px-2.5 py-1 text-xs rounded-full border border-cyan-400/30 bg-cyan-500/20 hover:bg-cyan-500/40 hover:border-cyan-400 text-cyan-300 hover:text-white backdrop-blur-sm inline-flex items-center gap-1 transition-all"
+                                  title={techInfo.found ? `Lihat detail teknologi ${tech}` : `Cari ${tech} di halaman Bahasa`}
+                                >
+                                  <span>{tech}</span>
+                                  <span className="text-[10px] opacity-70">↗</span>
+                                </Link>
+                              </motion.div>
+                            );
+                          })}
                         </div>
                       </motion.div>
                     )}

@@ -1,74 +1,41 @@
+import React, { memo } from "react";
 import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 
-export default function LoadingScreen() {
+function LoadingScreen() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0f172a] text-white relative overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-0 left-0 w-72 h-72 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-10 right-10 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#0f172a] text-white relative overflow-hidden">
+      {/* Background Ambient Glow */}
+      <div className="absolute inset-0 -z-10 pointer-events-none">
+        <div className="absolute top-1/4 left-1/3 -translate-x-1/2 w-80 h-80 bg-cyan-500/15 rounded-full blur-[100px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/3 w-80 h-80 bg-purple-500/15 rounded-full blur-[100px] animate-pulse" />
       </div>
 
-      {/* Animated Logo or Icon */}
+      {/* Center Spinner & Greeting */}
       <motion.div
-        className="flex flex-col items-center space-y-6"
-        initial={{ opacity: 0, scale: 0.8 }}
+        className="flex flex-col items-center space-y-5 px-4 text-center z-10"
+        initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1, ease: "easeOut" }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        <Loader2 className="w-16 h-16 text-cyan-400 animate-spin" />
+        <div className="relative">
+          <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center shadow-lg shadow-cyan-500/10">
+            <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
+          </div>
+          <Sparkles className="w-4 h-4 text-purple-400 absolute -top-1.5 -right-1.5 animate-bounce" />
+        </div>
 
-        <motion.h1
-          className="text-2xl sm:text-3xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500"
-          animate={{
-            backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-        >
-          Memuat Halaman Tentang...
-        </motion.h1>
-
-        <motion.p
-          className="text-gray-400 text-sm sm:text-base"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.5, delay: 0.8, repeat: Infinity, repeatType: "reverse" }}
-        >
-          Mohon tunggu sebentar ✨
-        </motion.p>
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-cyan-400 via-sky-300 to-purple-400 bg-clip-text text-transparent">
+            Memuat Profil & Halaman...
+          </h1>
+          <p className="text-slate-400 text-xs sm:text-sm mt-1 font-normal">
+            Menyiapkan informasi portofolio dan pencapaian ✨
+          </p>
+        </div>
       </motion.div>
-
-      {/* Floating Particles */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {Array.from({ length: 15 }).map((_, i) => (
-          <motion.span
-            key={i}
-            className="absolute w-2 h-2 bg-cyan-400 rounded-full opacity-40"
-            initial={{
-              x: Math.random() * window.innerWidth,
-              y: Math.random() * window.innerHeight,
-              scale: Math.random() * 0.8 + 0.3,
-            }}
-            animate={{
-              y: [null, -50],
-              opacity: [0.4, 0],
-              scale: [1, 0.5],
-            }}
-            transition={{
-              duration: Math.random() * 5 + 4,
-              delay: Math.random() * 2,
-              repeat: Infinity,
-              repeatType: "loop",
-              ease: "easeOut",
-            }}
-          />
-        ))}
-      </div>
     </div>
   );
 }
+
+export default memo(LoadingScreen);

@@ -35,6 +35,7 @@ import { useState, useEffect, useCallback } from "react";
 import data from "../../../data/projects.json";
 import Maintenance from "../../errors/Maintenance";
 import Forbidden from "../../errors/Forbidden";
+import { getTechLanguageInfo } from "../../../utils/techRouteHelper";
 
 export default function ProjectDetail() {
   const { id } = useParams();
@@ -389,16 +390,25 @@ export default function ProjectDetail() {
           {project.tech && project.tech.length > 0 && (
             <Section icon={Code} title="Teknologi yang Digunakan">
               <div className="flex flex-wrap gap-2">
-                {project.tech.map((tech, index) => (
-                  <motion.span
-                    key={index}
-                    whileHover={{ scale: 1.05 }}
-                    className="px-3 py-2 bg-cyan-500/20 border border-cyan-400/30 rounded-lg text-cyan-300 text-sm backdrop-blur-sm"
-                  >
-                    {tech}
-                  </motion.span>
-                ))}
+                {project.tech.map((tech, index) => {
+                  const techInfo = getTechLanguageInfo(tech);
+                  return (
+                    <motion.div key={index} whileHover={{ scale: 1.05 }}>
+                      <Link
+                        to={techInfo.url}
+                        className="group/tech px-3 py-2 bg-cyan-500/20 hover:bg-cyan-500/35 border border-cyan-400/30 hover:border-cyan-400 rounded-lg text-cyan-300 hover:text-white text-sm backdrop-blur-sm inline-flex items-center gap-1.5 transition-all shadow-sm"
+                        title={techInfo.found ? `Lihat penjelasan & kemahiran ${tech} di halaman Bahasa` : `Cari ${tech} di halaman Bahasa`}
+                      >
+                        <span>{tech}</span>
+                        <span className="text-[11px] opacity-70 group-hover/tech:opacity-100 group-hover/tech:translate-x-0.5 transition-all">↗</span>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
               </div>
+              <p className="text-xs text-gray-400 mt-2.5">
+                💡 Klik teknologi di atas untuk melihat penjelasan penguasaan dan detailnya di halaman <Link to="/bahasa" className="text-cyan-400 hover:underline">Kemampuan Bahasa & Teknologi</Link>.
+              </p>
             </Section>
           )}
 

@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { ToastContainer } from "react-toastify";
-import { Zap } from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
 import Maintenance from "../errors/Maintenance";
 import ContactForm from "./components/ContactForm";
@@ -14,74 +13,62 @@ import { SPARKLES_ICON } from "./utils/constants";
 export default function Contact() {
   const isMaintenance = false;
 
-  const badgeAnim = useScrollReveal(0);
-  const titleAnim = useScrollReveal(0.15);
-  const descAnim = useScrollReveal(0.3);
-  const statsAnim = useScrollReveal(0.5);
-  const formAnim = useScrollReveal(0.4);
-  const contactAnim = useScrollReveal(0.6);
+  const headerAnim = useScrollReveal(0);
+  const statsAnim = useScrollReveal(0.1);
+  const formAnim = useScrollReveal(0.15);
+  const contactAnim = useScrollReveal(0.2);
 
   if (isMaintenance) return <Maintenance />;
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-start px-3 sm:px-4 md:px-6 lg:px-8 xl:px-20 py-8 sm:py-12 bg-[#0f172a] text-white transition-all duration-500 relative overflow-hidden">
+    <main className="min-h-screen flex flex-col items-center justify-start px-3 sm:px-4 md:px-6 lg:px-8 xl:px-16 py-6 sm:py-10 bg-[#0f172a] text-white relative overflow-hidden">
       
+      {/* Lightweight GPU-friendly background */}
       <BackgroundEffects />
       
       <ToastContainer 
         theme="dark" 
         position="bottom-center"
-        autoClose={4000}
+        autoClose={3500}
         hideProgressBar={false}
         newestOnTop
         closeOnClick
         pauseOnHover
       />
 
-      {/* 🌟 Enhanced Header Section */}
-      <div className="text-center mb-8 sm:mb-12 lg:mb-16 max-w-6xl relative z-10 w-full px-2 sm:px-0">
-        <motion.div
-          {...badgeAnim}
-          className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-4 sm:px-6 py-2 sm:py-3 bg-white/5 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-white/10 shadow-lg"
-        >
-          {SPARKLES_ICON}
-          <span className="text-xs sm:text-sm font-medium text-cyan-400">
-            Mari Berkolaborasi Bersama
-          </span>
-          {SPARKLES_ICON}
+      {/* Header Section */}
+      <div className="text-center mb-6 sm:mb-10 lg:mb-12 max-w-5xl relative z-10 w-full px-2 sm:px-0">
+        <motion.div {...headerAnim}>
+          <div className="inline-flex items-center gap-2 mb-3 sm:mb-4 px-3.5 sm:px-5 py-1.5 sm:py-2 bg-white/5 backdrop-blur-md rounded-xl sm:rounded-2xl border border-white/10 shadow-sm">
+            {SPARKLES_ICON}
+            <span className="text-xs sm:text-sm font-medium text-cyan-400">
+              Mari Berkolaborasi Bersama
+            </span>
+            {SPARKLES_ICON}
+          </div>
+
+          <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 tracking-tight">
+            <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+              Hubungi Saya
+            </span>
+            <span className="ml-2 inline-block transform hover:scale-110 transition-transform cursor-default">
+              💬
+            </span>
+          </h1>
+
+          <p className="text-xs xs:text-sm sm:text-base md:text-lg text-gray-300 leading-relaxed mb-4 sm:mb-6 max-w-2xl mx-auto">
+            Mari wujudkan ide brilian Anda menjadi kenyataan — 
+            <span className="block mt-1 font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+              Setiap kolaborasi dimulai dengan satu pesan ✨
+            </span>
+          </p>
         </motion.div>
-
-        <motion.h1
-          {...titleAnim}
-          className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6"
-        >
-          <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-            Hubungi Saya
-          </span>
-          <motion.span
-            animate={{ rotate: [0, 10, -10, 0] }}
-            transition={{ duration: 2, repeat: Infinity, repeatDelay: 5 }}
-            className="ml-2 sm:ml-4 inline-block"
-          >
-            💬
-          </motion.span>
-        </motion.h1>
-
-        <motion.p
-          {...descAnim}
-          className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 leading-relaxed mb-6 sm:mb-8 max-w-4xl mx-auto"
-        >
-          Mari wujudkan ide brilian Anda menjadi kenyataan — 
-          <span className="block mt-2 sm:mt-3 font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-            Setiap kolaborasi dimulai dengan satu pesan ✨
-          </span>
-        </motion.p>
 
         <ContactStats statsAnim={statsAnim} />
       </div>
 
-      {/* 📮 Enhanced Container Form & Data */}
-      <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-start relative z-10 px-0">
+      {/* Container Form & Data */}
+      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 items-start relative z-10">
         <div className="w-full order-2 lg:order-1">
           <ContactList />
         </div>
@@ -90,6 +77,7 @@ export default function Contact() {
         </div>
       </div>
 
+      {/* Social Links */}
       <SocialLinks contactAnim={contactAnim} />
     </main>
   );

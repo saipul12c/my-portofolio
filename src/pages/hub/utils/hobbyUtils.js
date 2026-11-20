@@ -28,35 +28,48 @@ export const capitalizeWords = (str) => {
 // =============================================================================
 
 /**
- * Add random labels to hobbies (35% chance)
+ * Assign deterministic labels to hobbies based on performance and metadata
+ * Keeps results stable and avoids random re-renders/layout shifts
  */
 export const addRandomLabels = (hobbies) => {
-  const labelTypes = ["🔥 Hot", "🆕 Baru", "⭐ Rekomendasi"];
-  
   return hobbies.map((hobby) => {
-    const hasLabel = Math.random() < 0.35;
-    return hasLabel
-      ? { 
-          ...hobby, 
-          label: labelTypes[Math.floor(Math.random() * labelTypes.length)],
-          labelType: hasLabel ? labelTypes[Math.floor(Math.random() * labelTypes.length)].split(' ')[1] : null
-        }
-      : { 
-          ...hobby, 
-          label: null,
-          labelType: null
-        };
+    if (hobby.label) {
+      return {
+        ...hobby,
+        labelType: hobby.labelType || hobby.label.split(' ')[1] || null
+      };
+    }
+
+    let label = null;
+    let labelType = null;
+
+    if (hobby.stats?.rating >= 4.8 || (hobby.stats?.completion && hobby.stats.completion >= 85)) {
+      label = "⭐ Rekomendasi";
+      labelType = "Rekomendasi";
+    } else if (hobby.metadata?.priority === "High") {
+      label = "🔥 Hot";
+      labelType = "Hot";
+    } else if (hobby.id % 4 === 0) {
+      label = "🆕 Baru";
+      labelType = "Baru";
+    }
+
+    return {
+      ...hobby,
+      label,
+      labelType
+    };
   });
 };
 
 /**
- * Sort hobbies - those with labels appear first
+ * Sort hobbies - those with labels appear first, stable by id
  */
 export const sortHobbiesByLabel = (hobbies) => {
   return [...hobbies].sort((a, b) => {
     if (a.label && !b.label) return -1;
     if (!a.label && b.label) return 1;
-    return 0;
+    return (a.id || 0) - (b.id || 0);
   });
 };
 

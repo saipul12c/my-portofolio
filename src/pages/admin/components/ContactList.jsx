@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useState, useMemo } from "react";
+import { useState, useMemo, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Loader2,
@@ -14,16 +14,131 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useContacts } from "../hooks/useContacts";
-import { formatDate, formatSheetDBDateToHuman } from "../utils/formatDate";
+import { formatSheetDBDateToHuman } from "../utils/formatDate";
 import { getEmailSecurityBadge } from "../utils/emailValidator";
-import { shouldMarkAsPriority, analyzePriority } from "../utils/analyzePriority";
+import { analyzePriority } from "../utils/analyzePriority";
+
+const getInitialColor = (name) => {
+  const colors = [
+    'from-purple-500 to-pink-500',
+    'from-blue-500 to-cyan-500',
+    'from-green-500 to-emerald-500',
+    'from-orange-500 to-red-500',
+    'from-indigo-500 to-purple-500'
+  ];
+  const index = name ? name.charCodeAt(0) % colors.length : 0;
+  return colors[index];
+};
+
+const getEmailVerification = (email) => {
+  if (!email) {
+    return {
+      icon: <ShieldAlert size={12} className="text-gray-400 shrink-0" />,
+      color: 'text-gray-400',
+      text: 'Email tidak tersedia',
+    };
+  }
+  
+  const badge = getEmailSecurityBadge(email);
+  const { verification } = badge;
+  
+  if (verification.securityLevel === 'high') {
+    return {
+      icon: <ShieldCheck size={12} className="text-green-500 shrink-0" />,
+      color: 'text-green-500',
+      text: 'Email terverifikasi',
+    };
+  } else if (verification.securityLevel === 'medium') {
+    return {
+      icon: <ShieldCheck size={12} className="text-blue-500 shrink-0" />,
+      color: 'text-blue-500',
+      text: verification.isCorporate ? 'Email korporat' : 'Email valid',
+    };
+  } else {
+    return {
+      icon: <ShieldAlert size={12} className="text-orange-500 shrink-0" />,
+      color: 'text-orange-500',
+      text: verification.isSpam ? 'Disposable/Spam' : 'Belum terverifikasi',
+    };
+  }
+};
+
+const parseTimestamp = (contact) => {
+  const timestamp = contact.timestamp || contact.date || contact.created_at || contact.createdAt;
+  if (!timestamp) return 0;
+  const date = new Date(timestamp);
+  return isNaN(date.getTime()) ? 0 : date.getTime();
+};
+
+// Memoized Card Item to avoid unnecessary re-renders during state changes
+const ContactCard = memo(({ contact }) => {
+  const analysis = contact.analysis;
+  const emailStatus = contact.emailStatus;
+
+  return (
+    <div
+      className="bg-slate-800/40 border border-white/5 rounded-xl sm:rounded-2xl p-3 sm:p-4 transition-all duration-200 group hover:border-cyan-500/30 hover:ring-1 hover:ring-cyan-500/30 hover:shadow-lg hover:bg-slate-800/60"
+    >
+      <div className="flex flex-col gap-2.5">
+        {/* Header: User Info & Time */}
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className={`w-8 h-8 sm:w-9 sm:h-9 shrink-0 bg-gradient-to-br ${getInitialColor(contact.name)} rounded-lg flex items-center justify-center text-white text-xs font-bold shadow-sm`}>
+              {contact.name ? contact.name.charAt(0).toUpperCase() : "?"}
+            </div>
+            <div className="min-w-0">
+              <h3 className="font-semibold text-white text-xs sm:text-sm truncate">
+                {contact.name || "Anonymous"}
+              </h3>
+              <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-gray-400">
+                <Mail size={11} className="shrink-0 text-cyan-400" />
+                <span className="truncate">{contact.email || "No email"}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex flex-col items-end gap-1 shrink-0">
+            <div className="flex items-center gap-1 text-[10px] text-gray-400">
+              <Calendar size={10} />
+              <span>{contact.date ? formatSheetDBDateToHuman(contact.date) : "N/A"}</span>
+            </div>
+            <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold border ${
+              analysis.level === 'high' 
+                ? 'bg-red-500/20 text-red-400 border-red-500/30' 
+                : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
+            }`}>
+              {analysis.level.toUpperCase()}
+            </span>
+          </div>
+        </div>
+        
+        {/* Message Body */}
+        <div className="bg-slate-900/60 rounded-lg p-2.5 sm:p-3 border border-white/5">
+          <p className="text-[12px] sm:text-[13px] text-gray-300 line-clamp-3 leading-relaxed break-words">
+            {contact.message || "No message available"}
+          </p>
+        </div>
+        
+        {/* Footer: Verification status */}
+        <div className="flex items-center justify-between text-[10px]">
+          <div className={`flex items-center gap-1 ${emailStatus.color} font-medium`}>
+            {emailStatus.icon}
+            <span className="truncate max-w-[160px] sm:max-w-none">{emailStatus.text}</span>
+          </div>
+          <span className="text-gray-400 italic text-[10px]">
+            {contact.message?.length > 100 ? 'Detail' : 'Singkat'}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+ContactCard.displayName = "ContactCard";
 
 const ContactList = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("recent"); // Default ke terbaru
-  const [hoveredContact, setHoveredContact] = useState(null);
-  const [emailWarningTooltip, setEmailWarningTooltip] = useState(null);
-  const [showSpamFilter, setShowSpamFilter] = useState(true); // Toggle spam filter
+  const [activeTab, setActiveTab] = useState("recent");
   
   const {
     contacts,
@@ -34,387 +149,177 @@ const ContactList = () => {
     handleRefreshContacts,
   } = useContacts();
 
-  const getInitialColor = (name) => {
-    const colors = [
-      'from-purple-500 to-pink-500',
-      'from-blue-500 to-cyan-500',
-      'from-green-500 to-emerald-500',
-      'from-orange-500 to-red-500',
-      'from-indigo-500 to-purple-500'
-    ];
-    const index = name ? name.charCodeAt(0) % colors.length : 0;
-    return colors[index];
-  };
-
-  // Get email verification status with comprehensive validation
-  const getEmailVerification = (email) => {
-    if (!email) {
-      return {
-        verified: false,
-        level: 'unknown',
-        icon: '❓',
-        color: 'text-gray-400',
-        text: 'Email tidak tersedia',
-        description: 'Tidak ada email yang diberikan'
-      };
-    }
-    
-    const badge = getEmailSecurityBadge(email);
-    const { verification } = badge;
-    
-    // Map security levels to UI elements
-    const uiMap = {
-      high: {
-        verified: true,
-        icon: <ShieldCheck size={14} className="text-green-500" />,
-        color: 'text-green-500',
-        text: '📧 Email terverifikasi',
-        description: badge.description,
-        showWarning: false
-      },
-      medium: {
-        verified: true,
-        icon: <ShieldCheck size={14} className="text-blue-500" />,
-        color: 'text-blue-500',
-        text: '📧 Email valid',
-        description: verification.isCorporate 
-          ? 'Email korporat yang legitimate' 
-          : badge.description,
-        showWarning: false
-      },
-      low: {
-        verified: false,
-        icon: <ShieldAlert size={14} className="text-orange-500" />,
-        color: 'text-orange-500',
-        text: '📧 Email belum terverifikasi',
-        description: verification.isSpam 
-          ? 'Email disposable/spam terdeteksi - BERBAHAYA!'
-          : 'Email dari domain yang tidak terverifikasi',
-        showWarning: true,
-        warningLevel: verification.isSpam ? 'danger' : 'warning'
-      },
-      unknown: {
-        verified: false,
-        icon: <ShieldAlert size={14} className="text-gray-400" />,
-        color: 'text-gray-400',
-        text: '📧 Status tidak diketahui',
-        description: 'Tidak dapat memverifikasi email ini',
-        showWarning: false
-      }
-    };
-    
-    const result = uiMap[verification.securityLevel] || uiMap.unknown;
-    
-    // Add typo suggestion if exists
-    if (verification.hasTypo && verification.suggestion) {
-      result.typoSuggestion = verification.suggestion;
-      result.description += ` | Kemungkinan typo, maksud Anda: ${verification.suggestion}?`;
-    }
-    
-    return result;
-  };
-
-  // Helper function untuk parse timestamp
-  const parseTimestamp = (contact) => {
-    const timestamp = contact.timestamp || contact.date || contact.created_at || contact.createdAt;
-    if (!timestamp) return 0;
-    const date = new Date(timestamp);
-    return isNaN(date.getTime()) ? 0 : date.getTime();
-  };
-
-  // Memoize filtered and analyzed contacts
+  // Optimized memoized contacts filter & sorting: runs priority analysis ONCE per contact
   const displayContacts = useMemo(() => {
-    // Pastikan contacts selalu array, bahkan jika undefined/null
     const safeContacts = Array.isArray(contacts) ? contacts : [];
-    
     if (safeContacts.length === 0) return [];
-    
-    let filtered = [...safeContacts]; // Clone array
-    
-    switch (activeTab) {
-      case "recent":
-        // Ambil hanya 5 email terbaru, sort berdasarkan timestamp
-        filtered = filtered.sort((a, b) => parseTimestamp(b) - parseTimestamp(a));
-        filtered = filtered.slice(0, 5);
-        break;
-      case "priority":
-        // Filter email yang teranalisa sebagai priority (automatic)
-        // Urutkan berdasarkan priority score (descending), kemudian timestamp
-        filtered = filtered
-          .filter(contact => shouldMarkAsPriority(contact.message, contact.email))
-          .sort((a, b) => {
-            // Sort by priority score (descending)
-            const scoreA = analyzePriority(a.message, a.email).score;
-            const scoreB = analyzePriority(b.message, b.email).score;
-            if (scoreB !== scoreA) return scoreB - scoreA;
-            // Jika score sama, sort by timestamp terbaru
-            return parseTimestamp(b) - parseTimestamp(a);
-          })
-          .slice(0, 5);
-        break;
-      case "all":
-      default:
-        // Tampilkan semua tanpa sorting khusus (sudah disort di hook)
-        break;
+
+    // Pre-calculate once per contact
+    const enriched = safeContacts.map(contact => {
+      const analysis = analyzePriority(contact.message, contact.email);
+      const emailStatus = getEmailVerification(contact.email);
+      const time = parseTimestamp(contact);
+      return {
+        ...contact,
+        _time: time,
+        _score: analysis.score,
+        analysis,
+        emailStatus
+      };
+    });
+
+    if (activeTab === "recent") {
+      return [...enriched].sort((a, b) => b._time - a._time).slice(0, 5);
     }
-    
-    // Limit to 5 contacts jika belum di-limit pada case-nya
-    if (activeTab !== "recent" && activeTab !== "priority") {
-      filtered = filtered.slice(0, 5);
+    if (activeTab === "priority") {
+      return enriched
+        .filter(c => c.analysis.level === 'high')
+        .sort((a, b) => (b._score !== a._score ? b._score - a._score : b._time - a._time))
+        .slice(0, 5);
     }
-    
-    // Pre-calculate analysis for each displayed contact to avoid heavy logic during UI map
-    return filtered.map(contact => ({
-      ...contact,
-      analysis: analyzePriority(contact.message, contact.email),
-      emailStatus: getEmailVerification(contact.email)
-    }));
-  }, [contacts, activeTab]); // Only recompute when contacts or activeTab changes
+    return enriched.slice(0, 5);
+  }, [contacts, activeTab]);
 
   const displayedCount = Array.isArray(contacts) ? contacts.length : 0;
   const totalCount = totalContacts || 0;
 
   return (
-    <div className="space-y-4 sm:space-y-6 w-full min-h-[500px]">
-      {/* Debug info - hapus nanti */}
-      <div className="sr-only">ContactList Component Loaded</div>
-      
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2 gap-3">
-        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+    <div className="space-y-4 sm:space-y-5 w-full">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-1 gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
           <div className="relative flex-shrink-0">
-            <div className="p-2 sm:p-3 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl sm:rounded-2xl shadow-lg">
-              <Inbox className="text-white" size={24} />
+            <div className="p-2 sm:p-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl shadow-md">
+              <Inbox className="text-white" size={22} />
             </div>
             {totalContacts > 0 && (
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full border-2 border-slate-900 animate-pulse" />
+              <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-slate-900" />
             )}
           </div>
           <div className="min-w-0">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
               Pesan Terbaru
             </h2>
-            <p className="text-xs sm:text-sm text-gray-400 flex items-center gap-2 mt-1">
+            <p className="text-xs text-gray-400 flex items-center gap-1.5 mt-0.5">
               <Bot size={12} className="flex-shrink-0 text-cyan-400" />
-              <span className="truncate">5 pesan masuk terakhir • Real-time updates</span>
+              <span className="truncate">5 pesan masuk terakhir • Real-time</span>
             </p>
           </div>
         </div>
         
-        <motion.button
+        <button
           onClick={handleRefreshContacts}
           disabled={refreshLoading}
-          whileHover={{ scale: 1.05, rotate: 180 }}
-          whileTap={{ scale: 0.95 }}
-          className="p-2 sm:p-3 bg-slate-800/80 border border-white/10 rounded-lg sm:rounded-xl hover:bg-slate-700/80 hover:border-cyan-500/30 transition-all duration-300 disabled:opacity-50 shadow-lg flex-shrink-0"
+          className="p-2 bg-slate-800/80 border border-white/10 rounded-lg hover:bg-slate-700/80 hover:border-cyan-500/30 transition-colors disabled:opacity-50 shadow-md flex-shrink-0 active:scale-95"
           title="Refresh pesan"
+          aria-label="Refresh pesan masuk"
         >
           <RefreshCw 
-            size={18} 
+            size={16} 
             className={`text-cyan-400 ${refreshLoading ? 'animate-spin' : ''}`} 
           />
-        </motion.button>
+        </button>
       </div>
 
       <div 
-        className="bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-h-[700px] overflow-hidden flex flex-col shadow-2xl hover:border-cyan-500/30 transition-all duration-500"
+        className="bg-slate-900/80 backdrop-blur-md border border-white/10 rounded-2xl p-4 sm:p-5 max-h-[650px] overflow-hidden flex flex-col shadow-xl hover:border-cyan-500/30 transition-colors duration-300"
         style={{ isolation: 'isolate', transform: 'translateZ(0)' }}
       >
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4 sm:mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-              <div className="text-xs sm:text-sm font-medium text-gray-400">
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              <span className="text-xs font-medium text-gray-400 mr-1">
                 Filter:
-              </div>
-              {["all", "recent", "priority"].map((tab) => (
+              </span>
+              {[
+                { id: "all", label: "Semua" },
+                { id: "recent", label: "Terbaru" },
+                { id: "priority", label: "Prioritas" }
+              ].map((tab) => (
                 <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap ${
-                    activeTab === tab
-                      ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20"
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
+                    activeTab === tab.id
+                      ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-md shadow-cyan-500/20"
                       : "bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/5"
                   }`}
                 >
-                  {tab === "all" ? "Semua" : tab === "recent" ? "Terbaru" : "Prioritas"}
+                  {tab.label}
                 </button>
               ))}
               
-              <div
-                className="relative ml-1 sm:ml-2"
-              >
+              <div className="relative ml-auto sm:ml-2">
                 <button
                   onClick={() => navigate("/Live-Discussion")}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-1 sm:gap-2 active:scale-95"
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 shadow-md transition-all flex items-center gap-1.5 active:scale-95"
                 >
-                  <MessageSquare size={14} />
-                  <span className="hidden sm:inline">Room Chat</span>
-                  <span className="sm:hidden">Chat</span>
+                  <MessageSquare size={13} />
+                  <span>Room Chat</span>
                 </button>
               </div>
             </div>
           </div>
-          <div className="text-right flex-shrink-0">
-            <div className="text-lg sm:text-2xl font-bold text-cyan-400">
+          <div className="text-right flex-shrink-0 self-end sm:self-center">
+            <div className="text-base sm:text-xl font-bold text-cyan-400 leading-tight">
               {displayContacts.length}
             </div>
-            <div className="text-xs text-gray-400">
+            <div className="text-[10px] text-gray-400">
               dari {totalCount} Pesan
             </div>
           </div>
         </div>
 
-        <div className="space-y-3 sm:space-y-4 flex-1 overflow-y-auto pr-2 sm:pr-3 custom-scrollbar">
+        <div className="space-y-2.5 sm:space-y-3 flex-1 overflow-y-auto pr-1.5 sm:pr-2.5 custom-scrollbar">
           {loadingContacts ? (
-            <div className="flex flex-col items-center justify-center h-48 space-y-4">
-              <div className="animate-spin">
-                <Loader2 className="text-purple-600 dark:text-purple-400" size={36} />
-              </div>
+            <div className="flex flex-col items-center justify-center h-44 space-y-3">
+              <Loader2 className="text-cyan-400 animate-spin" size={32} />
               <div className="text-center">
-                <p className="text-gray-500 dark:text-gray-400 font-medium text-sm">Memuat Pesan</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Menyiapkan kotak masuk...</p>
+                <p className="text-gray-300 font-medium text-xs sm:text-sm">Memuat Pesan</p>
+                <p className="text-[11px] text-gray-500 mt-0.5">Menyiapkan kotak masuk...</p>
               </div>
             </div>
           ) : error ? (
-            <div className="flex flex-col items-center justify-center h-48 space-y-4">
-              <AlertCircle className="text-red-500" size={40} />
+            <div className="flex flex-col items-center justify-center h-44 space-y-3">
+              <AlertCircle className="text-red-400" size={32} />
               <div className="text-center">
-                <p className="text-red-500 font-medium text-sm">Gagal Memuat Pesan</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 max-w-xs">{error}</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-                  Data tidak tersedia atau terjadi kesalahan koneksi
-                </p>
+                <p className="text-red-400 font-medium text-xs sm:text-sm">Gagal Memuat Pesan</p>
+                <p className="text-[11px] text-gray-400 mt-1 max-w-xs">{error}</p>
                 <button
                   onClick={handleRefreshContacts}
-                  className="mt-4 px-3 sm:px-4 py-2 bg-purple-500 text-white text-sm rounded-lg hover:bg-purple-600 transition-colors flex items-center gap-2 mx-auto"
+                  className="mt-3 px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white text-xs rounded-lg transition-colors flex items-center gap-1.5 mx-auto active:scale-95"
                 >
-                  <RefreshCw size={14} />
+                  <RefreshCw size={12} />
                   Coba Lagi
                 </button>
               </div>
             </div>
           ) : displayContacts.length > 0 ? (
             displayContacts.map((contact, idx) => (
-              <motion.div
-                key={contact.id || `contact-${idx}`}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                onMouseEnter={() => setHoveredContact(idx)}
-                onMouseLeave={() => setHoveredContact(null)}
-                className={`bg-slate-800/40 border border-white/5 rounded-xl sm:rounded-2xl p-3 sm:p-4 transition-all duration-300 group cursor-pointer hover:border-cyan-500/30 ${
-                  hoveredContact === idx
-                    ? "ring-1 ring-cyan-500/30 shadow-xl bg-slate-800/60"
-                    : "shadow-sm hover:shadow-md"
-                }`}
-              >
-                <div className="flex flex-col gap-3">
-                  {/* Header: User Info & Time */}
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className={`w-8 h-8 sm:w-10 sm:h-10 shrink-0 bg-gradient-to-br ${getInitialColor(contact.name)} rounded-lg flex items-center justify-center text-white text-xs sm:text-sm font-bold shadow-sm`}>
-                        {contact.name ? contact.name.charAt(0).toUpperCase() : "?"}
-                      </div>
-                      <div className="min-w-0">
-                        <h3 className="font-semibold text-white text-[13px] sm:text-sm truncate">
-                          {contact.name || "Anonymous"}
-                        </h3>
-                        <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-gray-400">
-                          <Mail size={10} className="shrink-0 text-cyan-400" />
-                          <span className="truncate">{contact.email || "No email"}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex flex-col items-end gap-1.5 shrink-0">
-                      <div className="flex items-center gap-1 text-[10px] text-gray-400">
-                        <Calendar size={10} />
-                        <span>{contact.date ? formatSheetDBDateToHuman(contact.date) : "N/A"}</span>
-                      </div>
-                      {(() => {
-                        const analysis = contact.analysis;
-                        return (
-                          <div className={`text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold border ${
-                            analysis.level === 'high' 
-                              ? 'bg-red-500/20 text-red-400 border-red-500/30' 
-                              : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
-                          }`}>
-                            {analysis.level.toUpperCase()}
-                          </div>
-                        );
-                      })()}
-                    </div>
-                  </div>
-                  
-                  {/* Message Body */}
-                  <div className="bg-slate-900/60 rounded-lg p-2.5 sm:p-3 border border-white/5">
-                    <p className="text-[12px] sm:text-[13px] text-gray-300 line-clamp-3 leading-relaxed">
-                      {contact.message || "No message available"}
-                    </p>
-                  </div>
-                  
-                  {/* Footer: Verification status */}
-                  <div className="flex items-center justify-between text-[10px]">
-                    <div className="relative group">
-                      {(() => {
-                        const emailStatus = contact.emailStatus;
-                        return (
-                          <div 
-                            className={`flex items-center gap-1 ${emailStatus.color} font-medium`}
-                            onMouseEnter={() => setEmailWarningTooltip(idx)}
-                            onMouseLeave={() => setEmailWarningTooltip(null)}
-                          >
-                            {emailStatus.icon}
-                            <span>{emailStatus.text}</span>
-                          </div>
-                        );
-                      })()}
-                    </div>
-                    <span className="text-gray-400 italic">
-                      {contact.message?.length > 100 ? 'Long Msg' : 'Short Msg'}
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
+              <ContactCard key={contact.id || `contact-${idx}`} contact={contact} />
             ))
           ) : (
-            <div className="text-center py-12 sm:py-16 text-gray-500 dark:text-gray-400 px-2">
-              <Inbox size={56} className="mx-auto mb-4 sm:mb-6 opacity-30" />
-              <p className="text-lg sm:text-2xl font-medium mb-2 sm:mb-3">Kotak Masuk Kosong</p>
-              <p className="text-xs sm:text-sm max-w-sm mx-auto mb-4">
+            <div className="text-center py-10 sm:py-12 text-gray-400 px-2">
+              <Inbox size={44} className="mx-auto mb-3 opacity-30" />
+              <p className="text-base sm:text-lg font-medium mb-1.5 text-gray-300">Kotak Masuk Kosong</p>
+              <p className="text-xs text-gray-400 max-w-sm mx-auto">
                 {displayedCount === 0 && totalCount === 0
-                  ? "Belum ada pesan yang diterima. Jadilah yang pertama mengirim pesan dan mulai percakapan!"
-                  : displayedCount === 0 && totalCount > 0
-                  ? `Semua ${totalCount} pesan telah difilter sebagai spam atau tidak sesuai dengan filter ini.`
+                  ? "Belum ada pesan yang diterima. Jadilah yang pertama mengirim pesan!"
                   : "Tidak ada pesan yang sesuai dengan filter ini."}
               </p>
-              {displayedCount === 0 && totalCount === 0 && (
-                <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 max-w-sm mx-auto">
-                  <p className="text-xs text-blue-600 dark:text-blue-400">
-                    💡 <strong>Tips:</strong> Pastikan konfigurasi SheetDB sudah benar atau kirim pesan melalui form di sebelah kanan.
-                  </p>
-                </div>
-              )}
             </div>
           )}
         </div>
-        
-        {/* Enhanced Footer info */}
-        <div className="pt-4 sm:pt-6 mt-4 sm:mt-6 border-t border-gray-200 dark:border-gray-600">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs sm:text-sm flex-wrap gap-2 sm:gap-3">
-            <div className="flex flex-col gap-1">
-              <p className="text-gray-500 dark:text-gray-400">
-                Menampilkan <span className="font-semibold text-purple-600 dark:text-purple-400">{displayContacts.length}</span> dari{' '}
-                <span className="font-semibold text-blue-600 dark:text-blue-400">{displayedCount}</span> pesan valid
-              </p>
-              {totalCount > displayedCount && (
-                <p className="text-xs text-orange-500 dark:text-orange-400">
-                  🛡️ {totalCount - displayedCount} pesan spam difilter dari total {totalCount} pesan
-                </p>
-              )}
-            </div>
-            <div className="flex items-center gap-2 text-green-500">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-xs">Live Updates</span>
+
+        {/* Footer info */}
+        <div className="pt-3 sm:pt-4 mt-3 sm:mt-4 border-t border-white/10">
+          <div className="flex items-center justify-between text-[11px] text-gray-400 flex-wrap gap-2">
+            <p>
+              Menampilkan <span className="font-semibold text-cyan-400">{displayContacts.length}</span> dari{' '}
+              <span className="font-semibold text-blue-400">{displayedCount}</span> pesan valid
+            </p>
+            <div className="flex items-center gap-1.5 text-emerald-400">
+              <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+              <span>Live Updates</span>
             </div>
           </div>
         </div>
@@ -422,37 +327,22 @@ const ContactList = () => {
 
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
+          width: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.05);
-          border-radius: 10px;
+          background: rgba(0, 0, 0, 0.1);
+          border-radius: 8px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: linear-gradient(to bottom, #8b5cf6, #6366f1);
-          border-radius: 10px;
+          background: rgba(6, 182, 212, 0.4);
+          border-radius: 8px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(to bottom, #7c3aed, #4f46e5);
-        }
-        
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(-5px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out;
+          background: rgba(6, 182, 212, 0.6);
         }
       `}</style>
     </div>
   );
 };
 
-export default ContactList;
+export default memo(ContactList);

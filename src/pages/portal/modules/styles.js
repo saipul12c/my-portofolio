@@ -20,11 +20,6 @@ export const addStyles = () => {
           background-size: 16px 16px;
         }
         
-        /* Smooth scrolling */
-        html {
-          scroll-behavior: smooth;
-        }
-        
         /* Hide scrollbar but keep functionality */
         .scrollbar-hidden {
           -ms-overflow-style: none;
@@ -73,7 +68,7 @@ export const addStyles = () => {
         @keyframes qr-appear {
           from {
             opacity: 0;
-            transform: scale(0.8);
+            transform: scale(0.92);
           }
           to {
             opacity: 1;
@@ -81,40 +76,8 @@ export const addStyles = () => {
           }
         }
 
-        .qr-animation {
-          animation: qr-appear 0.3s ease-out;
-        }
-
-        /* QR Code scanner lines animation */
-        @keyframes scan-line {
-          0% {
-            transform: translateY(-100%);
-          }
-          100% {
-            transform: translateY(100%);
-          }
-        }
-
-        .scan-line {
-          position: absolute;
-          width: 100%;
-          height: 2px;
-          background: linear-gradient(to right, transparent, #00ff88, transparent);
-          animation: scan-line 2s ease-in-out infinite;
-        }
-
-        /* QR Code pulsating effect */
-        @keyframes qr-pulse {
-          0%, 100% {
-            box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4);
-          }
-          50% {
-            box-shadow: 0 0 0 10px rgba(0, 255, 136, 0);
-          }
-        }
-
-        .qr-pulse {
-          animation: qr-pulse 2s infinite;
+        .animate-fade-in {
+          animation: qr-appear 0.2s ease-out forwards;
         }
       `;
       document.head.appendChild(styleSheet);

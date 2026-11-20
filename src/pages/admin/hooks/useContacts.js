@@ -12,6 +12,7 @@ export const useContacts = () => {
   const [refreshLoading, setRefreshLoading] = useState(false);
   const [error, setError] = useState(null);
   const abortControllerRef = useRef(null);
+  const retryTimeoutRef = useRef(null);
 
   const SHEETDB_URL = import.meta.env.VITE_SHEETDB_URL;
 
@@ -133,7 +134,8 @@ export const useContacts = () => {
       setError(err.message);
       
       if (retryCount < 2) {
-        setTimeout(() => fetchContacts(retryCount + 1, forceRefresh), 2000);
+        if (retryTimeoutRef.current) clearTimeout(retryTimeoutRef.current);
+        retryTimeoutRef.current = setTimeout(() => fetchContacts(retryCount + 1, forceRefresh), 2000);
       } else {
         toast.error("Gagal memuat pesan masuk", {
           position: "bottom-center",
@@ -150,6 +152,9 @@ export const useContacts = () => {
     return () => {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
+      }
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
       }
     };
   }, [fetchContacts]);

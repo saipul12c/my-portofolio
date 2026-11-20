@@ -92,9 +92,22 @@ const Login = () => {
         password: formData.password
       });
 
-      if (authError) throw new Error('Email atau password salah');
+      if (authError) {
+        console.error('Supabase Auth signIn error:', authError);
+        const errLower = authError.message?.toLowerCase() || '';
 
-      // 2. Profile Fetch with Retry & Fallback (Antisipasi delay trigger database)
+        if (errLower.includes('email not confirmed')) {
+          throw new Error('Email belum diverifikasi! Silakan periksa inbox/spam email Anda untuk konfirmasi, atau nonaktifkan "Confirm email" di Dashboard Supabase (Authentication > Providers > Email) jika sedang tahap testing.');
+        } else if (errLower.includes('invalid login credentials') || errLower.includes('invalid credentials')) {
+          throw new Error('Email atau password salah. Pastikan akun sudah terdaftar.');
+        } else if (errLower.includes('too many requests') || errLower.includes('rate limit')) {
+          throw new Error('Terlalu banyak percobaan gagal. Mohon tunggu beberapa saat sebelum mencoba kembali.');
+        } else {
+          throw new Error(authError.message || 'Koneksi gagal. Periksa koneksi internet Anda.');
+        }
+      }
+
+      // 2. Profile Fetch with Retry & Self-Healing Sync
       let user = null;
       let retries = 3;
 
@@ -109,7 +122,29 @@ const Login = () => {
           user = users;
         } else {
           retries--;
-          if (retries > 0) await new Promise(res => setTimeout(res, 800));
+          if (retries > 0) await new Promise(res => setTimeout(res, 600));
+        }
+      }
+
+      // Self-Healing Profile Sync: Jika row di public.users belum terbuat oleh trigger
+      if (!user) {
+        const fallbackNama = authData.user.user_metadata?.nama || cleanEmail.split('@')[0];
+        try {
+          const { data: healedUser } = await supabase
+            .from('users')
+            .upsert({
+              id: authData.user.id,
+              email: cleanEmail,
+              nama: fallbackNama,
+              role: 'USER',
+              status: 'aktif'
+            }, { onConflict: 'id' })
+            .select()
+            .maybeSingle();
+
+          if (healedUser) user = healedUser;
+        } catch (healErr) {
+          console.warn('Auto-healing user profile failed:', healErr);
         }
       }
 

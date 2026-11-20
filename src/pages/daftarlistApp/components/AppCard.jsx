@@ -10,6 +10,7 @@ import {
   Sparkles,
   ArrowRight
 } from "lucide-react";
+import { getTechLanguageInfo } from "../../../utils/techRouteHelper";
 
 export default function AppCard({ app, viewMode = "grid", onSelect }) {
   if (viewMode === "list") {
@@ -51,14 +52,21 @@ export default function AppCard({ app, viewMode = "grid", onSelect }) {
           <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white/5 border border-white/10 text-cyan-300">
             {app.categoryLabel}
           </span>
-          {app.techStack?.slice(0, 2).map((tech, i) => (
-            <span
-              key={i}
-              className="hidden lg:inline-block px-2.5 py-1 rounded-lg text-xs bg-slate-800/80 text-gray-300 border border-slate-700/60"
-            >
-              {tech}
-            </span>
-          ))}
+          {app.techStack?.slice(0, 2).map((tech, i) => {
+            const techInfo = getTechLanguageInfo(tech);
+            return (
+              <Link
+                key={i}
+                to={techInfo.url}
+                onClick={(e) => e.stopPropagation()}
+                className="hidden lg:inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs bg-slate-800/80 hover:bg-cyan-500/20 text-gray-300 hover:text-cyan-200 border border-slate-700/60 hover:border-cyan-500/40 transition-colors"
+                title={`Lihat detail ${tech} di halaman Bahasa`}
+              >
+                <span>{tech}</span>
+                <span className="text-[9px] opacity-60">↗</span>
+              </Link>
+            );
+          })}
           <span className="inline-flex items-center gap-1 text-xs text-amber-400 font-bold px-2 py-1 bg-amber-500/10 rounded-lg">
             <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
             {app.rating}
@@ -168,14 +176,21 @@ export default function AppCard({ app, viewMode = "grid", onSelect }) {
       <div className="border-t border-white/5 pt-4 space-y-3 mt-2">
         {/* Tech Chips */}
         <div className="flex flex-wrap gap-1.5">
-          {app.techStack?.slice(0, 3).map((tech, idx) => (
-            <span
-              key={idx}
-              className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-white/5 text-gray-300 border border-white/5"
-            >
-              {tech}
-            </span>
-          ))}
+          {app.techStack?.slice(0, 3).map((tech, idx) => {
+            const techInfo = getTechLanguageInfo(tech);
+            return (
+              <Link
+                key={idx}
+                to={techInfo.url}
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-white/5 hover:bg-cyan-500/20 text-gray-300 hover:text-cyan-200 border border-white/5 hover:border-cyan-500/30 transition-colors"
+                title={`Lihat detail ${tech} di halaman Bahasa`}
+              >
+                <span>{tech}</span>
+                <span className="text-[8px] opacity-60">↗</span>
+              </Link>
+            );
+          })}
           {app.techStack?.length > 3 && (
             <span className="px-1.5 py-0.5 rounded-md text-[10px] font-medium bg-white/5 text-gray-400">
               +{app.techStack.length - 3}
