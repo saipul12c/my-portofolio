@@ -729,9 +729,14 @@ const Dashboard = () => {
   );
 
   // Handle logout
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.warn('SignOut error:', err);
+    }
     localStorage.removeItem('local_user');
-    navigate('/Live-Discussion/login');
+    navigate('/Live-Discussion/login?logout=true', { replace: true });
   };
 
   // Reset all message counts via RPC

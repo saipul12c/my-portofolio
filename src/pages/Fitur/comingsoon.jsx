@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles } from 'lucide-react';
 import { Helmet } from 'react-helmet';
@@ -19,7 +20,8 @@ import RoadmapPage from './components/pages/RoadmapPage';
 import EarlyAccessPage from './components/pages/EarlyAccessPage';
 
 const ComingSoon = () => {
-  const { currentConfig, handleConfigChange, configList } = useConfig();
+  const { slug } = useParams();
+  const { currentConfig, handleConfigChange, configList } = useConfig(slug);
   const [activeTab, setActiveTab] = useState('main');
   const [email, setEmail] = useState('');
 
@@ -86,6 +88,7 @@ const ComingSoon = () => {
         <ConfigSelector
           configList={configList}
           currentConfig={currentConfig}
+          isSingleProject={Boolean(slug)}
           handleConfigChange={(id) => {
             handleConfigChange(id);
           }}

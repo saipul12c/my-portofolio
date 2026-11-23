@@ -199,6 +199,13 @@ export const PERSONA_KNOWLEDGE = [
     category: "Conversational & Persona"
   },
   {
+    id: "persona_dual_engine_api",
+    title: "Integrasi Dual-Engine SaipulAI v8.1.0 (On-Device & Public REST API)",
+    keywords: ["api", "rest api", "arsitektur", "dual engine", "integrasi", "v8.1.0", "endpoint", "sdk", "saipul api"],
+    text: "SaipulAI v8.1.0 mengintegrasikan dua pilar arsitektur cerdas: 1) Mesin On-Device Browser yang bekerja 100% lokal di browser pengguna untuk privasi total tanpa latensi server, dan 2) Public REST API & Web SDK mandiri di endpoint /api/saipul (serverless) yang memungkinkan pihak ketiga mengintegrasikan kecerdasan SaipulAI ke aplikasi luar, bot eksternal, atau skrip cURL dan Python dengan pemahaman portofolio dan kalkulator matematika yang selaras.",
+    category: "Conversational & Persona"
+  },
+  {
     id: "persona_hobbies_lifestyle",
     title: "Hobi, Minat & Aktivitas Kreatif Personal",
     keywords: ["hobi", "minat", "fotografi", "kegemaran", "santai", "waktu luang", "aktivitas"],

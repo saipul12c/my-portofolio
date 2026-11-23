@@ -260,6 +260,31 @@ CREATE POLICY "Public can update ratings"
   ON public.blog_ratings FOR UPDATE USING (true);
 
 -- ==============================================================================
+-- 🔑 PERMISSIONS & GRANTS (Mencegah Error 42501 "permission denied for table")
+-- ==============================================================================
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+
+-- Tabel Blog
+GRANT SELECT ON public.blog_posts TO anon, authenticated;
+GRANT INSERT, UPDATE, DELETE ON public.blog_posts TO authenticated;
+
+GRANT SELECT, INSERT ON public.blog_comments TO anon, authenticated;
+GRANT UPDATE, DELETE ON public.blog_comments TO authenticated;
+
+GRANT SELECT, INSERT, DELETE ON public.blog_likes TO anon, authenticated;
+GRANT SELECT, INSERT, DELETE ON public.blog_bookmarks TO anon, authenticated;
+
+GRANT SELECT, INSERT, UPDATE ON public.blog_ratings TO anon, authenticated;
+GRANT DELETE ON public.blog_ratings TO authenticated;
+
+-- RPC Functions Blog
+GRANT EXECUTE ON FUNCTION public.increment_blog_views(TEXT) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.increment_blog_likes(TEXT) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.decrement_blog_likes(TEXT) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.increment_blog_shares(TEXT) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.submit_blog_rating(TEXT, TEXT, NUMERIC) TO anon, authenticated;
+
+-- ==============================================================================
 -- 📡 REALTIME CONFIGURATION
 -- ==============================================================================
 DO $$

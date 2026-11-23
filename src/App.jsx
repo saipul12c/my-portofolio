@@ -173,12 +173,12 @@ const DefaultLayout = ({ children }) => {
   const shouldHidePortal = isPortal && isMobile;
 
   const shouldHide = shouldHideAlways || shouldHidePortal;
-  const isLiveDiscussion = currentPath === "/live-discussion" || currentPath.startsWith("/live-discussion/");
+  const isLiveChatRoom = currentPath === "/live-discussion";
 
   return (
-    <div className={`flex flex-col ${isLiveDiscussion ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : 'min-h-screen'}`}>
+    <div className={`flex flex-col ${isLiveChatRoom ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : 'min-h-screen'}`}>
       {!shouldHide && <Navbar />}
-      <main className={`flex-grow overflow-x-hidden ${isLiveDiscussion ? 'h-full overflow-hidden' : ''}`}>{children}</main>
+      <main className={`flex-grow overflow-x-hidden ${isLiveChatRoom ? 'h-full overflow-hidden' : ''}`}>{children}</main>
       {!shouldHide && <Footer />}
       {!shouldHide && <HelpButton />}
     </div>
@@ -275,9 +275,9 @@ export default function App() {
                           {/* Redirects: direct certain paths to /coming-soon
                   Disabled temporarily to re-enable development for these routes.
                   Previous redirect lines are kept here (commented) so nothing is deleted. */}
-                          <Route path="/discord" element={<Navigate to="/coming-soon" replace />} />
-                          <Route path="/discord/profile" element={<Navigate to="/coming-soon" replace />} />
-                          <Route path="/komunitas" element={<Navigate to="/coming-soon" replace />} />
+                          <Route path="/discord" element={<Navigate to="/coming-soon/discond" replace />} />
+                          <Route path="/discord/profile" element={<Navigate to="/coming-soon/discond" replace />} />
+                          <Route path="/komunitas" element={<Navigate to="/coming-soon/komunitas-id" replace />} />
                           <Route path="/streming" element={<Navigate to="/coming-soon" replace />} />
                           <Route path="/login" element={<Navigate to="/coming-soon" replace />} />
                           <Route path="/register" element={<Navigate to="/coming-soon" replace />} />
@@ -321,6 +321,8 @@ export default function App() {
                                     <Route path="/help/faq/riwayat/ai/:slug" element={<HelpFAQriwayat />} />
                                     <Route path="/live-cs/security" element={<Keamanan />} />
                                     <Route path="/live-cs/privacy" element={<Privasi />} />
+                                    <Route path="/help/panduan/keamanan" element={<Navigate to="/live-cs/security" replace />} />
+                                    <Route path="/help/panduan/privasi" element={<Navigate to="/live-cs/privacy" replace />} />
 
                                     <Route path="/help/chatbot/settings/:tabId?" element={<ChatbotSettingsRoute />} />
                                     <Route path="/year-end" element={<TahunBaru />} />
@@ -400,6 +402,7 @@ export default function App() {
                                     <Route path="/daftar-app" element={<DaftarListApp />} />
                                     <Route path="/daftarlistApp" element={<DaftarListApp />} />
                                     <Route path="/coming-soon" element={<Comingsoon />} />
+                                    <Route path="/coming-soon/:slug" element={<Comingsoon />} />
                                     <Route path="/streming" element={<RequireAuth><Streming /></RequireAuth>} />
 
                                     {/* Live rooms feature */}

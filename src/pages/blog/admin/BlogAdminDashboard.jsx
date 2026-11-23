@@ -34,7 +34,10 @@ import {
   updateCommentStatus, 
   getAdminCategories, 
   saveAdminCategories, 
-  getOverallBlogStats 
+  getOverallBlogStats,
+  bulkDeletePosts,
+  bulkUpdatePostStatus,
+  bulkUpdatePostCategory
 } from './services/blogAdminService';
 import { getAdminSession, logoutAdmin } from './services/blogAdminAuth';
 
@@ -45,6 +48,7 @@ export default function BlogAdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [adminSession, setAdminSession] = useState(null);
   const [isOpenMobile, setIsOpenMobile] = useState(false);
+  const [lastUpdatedTime, setLastUpdatedTime] = useState(null);
 
   // Data states
   const [posts, setPosts] = useState([]);
@@ -52,6 +56,9 @@ export default function BlogAdminDashboard() {
   const [categories, setCategories] = useState([]);
   const [stats, setStats] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Filter preset to pass from Overview to Posts tab
+  const [postFilterPreset, setPostFilterPreset] = useState({ category: 'all', status: 'all', search: '' });
 
   // Editor Modal state
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -81,6 +88,7 @@ export default function BlogAdminDashboard() {
       setComments(fetchedComments);
       setCategories(fetchedCategories);
       setStats(fetchedStats);
+      setLastUpdatedTime(new Date().toLocaleTimeString('id-ID'));
     } catch (err) {
       console.warn('Error loading dashboard data:', err);
     } finally {
@@ -102,6 +110,12 @@ export default function BlogAdminDashboard() {
   const handleLogout = () => {
     logoutAdmin();
     navigate('/blog-admin/login', { replace: true });
+  };
+
+  // Navigate helper with filter preset (from Overview drilldown)
+  const handleNavigateToPosts = (preset = {}) => {
+    setPostFilterPreset(prev => ({ ...prev, ...preset }));
+    setActiveTab('posts');
   };
 
   // Post Actions
@@ -175,6 +189,37 @@ export default function BlogAdminDashboard() {
     }
   };
 
+  // Bulk / Batch Actions
+  const handleBulkDelete = async (identifiers) => {
+    try {
+      const count = await bulkDeletePosts(identifiers);
+      showToast('success', `${count} artikel berhasil dihapus massal!`);
+      await loadAllData();
+    } catch (err) {
+      showToast('error', 'Gagal menghapus artikel: ' + err.message);
+    }
+  };
+
+  const handleBulkStatusChange = async (identifiers, newStatus) => {
+    try {
+      const count = await bulkUpdatePostStatus(identifiers, newStatus);
+      showToast('success', `Status ${count} artikel berhasil diubah ke: ${newStatus}!`);
+      await loadAllData();
+    } catch (err) {
+      showToast('error', 'Gagal memperbarui status artikel: ' + err.message);
+    }
+  };
+
+  const handleBulkCategoryChange = async (identifiers, newCategory) => {
+    try {
+      const count = await bulkUpdatePostCategory(identifiers, newCategory);
+      showToast('success', `Kategori ${count} artikel berhasil diubah ke: ${newCategory}!`);
+      await loadAllData();
+    } catch (err) {
+      showToast('error', 'Gagal memperbarui kategori artikel: ' + err.message);
+    }
+  };
+
   // Comment Actions
   const handleDeleteComment = async (commentId, postSlug) => {
     try {
@@ -243,6 +288,9 @@ export default function BlogAdminDashboard() {
           setIsOpenMobile={setIsOpenMobile}
           openCreateModal={handleOpenCreateModal}
           onRefresh={loadAllData}
+          posts={posts}
+          onEditPost={handleOpenEditModal}
+          lastUpdatedTime={lastUpdatedTime}
         />
 
         {/* Main Body per Tab */}
@@ -267,6 +315,8 @@ export default function BlogAdminDashboard() {
                     openCreateModal={handleOpenCreateModal}
                     onEditPost={handleOpenEditModal}
                     setActiveTab={setActiveTab}
+                    onNavigateToPosts={handleNavigateToPosts}
+                    posts={posts}
                   />
                 )}
 
@@ -280,6 +330,10 @@ export default function BlogAdminDashboard() {
                     onToggleStatus={handleToggleStatus}
                     onToggleFeatured={handleToggleFeatured}
                     openCreateModal={handleOpenCreateModal}
+                    onBulkDelete={handleBulkDelete}
+                    onBulkStatusChange={handleBulkStatusChange}
+                    onBulkCategoryChange={handleBulkCategoryChange}
+                    filterPreset={postFilterPreset}
                   />
                 )}
 

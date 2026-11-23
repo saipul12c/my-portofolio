@@ -925,3 +925,222 @@ export const resetBlogToSeed = () => {
   localStorage.setItem(STORAGE_CATEGORIES_KEY, JSON.stringify(DEFAULT_SEED_CATEGORIES));
   return true;
 };
+
+/**
+ * 13. Operasi Massal (Bulk / Batch Actions)
+ */
+export const bulkDeletePosts = async (identifiers = []) => {
+  if (!Array.isArray(identifiers) || identifiers.length === 0) return 0;
+  const posts = await getAdminPosts();
+  const idSet = new Set(identifiers.map(String));
+  
+  const toDelete = posts.filter(p => idSet.has(String(p.id)) || idSet.has(String(p.slug)));
+  const remaining = posts.filter(p => !idSet.has(String(p.id)) && !idSet.has(String(p.slug)));
+
+  localStorage.setItem(STORAGE_POSTS_KEY, JSON.stringify(remaining));
+
+  if (supabase && toDelete.length > 0) {
+    try {
+      const slugs = toDelete.map(p => p.slug);
+      await supabase.from('blog_posts').delete().in('slug', slugs);
+    } catch (err) {
+      console.warn('Gagal bulk delete dari Supabase:', err);
+    }
+  }
+
+  return toDelete.length;
+};
+
+export const bulkUpdatePostStatus = async (identifiers = [], newStatus = 'published') => {
+  if (!Array.isArray(identifiers) || identifiers.length === 0) return 0;
+  const posts = await getAdminPosts();
+  const idSet = new Set(identifiers.map(String));
+  let count = 0;
+
+  const updated = posts.map(p => {
+    if (idSet.has(String(p.id)) || idSet.has(String(p.slug))) {
+      count++;
+      return {
+        ...p,
+        status: newStatus,
+        updatedAt: new Date().toISOString().split('T')[0]
+      };
+    }
+    return p;
+  });
+
+  localStorage.setItem(STORAGE_POSTS_KEY, JSON.stringify(updated));
+
+  if (supabase) {
+    try {
+      const slugs = posts.filter(p => idSet.has(String(p.id)) || idSet.has(String(p.slug))).map(p => p.slug);
+      if (slugs.length > 0) {
+        await supabase.from('blog_posts').update({ status: newStatus }).in('slug', slugs);
+      }
+    } catch (err) {
+      console.warn('Gagal bulk update status ke Supabase:', err);
+    }
+  }
+
+  return count;
+};
+
+export const bulkUpdatePostCategory = async (identifiers = [], newCategory) => {
+  if (!Array.isArray(identifiers) || identifiers.length === 0 || !newCategory) return 0;
+  const posts = await getAdminPosts();
+  const idSet = new Set(identifiers.map(String));
+  let count = 0;
+
+  const updated = posts.map(p => {
+    if (idSet.has(String(p.id)) || idSet.has(String(p.slug))) {
+      count++;
+      return {
+        ...p,
+        category: newCategory,
+        updatedAt: new Date().toISOString().split('T')[0]
+      };
+    }
+    return p;
+  });
+
+  localStorage.setItem(STORAGE_POSTS_KEY, JSON.stringify(updated));
+
+  if (supabase) {
+    try {
+      const slugs = posts.filter(p => idSet.has(String(p.id)) || idSet.has(String(p.slug))).map(p => p.slug);
+      if (slugs.length > 0) {
+        await supabase.from('blog_posts').update({ category: newCategory }).in('slug', slugs);
+      }
+    } catch (err) {
+      console.warn('Gagal bulk update category ke Supabase:', err);
+    }
+  }
+
+  return count;
+};
+
+/**
+ * 14. Quick Ideas / Memo Ide Artikel Cepat
+ */
+const STORAGE_QUICK_IDEAS_KEY = 'blog_quick_ideas';
+
+export const getQuickIdeas = () => {
+  try {
+    const raw = localStorage.getItem(STORAGE_QUICK_IDEAS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {
+    // fallback
+  }
+  return [
+    {
+      id: 'idea_1',
+      title: 'Strategi Optimasi Core Web Vitals pada Single Page App',
+      category: 'Teknologi',
+      notes: 'Bahas LCP, CLS, FID/INP dan lazy loading gambar.',
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 'idea_2',
+      title: 'Dokumentasi Visual Pertunjukan Teater Tradisi',
+      category: 'Seni & Budaya',
+      notes: 'Rangkuman persiapan panggung, tata cahaya panggung, dan wawancara aktor.',
+      createdAt: new Date().toISOString()
+    }
+  ];
+};
+
+export const saveQuickIdea = (idea) => {
+  try {
+    const current = getQuickIdeas();
+    const newIdea = {
+      id: 'idea_' + Date.now(),
+      title: idea.title.trim(),
+      category: idea.category || 'Teknologi',
+      notes: idea.notes?.trim() || '',
+      createdAt: new Date().toISOString()
+    };
+    const updated = [newIdea, ...current];
+    localStorage.setItem(STORAGE_QUICK_IDEAS_KEY, JSON.stringify(updated));
+    return newIdea;
+  } catch {
+    return null;
+  }
+};
+
+export const deleteQuickIdea = (id) => {
+  try {
+    const current = getQuickIdeas();
+    const filtered = current.filter(i => i.id !== id);
+    localStorage.setItem(STORAGE_QUICK_IDEAS_KEY, JSON.stringify(filtered));
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * 15. Content & SEO Quality Audit Metrics
+ */
+export const getContentAudit = (posts = []) => {
+  if (!Array.isArray(posts) || posts.length === 0) {
+    return {
+      healthScore: 100,
+      hasMetaDescPct: 100,
+      hasThumbPct: 100,
+      hasTagsPct: 100,
+      avgWords: 0,
+      needsImprovement: []
+    };
+  }
+
+  let totalScore = 0;
+  let hasMetaCount = 0;
+  let hasThumbCount = 0;
+  let hasTagsCount = 0;
+  let totalWords = 0;
+  const needsImprovement = [];
+
+  posts.forEach(p => {
+    let postScore = 0;
+    const words = p.wordCount || (p.content ? p.content.trim().split(/\s+/).length : 0);
+    totalWords += words;
+
+    // Check criteria
+    const hasMeta = Boolean(p.metaDescription && p.metaDescription.length >= 30);
+    const hasThumb = Boolean(p.thumbnail && p.thumbnail.startsWith('http'));
+    const hasTags = Boolean(Array.isArray(p.tags) && p.tags.length >= 2);
+    const goodLength = words >= 300;
+
+    if (hasMeta) { postScore += 25; hasMetaCount++; }
+    if (hasThumb) { postScore += 25; hasThumbCount++; }
+    if (hasTags) { postScore += 25; hasTagsCount++; }
+    if (goodLength) { postScore += 25; }
+
+    totalScore += postScore;
+
+    if (postScore < 75) {
+      needsImprovement.push({
+        id: p.id,
+        slug: p.slug,
+        title: p.title,
+        score: postScore,
+        issues: [
+          !hasMeta ? 'Meta Deskripsi Kurang' : null,
+          !hasThumb ? 'Belum Ada Cover' : null,
+          !hasTags ? 'Tagar < 2' : null,
+          !goodLength ? 'Konten < 300 kata' : null
+        ].filter(Boolean)
+      });
+    }
+  });
+
+  const count = posts.length;
+  return {
+    healthScore: Math.round(totalScore / count),
+    hasMetaDescPct: Math.round((hasMetaCount / count) * 100),
+    hasThumbPct: Math.round((hasThumbCount / count) * 100),
+    hasTagsPct: Math.round((hasTagsCount / count) * 100),
+    avgWords: Math.round(totalWords / count),
+    needsImprovement: needsImprovement.slice(0, 5)
+  };
+};

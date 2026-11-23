@@ -1,21 +1,23 @@
 import React, { useState } from "react";
-import { 
-  FaCode, 
-  FaShieldAlt, 
-  FaServer, 
-  FaCheckCircle, 
-  FaCopy, 
-  FaPlay, 
-  FaTerminal, 
+import {
+  FaCode,
+  FaShieldAlt,
+  FaServer,
+  FaCheckCircle,
+  FaCopy,
+  FaPlay,
+  FaTerminal,
   FaGlobe,
-  FaBolt
+  FaBolt,
+  FaBrain,
+  FaExchangeAlt
 } from "react-icons/fa";
 import { SiJavascript, SiPython } from "react-icons/si";
 
 export default function ApiDocs() {
   const [activeTab, setActiveTab] = useState("curl");
   const [copied, setCopied] = useState(false);
-  
+
   // State for live test
   const [testInput, setTestInput] = useState("Halo, apa kabar?");
   const [testStyle, setTestStyle] = useState("friendly");
@@ -51,16 +53,16 @@ export default function ApiDocs() {
 
   const codeSnippets = {
     curl: `# 1. POST Request (Chat & Kalkulasi)
-curl -X POST https://yourdomain.com/api/saipul \\
+curl -X POST https://syaiful-mukmin.netlify.app/api/saipul \\
   -H "Content-Type: application/json" \\
   -d '{"message": "Berapa hasil dari 25 * 40?", "style": "friendly"}'
 
 # 2. GET Request (Healthcheck & Quick Query)
-curl "https://yourdomain.com/api/saipul?q=halo"`,
+curl "https://syaiful-mukmin.netlify.app/api/saipul?q=halo"`,
 
     javascript: `// Integrasi JavaScript Modern (Browser / Node.js 18+)
 async function tanyasaipul(pertanyaan) {
-  const response = await fetch("https://yourdomain.com/api/saipul", {
+  const response = await fetch("https://syaiful-mukmin.netlify.app/api/saipul", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -85,7 +87,7 @@ tanyasaipul("Hitung akar kuadrat dari 144");`,
 
     python: `import requests
 
-url = "https://yourdomain.com/api/saipul"
+url = "https://syaiful-mukmin.netlify.app/api/saipul"
 payload = {
     "message": "Apa itu Machine Learning?",
     "style": "formal"
@@ -101,11 +103,11 @@ else:
     print("Gagal:", data.get("error"))`,
 
     sdk: `<!-- Embed SaipulAI Web SDK di file HTML eksternal Anda -->
-<script src="https://yourdomain.com/saipul-sdk.js"></script>
+<script src="https://syaiful-mukmin.netlify.app/saipul-sdk.js"></script>
 <script>
   // Inisialisasi SDK klien
   const ai = new SaipulAI({
-    endpoint: "https://yourdomain.com/api/saipul",
+    endpoint: "https://syaiful-mukmin.netlify.app/api/saipul",
     style: "friendly"
   });
 
@@ -127,7 +129,7 @@ else:
 node server/saipul-server.js
 
 # Output console:
-# 🤖 SaipulAI Standalone Server v8.0.0 aktif!
+# 🤖 SaipulAI Standalone Server v8.1.0 aktif!
 # 📡 URL API: http://localhost:3001/api/saipul
 # 🔒 Zero Sensitive Keys • CORS Enabled • PII Filter Active`
   };
@@ -151,7 +153,7 @@ node server/saipul-server.js
               </h2>
               <p className="text-gray-400 text-sm mt-1 flex items-center gap-2">
                 <FaBolt className="text-yellow-400 text-xs" />
-                Gunakan kecerdasan SaipulAI v8.0.0 di website, bot, atau aplikasi pihak ketiga
+                Gunakan kecerdasan SaipulAI v8.1.0 di website, bot, atau aplikasi pihak ketiga
               </p>
             </div>
           </div>
@@ -161,7 +163,7 @@ node server/saipul-server.js
               <span className="text-[10px] uppercase tracking-widest text-gray-500 font-bold block mb-1">Status API</span>
               <div className="flex items-center gap-2 text-green-400 text-sm font-semibold">
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                ONLINE (v8.0.0)
+                ONLINE (v8.1.0)
               </div>
             </div>
             <div className="bg-black/20 rounded-lg p-4 border border-white/5">
@@ -173,6 +175,80 @@ node server/saipul-server.js
               <div className="text-emerald-300 text-sm font-semibold">Zero Sensitive Leakage</div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Dual-Engine Architecture Integration Card */}
+      <div className="bg-gradient-to-r from-blue-950/40 via-purple-950/30 to-indigo-950/40 border border-blue-500/20 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-3 bg-blue-500/20 border border-blue-500/30 rounded-xl text-blue-400">
+            <FaBrain className="text-2xl" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold bg-gradient-to-r from-blue-300 via-indigo-200 to-purple-300 bg-clip-text text-transparent">
+              Integrasi Arsitektur Dual-Engine SaipulAI v8.1.0
+            </h3>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Sinergi harmonis antara kecerdasan On-Device (in-browser) dan Universal Serverless REST API
+            </p>
+          </div>
+        </div>
+
+        <p className="text-sm text-gray-300 leading-relaxed mb-6">
+          Ekosistem <strong>SaipulAI v8.1.0</strong> mengintegrasikan dua pilar arsitektur kecerdasan yang saling melengkapi. Keduanya berbagi pemahaman data portofolio yang selaras, evaluasi matematika simbolik/alami, serta standar keamanan privasi tanpa kebocoran kredensial.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Pilar 1 */}
+          <div className="bg-black/40 border border-blue-500/20 rounded-xl p-4 space-y-3 relative group hover:border-blue-500/40 transition-colors">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-blue-400" />
+                Pilar 1: On-Device In-Browser Engine
+              </span>
+              <span className="text-[10px] bg-blue-900/40 text-blue-300 px-2 py-0.5 rounded border border-blue-700/40 font-mono">
+                100% Client-Side
+              </span>
+            </div>
+            <p className="text-xs text-gray-300 leading-relaxed">
+              Menggerakkan <strong>Chatbot HelpButton</strong> dan <strong>Live Discussion Room (@saipul)</strong> langsung di RAM browser pengguna.
+            </p>
+            <ul className="text-[11px] text-gray-400 space-y-1.5 list-disc list-inside">
+              <li>6-Layer Deep NLP Pipeline & 256-D Self-Attention</li>
+              <li>Nol latensi jaringan (0ms response time)</li>
+              <li>100% privasi terlindungi (tanpa kirim teks obrolan ke server)</li>
+              <li>Akses langsung ke basis data portofolio & riwayat sesi lokal</li>
+            </ul>
+          </div>
+
+          {/* Pilar 2 */}
+          <div className="bg-black/40 border border-purple-500/20 rounded-xl p-4 space-y-3 relative group hover:border-purple-500/40 transition-colors">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-purple-400" />
+                Pilar 2: Universal REST API & Web SDK
+              </span>
+              <span className="text-[10px] bg-purple-900/40 text-purple-300 px-2 py-0.5 rounded border border-purple-700/40 font-mono">
+                /api/saipul
+              </span>
+            </div>
+            <p className="text-xs text-gray-300 leading-relaxed">
+              Menyediakan pintu integrasi mandiri untuk <strong>aplikasi luar, cURL, Python, mobile app, dan bot eksternal</strong>.
+            </p>
+            <ul className="text-[11px] text-gray-400 space-y-1.5 list-disc list-inside">
+              <li>Kompatibel Netlify Functions, Vite dev, & Node.js standalone</li>
+              <li>Evaluasi matematika simbolik dan frasa verbal alami</li>
+              <li>Proteksi deteksi data sensitif (PII) & IP rate-limiting</li>
+              <li>Universal Web SDK (<code className="text-purple-300">public/saipul-sdk.js</code>) siap pakai</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-white/5 flex items-center gap-2 text-xs text-indigo-300">
+          <FaExchangeAlt className="text-indigo-400 shrink-0" />
+          <span>
+            <strong>Jembatan Integrasi:</strong> Web SDK klien dapat digunakan di dalam website maupun diimpor oleh pihak ketiga untuk mengakses seluruh kapabilitas SaipulAI secara konsisten.
+          </span>
         </div>
       </div>
 
@@ -259,41 +335,36 @@ node server/saipul-server.js
           <div className="flex items-center gap-2">
             <button
               onClick={() => setActiveTab("curl")}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                activeTab === "curl" ? "bg-blue-600 text-white" : "text-gray-400 hover:text-gray-200 hover:bg-gray-800"
-              }`}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${activeTab === "curl" ? "bg-blue-600 text-white" : "text-gray-400 hover:text-gray-200 hover:bg-gray-800"
+                }`}
             >
               <FaTerminal /> cURL
             </button>
             <button
               onClick={() => setActiveTab("javascript")}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                activeTab === "javascript" ? "bg-yellow-500 text-black font-semibold" : "text-gray-400 hover:text-gray-200 hover:bg-gray-800"
-              }`}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${activeTab === "javascript" ? "bg-yellow-500 text-black font-semibold" : "text-gray-400 hover:text-gray-200 hover:bg-gray-800"
+                }`}
             >
               <SiJavascript /> JavaScript
             </button>
             <button
               onClick={() => setActiveTab("python")}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                activeTab === "python" ? "bg-blue-500 text-white" : "text-gray-400 hover:text-gray-200 hover:bg-gray-800"
-              }`}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${activeTab === "python" ? "bg-blue-500 text-white" : "text-gray-400 hover:text-gray-200 hover:bg-gray-800"
+                }`}
             >
               <SiPython /> Python
             </button>
             <button
               onClick={() => setActiveTab("sdk")}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                activeTab === "sdk" ? "bg-emerald-600 text-white" : "text-gray-400 hover:text-gray-200 hover:bg-gray-800"
-              }`}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${activeTab === "sdk" ? "bg-emerald-600 text-white" : "text-gray-400 hover:text-gray-200 hover:bg-gray-800"
+                }`}
             >
               <FaGlobe /> Web SDK
             </button>
             <button
               onClick={() => setActiveTab("server")}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                activeTab === "server" ? "bg-purple-600 text-white" : "text-gray-400 hover:text-gray-200 hover:bg-gray-800"
-              }`}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${activeTab === "server" ? "bg-purple-600 text-white" : "text-gray-400 hover:text-gray-200 hover:bg-gray-800"
+                }`}
             >
               <FaServer /> Microservice
             </button>

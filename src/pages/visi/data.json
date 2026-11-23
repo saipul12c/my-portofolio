@@ -1,0 +1,176 @@
+{
+  "header": {
+    "title": "Visi, Misi & Minat ✨",
+    "prefix": "Di balik setiap ",
+    "highlight1": "ide besar",
+    "middle": " dan ",
+    "highlight2": "ambisi kreatif",
+    "suffix": ", selalu ada arah dan tujuan yang jelas 💫"
+  },
+  "visi": {
+    "title": "Visi",
+    "segments": [
+      {
+        "text": "Menjadi pendidik dan kreator media edukatif yang ",
+        "highlight": false
+      },
+      {
+        "text": "adaptif terhadap kemajuan teknologi dan inovasi digital",
+        "highlight": true
+      },
+      {
+        "text": ", sekaligus ",
+        "highlight": false
+      },
+      {
+        "text": "menginspirasi melalui pembelajaran kreatif, interaktif, dan berdampak",
+        "highlight": true
+      },
+      {
+        "text": ". Berkomitmen menciptakan solusi edukasi yang ",
+        "highlight": false
+      },
+      {
+        "text": "inklusif, berkelanjutan, dan memberikan manfaat positif bagi individu maupun masyarakat luas",
+        "highlight": true
+      },
+      {
+        "text": ".",
+        "highlight": false
+      }
+    ]
+  },
+  "misi": {
+    "title": "Misi",
+    "items": [
+      "Menciptakan solusi digital yang relevan & bermanfaat.",
+      "Membangun ruang kolaboratif dan edukatif untuk kreator muda.",
+      "Terus belajar, bereksperimen, dan berinovasi tanpa batas 🚀.",
+      "Berkontribusi positif melalui teknologi dan empati."
+    ]
+  },
+  "minatBakatSection": {
+    "title": "Minat & Bakat",
+    "prefix": "Aku percaya setiap orang punya ",
+    "highlight": "spark unik",
+    "suffix": " yang bikin mereka beda ⚡ ini adalah hal-hal yang paling bikin aku hidup:"
+  },
+  "minatBakat": [
+    {
+      "emoji": "💻",
+      "title": "Web Development",
+      "desc": "Membangun pengalaman digital yang interaktif & berjiwa."
+    },
+    {
+      "emoji": "📸",
+      "title": "Photography",
+      "desc": "Menangkap momen jadi karya visual yang bercerita."
+    },
+    {
+      "emoji": "🎨",
+      "title": "UI/UX Design",
+      "desc": "Menggabungkan estetika dengan logika pengguna."
+    },
+    {
+      "emoji": "🧠",
+      "title": "Creative Strategy",
+      "desc": "Menemukan ide segar dan mengubahnya jadi dampak nyata."
+    },
+    {
+      "emoji": "🎬",
+      "title": "Content Creation",
+      "desc": "Membuat konten yang relate & meaningful untuk Gen Z."
+    },
+    {
+      "emoji": "🚀",
+      "title": "Personal Growth",
+      "desc": "Terus upgrade mindset, skill, dan empati tiap hari."
+    }
+  ],
+  "filosofiKreatif": {
+    "title": "Filosofi Kreatif 🌱",
+    "segments": [
+      {
+        "text": "Kreativitas bagiku bukan sekadar hasil, tapi perjalanan spiritual — ",
+        "highlightType": null
+      },
+      {
+        "text": "proses memahami diri lewat karya",
+        "highlightType": "cyan"
+      },
+      {
+        "text": ". Setiap kesalahan adalah eksperimen, setiap ide adalah benih. ",
+        "highlightType": null
+      },
+      {
+        "text": "Keberanian untuk gagal",
+        "highlightType": "yellow"
+      },
+      {
+        "text": " adalah bahan bakar dari setiap inovasi yang lahir. Di sinilah seni, logika, dan empati bersatu menjadi identitas 🌿.",
+        "highlightType": null
+      }
+    ]
+  },
+  "timelineTitle": "Timeline Perjalanan ⏳",
+  "timeline": [
+    {
+      "year": "2021",
+      "text": "Awal langkah kecil — mulai belajar desain dan pemrograman web secara otodidak.",
+      "icon": "🎓"
+    },
+    {
+      "year": "2022",
+      "text": "Mulai membangun proyek freelance, berkolaborasi dengan teman sevisi.",
+      "icon": "💡"
+    },
+    {
+      "year": "2023",
+      "text": "Mengenal dunia UI/UX dan membuat portofolio digital pertama.",
+      "icon": "🖌️"
+    },
+    {
+      "year": "2024",
+      "text": "Terlibat dalam komunitas kreatif, berbagi pengetahuan & menginspirasi orang lain.",
+      "icon": "🤝"
+    },
+    {
+      "year": "2025",
+      "text": "Fokus mengembangkan platform digital untuk kolaborasi dan ekspresi Gen Z.",
+      "icon": "🚀"
+    }
+  ],
+  "langkahSelanjutnya": {
+    "title": "Langkah Selanjutnya 🔮",
+    "prefix": "Aku ingin melangkah menuju fase baru: ",
+    "highlight": "membangun ekosistem kreatif berbasis teknologi",
+    "suffix": " — tempat ide, kolaborasi, dan pembelajaran bersatu jadi ruang berkembangnya kreativitas muda.",
+    "subDescription": "Misi berikutnya: memberi makna digital yang manusiawi 🌌",
+    "ctaText": "Bergabung Sekarang",
+    "ctaLink": "/contact"
+  },
+  "coreValues": {
+    "title": "Core Values 💫",
+    "items": [
+      {
+        "icon": "Heart",
+        "title": "Empathy",
+        "desc": "Memahami sebelum mencipta. Setiap karya berangkat dari rasa peduli pada manusia."
+      },
+      {
+        "icon": "Star",
+        "title": "Creativity",
+        "desc": "Berani berpikir berbeda, mengekspresikan ide dengan keaslian & jiwa."
+      },
+      {
+        "icon": "Compass",
+        "title": "Growth",
+        "desc": "Setiap hari adalah kesempatan untuk berkembang, belajar, dan berevolusi."
+      }
+    ]
+  },
+  "quote": {
+    "text": "Creativity is intelligence having fun.",
+    "author": "Albert Einstein"
+  }
+}

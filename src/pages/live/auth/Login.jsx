@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, AlertCircle, LogIn, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '../../../lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from '../../../lib/supabaseClient';
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTimerRef = useRef(null);
+
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -16,25 +19,98 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [rememberMe, setRememberMe] = useState(false);
 
-  // Auto-redirect jika pengguna sudah memiliki sesi login aktif
+  // Auto-redirect jika pengguna sudah memiliki sesi login aktif yang sah (Standar Modern Supabase: getUser & onAuthStateChange)
   useEffect(() => {
+    let isMounted = true;
+
     const checkActiveSession = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          const localUser = JSON.parse(localStorage.getItem('local_user') || '{}');
-          if (['SUPER_ADMIN', 'ADMIN', 'MODERATOR'].includes(localUser.role)) {
-            navigate('/Live-Discussion/dashboard', { replace: true });
-          } else {
-            navigate('/Live-Discussion', { replace: true });
-          }
+        const searchParams = new URLSearchParams(location.search);
+        const isExplicitLogout = searchParams.get('logout') === 'true';
+
+        // Jika navigasi berasal dari logout, bersihkan sesi secara tuntas
+        if (isExplicitLogout) {
+          try {
+            await supabase.auth.signOut();
+          } catch (_) {}
+          localStorage.removeItem('local_user');
+          return;
+        }
+
+        // Gunakan getUser() (Standar Baru Supabase) untuk memverifikasi token ke server auth, bukan sekadar cache lokal getSession()
+        const authRes = await supabase.auth.getUser().catch(() => null);
+        const authUser = authRes?.data?.user;
+        if (!authUser) return;
+
+        const localUserRaw = localStorage.getItem('local_user');
+
+        // Jika local_user kosong tetapi session ada (gejala logout tidak lengkap dari tab/komponen lain),
+        // lakukan sign out agar user tidak terjebak dalam siklus redirect loop
+        if (!localUserRaw) {
+          try {
+            await supabase.auth.signOut();
+          } catch (_) {}
+          return;
+        }
+
+        // Ambil profil terkini dari database untuk memverifikasi role dan status secara akurat (Anti-Spoofing & Anti-Banned)
+        const { data: dbUser } = await supabase
+          .from('users')
+          .select('id, role, status')
+          .eq('id', authUser.id)
+          .maybeSingle();
+
+        if (!isMounted) return;
+
+        // Jika status akun dinonaktifkan atau dibanned, putuskan sesi segera
+        if (dbUser?.status === 'banned' || dbUser?.status === 'nonaktif') {
+          await supabase.auth.signOut();
+          localStorage.removeItem('local_user');
+          setMessage({
+            type: 'error',
+            text: 'Akun Anda dinonaktifkan atau diblokir. Hubungi administrator.'
+          });
+          return;
+        }
+
+        let verifiedRole = dbUser?.role;
+        if (!verifiedRole && localUserRaw) {
+          try {
+            verifiedRole = JSON.parse(localUserRaw)?.role;
+          } catch (_) {}
+        }
+        verifiedRole = (verifiedRole || authUser.app_metadata?.role || 'USER').toUpperCase();
+
+        if (['SUPER_ADMIN', 'ADMIN', 'MODERATOR'].includes(verifiedRole)) {
+          navigate('/Live-Discussion/dashboard', { replace: true });
+        } else {
+          navigate('/Live-Discussion', { replace: true });
         }
       } catch (err) {
         console.warn('Session check failed', err);
       }
     };
+
     checkActiveSession();
-  }, [navigate]);
+
+    // Listener realtime perubahan status auth (Standar Baru Supabase)
+    const { data: authListener } = supabase.auth.onAuthStateChange((event) => {
+      if (!isMounted) return;
+      if (event === 'SIGNED_OUT') {
+        localStorage.removeItem('local_user');
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      if (authListener?.subscription) {
+        authListener.subscription.unsubscribe();
+      }
+      if (redirectTimerRef.current) {
+        clearTimeout(redirectTimerRef.current);
+      }
+    };
+  }, [navigate, location.search]);
 
   // Cek jika ada data login yang diingat
   useEffect(() => {
@@ -48,8 +124,8 @@ const Login = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const cleanEmail = formData.email.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!cleanEmail) {
       newErrors.email = 'Email wajib diisi';
     } else if (!emailRegex.test(cleanEmail)) {
@@ -61,7 +137,11 @@ const Login = () => {
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    if (Object.keys(newErrors).length > 0) {
+      setMessage({ type: 'error', text: newErrors.email || newErrors.password });
+      return false;
+    }
+    return true;
   };
 
   const handleChange = (e) => {
@@ -70,7 +150,7 @@ const Login = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
+    // Hapus pesan error field saat user mengetik
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -80,13 +160,21 @@ const Login = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
+    if (!isSupabaseConfigured) {
+      setMessage({
+        type: 'error',
+        text: 'Konfigurasi database Supabase belum terpasang atau tidak aktif.'
+      });
+      return;
+    }
+
     setLoading(true);
     setMessage({ type: '', text: '' });
 
     try {
       const cleanEmail = formData.email.trim().toLowerCase();
 
-      // 1. Auth Login
+      // 1. Auth Login Supabase
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
         password: formData.password
@@ -97,9 +185,9 @@ const Login = () => {
         const errLower = authError.message?.toLowerCase() || '';
 
         if (errLower.includes('email not confirmed')) {
-          throw new Error('Email belum diverifikasi! Silakan periksa inbox/spam email Anda untuk konfirmasi, atau nonaktifkan "Confirm email" di Dashboard Supabase (Authentication > Providers > Email) jika sedang tahap testing.');
+          throw new Error('Email belum diverifikasi! Silakan periksa inbox/spam email Anda untuk konfirmasi, atau nonaktifkan "Confirm email" di Dashboard Supabase jika sedang tahap testing.');
         } else if (errLower.includes('invalid login credentials') || errLower.includes('invalid credentials')) {
-          throw new Error('Email atau password salah. Pastikan akun sudah terdaftar.');
+          throw new Error('Email atau password salah. Pastikan akun sudah terdaftar dan kredensial sudah sesuai.');
         } else if (errLower.includes('too many requests') || errLower.includes('rate limit')) {
           throw new Error('Terlalu banyak percobaan gagal. Mohon tunggu beberapa saat sebelum mencoba kembali.');
         } else {
@@ -107,56 +195,72 @@ const Login = () => {
         }
       }
 
-      // 2. Profile Fetch with Retry & Self-Healing Sync
+      if (!authData?.user) {
+        throw new Error('Gagal mendapatkan data sesi pengguna.');
+      }
+
+      // 2. Profile Fetch with Retry
       let user = null;
       let retries = 3;
 
       while (retries > 0 && !user) {
-        const { data: users } = await supabase
+        const { data: userData, error: userFetchError } = await supabase
           .from('users')
           .select('*')
           .eq('id', authData.user.id)
           .maybeSingle();
 
-        if (users) {
-          user = users;
+        if (userData) {
+          user = userData;
+        } else if (userFetchError) {
+          console.warn('Profile fetch warning:', userFetchError.message);
+          retries--;
+          if (retries > 0) await new Promise(res => setTimeout(res, 500));
         } else {
           retries--;
-          if (retries > 0) await new Promise(res => setTimeout(res, 600));
+          if (retries > 0) await new Promise(res => setTimeout(res, 500));
         }
       }
 
-      // Self-Healing Profile Sync: Jika row di public.users belum terbuat oleh trigger
+      // Self-Healing Profile Sync: Hanya gunakan INSERT (bukan upsert paksa) jika row belum terbuat oleh trigger
       if (!user) {
         const fallbackNama = authData.user.user_metadata?.nama || cleanEmail.split('@')[0];
         try {
           const { data: healedUser } = await supabase
             .from('users')
-            .upsert({
+            .insert({
               id: authData.user.id,
               email: cleanEmail,
               nama: fallbackNama,
               role: 'USER',
               status: 'aktif'
-            }, { onConflict: 'id' })
+            })
             .select()
             .maybeSingle();
 
           if (healedUser) user = healedUser;
         } catch (healErr) {
-          console.warn('Auto-healing user profile failed:', healErr);
+          console.warn('Self-healing insert skipped or failed:', healErr);
+          // Coba fetch ulang jika gagal karena duplikasi id
+          const { data: retryUser } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', authData.user.id)
+            .maybeSingle();
+          if (retryUser) user = retryUser;
         }
       }
 
-      // 3. Status Check (hanya jika data profil sudah ada)
+      // 3. Status Check (Proteksi akun nonaktif atau dibanned)
       const userStatus = user?.status?.toLowerCase();
       if (userStatus === 'nonaktif' || userStatus === 'banned') {
         await supabase.auth.signOut();
+        localStorage.removeItem('local_user');
         throw new Error('Akun Anda tidak aktif atau diblokir. Hubungi administrator.');
       }
 
-      // 4. Role Config Mapping
-      const userRole = (user?.role || 'USER').toUpperCase();
+      // 4. Role Config Mapping (Prioritas: Database > App Metadata > User Metadata > USER)
+      const userRole = (user?.role || authData.user.app_metadata?.role || authData.user.user_metadata?.role || 'USER').toUpperCase();
       const roleConfig = {
         'SUPER_ADMIN': { level: 10, name: 'Super Admin', badge: '👑', color: 'from-purple-600 to-pink-600' },
         'ADMIN': { level: 8, name: 'Admin', badge: '🛡️', color: 'from-red-500 to-orange-500' },
@@ -168,7 +272,7 @@ const Login = () => {
 
       const config = roleConfig[userRole] || roleConfig.USER;
 
-      // 5. Save Session Data (Fallback ke user_metadata jika trigger Supabase belum selesai)
+      // 5. Save Session Data secara lengkap dan konsisten dengan Live.jsx & dashboard.jsx
       const localUser = {
         id: authData.user.id,
         username: user?.nama || authData.user.user_metadata?.nama || cleanEmail.split('@')[0],
@@ -181,6 +285,10 @@ const Login = () => {
         messageCount: parseInt(user?.message_count) || 0,
         lastReset: user?.last_reset || new Date().toISOString().split('T')[0],
         joinDate: user?.tanggal_daftar || authData.user.created_at || new Date().toISOString(),
+        muteUntil: user?.mute_until || null,
+        isShadowbanned: user?.is_shadowbanned || false,
+        banReason: user?.ban_reason || null,
+        muteReason: user?.mute_reason || null,
         loginTime: new Date().toISOString()
       };
 
@@ -190,25 +298,24 @@ const Login = () => {
 
       setMessage({ type: 'success', text: 'Sinyal terhubung! Mengarahkan...' });
 
-      // 6. Redirect
-      setTimeout(() => {
+      // 6. Redirect dengan replace: true agar tidak terjebak di history back
+      redirectTimerRef.current = setTimeout(() => {
         if (['SUPER_ADMIN', 'ADMIN', 'MODERATOR'].includes(userRole)) {
-          navigate('/Live-Discussion/dashboard');
+          navigate('/Live-Discussion/dashboard', { replace: true });
         } else {
-          navigate('/Live-Discussion');
+          navigate('/Live-Discussion', { replace: true });
         }
       }, 500);
 
     } catch (error) {
       console.error('Login error:', error);
       setMessage({ type: 'error', text: error.message || 'Koneksi gagal.' });
-    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-gray-900)] flex items-center justify-center p-4 sm:p-8 relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--color-gray-900)] flex items-center justify-center p-4 sm:p-8 relative overflow-y-auto">
       {/* Immersive Background Orbs - Hardware Accelerated */}
       <div 
         className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-500/10 rounded-full mix-blend-screen filter blur-[120px] pointer-events-none animate-pulse will-change-transform"
@@ -223,7 +330,7 @@ const Login = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="w-full max-w-md relative z-10"
+        className="w-full max-w-md relative z-10 my-auto py-6"
       >
         {/* Tombol Navigasi Kembali ke Live Discussion */}
         <div className="mb-4">
@@ -269,27 +376,34 @@ const Login = () => {
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-1">
-              <label className="text-[9px] font-black tracking-widest text-white/30 uppercase ml-1">Secure Email</label>
+              <label htmlFor="email" className="text-[9px] font-black tracking-widest text-white/30 uppercase ml-1">Secure Email</label>
               <div className="relative group/input">
                 <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within/input:text-cyan-400 transition-colors" />
                 <input
+                  id="email"
                   type="email"
                   name="email"
+                  autoComplete="email"
+                  aria-label="Secure Email"
                   value={formData.email}
                   onChange={handleChange}
                   className={`w-full pl-12 pr-4 py-3 bg-white/[0.03] border rounded-2xl focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500/40 outline-none text-white text-sm placeholder-white/10 transition-all duration-300 backdrop-blur-md ${errors.email ? 'border-red-400/50 bg-red-400/5' : 'border-white/5 hover:border-white/10'}`}
                   placeholder="name@example.com"
                 />
               </div>
+              {errors.email && <p className="text-[10px] text-red-400 ml-1 font-semibold">{errors.email}</p>}
             </div>
 
             <div className="space-y-1">
-              <label className="text-[9px] font-black tracking-widest text-white/30 uppercase ml-1">Access Protocol</label>
+              <label htmlFor="password" className="text-[9px] font-black tracking-widest text-white/30 uppercase ml-1">Access Protocol</label>
               <div className="relative group/input">
                 <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within/input:text-cyan-400 transition-colors" />
                 <input
+                  id="password"
                   type={showPassword ? "text" : "password"}
                   name="password"
+                  autoComplete="current-password"
+                  aria-label="Password Access Protocol"
                   value={formData.password}
                   onChange={handleChange}
                   className={`w-full pl-12 pr-12 py-3 bg-white/[0.03] border rounded-2xl focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500/40 outline-none text-white text-sm placeholder-white/10 transition-all duration-300 backdrop-blur-md ${errors.password ? 'border-red-400/50 bg-red-400/5' : 'border-white/5 hover:border-white/10'}`}
@@ -297,12 +411,14 @@ const Login = () => {
                 />
                 <button
                   type="button"
+                  aria-label={showPassword ? "Sembunyikan password" : "Lihat password"}
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/20 hover:text-cyan-400 transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+              {errors.password && <p className="text-[10px] text-red-400 ml-1 font-semibold">{errors.password}</p>}
             </div>
 
             <div className="flex items-center justify-between pb-2">
@@ -321,8 +437,8 @@ const Login = () => {
             </div>
 
             <motion.button
-              whileHover={{ scale: 1.02, boxShadow: '0 0 20px rgba(6, 182, 212, 0.3)' }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={loading ? {} : { scale: 1.02, boxShadow: '0 0 20px rgba(6, 182, 212, 0.3)' }}
+              whileTap={loading ? {} : { scale: 0.98 }}
               type="submit"
               disabled={loading}
               className={`w-full py-4 px-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] text-white transition-all border border-cyan-400/20 overflow-hidden relative group ${loading ? 'bg-cyan-600/50 cursor-not-allowed' : 'bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-700 shadow-xl shadow-cyan-500/10'}`}

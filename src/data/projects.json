@@ -20,16 +20,38 @@
         "Mengoptimalkan transisi antar halaman agar tetap halus"
       ],
       "timeline": [
-        { "phase": "Riset & Perancangan UI/UX", "duration": "3 minggu" },
-        { "phase": "Pengembangan Frontend", "duration": "6 minggu" },
-        { "phase": "Integrasi Data & Pengujian", "duration": "3 minggu" }
+        {
+          "phase": "Riset & Perancangan UI/UX",
+          "duration": "3 minggu"
+        },
+        {
+          "phase": "Pengembangan Frontend",
+          "duration": "6 minggu"
+        },
+        {
+          "phase": "Integrasi Data & Pengujian",
+          "duration": "3 minggu"
+        }
       ],
       "results": "Platform digunakan oleh 3 lembaga pendidikan dan mendapat rating 4.8/5 dari pengguna awal.",
       "impact": "Meningkatkan keterlibatan siswa sebesar 30% dibandingkan metode e-learning konvensional.",
       "role": "Frontend Developer & UI Designer",
-      "tech": ["React", "Tailwind CSS", "Framer Motion"],
-      "tools": ["Figma", "Trello", "Notion"],
-      "tags": ["Education", "React", "Learning Platform", "Interactive UI"],
+      "tech": [
+        "React",
+        "Tailwind CSS",
+        "Framer Motion"
+      ],
+      "tools": [
+        "Figma",
+        "Trello",
+        "Notion"
+      ],
+      "tags": [
+        "Education",
+        "React",
+        "Learning Platform",
+        "Interactive UI"
+      ],
       "gallery": [
         "https://images.unsplash.com/photo-1605902711622-cfb43c4437b5?auto=format&fit=crop&w=900&q=80",
         "https://images.unsplash.com/photo-1603570417033-62c9071b3b50?auto=format&fit=crop&w=900&q=80"
@@ -38,7 +60,9 @@
       "category": "Web App",
       "date": "2024-04-20",
       "duration": "3 bulan",
-      "collaborators": ["Digital Learning Studio"],
+      "collaborators": [
+        "Digital Learning Studio"
+      ],
       "status": "Selesai",
       "rating": 4.8,
       "label": "Rekomendasi",
@@ -71,16 +95,38 @@
         "Mengoptimalkan untuk perangkat dengan GPU lemah"
       ],
       "timeline": [
-        { "phase": "Konsep & Asset Desain", "duration": "2 minggu" },
-        { "phase": "Implementasi 3D Scene & Animasi", "duration": "4 minggu" },
-        { "phase": "Testing & Publikasi", "duration": "2 minggu" }
+        {
+          "phase": "Konsep & Asset Desain",
+          "duration": "2 minggu"
+        },
+        {
+          "phase": "Implementasi 3D Scene & Animasi",
+          "duration": "4 minggu"
+        },
+        {
+          "phase": "Testing & Publikasi",
+          "duration": "2 minggu"
+        }
       ],
       "results": "Galeri ini menarik lebih dari 2.000 pengunjung virtual dari 5 negara selama 2 minggu pertama.",
       "impact": "Menjadi sarana promosi seni Islam digital pertama di komunitas Madrasah Tech.",
       "role": "Frontend 3D Developer",
-      "tech": ["Three.js", "Vite", "Tailwind CSS"],
-      "tools": ["Blender", "Figma", "GitHub"],
-      "tags": ["3D", "Design", "Islamic Art", "WebGL"],
+      "tech": [
+        "Three.js",
+        "Vite",
+        "Tailwind CSS"
+      ],
+      "tools": [
+        "Blender",
+        "Figma",
+        "GitHub"
+      ],
+      "tags": [
+        "3D",
+        "Design",
+        "Islamic Art",
+        "WebGL"
+      ],
       "gallery": [
         "https://images.unsplash.com/photo-1507574565994-8f27be3c4d43?auto=format&fit=crop&w=900&q=80",
         "https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=900&q=80"
@@ -89,7 +135,9 @@
       "category": "Design & 3D",
       "date": "2023-12-12",
       "duration": "2 bulan",
-      "collaborators": ["Madrasah Tech Community"],
+      "collaborators": [
+        "Madrasah Tech Community"
+      ],
       "status": "Publik",
       "rating": 4.5,
       "label": "Hot",
@@ -122,16 +170,38 @@
         "Mengatasi keterbatasan deteksi marker di lingkungan minim cahaya"
       ],
       "timeline": [
-        { "phase": "Penelitian & Desain AR Marker", "duration": "1 bulan" },
-        { "phase": "Pengembangan Aplikasi", "duration": "3 bulan" },
-        { "phase": "Uji Lapangan & Evaluasi", "duration": "1 bulan" }
+        {
+          "phase": "Penelitian & Desain AR Marker",
+          "duration": "1 bulan"
+        },
+        {
+          "phase": "Pengembangan Aplikasi",
+          "duration": "3 bulan"
+        },
+        {
+          "phase": "Uji Lapangan & Evaluasi",
+          "duration": "1 bulan"
+        }
       ],
       "results": "Peningkatan partisipasi belajar hingga 40% di sekolah pilot project.",
       "impact": "Menjadi salah satu inovasi yang direkomendasikan oleh komunitas EdTech nasional.",
       "role": "Frontend AR Developer",
-      "tech": ["React", "AR.js", "Firebase"],
-      "tools": ["Blender", "Trello", "Figma"],
-      "tags": ["Education", "Augmented Reality", "React", "Innovation"],
+      "tech": [
+        "React",
+        "AR.js",
+        "Firebase"
+      ],
+      "tools": [
+        "Blender",
+        "Trello",
+        "Figma"
+      ],
+      "tags": [
+        "Education",
+        "Augmented Reality",
+        "React",
+        "Innovation"
+      ],
       "gallery": [
         "https://images.unsplash.com/photo-1605379399642-870262d3d051?auto=format&fit=crop&w=900&q=80",
         "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80"
@@ -140,7 +210,9 @@
       "category": "EdTech",
       "date": "2024-05-10",
       "duration": "5 bulan",
-      "collaborators": ["Kampus Merdeka Project"],
+      "collaborators": [
+        "Kampus Merdeka Project"
+      ],
       "status": "Berjalan",
       "rating": 5,
       "label": "Baru",
@@ -173,16 +245,38 @@
         "Penyesuaian UI agar tetap kontras di semua tema"
       ],
       "timeline": [
-        { "phase": "Desain & Struktur Konten", "duration": "1 minggu" },
-        { "phase": "Pengembangan UI & Routing", "duration": "2 minggu" },
-        { "phase": "Testing & Deployment", "duration": "1 minggu" }
+        {
+          "phase": "Desain & Struktur Konten",
+          "duration": "1 minggu"
+        },
+        {
+          "phase": "Pengembangan UI & Routing",
+          "duration": "2 minggu"
+        },
+        {
+          "phase": "Testing & Deployment",
+          "duration": "1 minggu"
+        }
       ],
       "results": "Website ini memperkuat branding personal dan menjadi pusat dokumentasi seluruh proyek publik.",
       "impact": "Meningkatkan koneksi profesional melalui tampilan visual dan UX yang berkesan.",
       "role": "Fullstack Web Developer",
-      "tech": ["React", "Vite", "Tailwind CSS"],
-      "tools": ["Figma", "VS Code", "Vercel"],
-      "tags": ["Portfolio", "UI/UX", "React", "Personal Website"],
+      "tech": [
+        "React",
+        "Vite",
+        "Tailwind CSS"
+      ],
+      "tools": [
+        "Figma",
+        "VS Code",
+        "Vercel"
+      ],
+      "tags": [
+        "Portfolio",
+        "UI/UX",
+        "React",
+        "Personal Website"
+      ],
       "gallery": [
         "https://images.unsplash.com/photo-1602407294553-6d8eeb3f07d7?auto=format&fit=crop&w=900&q=80",
         "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80"
@@ -191,7 +285,9 @@
       "category": "Personal",
       "date": "2024-02-01",
       "duration": "1 bulan",
-      "collaborators": ["Solo Project"],
+      "collaborators": [
+        "Solo Project"
+      ],
       "status": "Online",
       "rating": 4.7,
       "label": "Rekomendasi",
@@ -224,15 +320,33 @@
         "Menangani batasan token OpenAI pada materi panjang"
       ],
       "timeline": [
-        { "phase": "Desain UI/UX", "duration": "2 minggu" },
-        { "phase": "Integrasi API & Testing", "duration": "4 minggu" }
+        {
+          "phase": "Desain UI/UX",
+          "duration": "2 minggu"
+        },
+        {
+          "phase": "Integrasi API & Testing",
+          "duration": "4 minggu"
+        }
       ],
       "results": "Digunakan oleh lebih dari 200 siswa dan mendapat ulasan positif.",
       "impact": "Meningkatkan kemandirian belajar siswa hingga 25%.",
       "role": "Frontend Developer & AI Integrator",
-      "tech": ["React", "OpenAI API", "Tailwind CSS"],
-      "tools": ["Figma", "Notion", "GitHub"],
-      "tags": ["AI", "Education", "Chatbot"],
+      "tech": [
+        "React",
+        "OpenAI API",
+        "Tailwind CSS"
+      ],
+      "tools": [
+        "Figma",
+        "Notion",
+        "GitHub"
+      ],
+      "tags": [
+        "AI",
+        "Education",
+        "Chatbot"
+      ],
       "gallery": [
         "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=900&q=80"
       ],
@@ -240,7 +354,9 @@
       "category": "AI",
       "date": "2024-07-12",
       "duration": "1.5 bulan",
-      "collaborators": ["EdTech AI Lab"],
+      "collaborators": [
+        "EdTech AI Lab"
+      ],
       "status": "Online",
       "rating": 4.9,
       "label": "Baru",
@@ -273,15 +389,33 @@
         "Pengelolaan state kompleks antar komponen"
       ],
       "timeline": [
-        { "phase": "Riset UX & Desain", "duration": "2 minggu" },
-        { "phase": "Pengembangan", "duration": "5 minggu" }
+        {
+          "phase": "Riset UX & Desain",
+          "duration": "2 minggu"
+        },
+        {
+          "phase": "Pengembangan",
+          "duration": "5 minggu"
+        }
       ],
       "results": "Digunakan oleh sekolah mitra untuk manajemen akademik harian.",
       "impact": "Mengurangi waktu pengolahan data hingga 50%.",
       "role": "Frontend Developer",
-      "tech": ["React", "Chart.js", "Tailwind CSS"],
-      "tools": ["Figma", "Trello", "Vite"],
-      "tags": ["Dashboard", "Data Visualization", "React"],
+      "tech": [
+        "React",
+        "Chart.js",
+        "Tailwind CSS"
+      ],
+      "tools": [
+        "Figma",
+        "Trello",
+        "Vite"
+      ],
+      "tags": [
+        "Dashboard",
+        "Data Visualization",
+        "React"
+      ],
       "gallery": [
         "https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=900&q=80"
       ],
@@ -289,7 +423,9 @@
       "category": "Web App",
       "date": "2024-06-05",
       "duration": "2 bulan",
-      "collaborators": ["CreativeEdu Team"],
+      "collaborators": [
+        "CreativeEdu Team"
+      ],
       "status": "Online",
       "rating": 4.7,
       "label": "Rekomendasi",
@@ -322,15 +458,33 @@
         "Implementasi export ke format React"
       ],
       "timeline": [
-        { "phase": "Riset Framer Motion", "duration": "2 minggu" },
-        { "phase": "Pengembangan Editor", "duration": "6 minggu" }
+        {
+          "phase": "Riset Framer Motion",
+          "duration": "2 minggu"
+        },
+        {
+          "phase": "Pengembangan Editor",
+          "duration": "6 minggu"
+        }
       ],
       "results": "Digunakan oleh 150+ desainer untuk proyek pribadi.",
       "impact": "Meningkatkan produktivitas desainer UI hingga 35%.",
       "role": "Fullstack Developer",
-      "tech": ["React", "Framer Motion", "Vite"],
-      "tools": ["Figma", "Trello", "GitHub"],
-      "tags": ["Animation", "Design", "React"],
+      "tech": [
+        "React",
+        "Framer Motion",
+        "Vite"
+      ],
+      "tools": [
+        "Figma",
+        "Trello",
+        "GitHub"
+      ],
+      "tags": [
+        "Animation",
+        "Design",
+        "React"
+      ],
       "gallery": [
         "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=80"
       ],
@@ -338,7 +492,9 @@
       "category": "Design & 3D",
       "date": "2024-08-03",
       "duration": "2 bulan",
-      "collaborators": ["MotionLab ID"],
+      "collaborators": [
+        "MotionLab ID"
+      ],
       "status": "Publik",
       "rating": 4.6,
       "label": "Hot",
@@ -371,15 +527,33 @@
         "Membangun sistem rekomendasi sederhana tanpa server"
       ],
       "timeline": [
-        { "phase": "Penelitian", "duration": "2 minggu" },
-        { "phase": "Pengembangan", "duration": "5 minggu" }
+        {
+          "phase": "Penelitian",
+          "duration": "2 minggu"
+        },
+        {
+          "phase": "Pengembangan",
+          "duration": "5 minggu"
+        }
       ],
       "results": "Lebih dari 1.000 pengguna aktif bulanan.",
       "impact": "Mendorong perubahan perilaku kecil tapi nyata terhadap lingkungan.",
       "role": "Frontend Developer",
-      "tech": ["React", "TensorFlow.js", "Tailwind CSS"],
-      "tools": ["Notion", "Figma", "GitHub"],
-      "tags": ["AI", "Environment", "React"],
+      "tech": [
+        "React",
+        "TensorFlow.js",
+        "Tailwind CSS"
+      ],
+      "tools": [
+        "Notion",
+        "Figma",
+        "GitHub"
+      ],
+      "tags": [
+        "AI",
+        "Environment",
+        "React"
+      ],
       "gallery": [
         "https://images.unsplash.com/photo-1506765515384-028b60a970df?auto=format&fit=crop&w=900&q=80"
       ],
@@ -387,7 +561,9 @@
       "category": "AI",
       "date": "2024-09-22",
       "duration": "2 bulan",
-      "collaborators": ["GreenTech Community"],
+      "collaborators": [
+        "GreenTech Community"
+      ],
       "status": "Online",
       "rating": 4.8,
       "label": "Rekomendasi",
@@ -420,15 +596,33 @@
         "Mencegah kebosanan pengguna jangka panjang"
       ],
       "timeline": [
-        { "phase": "Riset UX", "duration": "3 minggu" },
-        { "phase": "Implementasi & Tes", "duration": "6 minggu" }
+        {
+          "phase": "Riset UX",
+          "duration": "3 minggu"
+        },
+        {
+          "phase": "Implementasi & Tes",
+          "duration": "6 minggu"
+        }
       ],
       "results": "5000+ pengguna aktif dalam 2 bulan peluncuran.",
       "impact": "Meningkatkan keterlibatan komunitas dalam kebiasaan sehat.",
       "role": "Fullstack Developer",
-      "tech": ["Next.js", "Firebase", "Tailwind CSS"],
-      "tools": ["Figma", "GitHub", "Vercel"],
-      "tags": ["Health", "Community", "Next.js"],
+      "tech": [
+        "Next.js",
+        "Firebase",
+        "Tailwind CSS"
+      ],
+      "tools": [
+        "Figma",
+        "GitHub",
+        "Vercel"
+      ],
+      "tags": [
+        "Health",
+        "Community",
+        "Next.js"
+      ],
       "gallery": [
         "https://images.unsplash.com/photo-1599058918144-1b39b9a7f3b3?auto=format&fit=crop&w=900&q=80"
       ],
@@ -436,7 +630,9 @@
       "category": "Health Tech",
       "date": "2024-10-05",
       "duration": "2,5 bulan",
-      "collaborators": ["FitLife Hub"],
+      "collaborators": [
+        "FitLife Hub"
+      ],
       "status": "Online",
       "rating": 4.9,
       "label": "Unggulan",
@@ -469,15 +665,33 @@
         "Desain UI yang nyaman untuk membaca panjang"
       ],
       "timeline": [
-        { "phase": "Desain UI/UX", "duration": "2 minggu" },
-        { "phase": "Pengembangan Backend", "duration": "4 minggu" }
+        {
+          "phase": "Desain UI/UX",
+          "duration": "2 minggu"
+        },
+        {
+          "phase": "Pengembangan Backend",
+          "duration": "4 minggu"
+        }
       ],
       "results": "Komunitas 1.200 anggota aktif dalam 3 bulan.",
       "impact": "Meningkatkan kebiasaan membaca melalui interaksi sosial digital.",
       "role": "Frontend Developer",
-      "tech": ["React", "Node.js", "MongoDB"],
-      "tools": ["Notion", "Figma", "Postman"],
-      "tags": ["Literacy", "Community", "React"],
+      "tech": [
+        "React",
+        "Node.js",
+        "MongoDB"
+      ],
+      "tools": [
+        "Notion",
+        "Figma",
+        "Postman"
+      ],
+      "tags": [
+        "Literacy",
+        "Community",
+        "React"
+      ],
       "gallery": [
         "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=900&q=80"
       ],
@@ -485,7 +699,9 @@
       "category": "Education",
       "date": "2024-10-15",
       "duration": "2 bulan",
-      "collaborators": ["Digital Reading Club"],
+      "collaborators": [
+        "Digital Reading Club"
+      ],
       "status": "Online",
       "rating": 4.7,
       "label": "Baru",
@@ -518,15 +734,33 @@
         "Optimasi rendering peta di browser"
       ],
       "timeline": [
-        { "phase": "Pengumpulan Data", "duration": "3 minggu" },
-        { "phase": "Integrasi API", "duration": "4 minggu" }
+        {
+          "phase": "Pengumpulan Data",
+          "duration": "3 minggu"
+        },
+        {
+          "phase": "Integrasi API",
+          "duration": "4 minggu"
+        }
       ],
       "results": "Digunakan oleh 10+ dinas pendidikan daerah.",
       "impact": "Membantu pengambilan keputusan berbasis data pendidikan.",
       "role": "Data Engineer",
-      "tech": ["Leaflet.js", "D3.js", "Python Flask"],
-      "tools": ["Tableau", "PostgreSQL", "Git"],
-      "tags": ["Education", "GIS", "Data Visualization"],
+      "tech": [
+        "Leaflet.js",
+        "D3.js",
+        "Python Flask"
+      ],
+      "tools": [
+        "Tableau",
+        "PostgreSQL",
+        "Git"
+      ],
+      "tags": [
+        "Education",
+        "GIS",
+        "Data Visualization"
+      ],
       "gallery": [
         "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=900&q=80"
       ],
@@ -534,7 +768,9 @@
       "category": "Data Tech",
       "date": "2024-11-01",
       "duration": "2 bulan",
-      "collaborators": ["EduData Labs"],
+      "collaborators": [
+        "EduData Labs"
+      ],
       "status": "Online",
       "rating": 4.8,
       "label": "Unggulan",
@@ -567,15 +803,33 @@
         "Menjaga privasi data personal"
       ],
       "timeline": [
-        { "phase": "Riset Pasar", "duration": "2 minggu" },
-        { "phase": "Produksi Audio", "duration": "3 minggu" }
+        {
+          "phase": "Riset Pasar",
+          "duration": "2 minggu"
+        },
+        {
+          "phase": "Produksi Audio",
+          "duration": "3 minggu"
+        }
       ],
       "results": "2.500+ unduhan di bulan pertama.",
       "impact": "Membantu pengguna menjaga keseimbangan mental di era sibuk.",
       "role": "UI/UX Designer",
-      "tech": ["Vue.js", "Firebase", "Tailwind CSS"],
-      "tools": ["Adobe XD", "Figma", "Trello"],
-      "tags": ["Health", "Wellness", "Mindfulness"],
+      "tech": [
+        "Vue.js",
+        "Firebase",
+        "Tailwind CSS"
+      ],
+      "tools": [
+        "Adobe XD",
+        "Figma",
+        "Trello"
+      ],
+      "tags": [
+        "Health",
+        "Wellness",
+        "Mindfulness"
+      ],
       "gallery": [
         "https://images.unsplash.com/photo-1557844352-761f2565b576?auto=format&fit=crop&w=900&q=80"
       ],
@@ -583,7 +837,9 @@
       "category": "Health Tech",
       "date": "2024-11-10",
       "duration": "1,5 bulan",
-      "collaborators": ["CalmSpace Studio"],
+      "collaborators": [
+        "CalmSpace Studio"
+      ],
       "status": "Online",
       "rating": 4.9,
       "label": "Rekomendasi",
@@ -616,15 +872,33 @@
         "Antarmuka sederhana untuk petani"
       ],
       "timeline": [
-        { "phase": "Integrasi Hardware", "duration": "4 minggu" },
-        { "phase": "Pengujian Lapangan", "duration": "3 minggu" }
+        {
+          "phase": "Integrasi Hardware",
+          "duration": "4 minggu"
+        },
+        {
+          "phase": "Pengujian Lapangan",
+          "duration": "3 minggu"
+        }
       ],
       "results": "Efisiensi air meningkat 20% di proyek uji coba.",
       "impact": "Mendukung pertanian cerdas dan efisien di Indonesia.",
       "role": "IoT Engineer",
-      "tech": ["Node-RED", "MQTT", "React"],
-      "tools": ["Grafana", "Figma", "GitHub"],
-      "tags": ["IoT", "Agriculture", "React"],
+      "tech": [
+        "Node-RED",
+        "MQTT",
+        "React"
+      ],
+      "tools": [
+        "Grafana",
+        "Figma",
+        "GitHub"
+      ],
+      "tags": [
+        "IoT",
+        "Agriculture",
+        "React"
+      ],
       "gallery": [
         "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=900&q=80"
       ],
@@ -632,7 +906,9 @@
       "category": "IoT",
       "date": "2024-12-01",
       "duration": "2 bulan",
-      "collaborators": ["AgriTech Lab"],
+      "collaborators": [
+        "AgriTech Lab"
+      ],
       "status": "Online",
       "rating": 4.8,
       "label": "Unggulan",
@@ -665,15 +941,33 @@
         "Sistem pembayaran aman"
       ],
       "timeline": [
-        { "phase": "Rancang UX", "duration": "2 minggu" },
-        { "phase": "Pembuatan galeri 3D", "duration": "5 minggu" }
+        {
+          "phase": "Rancang UX",
+          "duration": "2 minggu"
+        },
+        {
+          "phase": "Pembuatan galeri 3D",
+          "duration": "5 minggu"
+        }
       ],
       "results": "200 seniman telah memamerkan karya mereka.",
       "impact": "Memperluas jangkauan seni lokal ke ranah digital global.",
       "role": "Frontend 3D Developer",
-      "tech": ["Three.js", "Next.js", "Tailwind CSS"],
-      "tools": ["Blender", "Figma", "Git"],
-      "tags": ["Art", "3D", "Next.js"],
+      "tech": [
+        "Three.js",
+        "Next.js",
+        "Tailwind CSS"
+      ],
+      "tools": [
+        "Blender",
+        "Figma",
+        "Git"
+      ],
+      "tags": [
+        "Art",
+        "3D",
+        "Next.js"
+      ],
       "gallery": [
         "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=900&q=80"
       ],
@@ -681,7 +975,9 @@
       "category": "Creative",
       "date": "2024-12-20",
       "duration": "2,5 bulan",
-      "collaborators": ["Local Art Hub"],
+      "collaborators": [
+        "Local Art Hub"
+      ],
       "status": "Online",
       "rating": 4.9,
       "label": "Rekomendasi",
@@ -714,15 +1010,33 @@
         "Meningkatkan keterlibatan pengguna"
       ],
       "timeline": [
-        { "phase": "Desain Materi", "duration": "3 minggu" },
-        { "phase": "Pengujian Beta", "duration": "4 minggu" }
+        {
+          "phase": "Desain Materi",
+          "duration": "3 minggu"
+        },
+        {
+          "phase": "Pengujian Beta",
+          "duration": "4 minggu"
+        }
       ],
       "results": "15.000 sesi belajar diselesaikan dalam 1 bulan.",
       "impact": "Meningkatkan pemahaman finansial generasi muda.",
       "role": "Frontend Developer",
-      "tech": ["React", "Supabase", "Tailwind CSS"],
-      "tools": ["Notion", "Canva", "GitHub"],
-      "tags": ["Finance", "Education", "React"],
+      "tech": [
+        "React",
+        "Supabase",
+        "Tailwind CSS"
+      ],
+      "tools": [
+        "Notion",
+        "Canva",
+        "GitHub"
+      ],
+      "tags": [
+        "Finance",
+        "Education",
+        "React"
+      ],
       "gallery": [
         "https://images.unsplash.com/photo-1553729459-efe14ef6055d?auto=format&fit=crop&w=900&q=80"
       ],
@@ -730,7 +1044,9 @@
       "category": "Fintech",
       "date": "2025-01-05",
       "duration": "2 bulan",
-      "collaborators": ["EduFinance Hub"],
+      "collaborators": [
+        "EduFinance Hub"
+      ],
       "status": "Online",
       "rating": 4.7,
       "label": "Baru",
@@ -763,15 +1079,33 @@
         "Menangani gambar makanan besar di server"
       ],
       "timeline": [
-        { "phase": "Desain UI", "duration": "3 minggu" },
-        { "phase": "Integrasi API Resep", "duration": "4 minggu" }
+        {
+          "phase": "Desain UI",
+          "duration": "3 minggu"
+        },
+        {
+          "phase": "Integrasi API Resep",
+          "duration": "4 minggu"
+        }
       ],
       "results": "15.000 resep dibagikan dalam 2 bulan.",
       "impact": "Menghubungkan budaya melalui masakan rumahan.",
       "role": "Frontend Developer",
-      "tech": ["Vue.js", "Firebase", "Tailwind CSS"],
-      "tools": ["Figma", "Trello", "GitHub"],
-      "tags": ["Culinary", "Community", "Vue"],
+      "tech": [
+        "Vue.js",
+        "Firebase",
+        "Tailwind CSS"
+      ],
+      "tools": [
+        "Figma",
+        "Trello",
+        "GitHub"
+      ],
+      "tags": [
+        "Culinary",
+        "Community",
+        "Vue"
+      ],
       "gallery": [
         "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80"
       ],
@@ -779,7 +1113,9 @@
       "category": "Lifestyle",
       "date": "2025-01-20",
       "duration": "2 bulan",
-      "collaborators": ["FoodieHub"],
+      "collaborators": [
+        "FoodieHub"
+      ],
       "status": "Online",
       "rating": 4.9,
       "label": "Unggulan",
@@ -812,15 +1148,33 @@
         "Desain latihan yang tidak monoton"
       ],
       "timeline": [
-        { "phase": "Riset NLP", "duration": "3 minggu" },
-        { "phase": "Pengembangan Frontend", "duration": "5 minggu" }
+        {
+          "phase": "Riset NLP",
+          "duration": "3 minggu"
+        },
+        {
+          "phase": "Pengembangan Frontend",
+          "duration": "5 minggu"
+        }
       ],
       "results": "Retention pengguna meningkat 40% setelah sistem adaptif diterapkan.",
       "impact": "Meningkatkan motivasi belajar bahasa dengan pengalaman yang lebih personal.",
       "role": "AI Developer",
-      "tech": ["React", "Python FastAPI", "TensorFlow.js"],
-      "tools": ["Notion", "Figma", "GitHub"],
-      "tags": ["AI", "Education", "Language"],
+      "tech": [
+        "React",
+        "Python FastAPI",
+        "TensorFlow.js"
+      ],
+      "tools": [
+        "Notion",
+        "Figma",
+        "GitHub"
+      ],
+      "tags": [
+        "AI",
+        "Education",
+        "Language"
+      ],
       "gallery": [
         "https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=900&q=80"
       ],
@@ -828,7 +1182,9 @@
       "category": "AI",
       "date": "2025-02-02",
       "duration": "2 bulan",
-      "collaborators": ["LinguaLabs"],
+      "collaborators": [
+        "LinguaLabs"
+      ],
       "status": "Online",
       "rating": 4.8,
       "label": "Rekomendasi",
@@ -861,15 +1217,33 @@
         "Integrasi data aktivitas dari sensor ponsel"
       ],
       "timeline": [
-        { "phase": "Pengumpulan Data", "duration": "2 minggu" },
-        { "phase": "Pengembangan Algoritma", "duration": "4 minggu" }
+        {
+          "phase": "Pengumpulan Data",
+          "duration": "2 minggu"
+        },
+        {
+          "phase": "Pengembangan Algoritma",
+          "duration": "4 minggu"
+        }
       ],
       "results": "Lebih dari 10 ton CO₂ dihindari dalam 3 bulan peluncuran.",
       "impact": "Memberi kesadaran nyata akan dampak harian terhadap lingkungan.",
       "role": "Fullstack Developer",
-      "tech": ["Svelte", "Node.js", "MongoDB"],
-      "tools": ["Figma", "Notion", "GitHub"],
-      "tags": ["Environment", "Sustainability", "Svelte"],
+      "tech": [
+        "Svelte",
+        "Node.js",
+        "MongoDB"
+      ],
+      "tools": [
+        "Figma",
+        "Notion",
+        "GitHub"
+      ],
+      "tags": [
+        "Environment",
+        "Sustainability",
+        "Svelte"
+      ],
       "gallery": [
         "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=900&q=80"
       ],
@@ -877,7 +1251,9 @@
       "category": "Environment",
       "date": "2025-02-15",
       "duration": "2 bulan",
-      "collaborators": ["EcoVision Lab"],
+      "collaborators": [
+        "EcoVision Lab"
+      ],
       "status": "Online",
       "rating": 4.8,
       "label": "Unggulan",
@@ -910,15 +1286,33 @@
         "Desain UI intuitif untuk musisi non-teknis"
       ],
       "timeline": [
-        { "phase": "Riset Audio API", "duration": "3 minggu" },
-        { "phase": "Integrasi Cloud Storage", "duration": "5 minggu" }
+        {
+          "phase": "Riset Audio API",
+          "duration": "3 minggu"
+        },
+        {
+          "phase": "Integrasi Cloud Storage",
+          "duration": "5 minggu"
+        }
       ],
       "results": "300+ proyek musik kolaboratif tercipta.",
       "impact": "Meningkatkan kreativitas dan koneksi antar musisi.",
       "role": "Backend Developer",
-      "tech": ["React", "WebRTC", "Node.js"],
-      "tools": ["Ableton Live", "GitHub", "Figma"],
-      "tags": ["Music", "Collaboration", "WebRTC"],
+      "tech": [
+        "React",
+        "WebRTC",
+        "Node.js"
+      ],
+      "tools": [
+        "Ableton Live",
+        "GitHub",
+        "Figma"
+      ],
+      "tags": [
+        "Music",
+        "Collaboration",
+        "WebRTC"
+      ],
       "gallery": [
         "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=900&q=80"
       ],
@@ -926,7 +1320,9 @@
       "category": "Creative",
       "date": "2025-03-01",
       "duration": "2,5 bulan",
-      "collaborators": ["OpenMusic Collective"],
+      "collaborators": [
+        "OpenMusic Collective"
+      ],
       "status": "Online",
       "rating": 4.9,
       "label": "Rekomendasi",
@@ -938,156 +1334,15 @@
       ],
       "link": "#",
       "repo": "https://github.com/username/musenote"
-    },
-    {
-      "id": 20,
-      "title": "StoryWeaver",
-      "subtitle": "Platform Penulisan Cerita Kolaboratif",
-      "overview": "Aplikasi web untuk menulis dan mengembangkan cerita bersama secara daring.",
-      "description": "StoryWeaver memungkinkan beberapa penulis menulis bab bersama, menambahkan komentar, dan melakukan voting untuk alur cerita terbaik.",
-      "goals": "Mendorong kolaborasi kreatif di bidang literasi.",
-      "features": [
-        "Editor teks kolaboratif",
-        "Voting ide cerita",
-        "Komentar antar penulis",
-        "Template struktur cerita",
-        "Publikasi online otomatis"
-      ],
-      "challenges": [
-        "Menangani konflik versi tulisan",
-        "Menjaga orisinalitas karya",
-        "Membuat sistem voting adil"
-      ],
-      "timeline": [
-        { "phase": "Rancang UX", "duration": "2 minggu" },
-        { "phase": "Integrasi Editor Real-Time", "duration": "4 minggu" }
-      ],
-      "results": "500+ cerita kolaboratif terbit dalam 6 bulan.",
-      "impact": "Menciptakan komunitas penulis yang saling menginspirasi.",
-      "role": "Fullstack Developer",
-      "tech": ["Next.js", "Firebase", "Quill.js"],
-      "tools": ["Figma", "GitHub", "Notion"],
-      "tags": ["Writing", "Collaboration", "Next.js"],
-      "gallery": [
-        "https://images.unsplash.com/photo-1522204509441-24b3b4c8b6c1?auto=format&fit=crop&w=900&q=80"
-      ],
-      "image": "https://images.unsplash.com/photo-1522204509441-24b3b4c8b6c1?auto=format&fit=crop&w=900&q=80",
-      "category": "Creative Writing",
-      "date": "2025-03-15",
-      "duration": "2 bulan",
-      "collaborators": ["IndieWriters Hub"],
-      "status": "Online",
-      "rating": 4.8,
-      "label": "Unggulan",
-      "testimonials": [
-        {
-          "author": "Nanda R., Penulis Muda",
-          "comment": "Seru banget! Bisa bikin cerita bareng teman-teman dan hasilnya keren!"
-        }
-      ],
-      "link": "#",
-      "repo": "https://github.com/username/storyweaver"
-    },
-    {
-      "id": 21,
-      "title": "CivicConnect",
-      "subtitle": "Portal Partisipasi Warga Digital",
-      "overview": "Aplikasi partisipatif bagi warga untuk menyampaikan ide, saran, dan laporan publik secara langsung ke pemerintah daerah.",
-      "description": "CivicConnect menghubungkan masyarakat dengan pemerintah melalui laporan visual, sistem voting ide publik, dan forum kebijakan.",
-      "goals": "Meningkatkan transparansi dan kolaborasi antara warga dan pemerintah.",
-      "features": [
-        "Peta laporan publik",
-        "Forum aspirasi warga",
-        "Sistem voting ide",
-        "Dashboard analitik laporan",
-        "Notifikasi status tindak lanjut"
-      ],
-      "challenges": [
-        "Validasi laporan palsu",
-        "Kinerja peta interaktif",
-        "Koordinasi dengan instansi resmi"
-      ],
-      "timeline": [
-        { "phase": "Riset Sosial", "duration": "3 minggu" },
-        { "phase": "Pengembangan API", "duration": "5 minggu" }
-      ],
-      "results": "Digunakan di 3 kota sebagai proyek uji coba.",
-      "impact": "Meningkatkan kepercayaan publik dan partisipasi warga.",
-      "role": "Backend Developer",
-      "tech": ["Django", "React", "PostgreSQL"],
-      "tools": ["Figma", "Trello", "GitHub"],
-      "tags": ["CivicTech", "Community", "React"],
-      "gallery": [
-        "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=900&q=80"
-      ],
-      "image": "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=900&q=80",
-      "category": "Civic Tech",
-      "date": "2025-04-01",
-      "duration": "2 bulan",
-      "collaborators": ["OpenGov ID"],
-      "status": "Online",
-      "rating": 4.9,
-      "label": "Unggulan",
-      "testimonials": [
-        {
-          "author": "Arif Wibowo, Aktivis Sosial",
-          "comment": "Cara baru yang transparan buat menyampaikan suara warga!"
-        }
-      ],
-      "link": "#",
-      "repo": "https://github.com/username/civicconnect"
-    },
-    {
-      "id": 22,
-      "title": "SkillBridge",
-      "subtitle": "Kursus Mikro untuk Pekerja Modern",
-      "overview": "Platform kursus singkat berbasis video untuk meningkatkan keterampilan kerja digital.",
-      "description": "SkillBridge menawarkan kursus mikro berdurasi pendek dengan proyek praktis yang relevan dengan dunia industri modern.",
-      "goals": "Menjembatani kesenjangan keterampilan digital pekerja.",
-      "features": [
-        "Video pembelajaran singkat",
-        "Proyek mini berbasis kasus nyata",
-        "Kuis interaktif",
-        "Sertifikat digital otomatis",
-        "Dashboard progres pribadi"
-      ],
-      "challenges": [
-        "Menyusun konten padat tapi ringkas",
-        "Integrasi video streaming cepat",
-        "Motivasi belajar jangka panjang"
-      ],
-      "timeline": [
-        { "phase": "Kurasi Konten", "duration": "3 minggu" },
-        { "phase": "Integrasi Sistem Belajar", "duration": "4 minggu" }
-      ],
-      "results": "20.000+ peserta kursus aktif dalam 4 bulan.",
-      "impact": "Meningkatkan kompetensi kerja generasi digital.",
-      "role": "Frontend Developer",
-      "tech": ["Next.js", "Supabase", "Tailwind CSS"],
-      "tools": ["Notion", "Figma", "GitHub"],
-      "tags": ["Education", "Career", "Next.js"],
-      "gallery": [
-        "https://images.unsplash.com/photo-1581091215367-59ab6c1a3c36?auto=format&fit=crop&w=900&q=80"
-      ],
-      "image": "https://images.unsplash.com/photo-1581091215367-59ab6c1a3c36?auto=format&fit=crop&w=900&q=80",
-      "category": "EdTech",
-      "date": "2025-04-15",
-      "duration": "2 bulan",
-      "collaborators": ["LearnPro ID"],
-      "status": "Online",
-      "rating": 4.8,
-      "label": "Rekomendasi",
-      "testimonials": [
-        {
-          "author": "Rina Febriani, Freelancer",
-          "comment": "Belajarnya cepat tapi langsung bisa diterapkan di kerjaan!"
-        }
-      ],
-      "link": "#",
-      "repo": "https://github.com/username/skillbridge"
     }
   ],
-  "categories": ["All", "Web App", "Design & 3D", "EdTech", "Personal"],
+  "categories": [
+    "All",
+    "Web App",
+    "Design & 3D",
+    "EdTech",
+    "Personal"
+  ],
   "labelColors": {
     "Hot": "bg-red-500/20 text-red-400 border-red-400/40",
     "Baru": "bg-cyan-500/20 text-cyan-300 border-cyan-400/40",

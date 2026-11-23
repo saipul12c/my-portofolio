@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { 
@@ -27,10 +27,17 @@ import {
   History,
   RotateCcw,
   Clock,
-  Film
+  Film,
+  Table,
+  Minus,
+  CheckSquare,
+  ShieldCheck,
+  CheckCircle2
 } from 'lucide-react';
 import { generateSlug, calculateReadTime } from '../../services/blogAdminService';
 import MediaLibraryTab from './MediaLibraryTab';
+
+const AUTOSAVE_STORAGE_KEY = 'blog_post_editor_autosave';
 
 export default function PostEditorModal({ 
   isOpen, 
@@ -77,6 +84,11 @@ export default function PostEditorModal({
   const [formError, setFormError] = useState(null);
   const [notification, setNotification] = useState(null);
 
+  // Autosave states
+  const [lastAutosaved, setLastAutosaved] = useState(null);
+  const [hasAutosaveAvailable, setHasAutosaveAvailable] = useState(false);
+  const autosaveTimerRef = useRef(null);
+
   // Inisialisasi data form saat modal dibuka
   useEffect(() => {
     if (initialPost) {
@@ -85,7 +97,7 @@ export default function PostEditorModal({
       setAutoSlug(false);
       setCategory(initialPost.category || 'Teknologi');
       setStatus(initialPost.status || 'published');
-      setScheduledAt(initialPost.scheduledAt ? initialPost.scheduledAt.slice(0, 16) : '');
+      setScheduledAt(initialPost.scheduledAt ? initialPost.scheduledAt.slice(0, 16) : (initialPost.date ? `${initialPost.date}T09:00` : ''));
       setFeatured(Boolean(initialPost.featured));
       setExcerpt(initialPost.excerpt || '');
       setContent(initialPost.content || '');
@@ -100,8 +112,22 @@ export default function PostEditorModal({
       setMetaTitle(initialPost.metaTitle || initialPost.title || '');
       setMetaDescription(initialPost.metaDescription || initialPost.excerpt || '');
       setRevisions(Array.isArray(initialPost.revisions) ? initialPost.revisions : []);
+      setHasAutosaveAvailable(false);
     } else {
-      // Form baru
+      // Form baru: periksa apakah ada autosave dari sesi sebelumnya
+      let restoredFromAutosave = false;
+      try {
+        const raw = localStorage.getItem(AUTOSAVE_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && (parsed.title || parsed.content)) {
+            setHasAutosaveAvailable(true);
+          }
+        }
+      } catch {
+        // ignore
+      }
+
       setTitle('');
       setSlug('');
       setAutoSlug(true);
@@ -127,6 +153,82 @@ export default function PostEditorModal({
     setShowRevisionModal(false);
     setShowMediaPicker(false);
   }, [initialPost, isOpen, categories]);
+
+  // Handle Autosave interval
+  useEffect(() => {
+    if (!isOpen) return;
+
+    if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
+
+    autosaveTimerRef.current = setTimeout(() => {
+      if (title.trim() || content.trim()) {
+        const draftSnapshot = {
+          title,
+          slug,
+          category,
+          status,
+          excerpt,
+          content,
+          thumbnail,
+          tags,
+          metaTitle,
+          metaDescription,
+          savedAt: new Date().toISOString()
+        };
+        try {
+          localStorage.setItem(AUTOSAVE_STORAGE_KEY, JSON.stringify(draftSnapshot));
+          setLastAutosaved(new Date().toLocaleTimeString('id-ID'));
+        } catch {
+          // ignore
+        }
+      }
+    }, 4000);
+
+    return () => clearTimeout(autosaveTimerRef.current);
+  }, [title, slug, content, excerpt, category, status, thumbnail, tags, metaTitle, metaDescription, isOpen]);
+
+  // Restore autosaved draft
+  const handleRestoreAutosave = () => {
+    try {
+      const raw = localStorage.getItem(AUTOSAVE_STORAGE_KEY);
+      if (raw) {
+        const draft = JSON.parse(raw);
+        if (draft.title) setTitle(draft.title);
+        if (draft.slug) setSlug(draft.slug);
+        if (draft.content) setContent(draft.content);
+        if (draft.excerpt) setExcerpt(draft.excerpt);
+        if (draft.category) setCategory(draft.category);
+        if (draft.thumbnail) setThumbnail(draft.thumbnail);
+        if (Array.isArray(draft.tags)) setTags(draft.tags);
+        if (draft.metaTitle) setMetaTitle(draft.metaTitle);
+        if (draft.metaDescription) setMetaDescription(draft.metaDescription);
+        setHasAutosaveAvailable(false);
+        setNotification('Draf autosave berhasil dipulihkan!');
+        setTimeout(() => setNotification(null), 3000);
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleDiscardAutosave = () => {
+    localStorage.removeItem(AUTOSAVE_STORAGE_KEY);
+    setHasAutosaveAvailable(false);
+  };
+
+  // Keyboard shortcut Ctrl+S
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        handleSubmit(null, status);
+      }
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isOpen, title, slug, content, excerpt, status, scheduledAt]);
 
   // Otomatis sinkronkan slug dengan judul jika autoSlug aktif
   const handleTitleChange = (e) => {
@@ -201,6 +303,39 @@ export default function PostEditorModal({
     setTimeout(() => setNotification(null), 3500);
   };
 
+  // SEO Score live evaluation
+  const seoAudit = (() => {
+    let score = 0;
+    const titleLen = title.trim().length;
+    const metaLen = (metaDescription || excerpt).trim().length;
+    const wordsCount = content.trim().split(/\s+/).filter(Boolean).length;
+
+    // 1. Title (30-65 chars)
+    if (titleLen >= 30 && titleLen <= 65) score += 25;
+    else if (titleLen > 10) score += 15;
+
+    // 2. Meta description (80-160 chars)
+    if (metaLen >= 80 && metaLen <= 160) score += 25;
+    else if (metaLen > 30) score += 15;
+
+    // 3. Cover image
+    if (thumbnail && thumbnail.startsWith('http')) score += 20;
+
+    // 4. Tags >= 2
+    if (tags.length >= 2) score += 15;
+
+    // 5. Length >= 300 words
+    if (wordsCount >= 300) score += 15;
+    else if (wordsCount >= 100) score += 8;
+
+    return {
+      score: Math.min(100, score),
+      titleLen,
+      metaLen,
+      wordsCount
+    };
+  })();
+
   // Submit Handler
   const handleSubmit = async (e, forcedStatus = null) => {
     if (e) e.preventDefault();
@@ -251,6 +386,8 @@ export default function PostEditorModal({
 
     try {
       await onSave(postPayload, initialPost?.id);
+      // Bersihkan autosave jika berhasil
+      localStorage.removeItem(AUTOSAVE_STORAGE_KEY);
       onClose();
     } catch (err) {
       setFormError(err.message || 'Gagal menyimpan artikel.');
@@ -271,7 +408,7 @@ export default function PostEditorModal({
         {/* Modal Top Header */}
         <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-slate-950/60">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white shrink-0">
               <Edit3 className="w-4 h-4" />
             </div>
             <div>
@@ -283,9 +420,18 @@ export default function PostEditorModal({
                   </span>
                 )}
               </h2>
-              <p className="text-[11px] text-gray-400">
-                {isEditing ? `Slug: /blog/${slug}` : 'Editor Markdown dengan galeri terpadu & kalender rilis'}
-              </p>
+              <div className="flex items-center gap-2 mt-0.5 text-[11px] text-gray-400">
+                <span>{isEditing ? `/blog/${slug}` : 'Editor Markdown & SEO Cerdas'}</span>
+                {lastAutosaved && (
+                  <>
+                    <span>•</span>
+                    <span className="text-emerald-400 flex items-center gap-1 font-mono text-[10px]">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      Autosave {lastAutosaved}
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
@@ -315,6 +461,7 @@ export default function PostEditorModal({
               onClick={() => handleSubmit(null, status)}
               disabled={isSubmitting}
               className="py-2 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold text-xs shadow-md shadow-cyan-500/20 flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+              title="Shortcut: Ctrl+S"
             >
               <Save className="w-3.5 h-3.5" />
               <span>
@@ -327,11 +474,38 @@ export default function PostEditorModal({
             <button
               onClick={onClose}
               className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+              aria-label="Tutup Editor"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
+
+        {/* Prompt Pulihkan Autosave jika ditemukan */}
+        {hasAutosaveAvailable && !isEditing && (
+          <div className="mx-4 sm:mx-6 mt-3 p-3 rounded-xl bg-cyan-950/80 border border-cyan-400/40 text-cyan-200 text-xs flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-cyan-400 shrink-0" />
+              <span>Ditemukan draf otomatis yang tersimpan dari sesi sebelumnya. Ingin memulihkannya?</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleRestoreAutosave}
+                className="px-2.5 py-1 rounded-lg bg-cyan-500 text-slate-950 font-bold hover:bg-cyan-400 cursor-pointer"
+              >
+                Pulihkan
+              </button>
+              <button
+                type="button"
+                onClick={handleDiscardAutosave}
+                className="px-2.5 py-1 rounded-lg bg-white/10 text-gray-300 hover:bg-white/20 cursor-pointer"
+              >
+                Abaikan
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Notifikasi Pop-up Kecil */}
         {notification && (
@@ -357,14 +531,17 @@ export default function PostEditorModal({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             <div className="lg:col-span-2 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                  Judul Artikel <span className="text-red-400">*</span>
+                <label className="block text-xs font-semibold text-gray-300 mb-1.5 flex items-center justify-between">
+                  <span>Judul Artikel <span className="text-red-400">*</span></span>
+                  <span className={`text-[10px] font-mono ${title.length > 65 ? 'text-amber-400' : 'text-gray-500'}`}>
+                    {title.length} / 65 karakter (SEO)
+                  </span>
                 </label>
                 <input
                   type="text"
                   value={title}
                   onChange={handleTitleChange}
-                  placeholder="Contoh: Tips Membangun Portofolio Modern..."
+                  placeholder="Contoh: Tips Membangun Arsitektur Web Modern..."
                   className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/40"
                   required
                 />
@@ -403,8 +580,9 @@ export default function PostEditorModal({
 
               {/* Excerpt / Ringkasan Singkat */}
               <div>
-                <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                  Ringkasan Singkat (Excerpt)
+                <label className="block text-xs font-semibold text-gray-300 mb-1.5 flex items-center justify-between">
+                  <span>Ringkasan Singkat (Excerpt)</span>
+                  <span className="text-[10px] font-mono text-gray-500">{excerpt.length} karakter</span>
                 </label>
                 <textarea
                   value={excerpt}
@@ -416,11 +594,11 @@ export default function PostEditorModal({
               </div>
             </div>
 
-            {/* Kolom Kanan: Status Rilis & Penjadwalan */}
+            {/* Kolom Kanan: Status Rilis & Penjadwalan & SEO Meter */}
             <div className="space-y-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
               <div>
                 <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                  Kategori
+                  Kategori Artikel
                 </label>
                 <select
                   value={category}
@@ -481,7 +659,7 @@ export default function PostEditorModal({
                 <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 space-y-1.5">
                   <label className="block text-[11px] font-medium text-blue-300 flex items-center gap-1">
                     <Clock className="w-3.5 h-3.5" />
-                    <span>Waktu Otomatis Terbit (WITA/WIB)</span>
+                    <span>Waktu Otomatis Terbit</span>
                   </label>
                   <input
                     type="datetime-local"
@@ -495,6 +673,29 @@ export default function PostEditorModal({
                   </p>
                 </div>
               )}
+
+              {/* Live SEO Score Gauge Meter */}
+              <div className="p-3 rounded-xl bg-slate-950/70 border border-white/5 space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-semibold text-gray-300 flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
+                    Skor Kesiapan SEO
+                  </span>
+                  <span className={`font-mono font-bold ${
+                    seoAudit.score >= 80 ? 'text-emerald-400' : (seoAudit.score >= 50 ? 'text-amber-400' : 'text-red-400')
+                  }`}>
+                    {seoAudit.score}%
+                  </span>
+                </div>
+                <div className="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
+                  <div 
+                    className={`h-full rounded-full transition-all duration-300 ${
+                      seoAudit.score >= 80 ? 'bg-emerald-400' : (seoAudit.score >= 50 ? 'bg-amber-400' : 'bg-red-400')
+                    }`}
+                    style={{ width: `${seoAudit.score}%` }}
+                  />
+                </div>
+              </div>
 
               {/* Cover Thumbnail Image Selector */}
               <div>
@@ -511,17 +712,29 @@ export default function PostEditorModal({
                     className="text-[11px] text-cyan-400 hover:text-cyan-300 flex items-center gap-1 cursor-pointer"
                   >
                     <Sparkles className="w-3 h-3" />
-                    <span>Pilih dari Galeri/Unsplash</span>
+                    <span>Galeri / Unsplash</span>
                   </button>
                 </div>
 
-                <input
-                  type="url"
-                  value={thumbnail}
-                  onChange={(e) => setThumbnail(e.target.value)}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-cyan-400 font-mono"
-                />
+                <div className="relative">
+                  <input
+                    type="url"
+                    value={thumbnail}
+                    onChange={(e) => setThumbnail(e.target.value)}
+                    placeholder="https://images.unsplash.com/..."
+                    className="w-full pl-3 pr-8 py-2 rounded-xl bg-slate-950 border border-white/10 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-cyan-400 font-mono"
+                  />
+                  {thumbnail && (
+                    <button
+                      type="button"
+                      onClick={() => setThumbnail('')}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-400"
+                      title="Hapus Cover"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
 
                 {thumbnail && (
                   <div className="mt-2 h-24 w-full rounded-xl overflow-hidden border border-white/10 relative group">
@@ -541,39 +754,6 @@ export default function PostEditorModal({
                 )}
               </div>
 
-              {/* Video Cover Utama (Opsional) */}
-              <div>
-                <label className="block text-xs font-semibold text-gray-300 mb-1">
-                  Video Header / Teaser Panggung (.mp4)
-                </label>
-                <input
-                  type="text"
-                  value={coverVideo}
-                  onChange={(e) => setCoverVideo(e.target.value)}
-                  placeholder="/assets/pageran/trailer/trailer.webm"
-                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-cyan-400 font-mono"
-                />
-                {coverVideo && (
-                  <div className="mt-2 h-24 w-full rounded-xl overflow-hidden border border-white/10 bg-black">
-                    <video src={coverVideo} controls preload="metadata" className="w-full h-full object-cover" />
-                  </div>
-                )}
-              </div>
-
-              {/* Galeri Foto Tambahan */}
-              <div>
-                <label className="block text-xs font-semibold text-gray-300 mb-1">
-                  Galeri Foto Tambahan (Pisahkan URL dengan koma)
-                </label>
-                <textarea
-                  rows={2}
-                  value={galleryInput}
-                  onChange={(e) => setGalleryInput(e.target.value)}
-                  placeholder="/assets/pageran/momens/1.webp, /assets/pageran/pemain/amel.webp"
-                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-cyan-400 font-mono"
-                />
-              </div>
-
               <div className="pt-1">
                 <label className="flex items-center gap-2 cursor-pointer select-none">
                   <input
@@ -582,7 +762,7 @@ export default function PostEditorModal({
                     onChange={(e) => setFeatured(e.target.checked)}
                     className="rounded bg-slate-950 border-white/20 text-cyan-500 focus:ring-0"
                   />
-                  <span className="text-xs font-medium text-gray-200">Jadikan Artikel Unggulan (Featured)</span>
+                  <span className="text-xs font-medium text-gray-200">Tandai Artikel Unggulan (Featured)</span>
                 </label>
               </div>
             </div>
@@ -590,8 +770,9 @@ export default function PostEditorModal({
 
           {/* Tagar (Tags) Chips Input */}
           <div>
-            <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-              Tagar / Label (Tekan Enter atau Koma untuk menambahkan)
+            <label className="block text-xs font-semibold text-gray-300 mb-1.5 flex items-center justify-between">
+              <span>Tagar / Topik (Tekan Enter atau Koma untuk menambahkan)</span>
+              <span className="text-[10px] text-gray-500 font-mono">{tags.length} tagar aktif</span>
             </label>
             <div className="flex flex-wrap items-center gap-1.5 p-2 rounded-xl bg-slate-950 border border-white/10 min-h-[42px]">
               {tags.map((tag, idx) => (
@@ -623,12 +804,12 @@ export default function PostEditorModal({
           {/* ✍️ Editor Konten Utama (Markdown) */}
           <div className="space-y-2">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1 border-b border-white/10">
-              <div className="flex items-center gap-1 overflow-x-auto py-1">
+              <div className="flex items-center gap-1 overflow-x-auto py-1 scrollbar-none">
                 <button
                   type="button"
                   onClick={() => insertFormatting('**', '**')}
                   className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5"
-                  title="Tebal (Bold)"
+                  title="Tebal (Bold) - Ctrl+B"
                 >
                   <Bold className="w-4 h-4" />
                 </button>
@@ -636,7 +817,7 @@ export default function PostEditorModal({
                   type="button"
                   onClick={() => insertFormatting('*', '*')}
                   className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5"
-                  title="Miring (Italic)"
+                  title="Miring (Italic) - Ctrl+I"
                 >
                   <Italic className="w-4 h-4" />
                 </button>
@@ -676,9 +857,33 @@ export default function PostEditorModal({
                   type="button"
                   onClick={() => insertFormatting('- ')}
                   className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5"
-                  title="List Poin"
+                  title="Daftar Bullet"
                 >
                   <List className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => insertFormatting('- [ ] ')}
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5"
+                  title="Task Checklist"
+                >
+                  <CheckSquare className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => insertFormatting('| Kolom 1 | Kolom 2 |\n|---|---|\n| Data 1 | Data 2 |\n')}
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5"
+                  title="Sisipkan Tabel"
+                >
+                  <Table className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => insertFormatting('\n---\n')}
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5"
+                  title="Garis Pembatas (Divider)"
+                >
+                  <Minus className="w-4 h-4" />
                 </button>
                 <button
                   type="button"
@@ -696,11 +901,11 @@ export default function PostEditorModal({
                     setMediaPickerTarget('insert');
                     setShowMediaPicker(true);
                   }}
-                  className="p-1.5 px-2.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-1 text-xs cursor-pointer"
+                  className="p-1.5 px-2.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-1 text-xs cursor-pointer ml-1"
                   title="Sisipkan Foto/Video dari Galeri atau Unsplash"
                 >
                   <ImageIcon className="w-3.5 h-3.5" />
-                  <span>+Media Galeri</span>
+                  <span>+Media</span>
                 </button>
               </div>
 
@@ -709,7 +914,7 @@ export default function PostEditorModal({
                 <button
                   type="button"
                   onClick={() => setViewMode('write')}
-                  className={`px-2.5 py-1 rounded-lg transition-all ${
+                  className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                     viewMode === 'write' ? 'bg-cyan-500/20 text-cyan-300 font-semibold' : 'text-gray-400 hover:text-white'
                   }`}
                 >
@@ -718,7 +923,7 @@ export default function PostEditorModal({
                 <button
                   type="button"
                   onClick={() => setViewMode('preview')}
-                  className={`px-2.5 py-1 rounded-lg transition-all ${
+                  className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                     viewMode === 'preview' ? 'bg-cyan-500/20 text-cyan-300 font-semibold' : 'text-gray-400 hover:text-white'
                   }`}
                 >
@@ -727,11 +932,11 @@ export default function PostEditorModal({
                 <button
                   type="button"
                   onClick={() => setViewMode('split')}
-                  className={`hidden sm:inline-flex px-2.5 py-1 rounded-lg transition-all ${
+                  className={`hidden sm:inline-flex px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                     viewMode === 'split' ? 'bg-cyan-500/20 text-cyan-300 font-semibold' : 'text-gray-400 hover:text-white'
                   }`}
                 >
-                  Berdampingan (Split)
+                  Split
                 </button>
               </div>
             </div>
@@ -752,8 +957,8 @@ export default function PostEditorModal({
                     required
                   />
                   <div className="flex items-center justify-between text-[11px] text-gray-500 mt-2 px-1">
-                    <span>Markdown Didukung (GitHub Flavored Markdown)</span>
-                    <span className="font-mono">{words} kata • Estimasi baca: {readTimeEstimate}</span>
+                    <span>Markdown (GFM) Didukung</span>
+                    <span className="font-mono text-cyan-400">{words} kata • {content.length} karakter • {readTimeEstimate}</span>
                   </div>
                 </div>
               )}
@@ -778,22 +983,29 @@ export default function PostEditorModal({
 
           {/* Bagian Metadata SEO Tambahan */}
           <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-3">
-            <h4 className="text-xs font-bold text-gray-300 uppercase tracking-wider">
+            <h4 className="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-cyan-400" />
               Optimalisasi SEO & Metadata Mesin Pencari
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[11px] text-gray-400 mb-1">Meta Title</label>
+                <label className="block text-[11px] text-gray-400 mb-1 flex items-center justify-between">
+                  <span>Meta Title (Judul Tab & Google)</span>
+                  <span className="font-mono text-[10px] text-gray-500">{(metaTitle || title).length} karkater</span>
+                </label>
                 <input
                   type="text"
                   value={metaTitle}
                   onChange={(e) => setMetaTitle(e.target.value)}
-                  placeholder={title || "Judul SEO"}
+                  placeholder={title || "Judul SEO untuk Google"}
                   className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-400"
                 />
               </div>
               <div>
-                <label className="block text-[11px] text-gray-400 mb-1">Meta Description</label>
+                <label className="block text-[11px] text-gray-400 mb-1 flex items-center justify-between">
+                  <span>Meta Description (Snippet Pratinjau)</span>
+                  <span className="font-mono text-[10px] text-gray-500">{(metaDescription || excerpt).length} karakter</span>
+                </label>
                 <input
                   type="text"
                   value={metaDescription}

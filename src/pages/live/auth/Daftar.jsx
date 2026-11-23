@@ -19,12 +19,12 @@ const Daftar = () => {
   const [message, setMessage] = useState({ type: '', text: '' });
   const [errors, setErrors] = useState({});
 
-  // Auto-redirect jika pengguna sudah memiliki sesi login aktif
+  // Auto-redirect jika pengguna sudah memiliki sesi login aktif yang sah
   useEffect(() => {
     const checkActiveSession = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
+        const authRes = await supabase.auth.getUser().catch(() => null);
+        if (authRes?.data?.user) {
           navigate('/Live-Discussion', { replace: true });
         }
       } catch (err) {
@@ -160,7 +160,7 @@ const Daftar = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-gray-900)] flex items-center justify-center p-4 sm:p-8 relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--color-gray-900)] flex items-center justify-center p-4 sm:p-8 relative overflow-y-auto">
       {/* Immersive Background Orbs - Hardware Accelerated */}
       <div 
         className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-500/10 rounded-full mix-blend-screen filter blur-[120px] pointer-events-none animate-pulse will-change-transform"

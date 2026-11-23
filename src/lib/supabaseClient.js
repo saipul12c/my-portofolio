@@ -1,19 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Pastikan selalu ada URL valid agar createClient tidak melempar error inisialisasi
-const rawUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const rawKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+// Konfigurasi murni dari file .env (Menggunakan Publishable Key standar Supabase terbaru)
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
 
-const fallbackUrl = 'https://placeholder.supabase.co';
-const fallbackKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.placeholder';
-
-const supabaseUrl = (rawUrl && rawUrl.startsWith('http')) ? rawUrl : fallbackUrl;
-const supabaseAnonKey = rawKey || fallbackKey;
+export const supabaseKey = supabasePublishableKey;
 
 export const isSupabaseConfigured = Boolean(
-  rawUrl &&
-  rawKey &&
-  !rawUrl.includes('placeholder')
+  supabaseUrl &&
+  supabasePublishableKey &&
+  supabaseUrl.startsWith('http')
 );
 
 // Tangani unhandled rejection khusus dari Gotrue / Web Locks secara global
@@ -45,11 +41,12 @@ if (typeof window !== 'undefined') {
   });
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+const clientOptions = {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
+    flowType: 'pkce',
   },
   global: {
     fetch: async (...args) => {
@@ -62,4 +59,10 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       }
     }
   }
-});
+};
+
+export const supabase = isSupabaseConfigured
+  ? createClient(supabaseUrl, supabasePublishableKey, clientOptions)
+  : createClient(supabaseUrl || 'https://disabled.local', 'disabled-key', {
+      auth: { persistSession: false, autoRefreshToken: false }
+    });

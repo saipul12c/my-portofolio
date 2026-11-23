@@ -1,6 +1,7 @@
 [
   {
     "id": 1,
+    "slug": "komunitas-id",
     "launchDate": "2030-12-31T00:00:00",
     "themeColor": "orange",
     "version": "v1.0.0-DEV",
@@ -389,6 +390,7 @@
   },
   {
     "id": 2,
+    "slug": "sinyal-live",
     "launchDate": "2030-03-15T00:00:00",
     "themeColor": "cyan",
     "version": "v1.0.0-BETA",
@@ -766,6 +768,7 @@
   },
   {
     "id": 3,
+    "slug": "discond",
     "launchDate": "2030-10-31T00:00:00",
     "themeColor": "purple",
     "version": "v1.0.0-DEV",

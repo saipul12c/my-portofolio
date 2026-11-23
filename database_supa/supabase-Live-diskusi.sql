@@ -216,6 +216,10 @@ $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 DROP POLICY IF EXISTS "Public can view basic profiles" ON public.users;
 CREATE POLICY "Public can view basic profiles" ON public.users FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Users can insert own profile" ON public.users;
+CREATE POLICY "Users can insert own profile" ON public.users FOR INSERT 
+WITH CHECK (auth.uid() = id);
+
 DROP POLICY IF EXISTS "Users can update own profile" ON public.users;
 CREATE POLICY "Users can update own profile" ON public.users FOR UPDATE 
 USING (auth.uid() = id OR EXISTS (
@@ -898,6 +902,29 @@ GRANT SELECT, INSERT ON public.audit_logs TO authenticated;
 GRANT SELECT ON public.system_config TO authenticated, anon;
 GRANT INSERT, UPDATE, DELETE ON public.system_config TO authenticated;
 
+-- Blog System (Memastikan blog tetap dapat diakses setelah REVOKE ALL)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'blog_posts') THEN
+    GRANT SELECT ON public.blog_posts TO anon, authenticated;
+    GRANT INSERT, UPDATE, DELETE ON public.blog_posts TO authenticated;
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'blog_comments') THEN
+    GRANT SELECT, INSERT ON public.blog_comments TO anon, authenticated;
+    GRANT UPDATE, DELETE ON public.blog_comments TO authenticated;
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'blog_likes') THEN
+    GRANT SELECT, INSERT, DELETE ON public.blog_likes TO anon, authenticated;
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'blog_bookmarks') THEN
+    GRANT SELECT, INSERT, DELETE ON public.blog_bookmarks TO anon, authenticated;
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'blog_ratings') THEN
+    GRANT SELECT, INSERT, UPDATE ON public.blog_ratings TO anon, authenticated;
+    GRANT DELETE ON public.blog_ratings TO authenticated;
+  END IF;
+END $$;
+
 -- RPC Functions
 GRANT EXECUTE ON FUNCTION public.get_dashboard_stats TO authenticated, anon;
 GRANT EXECUTE ON FUNCTION public.get_role_level TO authenticated, anon;
@@ -1012,15 +1039,56 @@ INSERT INTO auth.users (
   updated_at
 )
 VALUES 
-  ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'superadmin@test.com', extensions.crypt('LiveTest123!', extensions.gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}', '{"nama":"Sang Arsitek"}', now(), now()),
-  ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'admin@test.com', extensions.crypt('LiveTest123!', extensions.gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}', '{"nama":"Penjaga Gerbang"}', now(), now()),
-  ('00000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'mod@test.com', extensions.crypt('LiveTest123!', extensions.gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}', '{"nama":"Moderator Alpha"}', now(), now()),
-  ('00000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'premium@test.com', extensions.crypt('LiveTest123!', extensions.gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}', '{"nama":"Sultan Diskusi"}', now(), now()),
-  ('00000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'verified@test.com', extensions.crypt('LiveTest123!', extensions.gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}', '{"nama":"Warga Terverifikasi"}', now(), now()),
-  ('00000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'user@test.com', extensions.crypt('LiveTest123!', extensions.gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}', '{"nama":"Pengunjung Baru"}', now(), now())
+  ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'superadmin@test.com', extensions.crypt('LiveTest123!', extensions.gen_salt('bf', 10)), now(), '{"provider":"email","providers":["email"]}', '{"nama":"Sang Arsitek","email":"superadmin@test.com","email_verified":true,"sub":"00000000-0000-0000-0000-000000000001"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'admin@test.com', extensions.crypt('LiveTest123!', extensions.gen_salt('bf', 10)), now(), '{"provider":"email","providers":["email"]}', '{"nama":"Penjaga Gerbang","email":"admin@test.com","email_verified":true,"sub":"00000000-0000-0000-0000-000000000002"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'mod@test.com', extensions.crypt('LiveTest123!', extensions.gen_salt('bf', 10)), now(), '{"provider":"email","providers":["email"]}', '{"nama":"Moderator Alpha","email":"mod@test.com","email_verified":true,"sub":"00000000-0000-0000-0000-000000000003"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'premium@test.com', extensions.crypt('LiveTest123!', extensions.gen_salt('bf', 10)), now(), '{"provider":"email","providers":["email"]}', '{"nama":"Sultan Diskusi","email":"premium@test.com","email_verified":true,"sub":"00000000-0000-0000-0000-000000000004"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'verified@test.com', extensions.crypt('LiveTest123!', extensions.gen_salt('bf', 10)), now(), '{"provider":"email","providers":["email"]}', '{"nama":"Warga Terverifikasi","email":"verified@test.com","email_verified":true,"sub":"00000000-0000-0000-0000-000000000005"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'user@test.com', extensions.crypt('LiveTest123!', extensions.gen_salt('bf', 10)), now(), '{"provider":"email","providers":["email"]}', '{"nama":"Pengunjung Baru","email":"user@test.com","email_verified":true,"sub":"00000000-0000-0000-0000-000000000006"}', now(), now())
 ON CONFLICT (id) DO UPDATE SET
   encrypted_password = EXCLUDED.encrypted_password,
-  email_confirmed_at = COALESCE(auth.users.email_confirmed_at, now());
+  email_confirmed_at = COALESCE(auth.users.email_confirmed_at, now()),
+  raw_app_meta_data = EXCLUDED.raw_app_meta_data,
+  raw_user_meta_data = EXCLUDED.raw_user_meta_data;
+
+-- WAJIB: Sinkronisasi ke auth.identities agar GoTrue Auth mengenali akun untuk login email/password
+INSERT INTO auth.identities (
+  id,
+  user_id,
+  identity_data,
+  provider,
+  provider_id,
+  last_sign_in_at,
+  created_at,
+  updated_at
+)
+SELECT 
+  u.id,
+  u.id,
+  jsonb_build_object(
+    'sub', u.id::text, 
+    'email', u.email, 
+    'email_verified', true, 
+    'nama', COALESCE(u.raw_user_meta_data->>'nama', split_part(u.email, '@', 1))
+  ),
+  'email',
+  u.id::text,
+  now(),
+  now(),
+  now()
+FROM auth.users u
+WHERE u.email IN (
+  'superadmin@test.com',
+  'admin@test.com',
+  'mod@test.com',
+  'premium@test.com',
+  'verified@test.com',
+  'user@test.com'
+)
+AND NOT EXISTS (
+  SELECT 1 FROM auth.identities i 
+  WHERE i.user_id = u.id AND i.provider = 'email'
+);
 
 -- Sinkronisasi / Insert ke public.users
 INSERT INTO public.users (id, email, nama, role)

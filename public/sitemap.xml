@@ -1,166 +1,405 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Halaman Utama -->
+  <!-- ============================== -->
+  <!-- 1. Halaman Utama & Navigasi Inti -->
+  <!-- ============================== -->
   <url>
     <loc>https://syaiful-mukmin.netlify.app/</loc>
-    <lastmod>2026-11-15</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://syaiful-mukmin.netlify.app/about</loc>
-    <lastmod>2026-11-15</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://syaiful-mukmin.netlify.app/projects</loc>
-    <lastmod>2026-11-15</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.90</priority>
   </url>
   <url>
     <loc>https://syaiful-mukmin.netlify.app/blog</loc>
-    <lastmod>2026-11-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.88</priority>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.90</priority>
   </url>
   <url>
     <loc>https://syaiful-mukmin.netlify.app/gallery</loc>
-    <lastmod>2026-11-15</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.84</priority>
   </url>
   <url>
     <loc>https://syaiful-mukmin.netlify.app/photography</loc>
-    <lastmod>2026-11-15</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://syaiful-mukmin.netlify.app/contact</loc>
-    <lastmod>2026-11-15</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.70</priority>
   </url>
   <url>
     <loc>https://syaiful-mukmin.netlify.app/testimoni</loc>
-    <lastmod>2026-11-15</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.70</priority>
   </url>
   <url>
     <loc>https://syaiful-mukmin.netlify.app/portal</loc>
-    <lastmod>2026-11-15</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
 
-  <!-- Dokumentasi & SaipulAI -->
+  <!-- ============================== -->
+  <!-- 2. Perjalanan Akademik (S1 PGMI) -->
+  <!-- ============================== -->
   <url>
-    <loc>https://syaiful-mukmin.netlify.app/help/docs</loc>
-    <lastmod>2026-11-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
+    <loc>https://syaiful-mukmin.netlify.app/S1-PGMI</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://syaiful-mukmin.netlify.app/help/docs/ai</loc>
-    <lastmod>2026-11-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.90</priority>
-  </url>
-  <url>
-    <loc>https://syaiful-mukmin.netlify.app/help/version</loc>
-    <lastmod>2026-11-15</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://syaiful-mukmin.netlify.app/kkn</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://syaiful-mukmin.netlify.app/help/commitment</loc>
-    <lastmod>2026-11-15</lastmod>
+    <loc>https://syaiful-mukmin.netlify.app/kkn-desa-kundan-haruyan-dayak</loc>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.70</priority>
   </url>
   <url>
-    <loc>https://syaiful-mukmin.netlify.app/help/faq</loc>
-    <lastmod>2026-11-15</lastmod>
+    <loc>https://syaiful-mukmin.netlify.app/sempro-skripsi</loc>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.65</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://syaiful-mukmin.netlify.app/help/panduan/keamanan</loc>
-    <lastmod>2026-11-15</lastmod>
+    <loc>https://syaiful-mukmin.netlify.app/sidang-skripsi</loc>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.60</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://syaiful-mukmin.netlify.app/help/panduan/privasi</loc>
-    <lastmod>2026-11-15</lastmod>
+    <loc>https://syaiful-mukmin.netlify.app/wisuda</loc>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.60</priority>
+    <priority>0.75</priority>
   </url>
 
-  <!-- Profil, Akademik, dan Keahlian -->
-  <url>
-    <loc>https://syaiful-mukmin.netlify.app/certificates</loc>
-    <lastmod>2026-11-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.65</priority>
-  </url>
-  <url>
-    <loc>https://syaiful-mukmin.netlify.app/SoftSkills</loc>
-    <lastmod>2026-11-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.65</priority>
-  </url>
+  <!-- ============================== -->
+  <!-- 3. Profil, Karir, & Keahlian   -->
+  <!-- ============================== -->
   <url>
     <loc>https://syaiful-mukmin.netlify.app/education</loc>
-    <lastmod>2026-11-15</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.60</priority>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/certificates</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
   </url>
   <url>
     <loc>https://syaiful-mukmin.netlify.app/cv-saya</loc>
-    <lastmod>2026-11-15</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.70</priority>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/softskills</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
   </url>
   <url>
     <loc>https://syaiful-mukmin.netlify.app/visi</loc>
-    <lastmod>2026-11-15</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://syaiful-mukmin.netlify.app/hobbies</loc>
-    <lastmod>2026-11-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://syaiful-mukmin.netlify.app/bahasa</loc>
-    <lastmod>2026-11-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://syaiful-mukmin.netlify.app/owner</loc>
-    <lastmod>2026-11-15</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.55</priority>
   </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/bahasa</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.55</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/owner</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.60</priority>
+  </url>
 
-  <!-- Fitur Interaktif -->
+  <!-- ============================== -->
+  <!-- 4. Katalog & Detail Proyek     -->
+  <!-- ============================== -->
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/apps</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/daftar-aplikasi</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/1</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/2</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/3</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/4</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/5</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/6</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/7</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/8</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/9</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/10</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/11</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/12</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/13</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/14</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/15</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/16</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/17</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/18</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/19</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/20</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/project-detail/21</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+
+  <!-- ============================== -->
+  <!-- 5. Dokumentasi & SaipulAI      -->
+  <!-- ============================== -->
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/help/docs</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/help/docs/ai</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/help/version</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/help/commitment</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/help/faq</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/help/faq/riwayat/ai</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <!-- Rute Resmi Panduan Keamanan & Privasi -->
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/live-cs/security</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/live-cs/privacy</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.60</priority>
+  </url>
+
+  <!-- ============================== -->
+  <!-- 6. Fitur Interaktif & Komunitas-->
+  <!-- ============================== -->
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/Live-Discussion</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.75</priority>
+  </url>
   <url>
     <loc>https://syaiful-mukmin.netlify.app/qodam</loc>
-    <lastmod>2026-11-15</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.40</priority>
+    <priority>0.50</priority>
   </url>
   <url>
     <loc>https://syaiful-mukmin.netlify.app/zodiak</loc>
-    <lastmod>2026-11-15</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.40</priority>
+    <priority>0.50</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/buat-kamu</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.50</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/year-end</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.50</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/coming-soon</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/coming-soon/komunitas-id</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/coming-soon/sinyal-live</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://syaiful-mukmin.netlify.app/coming-soon/discond</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.65</priority>
   </url>
 </urlset>

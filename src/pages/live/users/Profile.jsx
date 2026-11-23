@@ -135,6 +135,16 @@ const Profile = () => {
     return colors[role] || 'from-gray-500 to-gray-400';
   };
 
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.warn('SignOut error:', err);
+    }
+    localStorage.removeItem('local_user');
+    navigate('/Live-Discussion/login?logout=true', { replace: true });
+  };
+
   if (loading) return (
     <div className="min-h-screen bg-[var(--color-gray-900)] flex items-center justify-center">
       <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }} className="w-12 h-12 border-t-2 border-cyan-500 rounded-full" />
@@ -320,7 +330,7 @@ const Profile = () => {
               <div className="grid gap-3">
                 {currentUser?.email === profileUser.email && (
                   <button 
-                    onClick={() => { localStorage.removeItem('local_user'); navigate('/Live-Discussion/login'); }}
+                    onClick={handleLogout}
                     className="w-full flex items-center justify-between p-6 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white border border-red-500/20 rounded-2xl transition-all group"
                   >
                     <span className="text-[10px] font-black uppercase tracking-widest">Sever Connection</span>

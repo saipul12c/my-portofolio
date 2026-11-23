@@ -12,7 +12,9 @@
     "api:server": "node server/saipul-server.js",
     "test": "node ./test-contact.js",
     "test:nlu": "node test/testNaturalNLU.js",
-    "test:benchmark": "node test/runBenchmark.js"
+    "test:benchmark": "node test/runBenchmark.js",
+    "test:supabase": "node test-supabase.js",
+    "update-role": "node update-role.js"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
