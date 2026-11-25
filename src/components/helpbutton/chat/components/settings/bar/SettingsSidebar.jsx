@@ -53,7 +53,7 @@ export function SettingsSidebar({ activeTab, setActiveTab }) {
   // Sync active tab from current route ONLY when user navigates via URL/back button
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
     // If user just clicked button, don't sync from route
     if (isUserClickRef.current) {
       isUserClickRef.current = false;
@@ -70,7 +70,7 @@ export function SettingsSidebar({ activeTab, setActiveTab }) {
   }, [location.pathname, pathToTab, activeTab, setActiveTab]);
 
   return (
-    <div className={`bg-gray-800/80 border-gray-700 flex flex-col p-2 gap-2 ${collapsed ? 'w-14' : 'w-52'} md:w-52` }>
+    <div className={`bg-gray-800/80 border-gray-700 flex flex-col p-2 gap-2 ${collapsed ? 'w-14' : 'w-52'} md:w-52`}>
       {/* Toggle only visible on small screens */}
       <button
         className="md:hidden mb-1 p-1 rounded-full bg-gray-700/60 text-gray-200"
@@ -88,8 +88,10 @@ export function SettingsSidebar({ activeTab, setActiveTab }) {
           onClick={() => {
             isUserClickRef.current = true;
             setActiveTab(tab.id);
-            const p = tabToPath[tab.id] || 'general';
-            navigate(`/help/chatbot/settings/${p}`, { replace: true });
+            if (location.pathname.startsWith('/help/chatbot/settings')) {
+              const p = tabToPath[tab.id] || 'general';
+              navigate(`/help/chatbot/settings/${p}`, { replace: true });
+            }
           }}
           aria-label={tab.label}
           style={activeTab === tab.id ? { background: 'var(--saipul-accent-gradient)', color: '#fff', border: '1px solid rgba(255,255,255,0.06)' } : { color: 'var(--saipul-muted-text)' }}

@@ -15,6 +15,8 @@ import {
   BookOpen,
   MessageSquare,
   Globe,
+  ShieldCheck,
+  Lock,
 } from "lucide-react";
 import { FaTiktok, FaThreads, FaDiscord } from "react-icons/fa6";
 import { Link } from "react-router-dom";
@@ -200,7 +202,7 @@ export default function Footer() {
 
         {/* === COPYRIGHT === */}
         <motion.div
-          className="flex flex-col md:flex-row justify-between items-center gap-3 text-sm text-gray-500"
+          className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
@@ -211,6 +213,26 @@ export default function Footer() {
               Syaiful Mukmin
             </span>
           </p>
+
+          {/* Privacy & Security Links */}
+          <div className="flex items-center gap-4 text-xs">
+            <Link
+              to="/live-cs/privacy"
+              className="flex items-center gap-1.5 text-gray-400 hover:text-cyan-400 transition-colors"
+            >
+              <Lock className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Privasi</span>
+            </Link>
+            <span className="text-gray-600">•</span>
+            <Link
+              to="/live-cs/security"
+              className="flex items-center gap-1.5 text-gray-400 hover:text-cyan-400 transition-colors"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Keamanan</span>
+            </Link>
+          </div>
+
           <p>© {currentYear} — Semua hak dilindungi 🚀</p>
         </motion.div>
       </div>

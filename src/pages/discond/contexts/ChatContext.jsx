@@ -1,9 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { friendlyFetchError } from '../utils/helpers';
 import api from '../lib/api';
-
-export const ChatContext = createContext(undefined);
+import { ChatContext } from './chatContextObject';
 
 export const ChatProvider = ({ children }) => {
   const [servers, setServers] = useState([]);
@@ -45,7 +44,7 @@ export const ChatProvider = ({ children }) => {
           socketRef.current.disconnect();
           socketRef.current = null;
         }
-      } catch (e) { /* ignore */ }
+      } catch { /* ignore */ }
     };
   }, []);
 
@@ -87,7 +86,7 @@ export const ChatProvider = ({ children }) => {
         setServers(uniqueServers);
         if (uniqueServers && uniqueServers.length > 0) setSelectedServer(uniqueServers[0]);
         return;
-      } catch (err) {
+      } catch {
         // fallback mock servers for local/dev
         const mock = [
           { id: 'local-1', name: 'Local Server', icon: '🌐', is_public: true },
@@ -119,7 +118,7 @@ export const ChatProvider = ({ children }) => {
         if (uniqueChannels && uniqueChannels.length > 0) setSelectedChannel(uniqueChannels[0]);
         else setSelectedChannel(null);
         return;
-      } catch (err) {
+      } catch {
         // fallback mock channels
         const mock = [
           { id: `ch-${serverId}-1`, name: 'general', type: 'text', __mock: true },
@@ -140,7 +139,7 @@ export const ChatProvider = ({ children }) => {
         const data = await api.messages.list(channelId);
         setMessages(data || []);
         return;
-      } catch (err) {
+      } catch {
         // fallback mock messages
         const mock = [
           { id: `m-${channelId}-1`, content: 'Halo! Selamat datang di channel.', created_at: new Date().toISOString(), profiles: { username: 'System' } },
@@ -232,7 +231,7 @@ export const ChatProvider = ({ children }) => {
           const copy = [...prev];
           copy[idx] = { ...copy[idx], typing: !!payload.typing, typing_at: payload.at };
           return copy;
-        } catch (e) { return prev; }
+        } catch { return prev; }
       });
     };
     socket.on('typing', typingHandler);
@@ -246,7 +245,7 @@ export const ChatProvider = ({ children }) => {
           const copy = [...prev];
           copy[idx] = { ...copy[idx], presence: payload.status, presence_at: payload.updated_at || new Date().toISOString() };
           return copy;
-        } catch (e) { return prev; }
+        } catch { return prev; }
       });
     };
     socket.on('presence', presenceHandler);
@@ -289,7 +288,7 @@ export const ChatProvider = ({ children }) => {
         // fallback to POST endpoint
         await fetch('/api/typing', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       }
-    } catch (err) {
+    } catch {
       // ignore
     }
   };
@@ -332,10 +331,4 @@ export const ChatProvider = ({ children }) => {
   );
 };
 
-export const useChat = () => {
-  const context = useContext(ChatContext);
-  if (context === undefined) throw new Error('useChat must be used within a ChatProvider');
-  return context;
-};
-
-export default ChatContext;
+export default ChatProvider;

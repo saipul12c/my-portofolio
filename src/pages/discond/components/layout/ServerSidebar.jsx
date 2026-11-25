@@ -1,16 +1,13 @@
 import { motion } from "framer-motion";
 import { Plus, MessageCircle, X } from 'lucide-react';
 import { useState } from 'react';
-import { useChat } from '../../contexts/ChatContext';
-import { useAuth } from '../../contexts/AuthContext';
-import { getTierColor } from '../../utils/helpers';
+import { useChat } from '../../contexts/useChat';
 import AuthButtons from '../auth/AuthButtons';
 
-const ServerSidebar = ({ onProfileClick, mobileClose, onAuthRequest }) => {
+const ServerSidebar = ({ mobileClose, onAuthRequest }) => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newServerName, setNewServerName] = useState('');
   const { servers, selectedServer, setSelectedServer, createServer } = useChat();
-  const { user } = useAuth();
 
   const handleCreateServer = async () => {
     if (!newServerName.trim()) return;

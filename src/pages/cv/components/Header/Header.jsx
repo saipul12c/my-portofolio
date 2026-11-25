@@ -6,21 +6,22 @@ import { AnimatePresence } from 'framer-motion';
 import ContactInfo from '../UI/ContactInfo';
 import MetricCard from '../UI/MetricCard';
 
+const SPECIALTIES = [
+  "EduTech Specialist",
+  "UI/UX Enthusiast",
+  "Open Source Contributor",
+  "Problem Solver",
+  "Tech Innovator"
+];
+
 const Header = ({ isCopied, copyEmail, metrics }) => {
   const [showVerifiedTooltip, setShowVerifiedTooltip] = React.useState(false);
   const [specialtyIndex, setSpecialtyIndex] = React.useState(0);
-
-  const specialties = [
-    "EduTech Specialist",
-    "UI/UX Enthusiast",
-    "Open Source Contributor",
-    "Problem Solver",
-    "Tech Innovator"
-  ];
+  const specialties = SPECIALTIES;
 
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setSpecialtyIndex((prev) => (prev + 1) % specialties.length);
+      setSpecialtyIndex((prev) => (prev + 1) % SPECIALTIES.length);
     }, 3000);
     return () => clearInterval(interval);
   }, []);

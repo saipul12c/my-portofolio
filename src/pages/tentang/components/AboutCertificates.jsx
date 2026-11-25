@@ -1,5 +1,5 @@
 // AboutCertificates.jsx
-import React, { useState, useEffect, useRef, useMemo, useCallback, memo } from "react";
+import React, { useState, useEffect, useRef, useMemo, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Award,

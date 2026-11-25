@@ -8,7 +8,7 @@ import {
 } from 'recharts';
 import { monthlyData, platformStats, portfolioSummaryStats } from '../modules/portalData';
 
-const StatsCharts = memo(({ stats }) => {
+const StatsCharts = memo(() => {
   const summary = portfolioSummaryStats;
 
   return (

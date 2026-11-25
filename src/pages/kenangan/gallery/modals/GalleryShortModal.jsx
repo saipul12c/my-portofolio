@@ -29,13 +29,13 @@ export default function GalleryShortModal({
   handlePrev,
 }) {
   const [isMuted, setIsMuted] = useState(true);
-  const [videoError, setVideoError] = useState(false);
-  const [videoLoading, setVideoLoading] = useState(true);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [copied, setCopied] = useState(false);
   const newRef = useRef(null);
   const localVideoRef = videoRef || newRef;
+  const mediaId = selectedMedia?.id;
+  const initialLikes = selectedMedia?.engagement?.likes || 0;
 
   // Kunci scroll body saat modal aktif
   useEffect(() => {
@@ -50,14 +50,12 @@ export default function GalleryShortModal({
 
   // Reset state saat media berganti
   useEffect(() => {
-    if (selectedMedia) {
-      setVideoError(false);
-      setVideoLoading(true);
+    if (mediaId) {
       setLiked(false);
-      setLikeCount(selectedMedia.engagement?.likes || 0);
+      setLikeCount(initialLikes);
       setCopied(false);
     }
-  }, [selectedMedia?.id]);
+  }, [mediaId, initialLikes]);
 
   const handleToggleLike = useCallback(() => {
     setLiked((prev) => {
@@ -120,12 +118,6 @@ export default function GalleryShortModal({
 
   const handleVideoError = (e) => {
     console.error('Video playback error:', e);
-    setVideoError(true);
-    setVideoLoading(false);
-  };
-
-  const handleVideoLoadedData = () => {
-    setVideoLoading(false);
   };
 
   if (!selectedMedia || selectedMedia.type !== "short") return null;
@@ -237,7 +229,6 @@ export default function GalleryShortModal({
                 controls={true}
                 className="w-full h-full object-cover"
                 onError={handleVideoError}
-                onLoadedData={handleVideoLoadedData}
               />
 
               {/* Tombol Navigasi Mobile Terintegrasi (Overlay pada video) */}

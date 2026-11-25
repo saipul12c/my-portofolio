@@ -57,10 +57,7 @@ export default function ProfileAdmin() {
     recentBlogs,
     recentCertificates,
     topHobbies,
-    blogStats,
-    totalImpact,
-    projectsCount,
-    testimonialsCount
+    blogStats
   } = useDataProcessing(data);
 
   // Tab state: 'overview' | 'academic' | 'skills_blog' | 'trust_personal' | 'ecosystem'

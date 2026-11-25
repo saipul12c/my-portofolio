@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { 
-  ArrowLeft, 
-  Calendar, 
-  Users, 
-  Tag, 
-  AlertCircle, 
+import {
+  ArrowLeft,
+  Calendar,
+  Users,
+  Tag,
+  AlertCircle,
   CheckCircle,
   Download,
   Clock,
@@ -86,7 +86,7 @@ export default function HelpVersionDetail() {
               const bDate = parseDate(b.lastUpdated || b.versionHistory?.[0]?.date);
               if (aDate.getTime() !== bDate.getTime()) return bDate - aDate;
 
-              const parseVer = (v) => (v || '').toString().replace(/^v/i, '').split(/[^0-9]+/).map(n => parseInt(n||0, 10));
+              const parseVer = (v) => (v || '').toString().replace(/^v/i, '').split(/[^0-9]+/).map(n => parseInt(n || 0, 10));
               const av = parseVer(a.version);
               const bv = parseVer(b.version);
               for (let i = 0; i < Math.max(av.length, bv.length); i++) {
@@ -184,7 +184,7 @@ export default function HelpVersionDetail() {
           details: pv.details || [],
           content: pv.description || '',
           changelog: pv.changelog || (pv.details ? pv.details.map(d => ({ date: 'Coming Soon', changes: d })) : []),
-          changelogSummary: pv.changelog?.[0]?.changes || (pv.details ? pv.details.slice(0,2).join('; ') : ''),
+          changelogSummary: pv.changelog?.[0]?.changes || (pv.details ? pv.details.slice(0, 2).join('; ') : ''),
           changelogCount: pv.changelog?.length || pv.details?.length || 0,
           versionHistory: pv.versionHistory || [],
           visual: pv.visual || { summary: pv.description, color: pv.iconColor || pv.color || '#7c3aed' },
@@ -305,19 +305,19 @@ export default function HelpVersionDetail() {
   // Helper untuk merender data teknis agar tidak terlihat seperti JSON (robot)
   const renderValue = (val) => {
     if (val === null || val === undefined) return "N/A";
-    
+
     // Jika input adalah string yang terlihat seperti JSON, coba parse
     if (typeof val === "string" && (val.startsWith("{") || val.startsWith("["))) {
       try {
         const parsed = JSON.parse(val);
         return renderValue(parsed);
-      } catch (e) {
+      } catch {
         // Fallback ke string asli jika gagal parse
       }
     }
 
     if (typeof val !== "object") return String(val);
-    
+
     if (Array.isArray(val)) {
       if (val.length === 0) return "None";
       return (
@@ -330,11 +330,11 @@ export default function HelpVersionDetail() {
         </ul>
       );
     }
-    
+
     // Handle Object
     const entries = Object.entries(val);
     if (entries.length === 0) return "{}";
-    
+
     // Spesifik untuk data SaipulAI (punya name dan features)
     if (val.name && val.features) {
       return (
@@ -366,13 +366,13 @@ export default function HelpVersionDetail() {
   // Helper untuk merender isi changelog agar menjadi daftar poin-poin
   const renderChangelogList = (text) => {
     if (!text) return null;
-    
+
     // List separator yang mungkin digunakan (koma, titik koma, titik baru jika diawali huruf besar)
     // Tapi yang paling aman adalah koma atau semicolon untuk data terstruktur.
     const parts = text.split(/[,;]|\.\s(?=[A-Z])/).map(p => p.trim()).filter(p => p.length > 0);
-    
+
     if (parts.length <= 1) return <p className="text-gray-300">{text}</p>;
-    
+
     return (
       <ul className="space-y-2 mt-2">
         {parts.map((p, i) => (
@@ -391,7 +391,7 @@ export default function HelpVersionDetail() {
       <div className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-white/10 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <Link
                 to="/help/version"
                 className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
@@ -399,8 +399,17 @@ export default function HelpVersionDetail() {
                 <ArrowLeft size={20} />
                 <span>Back to Versions</span>
               </Link>
+              <span className="text-white/20 hidden sm:inline">|</span>
+              <Link
+                to="/help/docs"
+                className="hidden sm:flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 transition-all shadow-[0_0_10px_rgba(6,182,212,0.1)]"
+                title="Buka Dokumentasi Sistem"
+              >
+                <FileText size={14} />
+                <span>Dokumentasi Sistem</span>
+              </Link>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <span className={`px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(version.status)} ring-1 ring-white/5 shadow-sm`}>
                 {version.status}
@@ -482,10 +491,10 @@ export default function HelpVersionDetail() {
           {/* Mobile: compact nav for sections (shows on small screens) */}
           <div className="lg:hidden col-span-1">
             <div className="flex gap-2 overflow-x-auto pb-2">
-              <button onClick={() => setActiveSection('overview')} className={`px-3 py-2 rounded-lg text-sm ${activeSection==='overview' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-300'}`}>Overview</button>
-              {version.changelog?.length > 0 && <button onClick={() => setActiveSection('changelog')} className={`px-3 py-2 rounded-lg text-sm ${activeSection==='changelog' ? 'bg-indigo-600 text-white' : 'bg-gray-800 text-gray-300'}`}>Changelog</button>}
-              {version.versionHistory?.length > 0 && <button onClick={() => setActiveSection('history')} className={`px-3 py-2 rounded-lg text-sm ${activeSection==='history' ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-300'}`}>History</button>}
-              <button onClick={() => setActiveSection('compatibility')} className={`px-3 py-2 rounded-lg text-sm ${activeSection==='compatibility' ? 'bg-yellow-600 text-white' : 'bg-gray-800 text-gray-300'}`}>Compatibility</button>
+              <button onClick={() => setActiveSection('overview')} className={`px-3 py-2 rounded-lg text-sm ${activeSection === 'overview' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-300'}`}>Overview</button>
+              {version.changelog?.length > 0 && <button onClick={() => setActiveSection('changelog')} className={`px-3 py-2 rounded-lg text-sm ${activeSection === 'changelog' ? 'bg-indigo-600 text-white' : 'bg-gray-800 text-gray-300'}`}>Changelog</button>}
+              {version.versionHistory?.length > 0 && <button onClick={() => setActiveSection('history')} className={`px-3 py-2 rounded-lg text-sm ${activeSection === 'history' ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-300'}`}>History</button>}
+              <button onClick={() => setActiveSection('compatibility')} className={`px-3 py-2 rounded-lg text-sm ${activeSection === 'compatibility' ? 'bg-yellow-600 text-white' : 'bg-gray-800 text-gray-300'}`}>Compatibility</button>
             </div>
           </div>
           {/* Sidebar Navigation */}
@@ -493,8 +502,8 @@ export default function HelpVersionDetail() {
             <div className="sticky top-32 space-y-2">
               <button
                 onClick={() => setActiveSection("overview")}
-                className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "overview" 
-                  ? "bg-gradient-to-r from-pink-500/20 to-indigo-600/20 text-white border border-pink-500/30 ring-1 ring-white/5 shadow" 
+                className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "overview"
+                  ? "bg-gradient-to-r from-pink-500/20 to-indigo-600/20 text-white border border-pink-500/30 ring-1 ring-white/5 shadow"
                   : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:translate-x-1 hover:scale-[1.01]"}`}
               >
                 <div className="flex items-center gap-3">
@@ -506,8 +515,8 @@ export default function HelpVersionDetail() {
               {version.changelog && version.changelog.length > 0 && (
                 <button
                   onClick={() => setActiveSection("changelog")}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "changelog" 
-                    ? "bg-gradient-to-r from-indigo-500/20 to-blue-600/20 text-white border border-indigo-500/30 ring-1 ring-white/5 shadow" 
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "changelog"
+                    ? "bg-gradient-to-r from-indigo-500/20 to-blue-600/20 text-white border border-indigo-500/30 ring-1 ring-white/5 shadow"
                     : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:translate-x-1 hover:scale-[1.01]"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -523,8 +532,8 @@ export default function HelpVersionDetail() {
               {version.versionHistory && version.versionHistory.length > 0 && (
                 <button
                   onClick={() => setActiveSection("history")}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "history" 
-                    ? "bg-gradient-to-r from-green-500/20 to-green-600/20 text-white border border-green-500/30 ring-1 ring-white/5 shadow" 
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "history"
+                    ? "bg-gradient-to-r from-green-500/20 to-green-600/20 text-white border border-green-500/30 ring-1 ring-white/5 shadow"
                     : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:translate-x-1 hover:scale-[1.01]"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -537,8 +546,8 @@ export default function HelpVersionDetail() {
               {version.compatibility && (
                 <button
                   onClick={() => setActiveSection("compatibility")}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "compatibility" 
-                    ? "bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 text-white border border-yellow-500/30 ring-1 ring-white/5 shadow" 
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "compatibility"
+                    ? "bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 text-white border border-yellow-500/30 ring-1 ring-white/5 shadow"
                     : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:translate-x-1 hover:scale-[1.01]"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -551,8 +560,8 @@ export default function HelpVersionDetail() {
               {version.breakingChanges && (
                 <button
                   onClick={() => setActiveSection("breaking")}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "breaking" 
-                    ? "bg-gradient-to-r from-red-500/20 to-red-600/20 text-white border border-red-500/30 ring-1 ring-white/5 shadow" 
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "breaking"
+                    ? "bg-gradient-to-r from-red-500/20 to-red-600/20 text-white border border-red-500/30 ring-1 ring-white/5 shadow"
                     : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:translate-x-1 hover:scale-[1.01]"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -565,8 +574,8 @@ export default function HelpVersionDetail() {
               {version.details && (
                 <button
                   onClick={() => setActiveSection("details")}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "details" 
-                    ? "bg-gradient-to-r from-cyan-500/20 to-cyan-600/20 text-white border border-cyan-500/30 ring-1 ring-white/5 shadow" 
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "details"
+                    ? "bg-gradient-to-r from-cyan-500/20 to-cyan-600/20 text-white border border-cyan-500/30 ring-1 ring-white/5 shadow"
                     : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:translate-x-1 hover:scale-[1.01]"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -579,8 +588,8 @@ export default function HelpVersionDetail() {
               {version.acceptanceCriteria && version.acceptanceCriteria.length > 0 && (
                 <button
                   onClick={() => setActiveSection("acceptance")}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "acceptance" 
-                    ? "bg-gradient-to-r from-indigo-500/20 to-indigo-600/20 text-white border border-indigo-500/30 ring-1 ring-white/5 shadow" 
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "acceptance"
+                    ? "bg-gradient-to-r from-indigo-500/20 to-indigo-600/20 text-white border border-indigo-500/30 ring-1 ring-white/5 shadow"
                     : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:translate-x-1 hover:scale-[1.01]"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -593,8 +602,8 @@ export default function HelpVersionDetail() {
               {version.releaseChecklist && version.releaseChecklist.length > 0 && (
                 <button
                   onClick={() => setActiveSection("checklist")}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "checklist" 
-                    ? "bg-gradient-to-r from-blue-500/20 to-blue-600/20 text-white border border-blue-500/30 ring-1 ring-white/5 shadow" 
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "checklist"
+                    ? "bg-gradient-to-r from-blue-500/20 to-blue-600/20 text-white border border-blue-500/30 ring-1 ring-white/5 shadow"
                     : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:translate-x-1 hover:scale-[1.01]"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -607,8 +616,8 @@ export default function HelpVersionDetail() {
               {version.migrationNotes && (Object.keys(version.migrationNotes).length > 0) && (
                 <button
                   onClick={() => setActiveSection("migration")}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "migration" 
-                    ? "bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 text-white border border-yellow-500/30 ring-1 ring-white/5 shadow" 
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "migration"
+                    ? "bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 text-white border border-yellow-500/30 ring-1 ring-white/5 shadow"
                     : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:translate-x-1 hover:scale-[1.01]"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -621,8 +630,8 @@ export default function HelpVersionDetail() {
               {version.testPlan && Object.keys(version.testPlan).length > 0 && (
                 <button
                   onClick={() => setActiveSection("tests")}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "tests" 
-                    ? "bg-gradient-to-r from-green-500/20 to-green-600/20 text-white border border-green-500/30 ring-1 ring-white/5 shadow" 
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "tests"
+                    ? "bg-gradient-to-r from-green-500/20 to-green-600/20 text-white border border-green-500/30 ring-1 ring-white/5 shadow"
                     : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:translate-x-1 hover:scale-[1.01]"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -635,8 +644,8 @@ export default function HelpVersionDetail() {
               {version.performanceTargets && Object.keys(version.performanceTargets).length > 0 && (
                 <button
                   onClick={() => setActiveSection("performance")}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "performance" 
-                    ? "bg-gradient-to-r from-red-500/20 to-red-600/20 text-white border border-red-500/30 ring-1 ring-white/5 shadow" 
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "performance"
+                    ? "bg-gradient-to-r from-red-500/20 to-red-600/20 text-white border border-red-500/30 ring-1 ring-white/5 shadow"
                     : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:translate-x-1 hover:scale-[1.01]"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -649,8 +658,8 @@ export default function HelpVersionDetail() {
               {version.rolloutStrategy && Object.keys(version.rolloutStrategy).length > 0 && (
                 <button
                   onClick={() => setActiveSection("rollout")}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "rollout" 
-                    ? "bg-gradient-to-r from-purple-500/20 to-purple-600/20 text-white border border-purple-500/30 ring-1 ring-white/5 shadow" 
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "rollout"
+                    ? "bg-gradient-to-r from-purple-500/20 to-purple-600/20 text-white border border-purple-500/30 ring-1 ring-white/5 shadow"
                     : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:translate-x-1 hover:scale-[1.01]"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -663,8 +672,8 @@ export default function HelpVersionDetail() {
               {version.businessImpact && Object.keys(version.businessImpact).length > 0 && (
                 <button
                   onClick={() => setActiveSection("business")}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "business" 
-                    ? "bg-gradient-to-r from-indigo-500/20 to-indigo-600/20 text-white border border-indigo-500/30 ring-1 ring-white/5 shadow" 
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "business"
+                    ? "bg-gradient-to-r from-indigo-500/20 to-indigo-600/20 text-white border border-indigo-500/30 ring-1 ring-white/5 shadow"
                     : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:translate-x-1 hover:scale-[1.01]"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -677,8 +686,8 @@ export default function HelpVersionDetail() {
               {version.saipulaiUpgrade && (
                 <button
                   onClick={() => setActiveSection("ai")}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "ai" 
-                    ? "bg-gradient-to-r from-indigo-500/20 to-blue-600/20 text-white border border-indigo-500/30 ring-1 ring-white/5 shadow" 
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "ai"
+                    ? "bg-gradient-to-r from-indigo-500/20 to-blue-600/20 text-white border border-indigo-500/30 ring-1 ring-white/5 shadow"
                     : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:translate-x-1 hover:scale-[1.01]"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -691,8 +700,8 @@ export default function HelpVersionDetail() {
               {version.newFeatures && Object.keys(version.newFeatures).length > 0 && (
                 <button
                   onClick={() => setActiveSection("newfeatures")}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "newfeatures" 
-                    ? "bg-gradient-to-r from-cyan-500/20 to-teal-600/20 text-white border border-cyan-500/30 ring-1 ring-white/5 shadow" 
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "newfeatures"
+                    ? "bg-gradient-to-r from-cyan-500/20 to-teal-600/20 text-white border border-cyan-500/30 ring-1 ring-white/5 shadow"
                     : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:translate-x-1 hover:scale-[1.01]"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -705,8 +714,8 @@ export default function HelpVersionDetail() {
               {version.securityEnhancements && Object.keys(version.securityEnhancements).length > 0 && (
                 <button
                   onClick={() => setActiveSection("security")}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "security" 
-                    ? "bg-gradient-to-r from-red-500/20 to-rose-600/20 text-white border border-red-500/30 ring-1 ring-white/5 shadow" 
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "security"
+                    ? "bg-gradient-to-r from-red-500/20 to-rose-600/20 text-white border border-red-500/30 ring-1 ring-white/5 shadow"
                     : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:translate-x-1 hover:scale-[1.01]"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -719,8 +728,8 @@ export default function HelpVersionDetail() {
               {version.rollbackPlan && version.rollbackPlan.available && (
                 <button
                   onClick={() => setActiveSection("rollback")}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "rollback" 
-                    ? "bg-gradient-to-r from-yellow-500/20 to-amber-600/20 text-white border border-yellow-500/30 ring-1 ring-white/5 shadow" 
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "rollback"
+                    ? "bg-gradient-to-r from-yellow-500/20 to-amber-600/20 text-white border border-yellow-500/30 ring-1 ring-white/5 shadow"
                     : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:translate-x-1 hover:scale-[1.01]"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -733,8 +742,8 @@ export default function HelpVersionDetail() {
               {version.notes && (
                 <button
                   onClick={() => setActiveSection("notes")}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "notes" 
-                    ? "bg-gradient-to-r from-gray-500/20 to-gray-600/20 text-white border border-gray-500/30 ring-1 ring-white/5 shadow" 
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "notes"
+                    ? "bg-gradient-to-r from-gray-500/20 to-gray-600/20 text-white border border-gray-500/30 ring-1 ring-white/5 shadow"
                     : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:translate-x-1 hover:scale-[1.01]"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -747,8 +756,8 @@ export default function HelpVersionDetail() {
               {(version.resources && version.resources.length > 0) && (
                 <button
                   onClick={() => setActiveSection("resources")}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "resources" 
-                    ? "bg-gradient-to-r from-cyan-500/20 to-cyan-600/20 text-white border border-cyan-500/30 ring-1 ring-white/5 shadow" 
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all transform-gpu ${activeSection === "resources"
+                    ? "bg-gradient-to-r from-cyan-500/20 to-cyan-600/20 text-white border border-cyan-500/30 ring-1 ring-white/5 shadow"
                     : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:translate-x-1 hover:scale-[1.01]"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -768,11 +777,11 @@ export default function HelpVersionDetail() {
                 <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-4">Version Overview</h2>
                   <p className="text-gray-300 mb-6">{version.content || version.description}</p>
-                  
+
                   {version.visual && (
                     <div className="p-4 bg-gray-800/30 rounded-xl border border-gray-700">
                       <div className="flex items-center gap-3 mb-3">
-                        <div 
+                        <div
                           className="w-3 h-3 rounded-full"
                           style={{ backgroundColor: version.visual.color || "#6b7280" }}
                         />
@@ -792,7 +801,7 @@ export default function HelpVersionDetail() {
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       {version.tags.slice(0, 3).map((tag, tagIndex) => (
-                        <span 
+                        <span
                           key={tagIndex}
                           className={`px-3 py-1 rounded-full text-xs font-semibold ${tagColors[tagIndex % tagColors.length]} select-none`}
                         >
@@ -815,7 +824,7 @@ export default function HelpVersionDetail() {
                   <h2 className="text-2xl font-bold text-white mb-6">Changelog</h2>
                   <div className="space-y-4">
                     {version.changelog.map((change, index) => (
-                      <div 
+                      <div
                         key={index}
                         className="p-4 bg-gray-800/30 rounded-xl border border-gray-700"
                       >
@@ -824,13 +833,12 @@ export default function HelpVersionDetail() {
                             <Calendar className="text-gray-500" size={16} />
                             <span className="text-sm text-gray-400">{change.date}</span>
                           </div>
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            change.type === 'feature' ? 'bg-green-500/20 text-green-400' :
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${change.type === 'feature' ? 'bg-green-500/20 text-green-400' :
                             change.type === 'security' ? 'bg-red-500/20 text-red-400' :
-                            change.type === 'performance' ? 'bg-blue-500/20 text-blue-400' :
-                            change.type === 'improvement' ? 'bg-yellow-500/20 text-yellow-400' :
-                            'bg-gray-500/20 text-gray-400'
-                          }`}>
+                              change.type === 'performance' ? 'bg-blue-500/20 text-blue-400' :
+                                change.type === 'improvement' ? 'bg-yellow-500/20 text-yellow-400' :
+                                  'bg-gray-500/20 text-gray-400'
+                            }`}>
                             {change.type?.toUpperCase()}
                           </span>
                         </div>
@@ -851,30 +859,28 @@ export default function HelpVersionDetail() {
                   <h2 className="text-2xl font-bold text-white mb-6">Version History</h2>
                   <div className="space-y-4">
                     {version.versionHistory.map((history, index) => (
-                      <div 
+                      <div
                         key={index}
-                        className={`p-4 rounded-xl border ${
-                          history.breakingChanges 
-                            ? 'bg-red-500/10 border-red-500/30' 
-                            : 'bg-gray-800/30 border-gray-700'
-                        }`}
+                        className={`p-4 rounded-xl border ${history.breakingChanges
+                          ? 'bg-red-500/10 border-red-500/30'
+                          : 'bg-gray-800/30 border-gray-700'
+                          }`}
                       >
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-3">
                             <span className="text-lg font-semibold text-white">{history.version}</span>
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              history.status === 'current' ? 'bg-green-500/20 text-green-400' :
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${history.status === 'current' ? 'bg-green-500/20 text-green-400' :
                               history.status === 'supported' ? 'bg-blue-500/20 text-blue-400' :
-                              history.status === 'deprecated' ? 'bg-yellow-500/20 text-yellow-400' :
-                              history.status === 'archived' ? 'bg-gray-500/20 text-gray-400' :
-                              'bg-gray-500/20 text-gray-400'
-                            }`}>
+                                history.status === 'deprecated' ? 'bg-yellow-500/20 text-yellow-400' :
+                                  history.status === 'archived' ? 'bg-gray-500/20 text-gray-400' :
+                                    'bg-gray-500/20 text-gray-400'
+                              }`}>
                               {history.status?.toUpperCase()}
                             </span>
                           </div>
                           <span className="text-sm text-gray-400">{history.date}</span>
                         </div>
-                        
+
                         <div className="flex items-center gap-4">
                           {history.breakingChanges && (
                             <div className="flex items-center gap-2">
@@ -882,7 +888,7 @@ export default function HelpVersionDetail() {
                               <span className="text-sm text-red-400">Breaking Changes</span>
                             </div>
                           )}
-                          
+
                           {history.migrationRequired && (
                             <div className="flex items-center gap-2">
                               <AlertCircle className="text-yellow-400" size={16} />
@@ -902,7 +908,7 @@ export default function HelpVersionDetail() {
               <div className="space-y-6">
                 <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-6">Compatibility</h2>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div className="bg-gray-800/30 rounded-xl p-6 border border-gray-700">
                       <div className="flex items-center gap-3 mb-4">
@@ -934,7 +940,7 @@ export default function HelpVersionDetail() {
                       </h3>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         {version.compatibility.browserSupport.map((browser, index) => (
-                          <div 
+                          <div
                             key={index}
                             className="p-4 bg-gray-800/30 rounded-xl border border-gray-700"
                           >
@@ -973,7 +979,7 @@ export default function HelpVersionDetail() {
                     <AlertCircle className="text-red-400" size={24} />
                     <h2 className="text-2xl font-bold text-white">Breaking Changes</h2>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <div className="p-4 bg-red-500/10 rounded-xl border border-red-500/20">
                       <h3 className="text-lg font-semibold text-white mb-2">⚠️ Attention Required</h3>
@@ -1003,7 +1009,7 @@ export default function HelpVersionDetail() {
                   <h2 className="text-2xl font-bold text-white mb-6">Feature Details</h2>
                   <div className="space-y-4">
                     {version.details.map((detail, index) => (
-                      <div 
+                      <div
                         key={index}
                         className="p-4 bg-gray-800/30 rounded-xl border border-gray-700"
                       >

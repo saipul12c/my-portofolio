@@ -241,7 +241,7 @@ export const getAdminPosts = async () => {
     posts = [...DEFAULT_SEED_POSTS];
     try {
       localStorage.setItem(STORAGE_POSTS_KEY, JSON.stringify(posts));
-    } catch (e) {
+    } catch {
       // ignore
     }
   }

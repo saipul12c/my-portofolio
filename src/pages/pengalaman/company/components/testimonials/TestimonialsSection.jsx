@@ -9,7 +9,6 @@ const TestimonialsSection = ({
   dispatch, 
   mobileMenuOpen, 
   setMobileMenuOpen, 
-  debouncedSearchQuery, 
   filteredAndSortedTestimonials,
   info
 }) => {

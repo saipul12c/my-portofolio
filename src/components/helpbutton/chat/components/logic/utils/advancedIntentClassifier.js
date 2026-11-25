@@ -4,8 +4,8 @@
  * Menangani: greeting, question, statement, command, complex reasoning, dsb
  */
 
-import { processNLU } from './nluProcessing';
-import { enhancedEntityRecognition } from './entityRecognition';
+import { processNLU, detectSarcasmAndIrony } from './nluProcessing.js';
+import { enhancedEntityRecognition } from './entityRecognition.js';
 
 export const INTENT_TYPES = {
   // Simple Intents
@@ -14,6 +14,10 @@ export const INTENT_TYPES = {
   CONFIRMATION: 'confirmation',
   DENIAL: 'denial',
   THANKS: 'thanks',
+  SMALL_TALK: 'small_talk', // Basa-basi, keluhan ringan, obrolan santai sehari-hari
+  REPEAT_QUERY: 'repeat_query', // Pengguna mengulang pertanyaan yang sama
+  FOLLOW_UP: 'follow_up', // Pertanyaan lanjutan / menyambung konteks
+  CONTEXT_SHIFT: 'context_shift', // Pergeseran topik
   
   // Information Seeking
   SIMPLE_FACTUAL: 'simple_factual', // Pertanyaan faktual sederhana
@@ -121,7 +125,7 @@ const INTENT_PATTERNS = {
     patterns: [
       /\b(hitung|kalkulus|integral|turunan|statistik|rata\s*rata|median|standar deviasi)\b/i,
       /\b(berapa|how much|hasil|sama dengan|=)\b/i,
-      /^\d+\s*[\+\-\*\/÷]\s*\d+/
+      /^\d+\s*[+\-*/÷]\s*\d+/
     ],
     confidence_boost: 0.17
   },
@@ -200,6 +204,18 @@ const INTENT_PATTERNS = {
     ],
     confidence_boost: 0.15
   },
+  [INTENT_TYPES.SMALL_TALK]: {
+    patterns: [
+      /\b(lagi apa|lagi ngapain|sibuk apa|sedang apa|lagi santai|ngapain aja)\b/i,
+      /\b(udah makan|sudah makan|makan apa|makan siang|makan malam)\b/i,
+      /\b(bisa tidur|tidur gak|kamu tidur|istirahat jam|punya perasaan|robot atau manusia)\b/i,
+      /\b(temenin ngobrol|ngobrol yuk|lagi gabut|bosen nih|bosan nih|kesepian)\b/i,
+      /\b(ceritain lelucon|ada jokes|cerita lucu|bikin ketawa|jokes receh)\b/i,
+      /\b(capek banget|lelah banget|pusing pala|bad mood|bete banget|kesel bat|hari ini berat|capek kerja)\b/i,
+      /\b(kepo deh|lucu deh|wkwk|hehe|hahaha)\b/i
+    ],
+    confidence_boost: 0.22
+  },
   [INTENT_TYPES.LIVE_CS]: {
     patterns: [
       /\b(cs|agent|agen|human|manusia|admin|live support|bantuan langsung|diskusi)\b/i,
@@ -225,6 +241,36 @@ export function classifyIntent(text, conversationContext = {}) {
       confidence: 0,
       reason: 'empty_input'
     };
+  }
+
+  // Level 0A: Sarcasm / Irony Detection
+  // Jika pengguna menyindir (misal "Mantap sekali, baru dipakai sehari sudah rusak"),
+  // ini harus definitif diklasifikasikan sebagai COMPLAINT (komplain), BUKAN PRAISE (pujian).
+  const sarcasm = detectSarcasmAndIrony(normalized);
+  if (sarcasm && sarcasm.isSarcastic) {
+    return {
+      intent: INTENT_TYPES.COMPLAINT,
+      subIntent: 'sarcastic_complaint',
+      sarcasmType: sarcasm.type,
+      confidence: 0.95,
+      level: 'sarcasm_detector'
+    };
+  }
+
+  // Level 0B: Repetition Detection (Pengguna mengulang pertanyaan sama persis)
+  if (conversationContext && Array.isArray(conversationContext.messages) && conversationContext.messages.length > 0) {
+    const userMsgs = conversationContext.messages.filter(m => (m.sender === 'user' || m.role === 'user'));
+    if (userMsgs.length > 0) {
+      const lastUserMsg = (userMsgs[userMsgs.length - 1].content || userMsgs[userMsgs.length - 1].text || '').toLowerCase().trim();
+      if (lastUserMsg && (lastUserMsg === normalized || (normalized.length > 8 && lastUserMsg.includes(normalized)))) {
+        return {
+          intent: INTENT_TYPES.REPEAT_QUERY,
+          confidence: 0.95,
+          previousQuery: lastUserMsg,
+          level: 'repetition_detector'
+        };
+      }
+    }
   }
 
   // Level 1: Quick Pattern Matching
@@ -479,7 +525,7 @@ function combineResults(patternResults, complexityScore, nluAnalysis, contextAna
  * Get optimal response strategy based on intent
  */
 export function getResponseStrategy(classificationResult) {
-  const { intent, complexity } = classificationResult;
+  const { intent } = classificationResult;
 
   const strategies = {
     [INTENT_TYPES.GREETING]: {

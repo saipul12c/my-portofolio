@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/useAuth';
 import api from '../../lib/backend';
 
 const Profile = () => {
@@ -18,7 +18,7 @@ const Profile = () => {
   const save = async () => {
     setStatus('saving');
     try {
-      const res = await api.apiFetch(`/api/profiles/${user.id}`, {
+      await api.apiFetch(`/api/profiles/${user.id}`, {
         method: 'PUT',
         body: JSON.stringify(form)
       });

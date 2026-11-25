@@ -129,7 +129,7 @@ else:
 node server/saipul-server.js
 
 # Output console:
-# 🤖 SaipulAI Standalone Server v8.1.0 aktif!
+# 🤖 SaipulAI Standalone Server  v8.0.0 aktif!
 # 📡 URL API: http://localhost:3001/api/saipul
 # 🔒 Zero Sensitive Keys • CORS Enabled • PII Filter Active`
   };
@@ -153,7 +153,7 @@ node server/saipul-server.js
               </h2>
               <p className="text-gray-400 text-sm mt-1 flex items-center gap-2">
                 <FaBolt className="text-yellow-400 text-xs" />
-                Gunakan kecerdasan SaipulAI v8.1.0 di website, bot, atau aplikasi pihak ketiga
+                Gunakan kecerdasan SaipulAI  v8.0.0 di website, bot, atau aplikasi pihak ketiga
               </p>
             </div>
           </div>
@@ -163,7 +163,7 @@ node server/saipul-server.js
               <span className="text-[10px] uppercase tracking-widest text-gray-500 font-bold block mb-1">Status API</span>
               <div className="flex items-center gap-2 text-green-400 text-sm font-semibold">
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                ONLINE (v8.1.0)
+                ONLINE ( v8.0.0)
               </div>
             </div>
             <div className="bg-black/20 rounded-lg p-4 border border-white/5">
@@ -186,7 +186,7 @@ node server/saipul-server.js
           </div>
           <div>
             <h3 className="text-xl font-bold bg-gradient-to-r from-blue-300 via-indigo-200 to-purple-300 bg-clip-text text-transparent">
-              Integrasi Arsitektur Dual-Engine SaipulAI v8.1.0
+              Integrasi Arsitektur Dual-Engine SaipulAI  v8.0.0
             </h3>
             <p className="text-xs text-gray-400 mt-0.5">
               Sinergi harmonis antara kecerdasan On-Device (in-browser) dan Universal Serverless REST API
@@ -195,7 +195,7 @@ node server/saipul-server.js
         </div>
 
         <p className="text-sm text-gray-300 leading-relaxed mb-6">
-          Ekosistem <strong>SaipulAI v8.1.0</strong> mengintegrasikan dua pilar arsitektur kecerdasan yang saling melengkapi. Keduanya berbagi pemahaman data portofolio yang selaras, evaluasi matematika simbolik/alami, serta standar keamanan privasi tanpa kebocoran kredensial.
+          Ekosistem <strong>SaipulAI  v8.0.0</strong> mengintegrasikan dua pilar arsitektur kecerdasan yang saling melengkapi. Keduanya berbagi pemahaman data portofolio yang selaras, evaluasi matematika simbolik/alami, serta standar keamanan privasi tanpa kebocoran kredensial.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

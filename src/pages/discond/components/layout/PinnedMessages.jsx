@@ -14,7 +14,7 @@ export default function PinnedMessages({ channelId, onUnpin }) {
         if (!mounted) return;
         const pins = Array.isArray(msgs) ? msgs.filter(m => m.pinned) : [];
         setPinned(pins);
-      } catch (e) { setPinned([]); }
+      } catch { setPinned([]); }
       finally { if (mounted) setLoading(false); }
     })();
     return () => { mounted = false; };

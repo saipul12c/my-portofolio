@@ -85,6 +85,39 @@ export const NLP_TUNING = {
   factCheckerSourceBoosts: { uploadedData: 1.5, AI: 1.2 }
 };
 
+/**
+ * Terapkan variabel tema & warna aksen SaipulAI ke :root (single source of truth)
+ */
+export function applySaipulThemeToRoot(theme = 'dark', accent = 'cyan') {
+  try {
+    const acc = ACCENT_COLORS[accent] || ACCENT_COLORS['cyan'];
+    const th = PALETTES[theme] || PALETTES['dark'];
+    const root = typeof document !== 'undefined' ? document?.documentElement?.style : null;
+    if (!root) return;
+
+    const isDarkTheme = theme === 'dark' || theme === 'midnight' || theme === 'system' || theme === 'contrast';
+    root.setProperty('--saipul-accent', acc.accent);
+    root.setProperty('--saipul-accent-2', acc.accent2);
+    root.setProperty('--saipul-accent-gradient', `linear-gradient(90deg, ${acc.accent}, ${acc.accent2})`);
+    root.setProperty('--saipul-accent-1', acc.accent);
+    root.setProperty('--saipul-accent-contrast', acc.accent2);
+    root.setProperty('--saipul-modal-bg', th.surface);
+    root.setProperty('--saipul-surface', th.surface);
+    root.setProperty('--saipul-bg-card', isDarkTheme ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)');
+    root.setProperty('--saipul-bg-input', isDarkTheme ? 'rgba(255,255,255,0.05)' : '#ffffff');
+    root.setProperty('--saipul-text', th.text);
+    root.setProperty('--saipul-text-primary', th.text);
+    root.setProperty('--saipul-text-secondary', isDarkTheme ? '#94a3b8' : '#475569');
+    root.setProperty('--saipul-text-muted', th.muted);
+    root.setProperty('--saipul-muted', th.muted);
+    root.setProperty('--saipul-border', th.border);
+    root.setProperty('--saipul-button-hover', acc.accent2 + '33');
+    root.setProperty('--saipul-muted-text', th.muted);
+  } catch (err) {
+    console.warn('Failed to apply theme to :root', err);
+  }
+}
+
 export default {
   THEMES,
   ACCENTS,

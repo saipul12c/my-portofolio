@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Laporkan Celah Keamanan (Privat)
+    url: https://github.com/saipul12c/my-portofolio/security/advisories/new
+    about: Jangan buat issue publik untuk masalah keamanan. Laporkan secara privat melalui GitHub Security Advisory atau email uju355@gmail.com (lihat SECURITY.md).
+  - name: Pertanyaan Umum & Permintaan Izin Aset
+    url: mailto:uju355@gmail.com
+    about: Untuk pertanyaan portofolio, kolaborasi, atau izin penggunaan konten/aset di COPYRIGHT.md.
+  - name: Formulir Kontak Website
+    url: https://syaiful-mukmin.netlify.app/admin/contact
+    about: Hubungi pemilik proyek langsung melalui halaman kontak resmi website portofolio.

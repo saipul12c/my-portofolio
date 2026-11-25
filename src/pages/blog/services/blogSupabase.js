@@ -445,7 +445,7 @@ export const recordView = async (postSlug, currentViews = 0) => {
       if (supabase) {
         await supabase.rpc('increment_blog_views', { target_slug: postSlug });
       }
-    } catch (err) {
+    } catch {
       // silently ignore view tracking errors
     }
   }
@@ -572,7 +572,7 @@ export const subscribeToBlogPosts = (onUpdate) => {
     return () => {
       try {
         supabase.removeChannel(channel);
-      } catch (e) {
+      } catch {
         // ignore cleanup error
       }
     };
@@ -613,7 +613,7 @@ export const subscribeToComments = (postSlug, onComment) => {
     return () => {
       try {
         supabase.removeChannel(channel);
-      } catch (e) {
+      } catch {
         // ignore cleanup error
       }
     };

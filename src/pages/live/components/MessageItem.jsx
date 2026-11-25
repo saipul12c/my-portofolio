@@ -19,7 +19,6 @@ import { ReactionPicker, MessageReactions } from './ReactionPicker';
 
 export const MessageItem = memo(({
   message,
-  index,
   showDateDivider,
   currentDate,
   isOwnMessage,

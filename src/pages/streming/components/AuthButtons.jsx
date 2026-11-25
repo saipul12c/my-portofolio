@@ -1,10 +1,9 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { useAuth } from "../../../context/AuthContext";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../../context/useAuth";
 
 export default function AuthButtons() {
   const { user, logout } = useAuth();
-  const location = useLocation();
 
   if (user) {
     return (

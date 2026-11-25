@@ -59,5 +59,5 @@ export const useRelatedBlogPosts = (skillName) => {
       link: `/blog/${post.slug}`,
       relevance: "sedang"
     }));
-  }, [skillName]);
+  }, [skillName, blogs]);
 };

@@ -38,13 +38,6 @@ export const LeaderboardModal = ({ isOpen, onClose, currentUserId }) => {
   const top3 = leaders.slice(0, 3);
   const remaining = leaders.slice(3);
 
-  const getRankBadge = (rank) => {
-    if (rank === 0) return { icon: Trophy, color: 'text-amber-400 bg-amber-400/20 border-amber-400/40', label: '1' };
-    if (rank === 1) return { icon: Medal, color: 'text-slate-300 bg-slate-300/20 border-slate-300/40', label: '2' };
-    if (rank === 2) return { icon: Award, color: 'text-amber-600 bg-amber-600/20 border-amber-600/40', label: '3' };
-    return { icon: null, color: 'text-[var(--theme-text-muted)]', label: `${rank + 1}` };
-  };
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
       <motion.div

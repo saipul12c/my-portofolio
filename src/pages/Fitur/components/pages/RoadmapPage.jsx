@@ -7,7 +7,6 @@ const RoadmapPage = ({ currentConfig }) => {
   const isCyan = currentConfig.themeColor === 'cyan';
   const roadmap = currentConfig.roadmap || [];
 
-  const accentBorder = isCyan ? 'border-cyan-500/30' : 'border-orange-500/30';
   const accentText = isCyan ? 'text-cyan-400' : 'text-orange-400';
 
   return (

@@ -13,9 +13,15 @@ export function SettingsContent({
   handleReset,
   onClose,
   fileStats,
+  uploadedFiles = [],
+  handleFileUpload,
+  deleteSingleFile,
   clearUploadedData,
   exportKnowledgeBase,
+  getFileIcon,
   formatFileSize,
+  uploadProgress = 0,
+  isUploading = false,
   totalKBCategories,
   knowledgeStats,
 }) {
@@ -49,8 +55,14 @@ export function SettingsContent({
         return (
           <PrivacySettings
             {...commonProps}
+            handleFileUpload={handleFileUpload}
+            deleteSingleFile={deleteSingleFile}
+            uploadedFiles={uploadedFiles}
             clearUploadedData={clearUploadedData}
             exportKnowledgeBase={exportKnowledgeBase}
+            getFileIcon={getFileIcon}
+            uploadProgress={uploadProgress}
+            isUploading={isUploading}
           />
         );
       case "shortcuts": {
@@ -97,8 +109,15 @@ export function SettingsContent({
   }, [
     activeTab, 
     commonProps, 
+    handleSave,
+    handleFileUpload,
+    deleteSingleFile,
+    uploadedFiles,
     clearUploadedData, 
     exportKnowledgeBase, 
+    getFileIcon,
+    uploadProgress,
+    isUploading,
     settings.shortcuts
   ]);
 

@@ -4,75 +4,14 @@ import { LazyMotion, m, AnimatePresence, domAnimation } from "framer-motion";
 import { ChevronDown, Search, HelpCircle, Send, Bot, Sparkles, TrendingUp, BookOpen, Lightbulb, X, History, Clock } from "lucide-react";
 import faqsData from "../../../data/helpbutton/faq/faqs.json";
 import commitmentsData from "../../../data/helpbutton/komit/commitments.json";
-import askAI, { getAISuggestions, getCyclingSuggestions, getAIStatistics } from "./AI/Bot";
-
-// Utility untuk menyimpan riwayat ke localStorage
-const HISTORY_KEY = 'ai_search_history';
-const HISTORY_MAX_ITEMS = 20;
-const HISTORY_EXPIRY_DAYS = 7;
-
-const saveToHistory = (query, answer = '', type = 'ai') => {
-  try {
-    const now = new Date();
-    const expiry = new Date(now.getTime() + HISTORY_EXPIRY_DAYS * 24 * 60 * 60 * 1000);
-    
-    const historyItem = {
-      id: Date.now().toString(36) + Math.random().toString(36).substr(2),
-      query,
-      answer,
-      type,
-      timestamp: now.toISOString(),
-      expiry: expiry.toISOString(),
-      page: window.location.pathname
-    };
-
-    const existingHistory = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-    
-    // Hapus item duplikat dengan query yang sama
-    const filteredHistory = existingHistory.filter(item => 
-      item.query.toLowerCase() !== query.toLowerCase()
-    );
-    
-    // Tambahkan item baru di awal
-    const newHistory = [historyItem, ...filteredHistory].slice(0, HISTORY_MAX_ITEMS);
-    
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(newHistory));
-    return newHistory;
-  } catch (error) {
-    console.error('Error saving to history:', error);
-    return [];
-  }
-};
-
-const getHistory = () => {
-  try {
-    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-    const now = new Date();
-    
-    // Filter item yang belum expired
-    const validHistory = history.filter(item => {
-      if (!item.expiry) return true;
-      return new Date(item.expiry) > now;
-    });
-    
-    // Simpan kembali jika ada perubahan
-    if (validHistory.length !== history.length) {
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(validHistory));
-    }
-    
-    return validHistory;
-  } catch (error) {
-    console.error('Error getting history:', error);
-    return [];
-  }
-};
-
-// Color variants for quick example buttons
-const colorVariants = [
-  "from-cyan-500 to-blue-500",
-  "from-purple-500 to-pink-500",
-  "from-amber-500 to-orange-500"
-];
+import askAI, {
+  getAISuggestions,
+  getCyclingSuggestions,
+  getAIStatistics,
+  saveAISearchHistory,
+  getAISearchHistory,
+  AI_SEARCH_HISTORY_COLORS
+} from "./AI/Bot";
 
 export default function HelpFAQItem() {
   // State management
@@ -86,12 +25,12 @@ export default function HelpFAQItem() {
   const [suggestionsList, setSuggestionsList] = useState(getAISuggestions());
   const [suggestionIndex, setSuggestionIndex] = useState(0);
   const [aiStats, setAiStats] = useState({ totalQuestions: 0, successRate: 0 });
-  const [searchHistory, setSearchHistory] = useState(getHistory());
+  const [searchHistory, setSearchHistory] = useState(() => getAISearchHistory());
   const [activeTab, setActiveTab] = useState("faq");
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [aiRelevance, setAiRelevance] = useState(0);
 
-  
+
   const suggestionIntervalRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -103,33 +42,33 @@ export default function HelpFAQItem() {
     if (!q) return faqsData;
 
     const searchTerms = q.split(/\s+/).filter(term => term.length > 2);
-    
+
     return faqsData.map(item => {
       let score = 0;
       const question = item.question.toLowerCase();
       const answer = item.answer.toLowerCase();
-      
+
       // Exact match bonus
       if (question.includes(q)) score += 100;
       if (answer.includes(q)) score += 50;
-      
+
       // Individual term matching
       searchTerms.forEach(term => {
         if (question.includes(term)) score += 30;
         if (answer.includes(term)) score += 15;
       });
-      
+
       // Partial word matches
       if (q.length > 3) {
         const partial = q.substring(0, Math.floor(q.length * 0.7));
         if (question.includes(partial)) score += 20;
         if (answer.includes(partial)) score += 10;
       }
-      
+
       return { ...item, score };
     })
-    .filter(item => item.score > 0)
-    .sort((a, b) => b.score - a.score);
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score);
   }, [query]);
 
   // 📄 Pagination
@@ -161,17 +100,17 @@ export default function HelpFAQItem() {
     setIsLoading(true);
     setShowAiAnswer(true);
     setAiQuestion(q);
-    
+
     try {
       const result = await askAI(q, filteredFaqs);
       setAiAnswer(result.text);
       setAiRelevance(result.relevance);
-      
+
       // Save to history (save only text for simplicity in history)
-      const updatedHistory = saveToHistory(q, result.text, 'ai');
+      const updatedHistory = saveAISearchHistory(q, result.text, 'ai');
       setSearchHistory(updatedHistory);
 
-      
+
       // Update stats
       const stats = getAIStatistics();
       setAiStats(stats);
@@ -182,7 +121,7 @@ export default function HelpFAQItem() {
       setIsLoading(false);
       // Scroll ke jawaban AI
       setTimeout(() => {
-        document.getElementById("ai-answer-section")?.scrollIntoView({ 
+        document.getElementById("ai-answer-section")?.scrollIntoView({
           behavior: "smooth",
           block: "center"
         });
@@ -210,9 +149,9 @@ export default function HelpFAQItem() {
   useEffect(() => {
     const cycling = getCyclingSuggestions();
     setSuggestionsList(cycling.list || getAISuggestions());
-    
+
     if (suggestionIntervalRef.current) clearInterval(suggestionIntervalRef.current);
-    
+
     suggestionIntervalRef.current = setInterval(() => {
       setSuggestionIndex(i => (i + 1) % (cycling.list.length || 1));
     }, cycling.interval || 3000);
@@ -235,10 +174,10 @@ export default function HelpFAQItem() {
       return {
         text: truncated,
         fullText: text,
-        color: colorVariants[idx % colorVariants.length]
+        color: AI_SEARCH_HISTORY_COLORS[idx % AI_SEARCH_HISTORY_COLORS.length]
       };
     }).slice(0, 3);
-    
+
     return examples;
   }, [suggestionsList]);
 
@@ -336,10 +275,10 @@ export default function HelpFAQItem() {
           <div className="flex bg-[#0f1724]/80 backdrop-blur-xl rounded-2xl p-1.5 border border-white/10">
             <button
               onClick={() => setActiveTab("faq")}
-              className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${activeTab === "faq" 
+              className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${activeTab === "faq"
                 ? "bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-white border border-cyan-500/30"
                 : "text-gray-400 hover:text-white"
-              }`}
+                }`}
             >
               <div className="flex items-center gap-2">
                 <BookOpen className="w-4 h-4" />
@@ -351,10 +290,10 @@ export default function HelpFAQItem() {
             </button>
             <button
               onClick={() => setActiveTab("ai")}
-              className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${activeTab === "ai" 
+              className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${activeTab === "ai"
                 ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-white border border-purple-500/30"
                 : "text-gray-400 hover:text-white"
-              }`}
+                }`}
             >
               <div className="flex items-center gap-2">
                 <Bot className="w-4 h-4" />
@@ -386,14 +325,14 @@ export default function HelpFAQItem() {
                     {activeTab === "ai" ? "Tanya Asisten AI" : "Cari di FAQ"}
                   </h3>
                   <p className="text-gray-400">
-                    {activeTab === "ai" 
+                    {activeTab === "ai"
                       ? "Ajukan pertanyaan apapun tentang pendidikan digital dan kreativitas"
                       : "Temukan jawaban dari koleksi FAQ terlengkap kami"
                     }
                   </p>
                 </div>
               </div>
-              
+
               {/* AI Stats & History Link */}
               <div className="flex flex-wrap gap-3">
                 {activeTab === "ai" && (
@@ -434,8 +373,8 @@ export default function HelpFAQItem() {
                       ref={inputRef}
                       type="text"
                       value={query}
-                      onChange={(e) => { 
-                        setQuery(e.target.value); 
+                      onChange={(e) => {
+                        setQuery(e.target.value);
                         setCurrentPage(1);
                       }}
                       onKeyPress={handleKeyPress}
@@ -446,7 +385,7 @@ export default function HelpFAQItem() {
                       autoComplete="off"
                       spellCheck="true"
                     />
-                    
+
                     {query && (
                       <button
                         onClick={() => setQuery("")}
@@ -457,7 +396,7 @@ export default function HelpFAQItem() {
                     )}
                   </div>
                 </div>
-                
+
                 <button
                   onClick={handleAskAI}
                   disabled={(!query || !query.trim()) || isLoading}
@@ -479,7 +418,7 @@ export default function HelpFAQItem() {
                   )}
                 </button>
               </div>
-              
+
               {/* Quick Examples & History */}
               <div className="mt-6">
                 <div className="flex items-center gap-3 mb-3">
@@ -500,7 +439,7 @@ export default function HelpFAQItem() {
                       </span>
                     </button>
                   ))}
-                  
+
                   {/* Recent History */}
                   {recentHistory.length > 0 && (
                     <>
@@ -532,7 +471,7 @@ export default function HelpFAQItem() {
                 </div>
               </div>
             </div>
-            
+
             {/* Stats Bar */}
             <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/10">
               <div className="flex items-center gap-4">
@@ -549,7 +488,7 @@ export default function HelpFAQItem() {
                   </span>
                 </div>
               </div>
-              
+
               <div className="text-sm text-gray-500">
                 Tekan <kbd className="px-2 py-1 bg-white/10 rounded-md">Enter</kbd> untuk mencari
               </div>
@@ -583,7 +522,7 @@ export default function HelpFAQItem() {
                       <p className="text-sm text-gray-400">Berbasis data dari {faqsData.length} FAQ & {commitmentsData.commitments?.length || 0} Komitmen</p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div 
+                      <div
                         className="text-xs px-3 py-1 bg-emerald-900/50 text-emerald-300 rounded-full cursor-help whitespace-nowrap"
                         title={`Jawaban ini memiliki ${aiRelevance}% relevansi dengan pertanyaan Anda.`}
                       >
@@ -599,7 +538,7 @@ export default function HelpFAQItem() {
                       </button>
                     </div>
                   </div>
-                  
+
                   <div className="bg-black/40 rounded-xl p-6 border border-white/10">
                     {isLoading ? (
                       <div className="space-y-4">
@@ -625,7 +564,7 @@ export default function HelpFAQItem() {
                             "{aiQuestion}"
                           </p>
                         </div>
-                        
+
                         <div>
                           <div className="flex items-center gap-2 mb-3">
                             <div className="w-2 h-2 bg-emerald-500 rounded-full" />
@@ -639,7 +578,7 @@ export default function HelpFAQItem() {
                             ))}
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center justify-between mt-8 pt-5 border-t border-white/10">
                           <div className="flex items-center gap-3">
                             <div className="flex items-center gap-2">
@@ -678,13 +617,13 @@ export default function HelpFAQItem() {
                   Koleksi FAQ Lengkap
                 </h2>
                 <p className="text-gray-400">
-                  {query 
+                  {query
                     ? `Menemukan ${filteredFaqs.length} hasil untuk "${query}"`
                     : `${faqsData.length} pertanyaan umum tentang pendidikan digital`
                   }
                 </p>
               </div>
-              
+
               <div className="flex items-center gap-4">
                 <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/10">
                   <span className="text-sm text-gray-400">Halaman</span>
@@ -709,7 +648,7 @@ export default function HelpFAQItem() {
                   const globalIndex = startIdx + i;
                   const isOpen = openIndex === globalIndex;
                   const relevanceScore = faq.score || 0;
-                  
+
                   return (
                     <m.div
                       key={globalIndex}
@@ -717,13 +656,13 @@ export default function HelpFAQItem() {
                       initial={{ opacity: 0, scale: 0.95, y: 20 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.9, y: -10 }}
-                      transition={{ 
-                        duration: 0.3, 
+                      transition={{
+                        duration: 0.3,
                         ease: "easeOut",
-                        delay: i * 0.05 
+                        delay: i * 0.05
                       }}
-                      whileHover={{ 
-                        scale: 1.02, 
+                      whileHover={{
+                        scale: 1.02,
                         y: -4,
                         boxShadow: "0 10px 30px -10px rgba(0, 200, 255, 0.2)"
                       }}
@@ -740,7 +679,7 @@ export default function HelpFAQItem() {
                           </div>
                         </div>
                       )}
-                      
+
                       <div className="relative bg-gradient-to-br from-[#141a28] to-[#0f1522] p-6 rounded-2xl border border-white/10 backdrop-blur-md hover:border-cyan-400/40 transition-all duration-400 shadow-lg h-full flex flex-col">
                         <button
                           onClick={() => toggle(globalIndex)}
@@ -821,8 +760,8 @@ export default function HelpFAQItem() {
                   onClick={() => changePage(currentPage - 1)}
                   disabled={currentPage === 1}
                   className={`flex items-center gap-2 px-5 py-3 rounded-xl font-medium border transition-all duration-300 ${currentPage === 1
-                      ? "text-gray-600 bg-white/5 border-white/5 cursor-not-allowed"
-                      : "text-gray-400 hover:text-white hover:border-cyan-400/40 hover:bg-cyan-500/10"
+                    ? "text-gray-600 bg-white/5 border-white/5 cursor-not-allowed"
+                    : "text-gray-400 hover:text-white hover:border-cyan-400/40 hover:bg-cyan-500/10"
                     }`}
                 >
                   <ChevronDown className="w-4 h-4 rotate-90" />
@@ -841,8 +780,8 @@ export default function HelpFAQItem() {
                         key={idx}
                         onClick={() => changePage(page)}
                         className={`px-4 py-3 rounded-xl text-sm font-medium border transition-all duration-300 ${currentPage === page
-                            ? "bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-cyan-400/40 text-white shadow-[0_0_15px_rgba(34,211,238,0.3)]"
-                            : "border-white/10 text-gray-400 hover:text-white hover:border-cyan-400/30 hover:bg-white/5"
+                          ? "bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-cyan-400/40 text-white shadow-[0_0_15px_rgba(34,211,238,0.3)]"
+                          : "border-white/10 text-gray-400 hover:text-white hover:border-cyan-400/30 hover:bg-white/5"
                           }`}
                       >
                         {page}
@@ -856,8 +795,8 @@ export default function HelpFAQItem() {
                   onClick={() => changePage(currentPage + 1)}
                   disabled={currentPage === totalPages}
                   className={`flex items-center gap-2 px-5 py-3 rounded-xl font-medium border transition-all duration-300 ${currentPage === totalPages
-                      ? "text-gray-600 bg-white/5 border-white/5 cursor-not-allowed"
-                      : "text-gray-400 hover:text-white hover:border-cyan-400/40 hover:bg-cyan-500/10"
+                    ? "text-gray-600 bg-white/5 border-white/5 cursor-not-allowed"
+                    : "text-gray-400 hover:text-white hover:border-cyan-400/40 hover:bg-cyan-500/10"
                     }`}
                 >
                   <span>Selanjutnya</span>
@@ -927,10 +866,10 @@ export default function HelpFAQItem() {
               <div className="text-sm text-gray-400">Akurasi Jawaban</div>
             </div>
           </div>
-          
+
           <p className="text-gray-500 text-sm">
-            Sistem AI ini ditenagai oleh algoritma pencocokan cerdas yang ditingkatkan dengan 
-            <span className="text-cyan-400"> konteks semantik</span> dan 
+            Sistem AI ini ditenagai oleh algoritma pencocokan cerdas yang ditingkatkan dengan
+            <span className="text-cyan-400"> konteks semantik</span> dan
             <span className="text-purple-400"> analisis kata kunci</span>.
           </p>
         </m.div>

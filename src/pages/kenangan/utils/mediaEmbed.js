@@ -65,7 +65,7 @@ export function parseMediaSource(url, isShortHint = false) {
   }
 
   const ytMatch =
-    trimmed.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+    trimmed.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/i);
   if (ytMatch) {
     const videoId = ytMatch[1];
     return {
@@ -156,7 +156,7 @@ export function parseMediaSource(url, isShortHint = false) {
   }
 
   // 7. Vimeo
-  const vimeoMatch = trimmed.match(/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|video\/|)(\d+)/i);
+  const vimeoMatch = trimmed.match(/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^/]*)\/videos\/|album\/(\d+)\/video\/|video\/|)(\d+)/i);
   if (vimeoMatch) {
     const videoId = vimeoMatch[3];
     return {
@@ -212,7 +212,7 @@ export function parseMediaSource(url, isShortHint = false) {
       type: "pinterest",
       isEmbed: true,
       isLocal: false,
-      videoId,
+      videoId: pinId,
       embedUrl: `https://assets.pinterest.com/ext/embed.html?id=${pinId}`,
       directUrl: trimmed,
       platform: "Pinterest",

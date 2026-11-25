@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -7,7 +7,6 @@ import faqsData from "../../../../../data/helpbutton/faq/faqs.json";
 import commitmentsData from "../../../../../data/helpbutton/komit/commitments.json";
 import softSkillsData from "../../../../../data/skills/softskills.json";
 import { compileAuthorProfiles, findAuthorByName } from "../../../utils/authorUtils";
-import { cleanText, extractKeywords, detectIntents } from "../../../../../utils/ai/nlpCore";
 import { findRelatedEntities } from "../../../../../utils/ai/knowledgeBase";
 import { recordAITopic, getCrossAgentGreeting } from "../../../../../utils/ai/sessionMemory";
 
@@ -442,10 +441,22 @@ export default function AiOverview({ searchTerm, filteredBlogs, allBlogs, onSear
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
-                strong: ({ node, ...props }) => <strong className="text-cyan-300 font-bold" {...props} />,
-                h1: ({ node, ...props }) => <h1 className="text-xl font-bold text-white mb-2" {...props} />,
-                h2: ({ node, ...props }) => <h2 className="text-lg font-bold text-white mb-2" {...props} />,
-                h3: ({ node, ...props }) => <h3 className="text-md font-bold text-white mb-1" {...props} />,
+                strong: (allProps) => {
+                  const { node: _Node, ...props } = allProps;
+                  return <strong className="text-cyan-300 font-bold" {...props} />;
+                },
+                h1: (allProps) => {
+                  const { node: _Node, ...props } = allProps;
+                  return <h1 className="text-xl font-bold text-white mb-2" {...props} />;
+                },
+                h2: (allProps) => {
+                  const { node: _Node, ...props } = allProps;
+                  return <h2 className="text-lg font-bold text-white mb-2" {...props} />;
+                },
+                h3: (allProps) => {
+                  const { node: _Node, ...props } = allProps;
+                  return <h3 className="text-md font-bold text-white mb-1" {...props} />;
+                },
               }}
             >
               {aiAnalysis.answer}
@@ -580,7 +591,7 @@ export default function AiOverview({ searchTerm, filteredBlogs, allBlogs, onSear
           <div className="flex flex-wrap gap-2">
             {aiAnalysis.relatedEntities.projects.length > 0 && (
               <button
-                onClick={() => navigate(`/projek?search=${encodeURIComponent(searchTerm)}`)}
+                onClick={() => navigate(`/projects?search=${encodeURIComponent(searchTerm)}`)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-400/30 text-xs font-medium transition-all"
               >
                 <span>💻</span>
@@ -589,7 +600,7 @@ export default function AiOverview({ searchTerm, filteredBlogs, allBlogs, onSear
             )}
             {aiAnalysis.relatedEntities.skills.length > 0 && (
               <button
-                onClick={() => navigate(`/skills`)}
+                onClick={() => navigate(`/softskills`)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-400/30 text-xs font-medium transition-all"
               >
                 <span>⚡</span>
@@ -598,7 +609,7 @@ export default function AiOverview({ searchTerm, filteredBlogs, allBlogs, onSear
             )}
             {aiAnalysis.relatedEntities.certificates.length > 0 && (
               <button
-                onClick={() => navigate(`/sertif`)}
+                onClick={() => navigate(`/certificates`)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-400/30 text-xs font-medium transition-all"
               >
                 <span>🎓</span>
@@ -607,7 +618,7 @@ export default function AiOverview({ searchTerm, filteredBlogs, allBlogs, onSear
             )}
             {aiAnalysis.relatedEntities.testimonials.length > 0 && (
               <button
-                onClick={() => navigate(`/pengalaman/testimoni`)}
+                onClick={() => navigate(`/testimoni`)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/30 text-xs font-medium transition-all"
               >
                 <span>⭐</span>

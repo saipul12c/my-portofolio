@@ -6,7 +6,6 @@ import { ArrowLeft, Building2 } from "lucide-react";
 
 import { useCompanyData } from "./hooks/useCompanyData";
 import { useDebounce } from "./hooks/useDebounce";
-import { createCompanySlug } from "./utils/companyUtils";
 import { containerVariants } from "./animations/variants";
 
 import ErrorBoundary from "./components/ErrorBoundary";

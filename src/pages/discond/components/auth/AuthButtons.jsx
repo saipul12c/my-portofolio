@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth as useDiscondAuth } from "../../contexts/AuthContext";
+import { useAuth as useDiscondAuth } from "../../contexts/useAuth";
 
 export default function AuthButtons({ onAuthRequest }) {
   const { user, signOut } = useDiscondAuth();

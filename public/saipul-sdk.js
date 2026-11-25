@@ -1,5 +1,5 @@
 /**
- * SaipulAI Web SDK v8.1.0
+ * SaipulAI Web SDK  v8.0.0
  * Universal Client-Side Integration for SaipulAI
  * 
  * Bebas kredensial sensitif. Siap pakai untuk integrasi web pihak ketiga.
@@ -18,7 +18,7 @@
       this.endpoint = options.endpoint || (typeof window !== 'undefined' && window.location ? `${window.location.origin}/api/saipul` : '/api/saipul');
       this.defaultStyle = options.style || 'friendly';
       this.timeout = options.timeout || 8000;
-      this.version = '8.1.0';
+      this.version = '8.0.0';
     }
 
     /**
@@ -92,7 +92,7 @@
      * Versi SDK
      */
     static getVersion() {
-      return '8.1.0';
+      return '8.0.0';
     }
   }
 

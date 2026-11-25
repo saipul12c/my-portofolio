@@ -9,6 +9,15 @@ const CoursePopup = ({
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
   const [isClosing, setIsClosing] = useState(false);
 
+  // Smooth close function
+  const handleClose = useCallback(() => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+      setIsClosing(false);
+    }, 300);
+  }, [onClose]);
+
   // Handle escape key untuk close modal
   useEffect(() => {
     const handleEsc = (e) => {
@@ -18,7 +27,7 @@ const CoursePopup = ({
     };
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
-  }, [selectedCourse, isClosing]);
+  }, [selectedCourse, isClosing, handleClose]);
 
   // Track window width untuk responsivitas
   useEffect(() => {
@@ -45,15 +54,6 @@ const CoursePopup = ({
       document.body.style.paddingRight = '0px';
     };
   }, [selectedCourse]);
-
-  // Smooth close function
-  const handleClose = useCallback(() => {
-    setIsClosing(true);
-    setTimeout(() => {
-      onClose();
-      setIsClosing(false);
-    }, 300);
-  }, [onClose]);
 
   // Handle overlay click
   const handleOverlayClick = useCallback((e) => {

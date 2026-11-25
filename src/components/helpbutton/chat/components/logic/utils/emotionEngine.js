@@ -3,6 +3,17 @@
  * Mengatur emosi, karakter, dan kepribadian AI dalam respons
  */
 
+import { analyzeSentiment, detectSarcasmAndIrony } from './nluProcessing.js';
+
+// Negator untuk memeriksa apakah indikator emosi dibalikkan maknanya
+const EMOTION_NEGATORS = new Set([
+  'tidak', 'tak', 'bukan', 'nggak', 'gak', 'tiada', 'belum', 'tanpa',
+  'kurang', 'jangan', 'not', 'no', 'never', 'hardly', 'without'
+]);
+
+// Konjungsi kontras yang memindahkan fokus emosi ke klausa kedua
+const EMOTION_CONTRAST = /\b(tetapi|tapi|namun|melainkan|hanya saja|akan tetapi|padahal|sebaliknya|but|however|yet)\b/i;
+
 // Definisi emosi dan karakteristik
 export const EMOTIONS = {
   happy: {
@@ -166,45 +177,139 @@ export const CHARACTER_TRAITS = {
 };
 
 /**
- * Detect emosi dari input user
+ * Detect emosi dari input user dengan analisis struktur bahasa & valensi kontekstual
  */
 export function detectEmotion(userMessage) {
-  const text = userMessage.toLowerCase().trim();
-  const detectedEmotions = [];
-  let maxScore = 0;
+  const text = (userMessage || '').toLowerCase().trim();
+  if (!text) {
+    return {
+      primary: {
+        emotion: 'helpful',
+        name: 'membantu',
+        emoji: '🤝',
+        score: 0,
+        modifiers: EMOTIONS.helpful.modifiers
+      },
+      all: [],
+      confidence: 0
+    };
+  }
 
-  for (const [emotionKey, emotionData] of Object.entries(EMOTIONS)) {
-    let score = 0;
-    
-    // Check indicators
-    for (const indicator of emotionData.indicators) {
-      if (text.includes(indicator)) {
-        score += 1;
+  // Analisis sentimen struktural (memahami negasi, intensifier, dan kontras klausa)
+  let sentimentResult = null;
+  try {
+    sentimentResult = analyzeSentiment(userMessage);
+  } catch (e) {
+    console.debug('Sentiment analysis fallback:', e);
+  }
+
+  // Pecah kalimat berdasarkan konjungsi kontras (misal: "Awalnya sedih tapi sekarang senang!")
+  let clauses = [{ text: text, weight: 1.0 }];
+  if (EMOTION_CONTRAST.test(text)) {
+    const parts = text.split(EMOTION_CONTRAST);
+    clauses = [
+      { text: parts[0] || '', weight: 0.5 },
+      { text: parts.slice(2).join(' ') || parts[1] || '', weight: 1.8 }
+    ];
+  }
+
+  const detectedEmotions = [];
+  const emotionScores = {};
+
+  for (const emotionKey of Object.keys(EMOTIONS)) {
+    emotionScores[emotionKey] = 0;
+  }
+
+  clauses.forEach(({ text: clauseText, weight: clauseWeight }) => {
+    if (!clauseText.trim()) return;
+
+    const words = clauseText.replace(/[^\w\s-]/g, ' ').split(/\s+/).filter(Boolean);
+
+    for (const [emotionKey, emotionData] of Object.entries(EMOTIONS)) {
+      for (const indicator of emotionData.indicators) {
+        const indTokens = indicator.split(/\s+/);
+        
+        // Cari posisi indikator dalam kalimat
+        for (let i = 0; i <= words.length - indTokens.length; i++) {
+          const sub = words.slice(i, i + indTokens.length).join(' ');
+          if (sub === indicator || (indTokens.length === 1 && words[i].includes(indicator))) {
+            // Periksa apakah ada negator sebelum kata indikator (misal "tidak senang", "gak asik")
+            const lookback = words.slice(Math.max(0, i - 3), i);
+            const isNegated = lookback.some(w => EMOTION_NEGATORS.has(w));
+
+            if (isNegated) {
+              // Jika kata positif ("senang", "bagus") dinegasikan ("tidak senang"), jangan beri skor 'happy'!
+              // Sebaliknya, ini menandakan kekecewaan / perlu empati
+              if (['happy', 'excited', 'proud', 'enthusiastic'].includes(emotionKey)) {
+                emotionScores['empathetic'] += 1.5 * clauseWeight;
+                emotionScores['helpful'] += 1.0 * clauseWeight;
+              }
+              // Jika kata negatif ("tidak ada masalah", "tidak cemas") dinegasikan, kurangi skor sedih/cemas
+              else if (emotionKey === 'empathetic') {
+                emotionScores['calm'] += 1.2 * clauseWeight;
+              }
+            } else {
+              emotionScores[emotionKey] += 1.0 * clauseWeight;
+            }
+          }
+        }
       }
     }
+  });
 
+  // Integrasikan hasil sentimen kontekstual & deteksi sarkasme untuk menyempurnakan emosi utama
+  const sarcasmInfo = detectSarcasmAndIrony(userMessage);
+
+  if (sarcasmInfo.isSarcastic || sentimentResult?.structuralFeatures?.isSarcastic) {
+    // SARKASME / SINDIRAN: Pengguna sedang kecewa/mengeluhkan sesuatu secara tersirat.
+    // Matikan seluruh emosi gembira/bangga semu, alihkan secara definitif ke empati dan kesiapan membantu
+    emotionScores['happy'] = 0;
+    emotionScores['excited'] = 0;
+    emotionScores['proud'] = 0;
+    emotionScores['empathetic'] = (emotionScores['empathetic'] || 0) + 3.0;
+    emotionScores['helpful'] = (emotionScores['helpful'] || 0) + 2.0;
+  } else if (sentimentResult) {
+    if (sentimentResult.sentiment === 'negative' && sentimentResult.confidence > 0.4) {
+      // Sentimen negatif mengarahkan bot untuk bersikap suportif & berempati, bukan ceria
+      emotionScores['empathetic'] = (emotionScores['empathetic'] || 0) + 2.0;
+      emotionScores['helpful'] = (emotionScores['helpful'] || 0) + 1.2;
+      // Kurangi skor emosi gembira palsu jika sentimen kalimatnya negatif
+      emotionScores['happy'] = Math.max(0, (emotionScores['happy'] || 0) - 2.5);
+      emotionScores['excited'] = Math.max(0, (emotionScores['excited'] || 0) - 2.5);
+      emotionScores['proud'] = Math.max(0, (emotionScores['proud'] || 0) - 2.0);
+    } else if (sentimentResult.sentiment === 'positive' && sentimentResult.confidence > 0.5) {
+      emotionScores['happy'] = (emotionScores['happy'] || 0) + 1.2;
+    }
+  }
+
+  // Bangun daftar emosi terdeteksi
+  let maxScore = 0;
+  for (const [emotionKey, score] of Object.entries(emotionScores)) {
     if (score > 0) {
       detectedEmotions.push({
         emotion: emotionKey,
-        name: emotionData.name,
-        emoji: emotionData.emoji,
+        name: EMOTIONS[emotionKey].name,
+        emoji: EMOTIONS[emotionKey].emoji,
         score: score,
-        modifiers: emotionData.modifiers
+        modifiers: EMOTIONS[emotionKey].modifiers
       });
       maxScore = Math.max(maxScore, score);
     }
   }
 
-  // Sort by score dan ambil top emotion
+  // Urutkan berdasarkan skor tertinggi
   detectedEmotions.sort((a, b) => b.score - a.score);
-  
+
   if (detectedEmotions.length > 0) {
     const primaryEmotion = detectedEmotions[0];
     primaryEmotion.isPrimary = true;
     return {
       primary: primaryEmotion,
       all: detectedEmotions,
-      confidence: Math.min(1, primaryEmotion.score / 3)
+      confidence: Math.min(1, primaryEmotion.score / 2.5),
+      sentimentContext: sentimentResult ? sentimentResult.sentiment : 'neutral',
+      isSarcastic: !!(sarcasmInfo.isSarcastic || sentimentResult?.structuralFeatures?.isSarcastic),
+      sarcasmType: sarcasmInfo.type || sentimentResult?.structuralFeatures?.sarcasmType || null
     };
   }
 
@@ -218,7 +323,10 @@ export function detectEmotion(userMessage) {
       modifiers: EMOTIONS.helpful.modifiers
     },
     all: [],
-    confidence: 0
+    confidence: 0,
+    sentimentContext: sentimentResult ? sentimentResult.sentiment : 'neutral',
+    isSarcastic: !!(sarcasmInfo.isSarcastic || sentimentResult?.structuralFeatures?.isSarcastic),
+    sarcasmType: sarcasmInfo.type || sentimentResult?.structuralFeatures?.sarcasmType || null
   };
 }
 

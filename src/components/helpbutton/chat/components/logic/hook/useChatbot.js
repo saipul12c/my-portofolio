@@ -1,18 +1,24 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { getSmartReply } from '../utils/responseGenerator';
+import { detectLanguage } from '../utils/nluProcessing';
 import { sanitizeInput, classifyInput, addTrainingExample, containsPII, extractThemes } from '../utils/helpers';
-import { 
-  detectClarificationNeeded, 
-  generateClarificationPrompt 
+import {
+  detectClarificationNeeded,
+  generateClarificationPrompt
 } from '../utils/clarificationSystem';
 import { classifyIntent, INTENT_TYPES } from '../utils/advancedIntentClassifier';
-import { ConversationContextManager, isFollowUp, extractTopics } from '../utils/conversationContext';
+import { ConversationContextManager, extractTopics } from '../utils/conversationContext';
 import { DEFAULT_SETTINGS, CHATBOT_VERSION } from '../../../config.js';
+import { applySaipulThemeToRoot } from '../../settings/settingsConfig.js';
+import { getAnimationByInput, getLoadingVariants } from '../utils/animationMapper.js';
+import { readStoredUploadedData } from '../utils/fileProcessor.js';
 import { storageService } from '../utils/storageService';
-import { supabase } from '../../../../../../lib/supabaseClient';
+import { logResponseQuality, saipulAnalytics } from '../utils/analytics';
+import { supabase, isSupabaseConfigured } from '../../../../../../lib/supabaseClient';
 import { recordAITopic } from '../../../../../../utils/ai/sessionMemory';
 import { getUnifiedKnowledgeBase } from '../../../../../../utils/ai/knowledgeBase';
 import { scheduleSilentBenchmarkLearning } from '../../../../../../utils/ai/benchmarkLearner.js';
+import { streamTextGenerator } from '../utils/streamGenerator.js';
 
 const DEFAULT_KB = {
   ...getUnifiedKnowledgeBase(),
@@ -39,71 +45,93 @@ const FRIENDLY_MESSAGES = {
 };
 
 export function useChatbot(knowledgeBase, knowledgeStats) {
-    // Integrasi Gemini: update pesan bot jika event Gemini diterima
-    useEffect(() => {
-      const handleGeminiResponse = (event) => {
-        const { input, response } = event.detail || {};
-        if (input && response) {
-          setMessages((prev) => {
-            // Cari pesan bot yang placeholder/fallback (cocokkan dengan output responseGenerator)
-            const idx = prev.findIndex(m => m.from === 'bot' && (
-              m.text.includes('Maaf, saya belum punya jawaban spesifik') || 
-              m.text.includes('Maaf, aku belum sepenuhnya mengerti') ||
-              m.text.includes('Hmm, ada sesuatu yang tidak jelas')
-            ));
-            if (idx !== -1) {
-              const updated = [...prev];
-              updated[idx] = {
-                ...updated[idx],
-                text: response,
-                type: 'response-gemini'
-              };
-              return updated;
-            }
-            // Jika tidak ada, tambahkan sebagai pesan baru
-            return [...prev, {
-              id: `msg_${Date.now()}_${Math.floor(Math.random()*10000)}`,
-              from: 'bot',
+  // Integrasi Gemini: update pesan bot jika event Gemini diterima
+  useEffect(() => {
+    const handleGeminiResponse = (event) => {
+      const { input, response } = event.detail || {};
+      if (input && response) {
+        setMessages((prev) => {
+          // Cari pesan bot yang placeholder/fallback (cocokkan dengan output responseGenerator)
+          const idx = prev.findIndex(m => m.from === 'bot' && (
+            m.text.includes('Maaf, saya belum punya jawaban spesifik') ||
+            m.text.includes('Maaf, aku belum sepenuhnya mengerti') ||
+            m.text.includes('Hmm, ada sesuatu yang tidak jelas')
+          ));
+          if (idx !== -1) {
+            const updated = [...prev];
+            updated[idx] = {
+              ...updated[idx],
               text: response,
-              timestamp: new Date().toISOString(),
               type: 'response-gemini'
-            }];
-          });
-        }
-      };
-      window.addEventListener('saipul_chat_gemini', handleGeminiResponse);
-      return () => window.removeEventListener('saipul_chat_gemini', handleGeminiResponse);
-    }, []);
-  const [kbState, setKbState] = useState(() => ({ ...DEFAULT_KB, ...(knowledgeBase || {}) }));
+            };
+            return updated;
+          }
+          // Jika tidak ada, tambahkan sebagai pesan baru
+          return [...prev, {
+            id: `msg_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
+            from: 'bot',
+            text: response,
+            timestamp: new Date().toISOString(),
+            type: 'response-gemini'
+          }];
+        });
+      }
+    };
+    window.addEventListener('saipul_chat_gemini', handleGeminiResponse);
+    return () => window.removeEventListener('saipul_chat_gemini', handleGeminiResponse);
+  }, []);
+  const [kbState, setKbState] = useState(() => {
+    const stored = readStoredUploadedData();
+    return {
+      ...DEFAULT_KB,
+      ...(knowledgeBase || {}),
+      uploadedData: (knowledgeBase?.uploadedData?.length ? knowledgeBase.uploadedData : stored.uploadedData),
+      fileMetadata: (knowledgeBase?.fileMetadata?.length ? knowledgeBase.fileMetadata : stored.fileMetadata)
+    };
+  });
   const [isAgentOnline, setIsAgentOnline] = useState(false);
 
   // Evaluasi mandiri & pembelajaran otomatis berkala di latar belakang (1 bulan sekali secara senyap)
   useEffect(() => {
     try {
       scheduleSilentBenchmarkLearning(kbState);
-    } catch (e) {
+    } catch {
       // Senyap
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Track agent presence for live support handover
   useEffect(() => {
-    // Gunakan channel 'online-users' sesuai dengan implementasi di Live.jsx
-    const channel = supabase.channel('online-users');
+    if (!isSupabaseConfigured) return;
 
-    channel
-      .on('presence', { event: 'sync' }, () => {
-        const state = channel.presenceState();
-        // Ambil semua presence dan filter berdasarkan role admin/moderator
-        const onlineAgents = Object.values(state).flat().filter(
-          presence => presence.role === 'ADMIN' || presence.role === 'SUPER_ADMIN' || presence.role === 'MODERATOR'
-        );
-        setIsAgentOnline(onlineAgents.length > 0);
-      })
-      .subscribe();
+    let channel = null;
+    try {
+      // Gunakan channel 'online-users' sesuai dengan implementasi di Live.jsx
+      channel = supabase.channel('online-users');
+
+      channel
+        .on('presence', { event: 'sync' }, () => {
+          const state = channel.presenceState() || {};
+          // Ambil semua presence dan filter berdasarkan role admin/moderator
+          const onlineAgents = Object.values(state).flat().filter(
+            presence => presence && (presence.role === 'ADMIN' || presence.role === 'SUPER_ADMIN' || presence.role === 'MODERATOR')
+          );
+          setIsAgentOnline(onlineAgents.length > 0);
+        })
+        .subscribe();
+    } catch (err) {
+      console.warn('Agent presence subscription failed:', err);
+    }
 
     return () => {
-      supabase.removeChannel(channel);
+      if (channel) {
+        try {
+          supabase.removeChannel(channel);
+        } catch {
+          // Abaikan error cleanup channel
+        }
+      }
     };
   }, []);
 
@@ -112,21 +140,33 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
       const saved = storageService.get("saipul_chat_history");
       const savedVersion = storageService.get("saipul_chat_version");
       if (saved && savedVersion === CHATBOT_VERSION && Array.isArray(saved)) {
-        return saved.map(m => ({
-          ...m,
-          id: m.id || `msg_${Date.now()}_${Math.floor(Math.random()*10000)}`
-        }));
+        const valid = saved.filter(m => m && typeof m === 'object');
+        if (valid.length > 0) {
+          return valid.map(m => ({
+            ...m,
+            id: m.id || `msg_${Date.now()}_${Math.floor(Math.random() * 10000)}`
+          }));
+        }
       }
     } catch (e) {
       console.error("Error loading chat history:", e);
     }
-    
+
     const greet = FRIENDLY_MESSAGES.greetings[Math.floor(Math.random() * FRIENDLY_MESSAGES.greetings.length)];
+    const textId = `${greet}\n\nVersi: v${CHATBOT_VERSION}\n\n• 🧮 Matematika dan Analisis Data\n• 📁 Upload & Proses Multi-format\n• 🤖 Knowledge Base Dinamis\n\nKnowledge base saat ini: ${knowledgeStats ? (knowledgeStats.totalItems || 0) : 0} item dari ${knowledgeStats ? (knowledgeStats.totalCategories || 0) : 0} kategori.\n\nAda yang bisa kubantu hari ini?`;
+    const textEn = `Hello! 👋 Glad to see you again.\n\nVersion: v${CHATBOT_VERSION}\n\n• 🧮 Mathematics & Data Analysis\n• 📁 Multi-format File Upload & Processing\n• 🤖 Dynamic Knowledge Base\n\nCurrent knowledge base: ${knowledgeStats ? (knowledgeStats.totalItems || 0) : 0} items from ${knowledgeStats ? (knowledgeStats.totalCategories || 0) : 0} categories.\n\nHow can I help you today?`;
+
     return [{
+      id: `msg_welcome_${Date.now()}`,
       from: "bot",
-      text: `${greet}\n\nVersi: v${CHATBOT_VERSION}\n\n• 🧮 Matematika dan Analisis Data\n• 📁 Upload & Proses Multi-format\n• 🤖 Knowledge Base Dinamis\n\nKnowledge base saat ini: ${knowledgeStats ? (knowledgeStats.totalItems || 0) : 0} item dari ${knowledgeStats ? (knowledgeStats.totalCategories || 0) : 0} kategori.\n\nAda yang bisa kubantu hari ini?`,
+      text: textId,
       timestamp: new Date().toISOString(),
       type: "welcome",
+      language: "id",
+      alternatives: {
+        indonesian: textId,
+        english: textEn
+      },
       data: { knowledgeStats }
     }];
   });
@@ -141,7 +181,22 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
   const [suggestionsVisible, setSuggestionsVisible] = useState(true);
   const [conversationContext, setConversationContext] = useState([]);
   const [activeQuickActions, setActiveQuickActions] = useState([]);
-  const [userActivity, setUserActivity] = useState([]);
+  const [settings, setSettings] = useState(() => {
+    try {
+      const savedSettings = storageService.get("saipul_settings");
+      if (savedSettings && typeof savedSettings === 'object') {
+        return { ...DEFAULT_SETTINGS, ...savedSettings };
+      }
+    } catch (e) {
+      console.error("Error loading settings:", e);
+    }
+    return { ...DEFAULT_SETTINGS };
+  });
+  const trackChatActivity = useCallback((type, meta = {}) => {
+    if (settings?.enableAnalytics && !settings?.privacyMode) {
+      try { saipulAnalytics.trackEvent(`chat_${type}`, meta); } catch (_e) { void _e; }
+    }
+  }, [settings?.enableAnalytics, settings?.privacyMode]);
   const contextManagerRef = useRef(new ConversationContextManager());
   const [feedbackStore, setFeedbackStore] = useState(() => {
     try { return storageService.get('saipul_feedback_store', {}); } catch (e) { void e; return {}; }
@@ -153,8 +208,6 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     try { return storageService.get('saipul_chat_anomalies', []); } catch (e) { void e; return []; }
   });
 
-  const [settings, setSettings] = useState(() => ({ ...DEFAULT_SETTINGS }));
-
   const [isHidden, setIsHidden] = useState(false);
   const lastBotMessageIdRef = useRef(null);
   const pendingTrainingRef = useRef([]); // for trigger='on_feedback'
@@ -163,16 +216,14 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
   const userQuestionCounterRef = useRef(Number(storageService.get('saipul_question_counter', 0)));
   const audioCacheRef = useRef(new Map()); // messageId -> { text }
   const playingMessageIdRef = useRef(null);
+  const streamAbortRef = useRef(null);
 
   useEffect(() => {
-    try {
-      const savedSettings = storageService.get("saipul_settings");
-      if (savedSettings) {
-        setSettings(prev => ({ ...prev, ...savedSettings }));
+    return () => {
+      if (streamAbortRef.current) {
+        try { streamAbortRef.current.abort(); } catch (_e) { void _e; }
       }
-    } catch (e) {
-      console.error("Error loading settings:", e);
-    }
+    };
   }, []);
 
   // profile updates from settings UI
@@ -191,57 +242,13 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
 
   // Ensure :root CSS variables follow saved settings so chat UI matches chosen theme/accent
   useEffect(() => {
-    const applyPalette = (theme, accent) => {
-      try {
-        const accents = {
-          cyan: { accent: '#06b6d4', accent2: '#0891b2' },
-          amber: { accent: '#f59e0b', accent2: '#d97706' },
-          blue: { accent: '#2563eb', accent2: '#1e40af' },
-          teal: { accent: '#0ea5a4', accent2: '#0f766e' },
-          rose: { accent: '#fb7185', accent2: '#be185d' },
-          lime: { accent: '#84cc16', accent2: '#65a30d' }
-        };
-
-        const themes = {
-          system: { surface: '#0f172a', text: '#e6eef8', muted: '#94a3b8', border: '#1f2a44' },
-          dark: { surface: '#0b1220', text: '#e6eef8', muted: '#98a2b3', border: '#162232' },
-          light: { surface: '#ffffff', text: '#0b1220', muted: '#6b7280', border: '#e6eef8' },
-          sepia: { surface: '#fbf1e6', text: '#2b2b2b', muted: '#7b6f63', border: '#f0e6da' },
-          solar: { surface: '#fff7ed', text: '#2a2a2a', muted: '#7a5a3c', border: '#f5e6d8' },
-          midnight: { surface: '#071133', text: '#dbeafe', muted: '#93c5fd', border: '#0b2646' },
-          soft: { surface: '#f7fafc', text: '#0b1220', muted: '#94a3b8', border: '#eef2f7' },
-          contrast: { surface: '#000000', text: '#ffffff', muted: '#b3b3b3', border: '#222222' }
-        };
-
-        const acc = accents[accent] || accents['cyan'];
-        const th = themes[theme] || themes['dark'];
-        const root = document?.documentElement?.style;
-        if (!root) return;
-        root.setProperty('--saipul-accent', acc.accent);
-        root.setProperty('--saipul-accent-2', acc.accent2);
-        root.setProperty('--saipul-accent-gradient', `linear-gradient(90deg, ${acc.accent}, ${acc.accent2})`);
-        // aliases for components that reference alternate variable names
-        root.setProperty('--saipul-accent-1', acc.accent);
-        root.setProperty('--saipul-accent-contrast', acc.accent2);
-        root.setProperty('--saipul-modal-bg', th.surface);
-        root.setProperty('--saipul-surface', th.surface);
-        root.setProperty('--saipul-text', th.text);
-        root.setProperty('--saipul-muted', th.muted);
-        root.setProperty('--saipul-border', th.border);
-        root.setProperty('--saipul-button-hover', acc.accent2 + '33');
-        root.setProperty('--saipul-muted-text', th.muted);
-      } catch (err) {
-        console.warn('applyPalette error', err);
-      }
-    };
-
-    // apply once using initial settings state
-    applyPalette(settings.theme, settings.accent);
+    applySaipulThemeToRoot(settings.theme, settings.accent);
   }, [settings.theme, settings.accent]);
 
   // Update quick actions based on latest messages and knowledge base
   const updateQuickActions = useCallback(() => {
     const lastMessage = messages[messages.length - 1];
+    const lastText = typeof lastMessage?.text === 'string' ? lastMessage.text : '';
     let actions = [];
 
     if (!lastMessage || lastMessage.from === "user") {
@@ -250,24 +257,27 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
         { icon: 'Brain', label: "AI Knowledge", action: "Jelaskan tentang neural network" },
         { icon: 'FileText', label: "Data Info", action: "Tampilkan knowledge base yang tersedia" }
       ];
-    } else if (lastMessage.text && (lastMessage.text.includes('matematika') || lastMessage.text.includes('hitung'))) {
+    } else if (lastText && (lastText.includes('matematika') || lastText.includes('hitung'))) {
       actions = [
         { icon: 'Calculator', label: "Kalkulus", action: "Hitung turunan dari sin(x) + cos(x)" },
         { icon: 'BarChart3', label: "Statistik", action: "Hitung rata-rata 10, 20, 30, 40, 50" },
         { icon: 'TrendingUp', label: "Analisis", action: "Analisis data statistik untuk 100, 200, 150" }
       ];
-    } else if (lastMessage.text && (lastMessage.text.includes('AI') || lastMessage.text.includes('machine learning'))) {
+    } else if (lastText && (lastText.includes('AI') || lastText.includes('machine learning'))) {
       actions = [
         { icon: 'Brain', label: "Deep Learning", action: "Apa perbedaan AI dan machine learning?" },
         { icon: 'Settings', label: "Neural Network", action: "Jelaskan tentang convolutional neural network" },
         { icon: 'TrendingUp', label: "Prediksi", action: "Buat prediksi perkembangan AI 5 tahun ke depan" }
       ];
     } else {
-      if (kbState.hobbies.length > 0) {
-        actions.push({ icon: 'Brain', label: "Hobi", action: `Ceritakan tentang ${kbState.hobbies[0]?.title}` });
+      if (Array.isArray(kbState?.hobbies) && kbState.hobbies.length > 0 && kbState.hobbies[0]?.title) {
+        actions.push({ icon: 'Brain', label: "Hobi", action: `Ceritakan tentang ${kbState.hobbies[0].title}` });
       }
-      if (kbState.certificates.length > 0) {
-        actions.push({ icon: 'FileText', label: "Sertifikat", action: `Apa itu ${kbState.certificates[0]?.name}` });
+      if (Array.isArray(kbState?.certificates) && kbState.certificates.length > 0) {
+        const certTitle = kbState.certificates[0]?.name || kbState.certificates[0]?.title;
+        if (certTitle) {
+          actions.push({ icon: 'FileText', label: "Sertifikat", action: `Apa itu ${certTitle}` });
+        }
       }
       actions.push({ icon: 'Upload', label: "Upload File", action: "upload_file" });
     }
@@ -346,14 +356,8 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
         const toPersist = messages.slice(-50);
         const sanitized = toPersist.map(sanitizeMessageForPersist);
         try {
-          if (!settings.privacyMode) {
-            storageService.set("saipul_chat_history", sanitized);
-            storageService.set("saipul_chat_version", CHATBOT_VERSION);
-          } else {
-            const minimal = sanitized.slice(-1).map(m => ({ id: m.id, from: m.from, timestamp: m.timestamp, type: m.type }));
-            storageService.set("saipul_chat_history", minimal);
-            storageService.set("saipul_chat_version", CHATBOT_VERSION);
-          }
+          storageService.set("saipul_chat_history", sanitized);
+          storageService.set("saipul_chat_version", CHATBOT_VERSION);
         } catch (e) { console.warn('failed saving chat history', e); }
 
         // lightweight periodic backup metadata
@@ -408,27 +412,40 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     if (!last || last.from !== 'bot' || !last.text) return;
 
     try {
-    // cancel any ongoing speech first
-    window.speechSynthesis.cancel();
+      // cancel any ongoing speech first
+      window.speechSynthesis.cancel();
 
-    const utter = new SpeechSynthesisUtterance(stripMarkup(last.text));
-      // pick language from settings
+      const utter = new SpeechSynthesisUtterance(stripMarkup(last.text));
+      // pick language from settings or auto-detect from message content
       try {
-        const lang = settings.voiceLanguage === 'id' || settings.language === 'id' ? 'id-ID' : (settings.voiceLanguage === 'en' || settings.language === 'en' ? 'en-US' : 'auto');
-        if (lang !== 'auto') utter.lang = lang;
+        let targetVoiceLang = 'id-ID';
+        if (settings.voiceLanguage === 'en' || (settings.voiceLanguage === 'auto' && settings.language === 'en')) {
+          targetVoiceLang = 'en-US';
+        } else if (settings.voiceLanguage === 'id' || (settings.voiceLanguage === 'auto' && settings.language === 'id')) {
+          targetVoiceLang = 'id-ID';
+        } else {
+          // auto detection based on message language
+          const msgLang = (last && last.language) || (last && last._meta && last._meta.language) || (detectLanguage ? detectLanguage(last.text || '').language : 'id');
+          targetVoiceLang = msgLang === 'en' ? 'en-US' : 'id-ID';
+        }
+        utter.lang = targetVoiceLang;
+
+        // if user selected a specific voice name, try to set it; otherwise pick best matching voice for target language
+        if (settings.voiceName && window.speechSynthesis.getVoices) {
+          const v = window.speechSynthesis.getVoices().find(x => x.name === settings.voiceName);
+          if (v) utter.voice = v;
+        } else if (window.speechSynthesis.getVoices) {
+          const voices = window.speechSynthesis.getVoices();
+          const prefix = targetVoiceLang.startsWith('en') ? 'en' : 'id';
+          const match = voices.find(v => v.lang && v.lang.toLowerCase().startsWith(prefix));
+          if (match) utter.voice = match;
+        }
       } catch (_e) { void _e; }
 
       // gentle defaults (use settings if available)
       utter.rate = typeof settings.voiceRate === 'number' ? settings.voiceRate : (settings.rate || 1);
       utter.pitch = typeof settings.voicePitch === 'number' ? settings.voicePitch : (settings.pitch || 1);
 
-      // if user selected a specific voice name, try to set it
-      try {
-        if (settings.voiceName && window.speechSynthesis.getVoices) {
-          const v = window.speechSynthesis.getVoices().find(x => x.name === settings.voiceName);
-          if (v) utter.voice = v;
-        }
-      } catch (_e) { void _e; }
       window.speechSynthesis.speak(utter);
     } catch (err) {
       console.warn('TTS error:', err);
@@ -450,10 +467,32 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
         if (!msg) return;
         // prefer audio cache but fallback to SpeechSynthesis
         try { window.speechSynthesis.cancel(); } catch (_e) { void _e; }
-        const utter = new SpeechSynthesisUtterance((msg.text || '').replace(/<[^>]*>/g, ''));
+        const rawText = e?.detail?.text || msg.text || '';
+        const utter = new SpeechSynthesisUtterance(stripMarkup(rawText));
         try {
-          const lang = settings.voiceLanguage === 'id' || settings.language === 'id' ? 'id-ID' : (settings.voiceLanguage === 'en' || settings.language === 'en' ? 'en-US' : 'auto');
-          if (lang !== 'auto') utter.lang = lang;
+          const forcedLang = e?.detail?.lang;
+          let targetVoiceLang = 'id-ID';
+          if (forcedLang) {
+            targetVoiceLang = forcedLang === 'en' ? 'en-US' : 'id-ID';
+          } else if (settings.voiceLanguage === 'en' || (settings.voiceLanguage === 'auto' && settings.language === 'en')) {
+            targetVoiceLang = 'en-US';
+          } else if (settings.voiceLanguage === 'id' || (settings.voiceLanguage === 'auto' && settings.language === 'id')) {
+            targetVoiceLang = 'id-ID';
+          } else {
+            const msgLang = (msg && msg.language) || (msg && msg._meta && msg._meta.language) || (detectLanguage ? detectLanguage(rawText).language : 'id');
+            targetVoiceLang = msgLang === 'en' ? 'en-US' : 'id-ID';
+          }
+          utter.lang = targetVoiceLang;
+
+          if (settings.voiceName && window.speechSynthesis.getVoices) {
+            const v = window.speechSynthesis.getVoices().find(x => x.name === settings.voiceName);
+            if (v) utter.voice = v;
+          } else if (window.speechSynthesis.getVoices) {
+            const voices = window.speechSynthesis.getVoices();
+            const prefix = targetVoiceLang.startsWith('en') ? 'en' : 'id';
+            const match = voices.find(v => v.lang && v.lang.toLowerCase().startsWith(prefix));
+            if (match) utter.voice = match;
+          }
         } catch (_e) { void _e; }
         utter.rate = typeof settings.voiceRate === 'number' ? settings.voiceRate : 1;
         utter.pitch = typeof settings.voicePitch === 'number' ? settings.voicePitch : 1;
@@ -462,9 +501,11 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
         utter.onerror = (err) => { console.warn('TTS play error', err); window.dispatchEvent(new CustomEvent('saipul_tts_error', { detail: { id, error: err } })); };
         window.speechSynthesis.speak(utter);
         // store simple cache entry to avoid re-synthesis attempt (text-only)
-        try { audioCacheRef.current.set(id, { text: msg.text }); if (audioCacheRef.current.size > 200) { // cap cache
-          const firstKey = audioCacheRef.current.keys().next().value; audioCacheRef.current.delete(firstKey);
-        } } catch (_e) { void _e; }
+        try {
+          audioCacheRef.current.set(id, { text: rawText }); if (audioCacheRef.current.size > 200) { // cap cache
+            const firstKey = audioCacheRef.current.keys().next().value; audioCacheRef.current.delete(firstKey);
+          }
+        } catch (_e) { void _e; }
       } catch (err) { console.error('playHandler error', err); }
     };
 
@@ -478,7 +519,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
       window.removeEventListener('saipul_play_message', playHandler);
       window.removeEventListener('saipul_pause_message', pauseHandler);
     };
-  }, [messages, settings.voiceLanguage, settings.voiceRate, settings.voicePitch, settings.language]);
+  }, [messages, settings.voiceLanguage, settings.voiceName, settings.voiceRate, settings.voicePitch, settings.language]);
 
   // Helper to remove simple markdown/markdown-ish markup for clearer TTS
   function stripMarkup(text) {
@@ -490,7 +531,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
         .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
         .replace(/\s{2,}/g, ' ')
         .trim();
-      } catch (_e) { void _e; return text; }
+    } catch (_e) { void _e; return text; }
   }
 
   // Global event to toggle speech (updates persisted settings so other hooks sync)
@@ -514,10 +555,16 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     return () => window.removeEventListener('saipul_toggle_speech', handler);
   }, []);
 
-  // Sync incoming knowledgeBase prop into local kb state
+  // Sync incoming knowledgeBase prop into local kb state (preserving stored uploaded files)
   useEffect(() => {
     try {
-      setKbState(() => ({ ...DEFAULT_KB, ...(knowledgeBase || {}) }));
+      const stored = readStoredUploadedData();
+      setKbState((prev) => ({
+        ...DEFAULT_KB,
+        ...(knowledgeBase || {}),
+        uploadedData: knowledgeBase?.uploadedData?.length ? knowledgeBase.uploadedData : (prev?.uploadedData?.length ? prev.uploadedData : stored.uploadedData),
+        fileMetadata: knowledgeBase?.fileMetadata?.length ? knowledgeBase.fileMetadata : (prev?.fileMetadata?.length ? prev.fileMetadata : stored.fileMetadata)
+      }));
     } catch (e) {
       console.error('Error updating KB from props:', e);
     }
@@ -528,8 +575,11 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     const handleSettingsUpdate = () => {
       try {
         const savedSettings = storageService.get("saipul_settings");
-        if (savedSettings) {
-          setSettings(prev => ({ ...prev, ...savedSettings }));
+        if (savedSettings && typeof savedSettings === 'object') {
+          setSettings(prev => {
+            const next = { ...prev, ...savedSettings };
+            return JSON.stringify(prev) === JSON.stringify(next) ? prev : next;
+          });
         }
       } catch (err) {
         console.error("Error applying updated settings:", err);
@@ -540,8 +590,9 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
       try {
         // prefer payload if provided, fallback to storage
         const payload = e?.detail?.knowledgeBase;
-        const uploaded = storageService.get("saipul_uploaded_data", []);
-        const metadata = storageService.get("saipul_file_metadata", []);
+        const stored = readStoredUploadedData();
+        const uploaded = Array.isArray(e?.detail?.uploadedData) ? e.detail.uploadedData : stored.uploadedData;
+        const metadata = Array.isArray(e?.detail?.fileMetadata) ? e.detail.fileMetadata : stored.fileMetadata;
         if (payload) {
           setKbState(() => ({ ...DEFAULT_KB, ...payload, uploadedData: uploaded, fileMetadata: metadata }));
         } else {
@@ -659,18 +710,11 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
   const generateBotReply = useCallback((userText, opts = {}, intent = null) => {
     setIsTyping(true);
 
-    const baseTime = settings.responseSpeed === 'fast' ? 600 :
-                    settings.responseSpeed === 'thorough' ? 1800 : 1000;
-
-    const complexityMultiplier = userText.length > 50 ? 1.3 : 1;
-    const knowledgeMultiplier = userText.includes('upload') || userText.includes('file') ? 1.2 : 1;
-    const typingTime = baseTime * complexityMultiplier * knowledgeMultiplier;
-
     try {
       // generate reply early so we can create a typing placeholder that reveals progressively
       // Meneruskan intent yang sudah diklasifikasi untuk efisiensi
       const replyObj = getSmartReply(userText, settings, conversationContext, kbState, knowledgeStats, intent);
-      
+
       // Handle Live CS suggestions based on agent availability
       if (replyObj && replyObj.action === 'suggest_live_cs') {
         if (!isAgentOnline) {
@@ -680,6 +724,14 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
       }
 
       let replyText = typeof replyObj === 'string' ? replyObj : (replyObj && replyObj.text) || FRIENDLY_MESSAGES.responseError;
+
+      // enforce non-fabrication rule: prepend caution when confidence is low before formatting display text
+      try {
+        const conf = replyObj && typeof replyObj.confidence === 'number' ? replyObj.confidence : null;
+        if (conf !== null && conf < 0.5) {
+          replyText = `⚠️ Saya tidak sepenuhnya yakin terhadap jawaban ini. Mohon verifikasi sumber jika diperlukan.\n\n` + replyText;
+        }
+      } catch { /* ignore */ }
 
       // post-process reply text to improve presentation (clean up formatting, truncate preview)
       const postProcessBotText = (raw) => {
@@ -693,12 +745,15 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
           // collapse excessive blank lines to at most one empty line
           s = s.replace(/\n{3,}/g, '\n\n');
 
-          // remove stray control chars
-          s = s.replace(/[\x00-\x1F\x7F]/g, '');
+          // remove stray non-whitespace control chars (preserve \t, \n, \r)
+          s = Array.from(s).filter((ch) => {
+            const code = ch.charCodeAt(0);
+            return code === 9 || code === 10 || code === 13 || (code >= 32 && code !== 127);
+          }).join('');
 
           // normalize spaces around punctuation
-          s = s.replace(/\s+([.,!?;:\)])/g, '$1');
-          s = s.replace(/([\(\[] )/g, '$1');
+          s = s.replace(/\s+([.,!?;:)])/g, '$1');
+          s = s.replace(/([([ ])\s+/g, '$1');
 
           // trim long inline code fences or stack traces to keep preview readable
           const maxPreview = (settings && settings.previewLength) ? Number(settings.previewLength) : 1200;
@@ -721,24 +776,16 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
           }
 
           return { display: s, meta };
-        } catch (e) { return { display: String(raw || ''), meta: {} }; }
+        } catch { return { display: String(raw || ''), meta: {} }; }
       };
 
       const processed = postProcessBotText(replyText);
       const replyDisplayText = processed.display;
       const replyMetaFromPost = processed.meta || {};
-      
+
       // Extract emotion and character data from replyObj
       const emotionData = replyObj?.emotion || null;
       const characterData = replyObj?.character || null;
-      
-      // enforce non-fabrication rule: prepend caution when confidence is low
-      try {
-        const conf = replyObj && typeof replyObj.confidence === 'number' ? replyObj.confidence : null;
-        if (conf !== null && conf < 0.5) {
-          replyText = `⚠️ Saya tidak sepenuhnya yakin terhadap jawaban ini. Mohon verifikasi sumber jika diperlukan.\n\n` + replyText;
-        }
-      } catch (_e) { void _e; /* ignore */ }
 
       // model -> characters per second (higher model => slower)
       const modelCps = {
@@ -749,13 +796,12 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
       };
       const cps = modelCps[(settings.aiModel || 'enhanced')] || 30;
 
-      // dynamic multi-loading variants
-      const loadingVerbs = [
-        'Memikirkan', 'Mengolah', 'Menganalisis', 'Menyusun jawaban', 'Mengindeks informasi',
-        'Mengoptimalkan respons', 'Menggabungkan sumber', 'Memproses data'
-      ];
-      // generate a small unique list for this response
-      const loadingVariants = Array.from({ length: 3 }, () => loadingVerbs[Math.floor(Math.random() * loadingVerbs.length)] + '...');
+      // dynamic multi-loading variants & animation from animationMapper
+      const animType = getAnimationByInput(userText, intent?.intent || intent?.type || '');
+      const mappedVariants = getLoadingVariants(userText);
+      const loadingVariants = Array.isArray(mappedVariants) && mappedVariants.length > 0
+        ? mappedVariants.slice(0, 3)
+        : ['Memikirkan...', 'Menganalisis...', 'Menyusun jawaban...'];
 
       // create placeholder typing message
       const placeholderId = `msg_typing_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
@@ -767,7 +813,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
         type: 'typing',
         emotion: emotionData,
         character: characterData,
-        _meta: { expectedText: replyText, cps, loadingVariants, post: replyMetaFromPost }
+        _meta: { expectedText: replyDisplayText || replyText, cps, loadingAnimation: animType, loadingVariants, post: replyMetaFromPost }
       };
 
       setMessages(prev => {
@@ -784,13 +830,21 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
       });
       window.dispatchEvent(new CustomEvent('saipul_chat_update', { detail: { type: 'typing_start', message: placeholder } }));
 
-      // compute reveal duration based on cps and length, but respect typingTime minimum
-      const estimatedRevealMs = Math.min(12000, Math.max(600, Math.ceil((replyText.length / cps) * 1000)));
-      const finalDelay = Math.max(typingTime, estimatedRevealMs);
+      // Batalkan streaming sebelumnya jika masih berjalan
+      if (streamAbortRef.current) {
+        try { streamAbortRef.current.abort(); } catch (_e) { void _e; }
+      }
+      const abortController = new AbortController();
+      streamAbortRef.current = abortController;
 
-      // after delay, replace placeholder with final message (or alternatives)
-      setTimeout(() => {
+      // Jeda berpikir singkat alami sebelum mulai mengetik (streaming)
+      const thinkDelay = settings.responseSpeed === 'fast' ? 150 :
+        settings.responseSpeed === 'thorough' ? 450 : 250;
+
+      setTimeout(async () => {
         try {
+          if (abortController.signal.aborted) return;
+
           const produceAlternatives = (userQuestionCounterRef.current || 0) % 20 === 0 && (userQuestionCounterRef.current || 0) !== 0;
           if (produceAlternatives) {
             try { window.dispatchEvent(new CustomEvent('saipul_telemetry', { detail: { event: 'alternatives_generated', count: 2, userQuestionCounter: userQuestionCounterRef.current } })); } catch (_e) { void _e; }
@@ -802,7 +856,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
 
             const textA = typeof replyA === 'string' ? replyA : (replyA && replyA.text) || FRIENDLY_MESSAGES.responseError;
             const textB = typeof replyB === 'string' ? replyB : (replyB && replyB.text) || FRIENDLY_MESSAGES.responseError;
-            
+
             const emotionDataA = replyA?.emotion || null;
             const characterDataA = replyA?.character || null;
             const emotionDataB = replyB?.emotion || null;
@@ -818,9 +872,12 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
               text: (procA && procA.display) ? procA.display : textA,
               timestamp: new Date().toISOString(),
               type: 'response',
+              isStreaming: false,
+              language: (replyA && replyA.language) || 'id',
+              alternatives: (replyA && replyA.alternatives) || null,
               emotion: emotionDataA,
               character: characterDataA,
-              _meta: Object.assign({ altGroup: altId, altIndex: 0 }, procA && procA.meta ? { post: procA.meta } : {})
+              _meta: Object.assign({ altGroup: altId, altIndex: 0, language: (replyA && replyA.language) || 'id', alternatives: (replyA && replyA.alternatives) || null }, procA && procA.meta ? { post: procA.meta } : {})
             };
 
             const botMsgB = {
@@ -829,48 +886,62 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
               text: (procB && procB.display) ? procB.display : textB,
               timestamp: new Date().toISOString(),
               type: 'response',
+              isStreaming: false,
+              language: (replyB && replyB.language) || 'id',
+              alternatives: (replyB && replyB.alternatives) || null,
               emotion: emotionDataB,
               character: characterDataB,
-              _meta: procB && procB.meta ? { post: procB.meta } : {}
+              _meta: Object.assign({ language: (replyB && replyB.language) || 'id', alternatives: (replyB && replyB.alternatives) || null }, procB && procB.meta ? { post: procB.meta } : {})
             };
 
             setMessages(prev => prev.map(m => m.id === placeholderId ? botMsgA : m).concat(botMsgB));
             window.dispatchEvent(new CustomEvent('saipul_chat_update', { detail: { type: 'new_bot_message', message: botMsgA } }));
             window.dispatchEvent(new CustomEvent('saipul_chat_update', { detail: { type: 'new_bot_message', message: botMsgB } }));
+            setIsTyping(false);
           } else {
             // Contextual Action Chips
+            const isEnglishReply = replyObj?.language === 'en';
             let actionChips = (replyObj && replyObj.actionChips) || [];
             if (actionChips.length === 0) {
               const lowerRep = (replyDisplayText || replyText || '').toLowerCase();
               const lowerInp = (userText || '').toLowerCase();
               const combined = `${lowerInp} ${lowerRep}`;
-              
+
               if (combined.includes('proyek') || combined.includes('project') || combined.includes('karya')) {
-                actionChips.push({ label: 'Jelajahi Proyek', icon: '💻', path: '/projek' });
+                actionChips.push({ label: isEnglishReply ? 'Explore Projects' : 'Jelajahi Proyek', icon: '💻', path: '/projects' });
               }
               if (combined.includes('blog') || combined.includes('artikel') || combined.includes('tulisan')) {
-                actionChips.push({ label: 'Baca Blog', icon: '📚', path: '/blog' });
+                actionChips.push({ label: isEnglishReply ? 'Read Blog' : 'Baca Blog', icon: '📚', path: '/blog' });
               }
               if (combined.includes('skill') || combined.includes('keahlian') || combined.includes('kemampuan')) {
-                actionChips.push({ label: 'Cek Skill', icon: '⚡', path: '/skills' });
+                actionChips.push({ label: isEnglishReply ? 'Check Skills' : 'Cek Skill', icon: '⚡', path: '/softskills' });
               }
-              if (combined.includes('sertifikat') || combined.includes('sertifikasi') || combined.includes('kursus')) {
-                actionChips.push({ label: 'Lihat Sertifikat', icon: '🎓', path: '/sertif' });
+              if (combined.includes('sertifikat') || combined.includes('sertifikasi') || combined.includes('kursus') || combined.includes('certificate')) {
+                actionChips.push({ label: isEnglishReply ? 'View Certificates' : 'Lihat Sertifikat', icon: '🎓', path: '/certificates' });
               }
-              if (combined.includes('testimoni') || combined.includes('ulasan') || combined.includes('rekomendasi')) {
-                actionChips.push({ label: 'Ulasan Klien', icon: '⭐', path: '/pengalaman/testimoni' });
+              if (combined.includes('testimoni') || combined.includes('ulasan') || combined.includes('rekomendasi') || combined.includes('testimonial') || combined.includes('review')) {
+                actionChips.push({ label: isEnglishReply ? 'Client Reviews' : 'Ulasan Klien', icon: '⭐', path: '/testimoni' });
+              }
+              if (combined.includes('kontak') || combined.includes('contact') || combined.includes('hire') || combined.includes('email')) {
+                actionChips.push({ label: isEnglishReply ? 'Contact Syaiful' : 'Hubungi Syaiful', icon: '✉️', path: '/contact' });
               }
               if (combined.includes('faq') || combined.includes('tanya')) {
-                actionChips.push({ label: 'Buka FAQ', icon: '❓', path: '/help/faq' });
+                actionChips.push({ label: isEnglishReply ? 'Open FAQ' : 'Buka FAQ', icon: '❓', path: '/help/faq' });
               }
             }
 
+            const targetFullText = replyDisplayText || replyText;
+            const botMessageId = `msg_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+
             const botMsg = {
-              id: `msg_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
+              id: botMessageId,
               from: 'bot',
-              text: replyDisplayText || replyText,
+              text: '',
               timestamp: new Date().toISOString(),
               type: 'response',
+              isStreaming: true,
+              language: (replyObj && replyObj.language) || 'id',
+              alternatives: (replyObj && replyObj.alternatives) || null,
               emotion: emotionData,
               character: characterData,
               _meta: Object.assign({}, (typeof replyObj === 'object' && replyObj ? {
@@ -879,15 +950,56 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
                 relatedConcepts: replyObj.relatedConcepts || null,
                 entity: replyObj.entity || null,
                 reasoning: replyObj.reasoning || null,
-                userIntent: intent || null
+                userIntent: intent || null,
+                language: replyObj.language || 'id',
+                alternatives: replyObj.alternatives || null
               } : {}), replyMetaFromPost ? { post: replyMetaFromPost } : {}),
               action: (replyObj && replyObj.action) || null,
               actionChips: actionChips.slice(0, 3),
               suggestedTopics: (replyObj && replyObj.suggestedTopics) || null
             };
 
+            // Gantikan placeholder dengan bot message awal berstatus streaming
             setMessages(prev => prev.map(m => m.id === placeholderId ? botMsg : m));
-            window.dispatchEvent(new CustomEvent('saipul_chat_update', { detail: { type: 'new_bot_message', message: botMsg } }));
+            setIsTyping(false);
+
+            // Ritme kecepatan streaming typewriter berdasarkan konfigurasi respon
+            const streamSpeedMs = settings.responseSpeed === 'fast' ? 10 :
+              settings.responseSpeed === 'thorough' ? 24 : 16;
+
+            try {
+              for await (const chunk of streamTextGenerator(targetFullText, {
+                baseDelayMs: streamSpeedMs,
+                punctuationDelayMs: streamSpeedMs * 3,
+                signal: abortController.signal
+              })) {
+                if (abortController.signal.aborted) break;
+                setMessages(prev => prev.map(m => m.id === botMessageId ? { ...m, text: chunk.accumulated } : m));
+              }
+            } catch (streamErr) {
+              console.warn('Streaming interrupted or error:', streamErr);
+            }
+
+            // Selesaikan status streaming dan emit event pembaruan
+            if (!abortController.signal.aborted) {
+              const finalizedMsg = { ...botMsg, text: targetFullText, isStreaming: false };
+              setMessages(prev => prev.map(m => m.id === botMessageId ? finalizedMsg : m));
+              window.dispatchEvent(new CustomEvent('saipul_chat_update', {
+                detail: { type: 'new_bot_message', message: finalizedMsg }
+              }));
+
+              if (settings?.enableAnalytics && !settings?.privacyMode) {
+                try {
+                  logResponseQuality({
+                    query: userText,
+                    intent: intent?.type || 'general',
+                    confidence: replyObj?.confidence || 0.8,
+                    source: replyObj?.source?.type || 'logic',
+                    durationMs: Date.now() - thinkDelay
+                  });
+                } catch (_e) { void _e; }
+              }
+            }
           }
         } catch (error) {
           console.error('Error generating bot reply:', error);
@@ -896,24 +1008,25 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
             from: 'bot',
             text: FRIENDLY_MESSAGES.responseError,
             timestamp: new Date().toISOString(),
-            type: 'error'
+            type: 'error',
+            isStreaming: false
           } : m));
         } finally {
           setIsTyping(false);
         }
-      }, finalDelay);
+      }, thinkDelay);
     } catch (err) {
       console.error('generateBotReply error', err);
       setIsTyping(false);
       setMessages(prev => [...prev, {
         id: `msg_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
         from: 'bot',
-          text: FRIENDLY_MESSAGES.responseError,
+        text: FRIENDLY_MESSAGES.responseError,
         timestamp: new Date().toISOString(),
         type: 'error'
       }]);
     }
-  }, [settings, conversationContext, kbState, knowledgeStats]);
+  }, [settings, conversationContext, kbState, knowledgeStats, isAgentOnline]);
 
   // Listen for report events dispatched from ReportModal or elsewhere
   useEffect(() => {
@@ -925,7 +1038,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
         const message = messages.find(m => m.id === messageId) || null;
 
         const enriched = {
-          id: `report_${Date.now()}_${Math.floor(Math.random()*10000)}`,
+          id: `report_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
           messageId,
           messageText: message ? message.text : null,
           messageMeta: message ? message._meta : null,
@@ -988,7 +1101,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
 
         // Show a friendly confirmation message to the user
         setMessages(prev => [...prev, {
-          id: `msg_${Date.now()}_${Math.floor(Math.random()*10000)}`,
+          id: `msg_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
           from: 'bot',
           text: FRIENDLY_MESSAGES.reportSaved(enriched.reason),
           timestamp: new Date().toISOString(),
@@ -1036,7 +1149,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
         turnCount: messages.length
       });
       setLastInputType(classification);
-    } catch (e) { 
+    } catch (e) {
       console.warn('Advanced classification failed, falling back:', e);
       // Fallback ke logika sederhana jika terjadi error di modul baru
       try { classification = classifyInput(clean || ''); } catch (err) { void err; }
@@ -1047,13 +1160,13 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
       from: "user",
       text: clean,
       sentiment: (overrideData && overrideData.sentiment) || null,
-      intent: classification || { type: 'statement', confidence: 0.6 },
+      intent: classification || { intent: 'statement', confidence: 0.6 },
       timestamp: new Date().toISOString(),
       type: "text"
     };
 
     setMessages((prev) => [...prev, userMsg]);
-    
+
     // Update Advanced Context Manager
     try {
       const topics = extractTopics(clean, classification.entities || []);
@@ -1070,6 +1183,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     setSuggestionsVisible(false);
     const userInput = clean;
     setInput("");
+    try { trackChatActivity('send_message', { length: clean?.length }); } catch (_e) { void _e; }
     // increment user question counter for alternative-response feature and persist
     try {
       userQuestionCounterRef.current = (userQuestionCounterRef.current || 0) + 1;
@@ -1088,17 +1202,18 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     // Auto-training logic
     try {
       if (settings && settings.autoTraining && !settings.privacyMode) {
+        const label = classification.intent || classification.type || 'unknown';
         const trigger = settings.autoTrainingTrigger || 'always';
         if (trigger === 'always') {
-          try { addTrainingExample(clean, classification.type); } catch (_e) { void _e; }
+          try { addTrainingExample(clean, label); } catch (_e) { void _e; }
         } else if (trigger === 'heuristic') {
           const minConf = typeof settings.autoTrainingHeuristicConfidence === 'number' ? settings.autoTrainingHeuristicConfidence : 0.8;
           if ((classification.confidence || 0) >= minConf) {
-            try { addTrainingExample(clean, classification.type); } catch (_e) { void _e; }
+            try { addTrainingExample(clean, label); } catch (_e) { void _e; }
           }
         } else if (trigger === 'on_feedback') {
           // queue pending example; will be saved when user gives positive feedback on bot reply
-          pendingTrainingRef.current.push({ text: clean, label: classification.type, ts: Date.now() });
+          pendingTrainingRef.current.push({ text: clean, label, ts: Date.now() });
           // cap pending queue
           if (pendingTrainingRef.current.length > 200) pendingTrainingRef.current.shift();
         }
@@ -1126,7 +1241,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     }
 
     generateBotReply(userInput, {}, classification);
-  }, [input, generateBotReply, settings]);
+  }, [input, generateBotReply, settings, kbState, messages, trackChatActivity]);
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -1159,10 +1274,13 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
   }, [input, suggestions]);
 
   const clearChat = useCallback(() => {
+    if (streamAbortRef.current) {
+      try { streamAbortRef.current.abort(); } catch (_e) { void _e; }
+    }
     const greet = FRIENDLY_MESSAGES.greetings[Math.floor(Math.random() * FRIENDLY_MESSAGES.greetings.length)];
-    setMessages([{ 
+    setMessages([{
       id: `msg_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
-      from: "bot", 
+      from: "bot",
       text: `${greet} \n\nRiwayat percakapan telah dibersihkan. Ada yang bisa kubantu analisis, hitung, atau proses hari ini?`,
       timestamp: new Date().toISOString(),
       type: "welcome"
@@ -1221,7 +1339,6 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
       const sessionEnd = msgs[msgs.length - 1].timestamp || new Date().toISOString();
 
       const userMsgs = msgs.filter(m => m.from === 'user' && m.text).map(m => ({ content: m.text, timestamp: m.timestamp }));
-      const botMsgs = msgs.filter(m => m.from === 'bot' && m.text).map(m => ({ content: m.text, timestamp: m.timestamp }));
 
       // extract themes from user messages (helper)
       const themes = extractThemes(userMsgs || []);
@@ -1291,20 +1408,20 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
       const freq = { ...(frequentQuestions || {}) };
       const arr = Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, count).map(e => ({ question: e[0], count: e[1] }));
       return arr;
-    } catch (e) { return []; }
+    } catch { return []; }
   }, [frequentQuestions]);
 
   // auto-generate a session summary when chat session ends
   useEffect(() => {
-    const handleSessionEnd = (e) => {
+    const handleSessionEnd = () => {
       try {
         const result = generateSessionSummary({ messages });
         if (result && result.summaryText) {
           // post a short notice into chat (non-persistent if privacyMode)
           setMessages(prev => [...prev, {
-            id: `msg_${Date.now()}_${Math.floor(Math.random()*10000)}`,
+            id: `msg_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
             from: 'bot',
-            text: `📋 Ringkasan sesi:\n${result.summaryText.split('\n').slice(0,6).join('\n')}\n\nKetik 'lihat ringkasan' atau klik tombol Ringkasan untuk melihat detail.`,
+            text: `📋 Ringkasan sesi:\n${result.summaryText.split('\n').slice(0, 6).join('\n')}\n\nKetik 'lihat ringkasan' atau klik tombol Ringkasan untuk melihat detail.`,
             timestamp: new Date().toISOString(),
             type: 'summary_notice'
           }]);
@@ -1318,7 +1435,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
 
   const reportIssue = useCallback((details) => {
     setMessages((prev) => [...prev, {
-      id: `msg_${Date.now()}_${Math.floor(Math.random()*10000)}`,
+      id: `msg_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
       from: "user",
       text: `Laporan diterima: ${details}`,
       timestamp: new Date().toISOString(),
@@ -1330,6 +1447,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
   // Record simple feedback about messages (like/dislike/regenerate/report)
   const recordFeedback = useCallback((messageId, type = 'like') => {
     try {
+      try { trackChatActivity('feedback', { messageId, type }); } catch (_e) { void _e; }
       setFeedbackStore(prev => {
         const next = { ...(prev || {}) };
         next[messageId] = next[messageId] || { like: 0, dislike: 0, regen: 0 };
@@ -1365,11 +1483,11 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
               // match by approximate last timestamp order: take last pending
               const candidate = pending.pop();
               pendingTrainingRef.current = pending;
-              try { 
-                addTrainingExample(candidate.text, candidate.label); 
-                saved = true; 
-              } catch (err) { 
-                console.warn('Failed to add training example from feedback:', err); 
+              try {
+                addTrainingExample(candidate.text, candidate.label);
+                saved = true;
+              } catch (err) {
+                console.warn('Failed to add training example from feedback:', err);
               }
             }
 
@@ -1380,7 +1498,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
                 for (let i = idx - 1; i >= 0; i--) {
                   const um = messages[i];
                   if (um && um.from === 'user' && um.text) {
-                    const label = (um.intent && um.intent.type) ? um.intent.type : (classifyInput(um.text || '').type || 'statement');
+                    const label = (um.intent && (um.intent.intent || um.intent.type)) || (classifyInput(um.text || '').type || 'statement');
                     try { addTrainingExample(um.text, label); } catch (_e) { void _e; }
                     break;
                   }
@@ -1391,7 +1509,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
         } catch (_e) { void _e; }
       }
     } catch (e) { console.error('recordFeedback error', e); }
-  }, [messages, settings]);
+  }, [messages, settings, trackChatActivity]);
 
   const closeSuggestions = useCallback(() => setSuggestionsVisible(false), []);
 
@@ -1400,7 +1518,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
       setSuggestionsVisible(false);
       // remember that user closed suggestions for this bot message id
       if (lastBotMessageIdRef.current) closedForBotIdRef.current = lastBotMessageIdRef.current;
-    } catch (e) { 
+    } catch (e) {
       console.debug('Failed to close suggestions for current:', e);
     }
   }, []);
@@ -1416,7 +1534,7 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
       try {
         setSettings(prev => ({ ...prev, preferredResponseExample: chosen.text }));
         // persist to storage
-        try { 
+        try {
           const current = storageService.get('saipul_settings', {});
           current.preferredResponseExample = chosen.text;
           storageService.set('saipul_settings', current);
@@ -1448,28 +1566,6 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
     };
     return gradients[settings.accent] || gradients.cyan;
   };
-
-  useEffect(() => {
-    let lastType = null;
-    let lastTime = 0;
-    const trackActivity = (event) => {
-      // Hindari update beruntun dengan event yang sama dalam 100ms
-      if (event.type === lastType && event.timeStamp - lastTime < 100) return;
-      lastType = event.type;
-      lastTime = event.timeStamp;
-      setUserActivity((prev) => {
-        const updatedActivity = [...prev, { type: event.type, time: Date.now() }];
-        if (updatedActivity.length > 10) updatedActivity.shift();
-        return updatedActivity;
-      });
-    };
-    window.addEventListener("click", trackActivity);
-    window.addEventListener("keydown", trackActivity);
-    return () => {
-      window.removeEventListener("click", trackActivity);
-      window.removeEventListener("keydown", trackActivity);
-    };
-  }, []);
 
   // Global keyboard shortcuts for chat quick actions (configurable via settings.shortcuts)
   useEffect(() => {
@@ -1561,7 +1657,10 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
         let finalMessages = null;
         if (saved) {
           try {
-            if (Array.isArray(saved) && saved.length > 0) finalMessages = saved;
+            if (Array.isArray(saved) && saved.length > 0) {
+              const valid = saved.filter(m => m && typeof m === 'object');
+              if (valid.length > 0) finalMessages = valid;
+            }
           } catch (_e) { void _e; }
         }
 
@@ -1604,13 +1703,6 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
       window.removeEventListener('saipul_chat_opened', handleChatOpened);
     };
   }, []);
-
-  useEffect(() => {
-    // Hidden internal tracking for future analytics
-    if (userActivity.length > 50) {
-      // Clear or process large activity logs
-    }
-  }, [userActivity]);
 
   return {
     messages,

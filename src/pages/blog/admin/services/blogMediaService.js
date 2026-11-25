@@ -13,7 +13,6 @@ import galleryData from '../../../../data/galleryData.json';
 import imagesData from '../../../../data/gallery/images.json';
 import videosData from '../../../../data/gallery/videos.json';
 import shortsData from '../../../../data/gallery/shorts.json';
-import albumsData from '../../../../data/gallery/albums.json';
 
 const CUSTOM_UPLOADS_KEY = 'blog_media_custom_uploads';
 
@@ -190,8 +189,6 @@ export const deleteCustomUpload = (mediaId) => {
  * Menggunakan direct Unsplash source dengan query kata kunci
  */
 export const searchUnsplashPhotos = async (query = 'coding') => {
-  const clean = encodeURIComponent(query.trim() || 'technology');
-  
   // Koleksi gambar variatif berdasarkan seed query Unsplash Source
   const photos = [];
   const baseIds = [

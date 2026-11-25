@@ -32,6 +32,7 @@ const loadKnowledgeBaseAsync = () => {
     })
     .catch((err) => {
       console.warn("Gagal memuat KnowledgeBase SaipulAI:", err);
+      kbLoadingPromise = null;
       return { kb: {}, stats: {} };
     });
 
@@ -46,7 +47,7 @@ const prefetchChatbotAssets = () => {
 
 function ChatbotErrorFallback({ error, resetErrorBoundary }) {
   return (
-    <div className="fixed bottom-24 right-6 bg-red-900/90 text-white p-4 rounded-xl shadow-lg max-w-xs">
+    <div className="fixed bottom-24 right-6 z-[10001] bg-red-900/90 text-white p-4 rounded-xl shadow-lg max-w-xs">
       <p className="font-semibold">⚠️ Chatbot Error</p>
       <p className="text-sm mt-1 break-words">
         {error?.message ?? "Terjadi kesalahan"}
@@ -125,6 +126,9 @@ export default function HelpButton() {
 
   const openSettings = () => {
     closeChat();
+    if (!kbData?.kb || Object.keys(kbData.kb).length === 0) {
+      loadKnowledgeBaseAsync().then(setKbData);
+    }
     setIsSettingsOpen(true);
   };
 
@@ -206,7 +210,7 @@ export default function HelpButton() {
       {!isMaintenance && open && createPortal(
         <div
           className="fixed z-[10000] animate-fade-up-slow"
-          style={{ 
+          style={{
             bottom: `calc(${isRecaptchaVisible ? '110px' : '20px'} + 5rem)`,
             right: '3rem',
           }}
@@ -226,23 +230,31 @@ export default function HelpButton() {
       {/* Popup Chatbot - TERPISAH dari menu bantuan */}
       {isChatOpen && (
         <div className="z-[10000]">
-          <Suspense fallback={null}>
-            <ChatbotWindow
-              onClose={closeChat}
-              onOpenSettings={openSettings}
-              knowledgeBase={kbData.kb}
-              knowledgeStats={kbData.stats}
-            />
-          </Suspense>
+          <ErrorBoundary FallbackComponent={ChatbotErrorFallback}>
+            <Suspense fallback={null}>
+              <ChatbotWindow
+                onClose={closeChat}
+                onOpenSettings={openSettings}
+                knowledgeBase={kbData.kb}
+                knowledgeStats={kbData.stats}
+              />
+            </Suspense>
+          </ErrorBoundary>
         </div>
       )}
 
       {/* Popup Settings */}
       {isSettingsOpen && (
         <div className="z-[10000]">
-          <Suspense fallback={null}>
-            <ChatbotSettings onClose={closeSettings} />
-          </Suspense>
+          <ErrorBoundary FallbackComponent={ChatbotErrorFallback}>
+            <Suspense fallback={null}>
+              <ChatbotSettings
+                onClose={closeSettings}
+                knowledgeBase={kbData.kb}
+                knowledgeStats={kbData.stats}
+              />
+            </Suspense>
+          </ErrorBoundary>
         </div>
       )}
 

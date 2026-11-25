@@ -41,7 +41,7 @@ const SecurityHealthWidget = () => {
       let total = 0;
       try {
         for (let x in localStorage) {
-          if (localStorage.hasOwnProperty(x)) {
+          if (Object.prototype.hasOwnProperty.call(localStorage, x)) {
             total += ((localStorage[x].length + x.length) * 2);
           }
         }
@@ -159,7 +159,7 @@ const Privacy = ({ aiDocData }) => {
       try {
         localStorage.clear();
         window.location.reload();
-      } catch (e) {
+      } catch {
         alert("Gagal menghapus data. Silakan hapus cache browser secara manual.");
       }
     }

@@ -1,70 +1,76 @@
-import { useState } from 'react';
-import { processFileGeneric, saveUploadedData, STORAGE_KEYS } from '../utils/fileProcessor';
+import { useState, useCallback } from 'react';
+import { processFileGeneric, saveUploadedData, formatFileSize } from '../utils/fileProcessor.js';
 
 export function useFileUpload(settings, updateKnowledgeBase, setMessages) {
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
   const [fileUploadKey, setFileUploadKey] = useState(0);
 
-  const handleFileUpload = async (event) => {
-    const files = Array.from(event.target.files);
-    if (!files.length) return;
+  const handleFileUpload = useCallback(async (event) => {
+    const fileList = event?.target?.files || (event instanceof FileList ? event : Array.isArray(event) ? event : null);
+    if (!fileList || !fileList.length) return;
 
-    let processedCount = 0;
+    const files = Array.from(fileList);
+    setIsUploading(true);
+    setUploadProgress(10);
+
     const totalFiles = files.length;
 
-    for (const file of files) {
+    for (let i = 0; i < totalFiles; i++) {
+      const file = files[i];
       try {
-        setUploadProgress(Math.round((processedCount / totalFiles) * 100));
-        
-        const fileSizeMB = file.size / (1024 * 1024);
-        if (fileSizeMB > settings.maxFileSize) {
-          throw new Error(`File ${file.name} terlalu besar (${fileSizeMB.toFixed(1)}MB). Maksimal ${settings.maxFileSize}MB.`);
-        }
-
-        // process and validate file using shared util
         const fileData = await processFileGeneric(file, settings);
         const { updatedData, updatedMetadata } = saveUploadedData(fileData);
 
-        if (updateKnowledgeBase) {
+        if (typeof updateKnowledgeBase === 'function') {
           updateKnowledgeBase({
             uploadedData: updatedData,
             fileMetadata: updatedMetadata
           });
         }
 
-        processedCount++;
-        setUploadProgress(Math.round((processedCount / totalFiles) * 100));
+        const pct = Math.round(((i + 1) / totalFiles) * 100);
+        setUploadProgress(pct);
+
+        if (typeof setMessages === 'function') {
+          const docMsg = {
+            id: `doc_upload_${Date.now()}_${i}`,
+            from: "bot",
+            text: `📎 **Berkas "${fileData.fileName}" berhasil diunggah!**\n\n• **Ukuran**: ${formatFileSize(fileData.size)}\n• **Tipe**: \`.${fileData.extension}\`\n• **Indeks Pengetahuan**: **${fileData.sentences?.length || 0} kalimat** dan **${fileData.wordCount || 0} kata** telah dipelajari.\n\nKamu sekarang bisa langsung bertanya: *"Apa isi dari ${fileData.fileName}?"* atau meminta ringkasan topik tertentu dari dokumen tersebut.`,
+            timestamp: new Date().toISOString(),
+            type: "system_doc_upload",
+            confidence: 1.0
+          };
+          setMessages(prev => [...prev, docMsg]);
+        }
 
       } catch (error) {
         console.error(`Error processing file ${file.name}:`, error);
-        const errorMsg = {
-          from: "bot",
-          text: `❌ **Error processing ${file.name}**: ${error.message}`,
-          timestamp: new Date().toISOString(),
-          type: "error"
-        };
-        setMessages(prev => [...prev, errorMsg]);
+        if (typeof setMessages === 'function') {
+          const errorMsg = {
+            id: `doc_error_${Date.now()}_${i}`,
+            from: "bot",
+            text: `❌ **Gagal memproses berkas "${file.name}"**:\n${error.message}`,
+            timestamp: new Date().toISOString(),
+            type: "error"
+          };
+          setMessages(prev => [...prev, errorMsg]);
+        }
       }
     }
 
-    if (processedCount > 0) {
-      const successMsg = {
-        from: "bot",
-        text: `✅ **${processedCount} file berhasil diupload!**\n\nFile telah ditambahkan ke knowledge base dan siap digunakan untuk pencarian.`,
-        timestamp: new Date().toISOString(),
-        type: "success"
-      };
-      setMessages(prev => [...prev, successMsg]);
-    }
-
+    setIsUploading(false);
     setUploadProgress(0);
     setFileUploadKey(prev => prev + 1);
-  };
 
-  // file processing delegated to processFileGeneric in utils
+    if (event?.target && event.target.value !== undefined) {
+      event.target.value = '';
+    }
+  }, [settings, updateKnowledgeBase, setMessages]);
 
   return {
     uploadProgress,
+    isUploading,
     fileUploadKey,
     setFileUploadKey,
     handleFileUpload,

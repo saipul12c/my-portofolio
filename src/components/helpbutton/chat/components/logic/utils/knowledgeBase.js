@@ -12,11 +12,15 @@ export function getKnowledgeResponse(userInput, safeKnowledgeBase, settings) {
   const input = userInput.toLowerCase();
   
   try {
+    const targetLang = (settings?.language === 'en') ? 'en' : (settings?.language === 'id' ? 'id' : 'auto');
+
     // Gunakan Smart KB Query (Advanced Fuzzy Search) sebagai prioritas utama
     const smartResults = smartKBQuery(userInput, safeKnowledgeBase, {
       searchDepth: settings?.creativeMode ? 'comprehensive' : 'standard',
       threshold: 0.4, // Threshold lebih rendah untuk fuzzy matching
-      maxResults: 1
+      maxResults: 1,
+      targetLanguage: targetLang,
+      language: settings?.language || 'auto'
     });
 
     if (smartResults && smartResults.length > 0) {
@@ -41,15 +45,33 @@ export function getKnowledgeResponse(userInput, safeKnowledgeBase, settings) {
           responseText += `\n\n💡 **Insight**: ${insights[Math.floor(Math.random() * insights.length)]}`;
         }
 
+        let actionChips = bestMatch.actionChips || [];
+        if (!actionChips.length && bestMatch.url) {
+          const isEn = targetLang === 'en';
+          const label = bestMatch.category === 'projects' ? (isEn ? 'Explore Projects' : 'Jelajahi Proyek') :
+                        bestMatch.category === 'blogs' ? (isEn ? 'Read Articles' : 'Baca Artikel') :
+                        bestMatch.category === 'certificates' ? (isEn ? 'View Certificates' : 'Lihat Sertifikat') :
+                        bestMatch.category === 'languages' ? (isEn ? 'Tech Stack Details' : 'Detail Teknologi') :
+                        bestMatch.category === 'academic_kkn' ? (isEn ? 'Fieldwork Report' : 'Laporan KKN') :
+                        bestMatch.category === 'galleryAlbums' ? (isEn ? 'Open Gallery' : 'Buka Galeri') :
+                        (bestMatch.category === 'coreValues' || bestMatch.category === 'visi') ? (isEn ? 'Vision & Mission' : 'Buka Visi Misi') :
+                        (isEn ? 'Open Page' : 'Buka Halaman');
+          actionChips.push({ label, path: bestMatch.url, icon: '🔗' });
+        }
+
         return {
           text: responseText,
+          language: bestMatch.language || targetLang,
+          alternatives: bestMatch.alternatives || {},
           source: { 
             type: bestMatch.source, 
             id: bestMatch.question || bestMatch.fileName,
             matchType: bestMatch.matchType,
-            score: bestMatch.relevanceScore
+            score: bestMatch.relevanceScore,
+            category: bestMatch.category || null
           },
-          confidence: Math.min(0.99, bestMatch.relevanceScore + 0.1)
+          confidence: Math.min(0.99, bestMatch.relevanceScore + 0.1),
+          actionChips
         };
       }
     }

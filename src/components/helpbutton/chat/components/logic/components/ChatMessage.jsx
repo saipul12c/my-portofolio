@@ -16,26 +16,16 @@ import {
   ChevronDown,
   ChevronUp,
   Cpu,
-  ShieldCheck
+  ShieldCheck,
+  Globe
 } from "lucide-react";
 import ReportModal from "./ReportModal";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { MultiLoadingAnimation } from "./LoadingAnimations";
 import { LIVE_CS_PATH } from "../../../config.js";
 
-// escape potentially unsafe characters (extra safety, React already escapes by default)
-function escapeHtml(unsafe) {
-  if (unsafe === null || unsafe === undefined) return '';
-  return String(unsafe)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
 // Helper untuk menguraikan alur berpikir & penalaran asisten AI yang alami dan ramah pengguna
-function getTransparencyInfo(message) {
+function getTransparencyInfo(message, isEnglish = false) {
   const meta = message?._meta || {};
   const rawSource = meta.source || null;
   const rawConf = typeof meta.confidence === 'number' ? meta.confidence : null;
@@ -48,136 +38,145 @@ function getTransparencyInfo(message) {
   }
 
   // Format emosi / nada bahasa yang aman (mencegah [object Object])
-  let formattedEmotion = 'Ramah & Solutif';
+  let formattedEmotion = isEnglish ? 'Friendly & Helpful' : 'Ramah & Solutif';
   const rawEmotion = message?.emotion?.primary || message?.emotion || null;
   if (rawEmotion && typeof rawEmotion === 'object') {
-    formattedEmotion = rawEmotion.primary || rawEmotion.name || 'Ramah & Solutif';
+    formattedEmotion = rawEmotion.primary || rawEmotion.name || (isEnglish ? 'Friendly & Helpful' : 'Ramah & Solutif');
   } else if (typeof rawEmotion === 'string' && rawEmotion.trim()) {
     formattedEmotion = rawEmotion.trim();
   }
-  const emotionMap = {
+  const emotionMap = isEnglish ? {
+    'friendly': 'Friendly & Welcoming',
+    'professional': 'Professional',
+    'helpful': 'Helpful & Informative',
+    'curious': 'Curious & Engaging',
+    'polite': 'Polite & Courteous',
+    'neutral': 'Informative',
+    'empathetic': 'Empathetic & Caring'
+  } : {
     'friendly': 'Ramah & Bersahabat',
     'professional': 'Profesional',
     'helpful': 'Solutif & Informatif',
     'curious': 'Antusias',
     'polite': 'Sopan & Santun',
-    'neutral': 'Informatif'
+    'neutral': 'Informatif',
+    'empathetic': 'Empati & Peduli'
   };
   formattedEmotion = emotionMap[formattedEmotion.toLowerCase()] || formattedEmotion;
 
-  let label = 'Basis Pengetahuan';
+  let label = isEnglish ? 'Knowledge Base' : 'Basis Pengetahuan';
   let icon = '🧠';
   let defaultConf = 0.92;
-  let stepUnderstand = 'Menganalisis topik dan maksud kueri pengguna.';
-  let stepSearch = 'Menelusuri informasi yang paling relevan dari basis data portofolio resmi.';
-  let stepFormulate = 'Menyusun respon yang akurat, informatif, dan mudah dipahami.';
+  let stepUnderstand = isEnglish ? 'Analyzing user topic and query intent.' : 'Menganalisis topik dan maksud kueri pengguna.';
+  let stepSearch = isEnglish ? 'Scanning the most relevant information from verified portfolio databases.' : 'Menelusuri informasi yang paling relevan dari basis data portofolio resmi.';
+  let stepFormulate = isEnglish ? 'Structuring an accurate, informative, and clear response.' : 'Menyusun respon yang akurat, informatif, dan mudah dipahami.';
 
   switch (sourceType) {
     case 'faq':
-      label = 'Tanya Jawab (FAQ)';
+      label = isEnglish ? 'Q&A (FAQ)' : 'Tanya Jawab (FAQ)';
       icon = '❓';
-      stepUnderstand = 'Mengenali pertanyaan seputar profil, keahlian, dan komitmen profesional.';
-      stepSearch = 'Mencocokkan informasi dari dokumentasi tanya jawab dan pilar komitmen resmi.';
-      stepFormulate = 'Menampilkan jawaban terverifikasi dengan rujukan yang jelas.';
+      stepUnderstand = isEnglish ? 'Recognizing questions regarding portfolio profile and professional commitments.' : 'Mengenali pertanyaan seputar profil, keahlian, dan komitmen profesional.';
+      stepSearch = isEnglish ? 'Matching details against verified FAQ items and core dedication pillars.' : 'Mencocokkan informasi dari dokumentasi tanya jawab dan pilar komitmen resmi.';
+      stepFormulate = isEnglish ? 'Displaying verified answers with clear references.' : 'Menampilkan jawaban terverifikasi dengan rujukan yang jelas.';
       defaultConf = 0.95;
       break;
     case 'calculator':
-      label = 'Kalkulator Cerdas';
+      label = isEnglish ? 'Smart Calculator' : 'Kalkulator Cerdas';
       icon = '🧮';
-      stepUnderstand = 'Mendeteksi ekspresi perhitungan dan rumus matematis.';
-      stepSearch = 'Memverifikasi parameter angka dan kaidah operasi perhitungan.';
-      stepFormulate = 'Melakukan kalkulasi presisi dan menyajikan hasil perhitungan.';
+      stepUnderstand = isEnglish ? 'Detecting mathematical expressions and formulas.' : 'Mendeteksi ekspresi perhitungan dan rumus matematis.';
+      stepSearch = isEnglish ? 'Verifying numerical parameters and rules of arithmetic.' : 'Memverifikasi parameter angka dan kaidah operasi perhitungan.';
+      stepFormulate = isEnglish ? 'Executing precision calculations.' : 'Melakukan kalkulasi presisi dan menyajikan hasil perhitungan.';
       defaultConf = 0.99;
       break;
     case 'conversion':
-      label = 'Konversi Satuan';
+      label = isEnglish ? 'Unit Converter' : 'Konversi Satuan';
       icon = '📐';
-      stepUnderstand = 'Mengidentifikasi besaran nilai dan unit satuan awal.';
-      stepSearch = 'Menyesuaikan faktor konversi satuan metrik & standar internasional.';
-      stepFormulate = 'Menghitung hasil konversi dan menyajikannya secara akurat.';
+      stepUnderstand = isEnglish ? 'Identifying initial values and units.' : 'Mengidentifikasi besaran nilai dan unit satuan awal.';
+      stepSearch = isEnglish ? 'Applying standard metric and conversion coefficients.' : 'Menyesuaikan faktor konversi satuan metrik & standar internasional.';
+      stepFormulate = isEnglish ? 'Displaying accurate conversion results.' : 'Menghitung hasil konversi dan menyajikannya secara akurat.';
       defaultConf = 0.99;
       break;
     case 'rag':
     case 'uploaded_file':
-      label = 'Analisis Dokumen';
+      label = isEnglish ? 'Document Analysis' : 'Analisis Dokumen';
       icon = '📚';
-      stepUnderstand = 'Membaca konteks pertanyaan terkait dokumen atau file yang dilampirkan.';
-      stepSearch = 'Menelusuri bagian teks dokumen yang paling relevan dengan topik.';
-      stepFormulate = 'Menyimpulkan isi dokumen ke dalam ringkasan jawaban.';
+      stepUnderstand = isEnglish ? 'Reading query context regarding attached documents or files.' : 'Membaca konteks pertanyaan terkait dokumen atau file yang dilampirkan.';
+      stepSearch = isEnglish ? 'Scanning the most relevant document segments.' : 'Menelusuri bagian teks dokumen yang paling relevan dengan topik.';
+      stepFormulate = isEnglish ? 'Summarizing findings into a clear response.' : 'Menyimpulkan isi dokumen ke dalam ringkasan jawaban.';
       defaultConf = 0.90;
       break;
     case 'project':
     case 'projects':
-      label = 'Portofolio Proyek';
+      label = isEnglish ? 'Project Showcase' : 'Portofolio Proyek';
       icon = '🚀';
-      stepUnderstand = 'Mendeteksi pertanyaan mengenai proyek, karya, dan teknologi.';
-      stepSearch = 'Mengakses katalog rekayasa web, teknologi, dan showcase proyek.';
-      stepFormulate = 'Menyajikan deskripsi proyek, teknologi yang digunakan, dan informasi terkait.';
+      stepUnderstand = isEnglish ? 'Detecting queries about projects, software, and tech stack.' : 'Mendeteksi pertanyaan mengenai proyek, karya, dan teknologi.';
+      stepSearch = isEnglish ? 'Accessing web engineering catalogs and project demos.' : 'Mengakses katalog rekayasa web, teknologi, dan showcase proyek.';
+      stepFormulate = isEnglish ? 'Describing architecture, tech stack, and links.' : 'Menyajikan deskripsi proyek, teknologi yang digunakan, dan informasi terkait.';
       defaultConf = 0.92;
       break;
     case 'certificate':
     case 'certificates':
-      label = 'Sertifikasi Resmi';
+      label = isEnglish ? 'Official Certifications' : 'Sertifikasi Resmi';
       icon = '🏆';
-      stepUnderstand = 'Mendeteksi kueri tentang sertifikasi, lisensi, dan piagam.';
-      stepSearch = 'Menelusuri arsip sertifikasi kompetensi dan lembaga penerbit resmi.';
-      stepFormulate = 'Menampilkan rincian kredensial dan bidang keahlian resmi.';
+      stepUnderstand = isEnglish ? 'Detecting queries about licenses and credentials.' : 'Mendeteksi kueri tentang sertifikasi, lisensi, dan piagam.';
+      stepSearch = isEnglish ? 'Reviewing competency certificates and issuing institutions.' : 'Menelusuri arsip sertifikasi kompetensi dan lembaga penerbit resmi.';
+      stepFormulate = isEnglish ? 'Detailing credential records and certifications.' : 'Menampilkan rincian kredensial dan bidang keahlian resmi.';
       defaultConf = 0.92;
       break;
     case 'skill':
     case 'softskill':
     case 'skills':
-      label = 'Keahlian & Skill';
+      label = isEnglish ? 'Skills & Competencies' : 'Keahlian & Skill';
       icon = '🌟';
-      stepUnderstand = 'Menganalisis pertanyaan terkait kompetensi dan soft skills.';
-      stepSearch = 'Mengambil profil keahlian interpersonal dan penguasaan teknis.';
-      stepFormulate = 'Merangkum tingkat keahlian dan implementasi praktisnya.';
+      stepUnderstand = isEnglish ? 'Analyzing queries about technical and soft skills.' : 'Menganalisis pertanyaan terkait kompetensi dan soft skills.';
+      stepSearch = isEnglish ? 'Retrieving interpersonal and full-stack engineering proficiency.' : 'Mengambil profil keahlian interpersonal dan penguasaan teknis.';
+      stepFormulate = isEnglish ? 'Summarizing skill depth and real-world application.' : 'Merangkum tingkat keahlian dan implementasi praktisnya.';
       defaultConf = 0.90;
       break;
     case 'ai_identity':
     case 'ai_capabilities':
     case 'ai_creator':
-      label = 'Profil SaipulAI';
+      label = isEnglish ? 'SaipulAI Profile' : 'Profil SaipulAI';
       icon = '🤖';
-      stepUnderstand = 'Mengenali pertanyaan seputar identitas dan kapabilitas SaipulAI.';
-      stepSearch = 'Memuat spesifikasi fungsi dan panduan asisten virtual.';
-      stepFormulate = 'Menyapa pengguna dan menjelaskan bantuan yang dapat diberikan.';
+      stepUnderstand = isEnglish ? 'Recognizing questions about SaipulAI identity and features.' : 'Mengenali pertanyaan seputar identitas dan kapabilitas SaipulAI.';
+      stepSearch = isEnglish ? 'Loading system capabilities and guidelines.' : 'Memuat spesifikasi fungsi dan panduan asisten virtual.';
+      stepFormulate = isEnglish ? 'Greeting user and describing assistive functions.' : 'Menyapa pengguna dan menjelaskan bantuan yang dapat diberikan.';
       defaultConf = 0.95;
       break;
     case 'time':
-      label = 'Waktu Global';
+      label = isEnglish ? 'Global Time' : 'Waktu Global';
       icon = '🕒';
-      stepUnderstand = 'Mendeteksi permintaan waktu atau zona wilayah.';
-      stepSearch = 'Menyesuaikan referensi waktu sistem lokal dan standar zona waktu.';
-      stepFormulate = 'Menampilkan informasi tanggal dan jam secara akurat.';
+      stepUnderstand = isEnglish ? 'Detecting time or timezone requests.' : 'Mendeteksi permintaan waktu atau zona wilayah.';
+      stepSearch = isEnglish ? 'Adjusting local system time references and standard time zones.' : 'Menyesuaikan referensi waktu sistem lokal dan standar zona waktu.';
+      stepFormulate = isEnglish ? 'Displaying accurate date and time information.' : 'Menampilkan informasi tanggal dan jam secara akurat.';
       defaultConf = 0.98;
       break;
     case 'policy':
     case 'reported':
     case 'throttle':
-      label = 'Panduan Keamanan';
+      label = isEnglish ? 'Safety Guidelines' : 'Panduan Keamanan';
       icon = '🛡️';
-      stepUnderstand = 'Memeriksa kesesuaian konten dengan standar etika dan privasi.';
-      stepSearch = 'Menerapkan filter perlindungan data sensitif.';
-      stepFormulate = 'Menyampaikan saran interaksi yang aman dan sesuai kebijakan.';
+      stepUnderstand = isEnglish ? 'Checking content compliance with ethics and privacy standards.' : 'Memeriksa kesesuaian konten dengan standar etika dan privasi.';
+      stepSearch = isEnglish ? 'Applying sensitive data protection filters.' : 'Menerapkan filter perlindungan data sensitif.';
+      stepFormulate = isEnglish ? 'Providing safe, policy-compliant guidance.' : 'Menyampaikan saran interaksi yang aman dan sesuai kebijakan.';
       defaultConf = 0.95;
       break;
     case 'live_cs':
     case 'live_cs_referral':
     case 'live_cs_direct':
-      label = 'Dukungan Langsung';
+      label = isEnglish ? 'Live Support' : 'Dukungan Langsung';
       icon = '🎧';
-      stepUnderstand = 'Mendeteksi kebutuhan konsultasi atau bantuan personal.';
-      stepSearch = 'Memeriksa status ketersediaan ruang diskusi dan agen manusia.';
-      stepFormulate = 'Menyediakan panduan langsung untuk terhubung ke sesi percakapan.';
+      stepUnderstand = isEnglish ? 'Detecting consultation or personal assistance needs.' : 'Mendeteksi kebutuhan konsultasi atau bantuan personal.';
+      stepSearch = isEnglish ? 'Checking live discussion room status and agent availability.' : 'Memeriksa status ketersediaan ruang diskusi dan agen manusia.';
+      stepFormulate = isEnglish ? 'Providing direct guidance to connect to live conversation.' : 'Menyediakan panduan langsung untuk terhubung ke sesi percakapan.';
       defaultConf = 0.95;
       break;
     default:
-      label = 'Penalaran AI';
+      label = isEnglish ? 'AI Reasoning' : 'Penalaran AI';
       icon = '💡';
-      stepUnderstand = 'Memahami konteks pertanyaan dan kata kunci yang Anda masukkan.';
-      stepSearch = 'Mencari referensi terbaik dari basis pengetahuan portofolio.';
-      stepFormulate = 'Menyusun informasi yang relevan dan siap dibaca.';
+      stepUnderstand = isEnglish ? 'Understanding query context and input keywords.' : 'Memahami konteks pertanyaan dan kata kunci yang Anda masukkan.';
+      stepSearch = isEnglish ? 'Retrieving optimal references from portfolio knowledge base.' : 'Mencari referensi terbaik dari basis pengetahuan portofolio.';
+      stepFormulate = isEnglish ? 'Structuring clear and relevant information.' : 'Menyusun informasi yang relevan dan siap dibaca.';
       defaultConf = 0.88;
       break;
   }
@@ -197,16 +196,25 @@ function getTransparencyInfo(message) {
 }
 
 export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
-  const isUser = message.from === "user";
-  const transparency = !isUser ? getTransparencyInfo(message) : null;
+  const isUser = message?.from === "user";
   const [showAnalysis, setShowAnalysis] = useState(false);
+  const [showAlt, setShowAlt] = useState(false);
+
+  // Resolusi data multi-bahasa & teks alternatif (terjemahan)
+  const altData = message?.alternatives || message?._meta?.alternatives;
+  const messageLang = message?.language || message?._meta?.language || 'id';
+  const altText = altData ? (messageLang === 'en' ? (altData.indonesian || altData.id) : (altData.english || altData.en)) : null;
+  const displayedText = (showAlt && altText) ? altText : (message?.text || '');
+  const activeLangNow = showAlt ? (messageLang === 'en' ? 'id' : 'en') : messageLang;
+  const isEnglish = activeLangNow === 'en';
+  const transparency = !isUser ? getTransparencyInfo(message, isEnglish) : null;
+
   const [reportCount, setReportCount] = useState(0);
   const [reportSeverity, setReportSeverity] = useState(null);
   const [reportCategories, setReportCategories] = useState([]);
   const [hiddenByReports, setHiddenByReports] = useState(false);
   const [isReportModalOpen, setReportModalOpen] = useState(false);
   const [typingText, setTypingText] = useState('');
-  const [typingDots, setTypingDots] = useState('');
   const [loadingLabel, setLoadingLabel] = useState('');
   const [loadingAnimationType, setLoadingAnimationType] = useState('thinking');
 
@@ -214,7 +222,7 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
   const closeReportModal = () => setReportModalOpen(false);
 
   // compute report summary for this message (best-effort match by messageId or snippet overlap)
-  const computeReportSummary = () => {
+  const computeReportSummary = useCallback(() => {
     try {
       const reports = JSON.parse(localStorage.getItem('saipul_chat_reports') || '[]');
       if (!Array.isArray(reports) || reports.length === 0) {
@@ -248,24 +256,24 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
       setReportCategories(cats);
       // hide automatically if many reports or high severity
       if (count >= 3 || highest === 'high') setHiddenByReports(true);
-    } catch (e) {
+    } catch {
       setReportCount(0); setReportSeverity(null); setReportCategories([]);
     }
-  };
+  }, [message]);
 
   useEffect(() => {
     computeReportSummary();
     const onStorage = (e) => {
       if (e && e.key === 'saipul_chat_reports') computeReportSummary();
     };
-    const onCustom = (ev) => { try { computeReportSummary(); } catch (e) {} };
+    const onCustom = () => { try { computeReportSummary(); } catch { /* ignore */ } };
     window.addEventListener('storage', onStorage);
     window.addEventListener('saipul_chat_report', onCustom);
     return () => {
       window.removeEventListener('storage', onStorage);
       window.removeEventListener('saipul_chat_report', onCustom);
     };
-  }, [message && message.id]);
+  }, [computeReportSummary]);
 
   const renderInline = (text) => {
     if (!text) return null;
@@ -279,7 +287,6 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
   useEffect(() => {
     if (!message || message.type !== 'typing' || !message._meta || !message._meta.expectedText) {
       setTypingText('');
-      setTypingDots('');
       setLoadingLabel('');
       return;
     }
@@ -307,13 +314,12 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
       }
     }, msPerChar);
 
-    // dots and loading label rotator
+    // loading label rotator
     const variants = Array.isArray(message._meta.loadingVariants) && message._meta.loadingVariants.length > 0 ? message._meta.loadingVariants : ['Memikirkan...'];
     let dotCount = 0;
     let labelIndex = 0;
     const dotsInterval = setInterval(() => {
       dotCount = (dotCount + 1) % 4;
-      setTypingDots('.'.repeat(dotCount));
       if (dotCount === 0) {
         labelIndex = (labelIndex + 1) % variants.length;
         setLoadingLabel(variants[labelIndex]);
@@ -324,10 +330,9 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
       clearInterval(charInterval);
       clearInterval(dotsInterval);
       setTypingText('');
-      setTypingDots('');
       setLoadingLabel('');
     };
-  }, [message?.id, message?.type, message?._meta?.expectedText]);
+  }, [message]);
 
   const formatTextToElements = (txt) => {
     if (!txt) return null;
@@ -395,13 +400,13 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const handleCopy = async () => {
     try {
-      const text = message?.text || "";
+      const text = displayedText || message?.text || "";
       await navigator.clipboard.writeText(text);
       setCopied(true);
       // Dispatch global event so parent window can show a toast
       try {
-        window.dispatchEvent(new CustomEvent('saipul_copy', { detail: { text: 'Tersalin' } }));
-      } catch (e) {
+        window.dispatchEvent(new CustomEvent('saipul_copy', { detail: { text: activeLangNow === 'en' ? 'Copied' : 'Tersalin' } }));
+      } catch {
         // ignore
       }
       setTimeout(() => setCopied(false), 1600);
@@ -416,7 +421,13 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
         window.dispatchEvent(new Event('saipul_pause_message'));
         setIsPlaying(false);
       } else {
-        window.dispatchEvent(new CustomEvent('saipul_play_message', { detail: { id: message.id } }));
+        window.dispatchEvent(new CustomEvent('saipul_play_message', { 
+          detail: { 
+            id: message.id, 
+            text: displayedText || message.text, 
+            lang: activeLangNow 
+          } 
+        }));
         setIsPlaying(true);
       }
     } catch (e) { console.error('playpause', e); }
@@ -457,7 +468,7 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
               <div className="text-xs text-gray-300 mb-2">Laporan: {reportCount} • Severity: {reportSeverity || 'n/a'} • Kategori: {reportCategories.join(', ') || 'n/a'}</div>
               <div className="flex gap-2">
                 <button onClick={() => setHiddenByReports(false)} className="px-2 py-1 rounded bg-gray-700 text-sm text-white">Tampilkan isi</button>
-                <button onClick={() => handleQuickAction('report_view_context', message.id)} className="px-2 py-1 rounded bg-red-600 text-sm text-white">Laporkan lagi / Lihat</button>
+                <button onClick={openReportModal} className="px-2 py-1 rounded bg-red-600 text-sm text-white">Laporkan lagi / Lihat</button>
               </div>
             </div>
           ) : (
@@ -484,20 +495,41 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
                         <span>🎯</span>
                         <span>{transparency.percent >= 80 ? 'Sangat Relevan' : `${transparency.percent}% Relevan`}</span>
                       </span>
+
+                      {/* Badge Bahasa Aktif */}
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 font-medium text-[10px]">
+                        <span>🌐</span>
+                        <span>{activeLangNow === 'en' ? 'EN' : 'ID'}</span>
+                      </span>
                     </div>
 
-                    {/* Tombol Toggle Alur Berpikir */}
-                    <button
-                      type="button"
-                      onClick={() => setShowAnalysis(!showAnalysis)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white transition-all border border-white/10 active:scale-95 cursor-pointer ml-auto"
-                      title="Lihat alur berpikir dan penalaran AI"
-                      aria-label="Lihat alur berpikir AI"
-                    >
-                      <Sparkles size={11} className="text-cyan-400" />
-                      <span className="font-medium">{showAnalysis ? "Tutup" : "Alur Berpikir"}</span>
-                      {showAnalysis ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
-                    </button>
+                    <div className="flex items-center gap-1.5 ml-auto">
+                      {/* Tombol Terjemahan Bilingual jika tersedia */}
+                      {altText && (
+                        <button
+                          type="button"
+                          onClick={() => setShowAlt(!showAlt)}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 border border-blue-400/30 transition-all active:scale-95 cursor-pointer font-medium"
+                          title={showAlt ? (isEnglish ? "Back to original text" : "Kembali ke teks asli") : (messageLang === 'en' ? "Terjemahkan ke Bahasa Indonesia" : "Translate to English")}
+                        >
+                          <Globe size={11} className="text-blue-300" />
+                          <span>{showAlt ? (messageLang === 'en' ? 'Original (EN)' : 'Asli (ID)') : (messageLang === 'en' ? '🇮🇩 Terjemahan' : '🇬🇧 English')}</span>
+                        </button>
+                      )}
+
+                      {/* Tombol Toggle Alur Berpikir */}
+                      <button
+                        type="button"
+                        onClick={() => setShowAnalysis(!showAnalysis)}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white transition-all border border-white/10 active:scale-95 cursor-pointer"
+                        title={isEnglish ? "View AI reasoning and thinking flow" : "Lihat alur berpikir dan penalaran AI"}
+                        aria-label={isEnglish ? "View AI reasoning" : "Lihat alur berpikir AI"}
+                      >
+                        <Sparkles size={11} className="text-cyan-400" />
+                        <span className="font-medium">{showAnalysis ? (isEnglish ? "Close" : "Tutup") : (isEnglish ? "Reasoning Flow" : "Alur Berpikir")}</span>
+                        {showAnalysis ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
+                      </button>
+                    </div>
                   </div>
 
                   {/* Collapsible Panel Alur Berpikir Cerdas */}
@@ -513,10 +545,10 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
                         <div className="flex items-center justify-between font-semibold text-cyan-300 text-xs border-b border-white/10 pb-2">
                           <span className="flex items-center gap-1.5">
                             <Sparkles size={13} className="text-cyan-400" />
-                            <span>Proses Penalaran AI</span>
+                            <span>{isEnglish ? "AI Reasoning Process" : "Proses Penalaran AI"}</span>
                           </span>
                           <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 font-medium">
-                            Pemrosesan Cerdas
+                            {isEnglish ? "Smart Processing" : "Pemrosesan Cerdas"}
                           </span>
                         </div>
 
@@ -525,7 +557,7 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
                           <div className="flex items-start gap-2.5 bg-white/5 p-2 rounded-xl border border-white/5">
                             <span className="text-sm select-none">💭</span>
                             <div>
-                              <div className="font-semibold text-white text-[11px]">1. Memahami Konteks</div>
+                              <div className="font-semibold text-white text-[11px]">{isEnglish ? "1. Understanding Context" : "1. Memahami Konteks"}</div>
                               <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
                                 {transparency.stepUnderstand}
                               </p>
@@ -535,7 +567,7 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
                           <div className="flex items-start gap-2.5 bg-white/5 p-2 rounded-xl border border-white/5">
                             <span className="text-sm select-none">🔍</span>
                             <div>
-                              <div className="font-semibold text-white text-[11px]">2. Menelusuri Data Relevan</div>
+                              <div className="font-semibold text-white text-[11px]">{isEnglish ? "2. Searching Relevant Data" : "2. Menelusuri Data Relevan"}</div>
                               <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
                                 {transparency.stepSearch}
                               </p>
@@ -545,7 +577,7 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
                           <div className="flex items-start gap-2.5 bg-white/5 p-2 rounded-xl border border-white/5">
                             <span className="text-sm select-none">✨</span>
                             <div>
-                              <div className="font-semibold text-white text-[11px]">3. Menyusun Respon</div>
+                              <div className="font-semibold text-white text-[11px]">{isEnglish ? "3. Formulating Response" : "3. Menyusun Respon"}</div>
                               <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
                                 {transparency.stepFormulate}
                               </p>
@@ -556,14 +588,14 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
                         {/* Status Kesesuaian & Gaya Bahasa */}
                         <div className="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-[11px]">
                           <div className="flex items-center gap-2">
-                            <span className="text-slate-400">Tingkat Kesesuaian:</span>
+                            <span className="text-slate-400">{isEnglish ? "Relevance:" : "Tingkat Kesesuaian:"}</span>
                             <span className="font-semibold text-cyan-300">
-                              {transparency.percent >= 80 ? 'Sangat Relevan' : `${transparency.percent}%`}
+                              {transparency.percent >= 80 ? (isEnglish ? 'Highly Relevant' : 'Sangat Relevan') : `${transparency.percent}%`}
                             </span>
                           </div>
                           {transparency.emotion && (
                             <div className="flex items-center gap-1.5 text-slate-400">
-                              <span>Gaya Bahasa:</span>
+                              <span>{isEnglish ? "Tone & Style:" : "Gaya Bahasa:"}</span>
                               <span className="px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 text-[10px] font-medium">
                                 {transparency.emotion}
                               </span>
@@ -574,26 +606,52 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
                         {/* Jaminan Privasi */}
                         <div className="pt-1.5 border-t border-white/5 flex items-center gap-1.5 text-[10px] text-emerald-400">
                           <ShieldCheck size={12} className="flex-shrink-0" />
-                          <span>Privasi: Diproses secara aman & privat langsung di peramban Anda.</span>
+                          <span>{isEnglish ? "Privacy: Securely and privately processed in your browser." : "Privasi: Diproses secara aman & privat langsung di peramban Anda."}</span>
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </div>
               )}
-              {formatTextToElements(message?.text)}
+              {/* TOP BAR UNTUK PESAN TANPA TRANSPARENCY TAPI MEMILIKI TERJEMAHAN */}
+              {!isUser && !transparency && altText && (
+                <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-white/10 text-[11px]">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 font-medium text-[10px]">
+                    <span>🌐</span>
+                    <span>{activeLangNow === 'en' ? 'EN' : 'ID'}</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setShowAlt(!showAlt)}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 border border-blue-400/30 transition-all active:scale-95 cursor-pointer font-medium ml-auto"
+                    title={showAlt ? "Kembali ke teks asli" : (messageLang === 'en' ? "Terjemahkan ke Bahasa Indonesia" : "Translate to English")}
+                  >
+                    <Globe size={11} className="text-blue-300" />
+                    <span>{showAlt ? (messageLang === 'en' ? 'Asli (EN)' : 'Asli (ID)') : (messageLang === 'en' ? '🇮🇩 Terjemahan' : '🇬🇧 English')}</span>
+                  </button>
+                </div>
+              )}
+              {formatTextToElements(displayedText)}
+              {message?.isStreaming && (
+                <span 
+                  aria-hidden="true" 
+                  className="inline-block w-1.5 h-3.5 ml-1 bg-cyan-400 animate-pulse rounded-xs align-middle shadow-[0_0_8px_rgba(34,211,238,0.8)]" 
+                />
+              )}
             </>
           ))
         )}
         <span className="block text-xs mt-1 text-right opacity-70">
-                {message?.timestamp ? new Date(message.timestamp).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                }) : ""}
+                {message?.isStreaming 
+                  ? (activeLangNow === 'en' ? "Typing..." : "Sedang mengetik...") 
+                  : (message?.timestamp ? new Date(message.timestamp).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }) : "")}
         </span>
         
         {/* Action Buttons for items like Live CS */}
-        {message && message.action === 'suggest_live_cs' && (
+        {!message?.isStreaming && message && message.action === 'suggest_live_cs' && (
           <div className="mt-4 pt-3 border-t border-white/10 flex flex-col gap-2">
             <button
               onClick={() => {
@@ -625,7 +683,7 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
         )}
 
         {/* Actionable Quick Chips for Navigation */}
-        {!isUser && message?.actionChips && message.actionChips.length > 0 && (
+        {!isUser && !message?.isStreaming && message?.actionChips && message.actionChips.length > 0 && (
           <div className="mt-3 pt-2.5 border-t border-white/10 flex flex-wrap gap-1.5">
             {message.actionChips.map((chip, idx) => (
               <button
@@ -647,13 +705,14 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
         )}
 
         {/* Quick Actions */}
+        {!message?.isStreaming && (
         <div className="flex gap-2 mt-2">
           {/* Delete available for both user and bot messages */}
           <button
             onClick={() => handleQuickAction("delete", message.id)}
             className="saipul-action-btn p-1 rounded-full"
-            title="Hapus"
-            aria-label="Hapus pesan"
+            title={activeLangNow === 'en' ? "Delete" : "Hapus"}
+            aria-label={activeLangNow === 'en' ? "Delete message" : "Hapus pesan"}
           >
             <Trash size={16} />
           </button>
@@ -663,15 +722,15 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
               <button
                 onClick={handleCopy}
                 className="saipul-action-btn p-1 rounded-full"
-                title="Salin"
-                aria-label="Salin teks pesan"
+                title={activeLangNow === 'en' ? "Copy" : "Salin"}
+                aria-label={activeLangNow === 'en' ? "Copy message text" : "Salin teks pesan"}
               >
                 {copied ? <Check size={16} /> : <Copy size={16} />}
               </button>
               <button
                 onClick={handlePlayPause}
                 className="saipul-action-btn p-1 rounded-full"
-                title={isPlaying ? 'Pause' : 'Play'}
+                title={isPlaying ? 'Pause' : (activeLangNow === 'en' ? 'Play audio' : 'Putar suara')}
                 aria-label={isPlaying ? 'Pause audio pesan' : 'Play audio pesan'}
               >
                 {isPlaying ? <VolumeX size={16} /> : <Volume2 size={16} />}
@@ -679,28 +738,28 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
               <button
                 onClick={() => handleQuickAction("like", message.id)}
                 className="saipul-action-btn p-1 rounded-full"
-                title="Like"
+                title={activeLangNow === 'en' ? "Like" : "Suka"}
               >
                 <ThumbsUp size={16} />
               </button>
               <button
                 onClick={() => handleQuickAction("dislike", message.id)}
                 className="saipul-action-btn p-1 rounded-full"
-                title="Dislike"
+                title={activeLangNow === 'en' ? "Dislike" : "Tidak Suka"}
               >
                 <ThumbsDown size={16} />
               </button>
               <button
                 onClick={() => handleQuickAction("regenerate", message.id)}
                 className="saipul-action-btn p-1 rounded-full"
-                title="Regenerate"
+                title={activeLangNow === 'en' ? "Regenerate" : "Buat Ulang"}
               >
                 <RefreshCw size={16} />
               </button>
               <button
                 onClick={openReportModal}
                 className="saipul-action-btn p-1 rounded-full"
-                title="Report"
+                title={activeLangNow === 'en' ? "Report" : "Laporkan"}
               >
                 <Flag size={16} />
               </button>
@@ -708,7 +767,7 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
                 <button
                   onClick={() => handleQuickAction('prefer_response', message.id, { altGroup: message._meta.altGroup })}
                   className="saipul-action-btn p-1 rounded-full"
-                  title="Saya lebih suka ini"
+                  title={activeLangNow === 'en' ? "I prefer this response" : "Saya lebih suka ini"}
                 >
                   <Check size={16} />
                 </button>
@@ -716,22 +775,25 @@ export function ChatMessage({ message, handleQuickAction, isAgentOnline }) {
             </>
           )}
         </div>
+        )}
       </div>
 
       {/* Report Modal */}
-      <ReportModal
-        open={isReportModalOpen}
-        onClose={closeReportModal}
-        onSubmit={(payload) => {
-          try {
-            // ensure messageId attached
-            const p = { ...payload, messageId: message.id };
-            window.dispatchEvent(new CustomEvent('saipul_chat_report', { detail: p }));
-          } catch (e) { console.error('Failed to dispatch saipul_chat_report', e); }
-          closeReportModal();
-        }}
-        messageId={message.id}
-      />
+      {isReportModalOpen && (
+        <ReportModal
+          open={isReportModalOpen}
+          onClose={closeReportModal}
+          onSubmit={(payload) => {
+            try {
+              // ensure messageId attached
+              const p = { ...payload, messageId: message.id };
+              window.dispatchEvent(new CustomEvent('saipul_chat_report', { detail: p }));
+            } catch (e) { console.error('Failed to dispatch saipul_chat_report', e); }
+            closeReportModal();
+          }}
+          messageId={message.id}
+        />
+      )}
     </motion.div>
   );
 }

@@ -80,7 +80,7 @@ export const canEditProfile = (currentUserRole, currentUserEmail, targetUserEmai
 };
 
 // Fungsi untuk check apakah user bisa lihat profile tertentu
-export const canViewProfile = (currentUserRole, currentUserEmail, targetUserEmail) => {
+export const canViewProfile = () => {
   // Semua bisa lihat profile orang lain
   return true;
 };

@@ -1,47 +1,10 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { motion } from "framer-motion";
-import { Target, Sparkles, Zap, Code, Globe, X } from "lucide-react";
+import { Target, Sparkles, Zap, Globe, X } from "lucide-react";
 import { ProgressBar } from "./ProgressBar";
 import { Link } from "react-router-dom";
-import { RelatedItems } from "./RelatedItems";
-import { SkillResources } from "./SkillResources";
-import { generateColor } from "../utils/colorGenerator";
 
-const DetailTooltipComponent = React.memo(({ bahasa, isProgramming, onClose }) => {
-  const renderSection = useCallback((title, icon, content, color = "cyan", isArray = true) => {
-    if (!content || (Array.isArray(content) && content.length === 0)) return null;
-    
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="space-y-3"
-      >
-        <h4 className={`font-semibold text-${color}-300 flex items-center text-sm sm:text-base`}>
-          {icon}
-          <span className="ml-2">{title}</span>
-        </h4>
-        {isArray && Array.isArray(content) ? (
-          <div className="flex flex-wrap gap-1.5 sm:gap-2">
-            {content.map((item, idx) => {
-              const colorClass = generateColor(item);
-              return (
-                <span 
-                  key={idx}
-                  className={`${colorClass.bg} ${colorClass.text} ${colorClass.border} text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border backdrop-blur-sm`}
-                >
-                  {item}
-                </span>
-              );
-            })}
-          </div>
-        ) : (
-          <p className="text-gray-300 text-sm sm:text-base leading-relaxed">{content}</p>
-        )}
-      </motion.div>
-    );
-  }, []);
+const DetailTooltipComponent = React.memo(({ bahasa, onClose }) => {
 
   return (
     <motion.div

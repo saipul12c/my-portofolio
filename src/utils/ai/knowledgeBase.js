@@ -4,55 +4,59 @@
  * untuk digunakan oleh seluruh agen AI (SaipulAI, Blog AI, Project AI, SoftSkills AI, FAQ AI).
  */
 
-import projectsData from '../../data/projects.json';
-import softskillsData from '../../data/skills/softskills.json';
-import specializationsData from '../../data/skills/specializations.json';
-import experiencesData from '../../data/pengalaman/experiences.json';
-import docsSectionsData from '../../data/helpbutton/docs/docsSections.json';
-import plannedVersionsData from '../../data/helpbutton/docs/plannedVersions.json';
-import commitmentsData from '../../data/helpbutton/komit/commitments.json';
-import faqsData from '../../data/helpbutton/faq/faqs.json';
-import profileData from '../../data/about/profile.json';
-import cardsData from '../../data/about/cards.json';
-import certificatesData from '../../data/sertif/certificates.json';
-import collaborationsData from '../../data/about/collaborations.json';
-import hobbiesData from '../../data/hub/hobbiesData.json';
-import chatHobbiesData from '../../data/helpbutton/chat/hobbies.json';
-import interestsData from '../../data/about/interests.json';
-import aiBaseData from '../../data/helpbutton/chat/AI-base.json';
-import testimonialsData from '../../data/testimoni/testimonials.json';
-import languagesData from '../../data/bahasa/data.json';
-import educationData from '../../data/pendidikan/data.json';
-import blogsData from '../../data/blog/data.json';
-import photosData from '../../data/foto/photos.json';
-import aiDocData from '../../data/AIDoc/data.json';
-import riwayatData from '../../data/AIDoc/riwayat/riwayat.json';
-import galleryData from '../../data/galleryData.json';
-import galleryAlbumsData from '../../data/gallery/albums.json';
-import galleryImagesData from '../../data/gallery/images.json';
-import galleryShortsData from '../../data/gallery/shorts.json';
-import galleryVideosData from '../../data/gallery/videos.json';
-import streamingVideosData from '../../data/streming/videosData.json';
-import streamingShortsData from '../../data/streming/shortsData.json';
-import comingSoonData from '../../data/comingsoon/data.json';
-import maintenanceData from '../../data/maintenance/maintenanceData.json';
-import qodamData from '../../data/qodam/data.json';
-import zodiacData from '../../data/zodiak/data.json';
+import {
+  projectsData,
+  softskillsData,
+  specializationsData,
+  experiencesData,
+  docsSectionsData,
+  plannedVersionsData,
+  commitmentsData,
+  faqsData,
+  profileData,
+  cardsData,
+  certificatesData,
+  collaborationsData,
+  hobbiesData,
+  chatHobbiesData,
+  interestsData,
+  aiBaseData,
+  testimonialsData,
+  languagesData,
+  educationData,
+  blogsData,
+  photosData,
+  aiDocData,
+  riwayatData,
+  galleryData,
+  galleryAlbumsData,
+  galleryImagesData,
+  galleryShortsData,
+  galleryVideosData,
+  streamingVideosData,
+  streamingShortsData,
+  comingSoonData,
+  maintenanceData,
+  qodamData,
+  zodiacData,
+  visiData,
+  streamingUserData,
+} from '#kb-datasets';
 import { getAuthorProfiles } from '../../pages/blog/services/authorProfileService.js';
 import { getCachedMessages } from '../../pages/live/utils/cacheManager.js';
 import { kknOverview, kknStats, kknOutputs, kknPillars } from '../../pages/akademik/sarjana/kkn/data/kknData.js';
 import { getLearnedBenchmarkKnowledge } from './benchmarkLearner.js';
 
-// Data Visi, Misi & Minat Bakat (dari halaman /visi)
+// Data Visi, Misi & Minat Bakat (dari halaman /visi dan src/data/visi/data.json)
 export const visiMisiData = {
-  visi: "Menjadi pendidik dan kreator media edukatif yang adaptif terhadap kemajuan teknologi dan inovasi digital, sekaligus menginspirasi melalui pembelajaran kreatif, interaktif, dan berdampak. Berkomitmen menciptakan solusi edukasi yang inklusif, berkelanjutan, dan memberikan manfaat positif bagi individu maupun masyarakat luas.",
-  misi: [
+  visi: visiData?.visi?.segments?.map(s => s.text).join('') || "Menjadi pendidik dan kreator media edukatif yang adaptif terhadap kemajuan teknologi dan inovasi digital, sekaligus menginspirasi melalui pembelajaran kreatif, interaktif, dan berdampak. Berkomitmen menciptakan solusi edukasi yang inklusif, berkelanjutan, dan memberikan manfaat positif bagi individu maupun masyarakat luas.",
+  misi: Array.isArray(visiData?.misi?.items) ? visiData.misi.items : [
     "Menciptakan solusi digital yang relevan & bermanfaat bagi masyarakat.",
     "Membangun ruang kolaboratif dan edukatif untuk kreator muda dan pendidik.",
     "Terus belajar, bereksperimen, dan berinovasi tanpa batas dalam arsitektur modern.",
     "Berkontribusi positif melalui integrasi teknologi mutakhir dan empati kemanusiaan."
   ],
-  minatBakat: [
+  minatBakat: Array.isArray(visiData?.minatBakat) ? visiData.minatBakat : [
     { title: "Web Development", desc: "Membangun pengalaman digital yang interaktif & berjiwa dengan standar clean code." },
     { title: "Photography & Visual", desc: "Menangkap momen berharga jadi karya visual yang bercerita dan artistik." },
     { title: "UI/UX Design", desc: "Menggabungkan estetika modern glassmorphism dengan kenyamanan logika pengguna." },
@@ -60,13 +64,17 @@ export const visiMisiData = {
     { title: "Content Creation", desc: "Membuat konten edukasi bermutu tinggi yang relate & meaningful bagi pembelajar." },
     { title: "Personal Growth", desc: "Terus meng-upgrade mindset, skill, dan etika profesional setiap hari." }
   ],
-  timeline: [
+  timeline: Array.isArray(visiData?.timeline) ? visiData.timeline : [
     { year: "2021", text: "Awal langkah kecil — belajar desain dan pemrograman web secara otodidak." },
     { year: "2022", text: "Mulai membangun proyek freelance dan kolaborasi kreatif." },
     { year: "2023", text: "Mendalami UI/UX modern, arsitektur frontend, dan merilis portofolio digital pertama." },
     { year: "2024", text: "Aktif dalam komunitas teknologi dan edukasi digital, membagikan wawasan." },
     { year: "2025", text: "Fokus mengembangkan platform digital untuk kolaborasi, AI terintegrasi, dan edukasi generasi penerus." }
-  ]
+  ],
+  filosofiKreatif: visiData?.filosofiKreatif || {},
+  coreValues: visiData?.coreValues || {},
+  langkahSelanjutnya: visiData?.langkahSelanjutnya || {},
+  quote: visiData?.quote || {}
 };
 
 // Data Akun Sosial & Platform Resmi (dari halaman /portal & /contact)
@@ -135,7 +143,7 @@ export const getDiscussionRoomData = () => {
     const cachedUmum = getCachedMessages('umum');
     const cachedProjek = getCachedMessages('projek');
     return [...(Array.isArray(cachedUmum) ? cachedUmum : []), ...(Array.isArray(cachedProjek) ? cachedProjek : [])];
-  } catch (e) {
+  } catch {
     return [];
   }
 };
@@ -216,6 +224,7 @@ export const getUnifiedKnowledgeBase = () => {
     collaborations: extractArray(collaborationsData, 'collaborations'),
     interests: interestsData || {},
     aiBase: aiBaseData || {},
+    AI: aiBaseData || {},
     testimonials: extractArray(testimonialsData, 'testimonials'),
     languages: allLanguagesList,
     languagesDetail: {
@@ -239,6 +248,7 @@ export const getUnifiedKnowledgeBase = () => {
     galleryVideos,
     streamingVideos: extractArray(streamingVideosData),
     streamingShorts: extractArray(streamingShortsData),
+    streamingUser: streamingUserData || {},
     discussionRoom: getDiscussionRoomData(),
     comingsoon: extractArray(comingSoonData),
     maintenance: maintenanceData || {},
@@ -330,53 +340,53 @@ export const findRelatedEntities = (keyword = '') => {
   const matchArray = (arr) => Array.isArray(arr) && arr.some(item => matchText(typeof item === 'string' ? item : item?.name || item?.title || ''));
 
   // 1. Projects
-  const matchedProjects = kb.projects.filter(p => 
+  const matchedProjects = kb.projects.filter(p =>
     matchText(p.title) || matchText(p.description) || matchText(p.desc) || matchArray(p.tech) || matchArray(p.tags)
   );
 
   // 2. Blogs
-  const matchedBlogs = kb.blogs.filter(b => 
+  const matchedBlogs = kb.blogs.filter(b =>
     matchText(b.title) || matchText(b.excerpt) || matchArray(b.tags) || matchText(b.author)
   );
 
   // 3. Skills
-  const matchedSkills = kb.skills.filter(s => 
+  const matchedSkills = kb.skills.filter(s =>
     matchText(s.name) || matchText(s.description) || matchText(s.category) || matchArray(s.tags)
   );
 
   // 4. Certificates
-  const matchedCertificates = kb.certificates.filter(c => 
+  const matchedCertificates = kb.certificates.filter(c =>
     matchText(c.title) || matchText(c.name) || matchText(c.issuer) || matchArray(c.skills) || matchArray(c.tags)
   );
 
   // 5. Testimonials
-  const matchedTestimonials = kb.testimonials.filter(t => 
+  const matchedTestimonials = kb.testimonials.filter(t =>
     matchText(t.name) || matchText(t.role) || matchText(t.quote) || matchText(t.message) || matchText(t.company)
   );
 
   // 6. Education
-  const matchedEducation = kb.education.filter(e => 
+  const matchedEducation = kb.education.filter(e =>
     matchText(e.title) || matchText(e.institution) || matchText(e.platform) || matchArray(e.skills)
   );
 
   // 7. FAQ
-  const matchedFAQ = (kb.faq || []).filter(f => 
+  const matchedFAQ = (kb.faq || []).filter(f =>
     matchText(f.question) || matchText(f.answer)
   );
 
   // 8. Experiences (Pengalaman Kerja & Karir)
-  const matchedExperiences = (kb.experiences || []).filter(e => 
+  const matchedExperiences = (kb.experiences || []).filter(e =>
     matchText(e.title) || matchText(e.position) || matchText(e.company) || matchText(e.description) ||
     matchArray(e.tags) || matchArray(e.achievements)
   );
 
   // 9. Specializations (Keahlian & Spesialisasi)
-  const matchedSpecializations = (kb.specializations || []).filter(s => 
+  const matchedSpecializations = (kb.specializations || []).filter(s =>
     matchText(s.title) || matchText(s.description) || matchArray(s.skills)
   );
 
   // 10. Author Profiles (Profil Penulis Blog)
-  const matchedAuthorProfiles = (kb.authorProfiles || []).filter(a => 
+  const matchedAuthorProfiles = (kb.authorProfiles || []).filter(a =>
     matchText(a.name) || matchText(a.bio) || matchText(a.expertise) || matchText(a.location) || matchText(a.company)
   );
 
@@ -386,12 +396,12 @@ export const findRelatedEntities = (keyword = '') => {
     ...(kb.galleryImages || []),
     ...(kb.gallery?.items || [])
   ];
-  const matchedGallery = galleryItems.filter(g => 
+  const matchedGallery = galleryItems.filter(g =>
     matchText(g.title) || matchText(g.desc) || matchText(g.category) || matchArray(g.tags)
   );
 
   // 12. Discussion Room (Insight & Percakapan Room Live)
-  const matchedDiscussion = (kb.discussionRoom || []).filter(d => 
+  const matchedDiscussion = (kb.discussionRoom || []).filter(d =>
     matchText(d.content) || matchText(d.username) || matchText(d.reply_to_name)
   );
 
@@ -413,27 +423,27 @@ export const findRelatedEntities = (keyword = '') => {
   }
 
   // 15. Languages & Technologies (Kemampuan Bahasa & Teknologi /bahasa)
-  const matchedLanguages = (kb.languages || []).filter(l => 
+  const matchedLanguages = (kb.languages || []).filter(l =>
     matchText(l.nama) || matchText(l.name) || matchText(l.deskripsi) || matchText(l.penjelasan) ||
     matchArray(l.kemampuan) || matchArray(l.framework) || matchArray(l.tools)
   );
 
   // 16. Site Pages Directory
-  const matchedPages = (kb.sitePages || []).filter(p => 
+  const matchedPages = (kb.sitePages || []).filter(p =>
     matchText(p.title) || matchText(p.desc) || matchText(p.path) || matchText(p.category)
   );
 
   // 17. Hobbies & Minat Personal (/hobbies)
-  const matchedHobbies = (kb.hobbies || []).filter(h => 
+  const matchedHobbies = (kb.hobbies || []).filter(h =>
     matchText(h.title) || matchText(h.desc) || matchText(h.category) ||
     matchArray(h.metadata?.tools) || matchText(h.metadata?.difficulty)
   );
 
-  const totalMatches = matchedProjects.length + matchedBlogs.length + matchedSkills.length + 
-                       matchedCertificates.length + matchedTestimonials.length + matchedEducation.length +
-                       matchedExperiences.length + matchedSpecializations.length + matchedAuthorProfiles.length +
-                       matchedGallery.length + matchedDiscussion.length + kknMatches.length + visiMatches.length + 
-                       matchedLanguages.length + matchedPages.length + matchedHobbies.length + matchedFAQ.length;
+  const totalMatches = matchedProjects.length + matchedBlogs.length + matchedSkills.length +
+    matchedCertificates.length + matchedTestimonials.length + matchedEducation.length +
+    matchedExperiences.length + matchedSpecializations.length + matchedAuthorProfiles.length +
+    matchedGallery.length + matchedDiscussion.length + kknMatches.length + visiMatches.length +
+    matchedLanguages.length + matchedPages.length + matchedHobbies.length + matchedFAQ.length;
 
   return {
     keyword: k,

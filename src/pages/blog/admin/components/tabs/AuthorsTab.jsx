@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   User, 
   CheckCircle2, 
@@ -45,6 +45,7 @@ export default function AuthorsTab({ posts = [], setToast }) {
   const [instagram, setInstagram] = useState('');
   const [twitter, setTwitter] = useState('');
   const [website, setWebsite] = useState('');
+  const loadProfilesRef = useRef(null);
 
   // 1. Ekstrak seluruh penulis unik dari artikel + profil tersimpan
   const authorList = useMemo(() => {
@@ -90,7 +91,7 @@ export default function AuthorsTab({ posts = [], setToast }) {
 
   // Load profiles on mount
   useEffect(() => {
-    loadProfiles();
+    loadProfilesRef.current?.();
   }, []);
 
   const loadProfiles = () => {
@@ -103,6 +104,7 @@ export default function AuthorsTab({ posts = [], setToast }) {
       handleSelectAuthor(keys[0], data);
     }
   };
+  loadProfilesRef.current = loadProfiles;
 
   const handleSelectAuthor = (slug, dataMap = profiles) => {
     setSelectedSlug(slug);

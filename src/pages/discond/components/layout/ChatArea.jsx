@@ -5,8 +5,8 @@ import ChannelSettings from './ChannelSettings';
 import Modal from '../ui/Modal';
 import { MessageReactions, ThreadView } from '../features';
 import api from '../../lib/api';
-import { useChat } from '../../contexts/ChatContext';
-import { useAuth } from '../../contexts/AuthContext';
+import { useChat } from '../../contexts/useChat';
+import { useAuth } from '../../contexts/useAuth';
 import { Sun } from 'lucide-react';
 
 const ChatArea = ({ onOpenServers, onOpenChannels, onOpenMembers }) => {
@@ -60,7 +60,7 @@ const ChatArea = ({ onOpenServers, onOpenChannels, onOpenMembers }) => {
       try {
         const cfg = await api.request('/api/ai/config').catch(() => null);
         setAiAvailable(!!(cfg && cfg.openai));
-      } catch (e) { setAiAvailable(false); }
+      } catch { setAiAvailable(false); }
     })();
   }, []);
 
@@ -78,7 +78,7 @@ const ChatArea = ({ onOpenServers, onOpenChannels, onOpenMembers }) => {
     e.preventDefault();
     if (message.trim()) {
       sendMessage(message);
-      try { sendTyping(false); } catch { }
+      try { sendTyping(false); } catch { /* ignore */ }
       setMessage('');
     }
   };
@@ -89,10 +89,10 @@ const ChatArea = ({ onOpenServers, onOpenChannels, onOpenMembers }) => {
     setMessage(val);
     try {
       sendTyping(true);
-    } catch { }
+    } catch { /* ignore */ }
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     typingTimeoutRef.current = setTimeout(() => {
-      try { sendTyping(false); } catch { }
+      try { sendTyping(false); } catch { /* ignore */ }
     }, 1500);
   };
 
@@ -307,7 +307,7 @@ const ChatArea = ({ onOpenServers, onOpenChannels, onOpenMembers }) => {
                   handleSubmit(e);
                 }
               }}
-              onBlur={() => { try { sendTyping(false); } catch { } }}
+              onBlur={() => { try { sendTyping(false); } catch { /* ignore */ } }}
               className="flex-1 resize-none bg-transparent text-white py-2 px-2 focus:outline-none placeholder-gray-400"
             />
             

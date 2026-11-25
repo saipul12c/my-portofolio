@@ -83,7 +83,7 @@ channels.settings = {
       // if backend replies 404 for this endpoint, cache negative result to avoid further requests
       try {
         if (err && err.status === 404) channels.settings._hasEndpoint = false;
-      } catch (e) { /* ignore */ }
+      } catch { /* ignore */ }
       // fall through to local storage fallback
     }
     try {
@@ -175,7 +175,7 @@ export const uploads = {
     const token = localStorage.getItem('token');
     return fetch('/api/uploads', { method: 'POST', body: formData, headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) } }).then(async (res) => {
       const txt = await res.text();
-      try { const data = txt ? JSON.parse(txt) : null; if (!res.ok) return Promise.reject({ error: data?.error || 'Upload failed', status: res.status, raw: data }); return data; } catch (e) { if (!res.ok) return Promise.reject({ error: 'Upload failed', status: res.status, raw: txt }); return txt; }
+      try { const data = txt ? JSON.parse(txt) : null; if (!res.ok) return Promise.reject({ error: data?.error || 'Upload failed', status: res.status, raw: data }); return data; } catch { if (!res.ok) return Promise.reject({ error: 'Upload failed', status: res.status, raw: txt }); return txt; }
     }).catch(err => Promise.reject({ error: friendlyFetchError(err), raw: err }));
   }
 };

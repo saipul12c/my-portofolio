@@ -1,5 +1,6 @@
 import { MessageSquare, Sparkles, Brain, Calculator } from "lucide-react";
 import { ToggleSwitch } from "../components/ToggleSwitch";
+import { AI_MODELS, TOKEN_OPTIONS } from "../settingsConfig";
 
 export function AISettings({ settings, handleSave }) {
   const RESPONSE_STYLES = [
@@ -67,6 +68,32 @@ export function AISettings({ settings, handleSave }) {
               <option value="medium">Standar (4 desimal)</option>
               <option value="high">Presisi Tinggi (6 desimal)</option>
               <option value="max">Maksimal (10 desimal)</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <div>
+            <label className="block text-xs text-[var(--saipul-text-secondary)] mb-1">Tingkat Model AI</label>
+            <select
+              value={settings.aiModel || 'enhanced'}
+              onChange={(e) => handleSave("aiModel", e.target.value)}
+              className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[var(--saipul-accent)] outline-none"
+              style={{ background: 'var(--saipul-surface)', color: 'var(--saipul-text)', borderColor: 'var(--saipul-border)' }}
+            >
+              {AI_MODELS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs text-[var(--saipul-text-secondary)] mb-1">Batas Panjang Respons (Token)</label>
+            <select
+              value={settings.maxTokens || 1500}
+              onChange={(e) => handleSave("maxTokens", Number(e.target.value))}
+              className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[var(--saipul-accent)] outline-none"
+              style={{ background: 'var(--saipul-surface)', color: 'var(--saipul-text)', borderColor: 'var(--saipul-border)' }}
+            >
+              {TOKEN_OPTIONS.map(t => <option key={t} value={t}>{t} token</option>)}
             </select>
           </div>
         </div>

@@ -37,7 +37,3 @@ export const CommunityProvider = ({ children }) => {
 };
 
 export default CommunityProvider;
-
-// Re-export the `useCommunity` hook for convenience so importing
-// from `CommunityContext` still works in places that expect it.
-export { useCommunity } from './useCommunity';

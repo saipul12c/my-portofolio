@@ -17,9 +17,7 @@ const CommentSection = ({ videoId }) => {
   const [page, setPage] = useState(1);
   const [per] = useState(10);
   const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const debouncedPostRef = useRef(null);
 
   useEffect(() => {
@@ -27,7 +25,7 @@ const CommentSection = ({ videoId }) => {
     const loadPage = async (p = 1) => {
       if (!videoId) return;
       try {
-        if (p === 1) setLoading(true); else setLoadingMore(true);
+        if (p !== 1) setLoadingMore(true);
         const res = await api.videos.comments(videoId, p, per).catch(() => null);
         if (!mounted) return;
         // res may be {page, per, total, data} or an array
@@ -45,7 +43,6 @@ const CommentSection = ({ videoId }) => {
       } catch (err) {
         console.error('Failed to load comments', err);
       } finally {
-        setLoading(false);
         setLoadingMore(false);
       }
     };
@@ -84,7 +81,6 @@ const CommentSection = ({ videoId }) => {
     // prepare debounced poster
     debouncedPostRef.current = debounce(async (text) => {
       if (!videoId) return;
-      setSubmitting(true);
       try {
         const author = localStorage.getItem('username') || 'You';
         const res = await api.videos.postComment(videoId, author, text);
@@ -93,8 +89,6 @@ const CommentSection = ({ videoId }) => {
       } catch (err) {
         console.error('Failed to post comment', err);
         setComments(prev => [{ id: Date.now(), author: localStorage.getItem('username') || 'You', message: text, created_at: new Date().toISOString() }, ...prev]);
-      } finally {
-        setSubmitting(false);
       }
     }, 800);
     return () => { debouncedPostRef.current = null; };

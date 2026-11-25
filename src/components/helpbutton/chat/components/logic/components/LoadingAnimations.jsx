@@ -262,7 +262,7 @@ export function DNAAnimation() {
 }
 
 // Component yang memilih loading animation secara random atau berdasarkan tipe
-export function MultiLoadingAnimation({ type = 'random', variant = 'thinking' }) {
+export function MultiLoadingAnimation({ type = 'random' }) {
   const animations = [
     'thinking',
     'wave',
@@ -301,7 +301,7 @@ export function MultiLoadingAnimation({ type = 'random', variant = 'thinking' })
       case 'dna':
         return <DNAAnimation />;
       default:
-        return <ThinkingAnimation />;
+        return <Thinking />;
     }
   };
 

@@ -17,7 +17,6 @@ export default function Education() {
   const totalAchievements = education.reduce((acc, edu) => acc + (edu.achievements?.length || 0), 0);
   const totalSkills = education.reduce((acc, edu) => acc + (edu.skills?.length || 0), 0);
   const totalCourses = courses?.length || 0;
-  const totalCertifications = education.length + totalCourses;
 
   return (
     <main

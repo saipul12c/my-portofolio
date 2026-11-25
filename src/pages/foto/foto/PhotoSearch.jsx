@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, memo } from "react";
+import { useState, useEffect, useMemo, useRef, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, SlidersHorizontal, Grid3x3, Grid2x2 } from "lucide-react";
 
@@ -57,10 +57,12 @@ function PhotoSearch({ onSearch, allPhotos = [], onFilterChange, onViewChange, c
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("date");
   const [isFocused, setIsFocused] = useState(false);
+  const queryRef = useRef(query);
+  queryRef.current = query;
 
   // Sync external search term jika diubah dari luar (misal saran kategori)
   useEffect(() => {
-    if (externalSearchTerm !== undefined && externalSearchTerm !== query) {
+    if (externalSearchTerm !== undefined && externalSearchTerm !== queryRef.current) {
       setQuery(externalSearchTerm);
     }
   }, [externalSearchTerm]);

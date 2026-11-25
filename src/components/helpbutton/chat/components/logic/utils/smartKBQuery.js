@@ -4,12 +4,13 @@
  * dengan semantic similarity, fuzzy matching, dan caching
  */
 
-import { analyzeLexical, getSynonyms, getLemma, normalizeWord } from './lexicalDatabase.js';
-import { findSimilarSentences } from './languageCorpus.js';
+import { getSynonyms, getLemma } from './lexicalDatabase.js';
 import { processDeepNeuralQuery, formatNeuralAnswer } from '../../../../../../utils/ai/neural/deepNeuralPipeline.js';
 import { solveMathQuery } from './mathEngine.js';
+import { buildIndexFromKB, searchIndex } from './tfidfSearch.js';
 
 const QUERY_CACHE = new Map();
+const TFIDF_CACHE = new WeakMap();
 const CACHE_TTL = 5 * 60 * 1000; // 5 menit cache
 
 const INDONESIAN_STOPWORDS = new Set([
@@ -35,8 +36,11 @@ export function smartKBQuery(userQuery, knowledgeBase, options = {}) {
     returnMetadata = true
   } = options;
 
-  // Check cache
-  const cacheKey = `${userQuery}:${searchDepth}`;
+  // Check cache (sertakan parameter kunci & status uploadedData agar cache tidak basi)
+  const langKey = options.targetLanguage || options.language || 'auto';
+  const uploadList = Array.isArray(knowledgeBase?.uploadedData) ? knowledgeBase.uploadedData : [];
+  const lastUploadStamp = uploadList.length > 0 ? `${uploadList.length}:${uploadList[uploadList.length - 1]?.uploadDate || uploadList[uploadList.length - 1]?.fileName || ''}` : '0';
+  const cacheKey = `${userQuery}:${searchDepth}:${threshold}:${maxResults}:${langKey}:${lastUploadStamp}`;
   if (useCache && QUERY_CACHE.has(cacheKey)) {
     const cached = QUERY_CACHE.get(cacheKey);
     if (Date.now() - cached.timestamp < CACHE_TTL) {
@@ -61,11 +65,11 @@ export function smartKBQuery(userQuery, knowledgeBase, options = {}) {
   }
 
   // Strategy 1: Exact Keyword Match (fastest)
-  const exactMatches = searchExactMatch(userQuery, knowledgeBase);
+  const exactMatches = searchExactMatch(userQuery, knowledgeBase, options);
   results.push(...exactMatches.map(r => ({ ...r, matchType: 'exact', score: 1.0 })));
 
   // Strategy 2: Synonym-based Search
-  const synonymMatches = searchWithSynonyms(userQuery, knowledgeBase);
+  const synonymMatches = searchWithSynonyms(userQuery, knowledgeBase, options);
   results.push(...synonymMatches);
 
   // Strategy 3: Semantic/Fuzzy Search (slower but comprehensive)
@@ -109,13 +113,63 @@ export function smartKBQuery(userQuery, knowledgeBase, options = {}) {
     }
   }
 
+  // Strategy 5b: Lexical TF-IDF fallback untuk kueri teks/dokumen terunggah
+  if (!hasHighConfidenceExact && searchDepth !== 'quick' && knowledgeBase && typeof knowledgeBase === 'object') {
+    try {
+      let cachedTfidf = TFIDF_CACHE.get(knowledgeBase);
+      const uploadLen = Array.isArray(knowledgeBase.uploadedData) ? knowledgeBase.uploadedData.length : 0;
+      if (!cachedTfidf || cachedTfidf.uploadLen !== uploadLen) {
+        const index = buildIndexFromKB({
+          uploadedData: knowledgeBase.uploadedData || [],
+          projects: knowledgeBase.projects || [],
+          aiBase: knowledgeBase.aiBase || knowledgeBase.AI || {},
+          faq: knowledgeBase.faq || [],
+          skills: knowledgeBase.skills || knowledgeBase.softskills || []
+        });
+        cachedTfidf = { index, uploadLen };
+        TFIDF_CACHE.set(knowledgeBase, cachedTfidf);
+      }
+      const tfidfHits = searchIndex(cachedTfidf.index, userQuery, Math.max(3, maxResults));
+      for (const hit of tfidfHits) {
+        if (hit.score < 0.12) continue;
+        let displayAnswer = hit.text;
+        try {
+          const parsed = JSON.parse(hit.text);
+          if (parsed && typeof parsed === 'object') {
+            displayAnswer = parsed.content || parsed.description || parsed.answer || parsed.title || hit.text;
+          }
+        } catch { /* plain text */ }
+        results.push({
+          source: `tfidf_${hit.meta?.section || 'kb'}`,
+          question: `TF-IDF Match (${hit.meta?.section || 'kb'})`,
+          answer: String(displayAnswer).slice(0, 800),
+          relevanceScore: Math.min(0.84, 0.42 + hit.score * 0.42),
+          matchedWords: 1,
+          matchType: 'tfidf'
+        });
+      }
+    } catch { /* fallback aman */ }
+  }
+
   // Deduplicate dan sort
   const deduplicated = deduplicateResults(results);
   const sorted = deduplicated.sort((a, b) => b.relevanceScore - a.relevanceScore);
   const final = sorted.slice(0, maxResults);
 
-  // Cache result
+  // Pastikan setiap hasil pencarian terstempel bahasa dengan benar
+  const defaultLang = (options.targetLanguage === 'en' || options.language === 'en') ? 'en' : 'id';
+  for (const item of final) {
+    if (typeof item === 'object' && item && !item.language) {
+      item.language = defaultLang;
+    }
+  }
+
+  // Cache result (dengan batas ukuran agar memori terkendali)
   if (useCache) {
+    if (QUERY_CACHE.size >= 250) {
+      const oldestKey = QUERY_CACHE.keys().next().value;
+      if (oldestKey !== undefined) QUERY_CACHE.delete(oldestKey);
+    }
     QUERY_CACHE.set(cacheKey, {
       result: final,
       timestamp: Date.now()
@@ -128,25 +182,108 @@ export function smartKBQuery(userQuery, knowledgeBase, options = {}) {
 /**
  * Search with exact keyword matching
  */
-function searchExactMatch(query, knowledgeBase) {
+function searchExactMatch(query, knowledgeBase, options = {}) {
   const results = [];
   const lowerQuery = query.toLowerCase().trim();
   const allWords = lowerQuery.split(/\s+/).filter(w => w.length > 1);
   const queryWords = allWords.filter(w => w.length > 2);
   const contentWords = allWords.filter(w => !INDONESIAN_STOPWORDS.has(w) && w.length > 2);
+  const isEnTarget = options.targetLanguage === 'en' || options.language === 'en';
 
-  // 0. Deterministic Math Engine (< 2ms)
-  const mathCheck = solveMathQuery(query);
-  if (mathCheck && mathCheck.isMath && mathCheck.answer) {
-    results.push({
-      source: 'math_engine',
-      question: `Perhitungan Matematika: ${mathCheck.expression || query}`,
-      answer: mathCheck.answer,
-      relevanceScore: 0.99,
-      matchedWords: 1,
-      matchType: 'math_calculation',
-      mathResult: mathCheck.result
-    });
+  // 0. English Specialized Direct Routing Handlers (First-Class Multi-Language Support)
+  if (isEnTarget || /\b(who is|tell me about|experience|career|project|projects|skill|skills|certificate|contact|hire)\b/i.test(lowerQuery)) {
+    if (lowerQuery.includes('who is muhammad syaiful mukmin') || lowerQuery.includes('who is syaiful') || (lowerQuery.includes('who is') && lowerQuery.includes('syaiful')) || (lowerQuery.includes('about') && lowerQuery.includes('syaiful'))) {
+      results.push({
+        source: 'profile_direct_en',
+        question: 'Muhammad Syaiful Mukmin Biography',
+        answer: '👨‍💻 **Muhammad Syaiful Mukmin - Software Engineer & Full-Stack Developer**\n\nMuhammad Syaiful Mukmin is a dedicated Software Engineer and Full-Stack Web Developer specialized in crafting interactive web applications, EduTech systems, and local client-side intelligent agents.',
+        relevanceScore: 0.99,
+        matchedWords: queryWords.length,
+        matchType: 'exact',
+        language: 'en',
+        alternatives: {
+          indonesian: '👨‍💻 **Muhammad Syaiful Mukmin - Software Engineer & Full-Stack Developer**\n\nMuhammad Syaiful Mukmin adalah Pengembang Perangkat Lunak dan Full-Stack Web Developer yang berdedikasi dalam membangun aplikasi web interaktif, sistem EduTech, dan agen cerdas lokal sisi peramban.'
+        }
+      });
+    } else if (lowerQuery.includes('work experience') || lowerQuery.includes('career') || (lowerQuery.includes('experience') && !lowerQuery.includes('user experience'))) {
+      results.push({
+        source: 'experience_direct_en',
+        question: 'Work Experience & Career',
+        answer: '💼 **Work Experience & Career Track Record**\n\nMuhammad Syaiful Mukmin has active experience as a Full-Stack Web Developer & EduTech Specialist, building innovative web solutions and collaborating on freelance projects since 2023.',
+        relevanceScore: 0.99,
+        matchedWords: queryWords.length,
+        matchType: 'exact',
+        language: 'en',
+        alternatives: {
+          indonesian: '💼 **Pengalaman Kerja & Karir Syaiful**\n\nMuhammad Syaiful Mukmin berpengalaman aktif sebagai Full-Stack Web Developer & EduTech Specialist, membangun solusi web inovatif dan mengerjakan proyek freelance sejak 2023.'
+        }
+      });
+    } else if (lowerQuery.includes('what project') || lowerQuery.includes('featured project') || lowerQuery.includes('portfolio project') || (lowerQuery.includes('project') && (lowerQuery.includes('syaiful') || lowerQuery.includes('develop') || lowerQuery.includes('create') || lowerQuery.includes('web')))) {
+      results.push({
+        source: 'project_direct_en',
+        question: 'Featured Web Projects',
+        answer: '🚀 **Featured Web Projects by Syaiful**\n\nSyaiful has designed and developed 22+ modern web applications using modern web technologies (React, Tailwind CSS, Supabase, and Node.js). You can explore the interactive showcase on the `/projects` page.',
+        relevanceScore: 0.99,
+        matchedWords: queryWords.length,
+        matchType: 'exact',
+        language: 'en',
+        alternatives: {
+          indonesian: '🚀 **Proyek Web Unggulan Syaiful**\n\nSyaiful telah merancang dan membangun 22+ aplikasi web modern menggunakan teknologi web modern (React, Tailwind CSS, Supabase, dan Node.js). Anda dapat menjelajahi etalase interaktif di halaman `/projects`.'
+        }
+      });
+    } else if (lowerQuery.includes('tech stack') || lowerQuery.includes('specialization') || lowerQuery.includes('skills') || (lowerQuery.includes('skill') && (isEnTarget || lowerQuery.includes('syaiful') || lowerQuery.includes('technical') || lowerQuery.includes('your')))) {
+      results.push({
+        source: 'specialization_direct_en',
+        question: 'Specialization & Tech Stack',
+        answer: '🎯 **Core Specialization & Tech Stack**\n\nMuhammad Syaiful Mukmin specializes in Frontend & Full-Stack Web Development, modern React architectures, Tailwind CSS, clean code practices, and fast client-side application logic.',
+        relevanceScore: 0.99,
+        matchedWords: queryWords.length,
+        matchType: 'exact',
+        language: 'en',
+        alternatives: {
+          indonesian: '🎯 **Spesialisasi Inti & Tech Stack Syaiful**\n\nMuhammad Syaiful Mukmin berspesialisasi dalam Frontend & Full-Stack Web Development, arsitektur modern React, Tailwind CSS, standar kode bersih, dan logika aplikasi lokal yang cepat.'
+        }
+      });
+    } else if (lowerQuery.includes('certificate') || lowerQuery.includes('certification') || lowerQuery.includes('credential')) {
+      results.push({
+        source: 'certificate_direct_en',
+        question: 'Official Certifications & Credentials',
+        answer: '🏆 **Official Certifications**\n\nSyaiful holds accredited certifications from reputable institutions (Dicoding Academy, Course Networking, and formal technology training centers) validating proficiency in frontend engineering, web architecture, and clean code.',
+        relevanceScore: 0.99,
+        matchedWords: queryWords.length,
+        matchType: 'exact',
+        language: 'en',
+        alternatives: {
+          indonesian: '🏆 **Sertifikasi Resmi Syaiful**\n\nSyaiful memiliki sertifikasi terakreditasi dari lembaga ternama (Dicoding Academy, Course Networking, dll) yang memvalidasi keahlian dalam rekayasa frontend, arsitektur web, dan clean code.'
+        }
+      });
+    } else if (lowerQuery.includes('how to contact') || lowerQuery.includes('hire syaiful') || lowerQuery.includes('contact information') || (lowerQuery.includes('hire') && lowerQuery.includes('service'))) {
+      results.push({
+        source: 'contact_direct_en',
+        question: 'Contact & Collaboration',
+        answer: '💼 **Collaboration & Web Development Services**\n\nSyaiful is open for modern web development collaborations and freelance opportunities: responsive web applications, landing pages, and interactive UI systems. Reach out via `/contact` or DM on Instagram `@saipul16_`.',
+        relevanceScore: 0.99,
+        matchedWords: queryWords.length,
+        matchType: 'exact',
+        language: 'en',
+        alternatives: {
+          indonesian: '💼 **Kolaborasi & Layanan Pengembangan Web**\n\nSyaiful terbuka untuk kolaborasi pembuatan web dan peluang freelance: aplikasi web responsif, landing page, dan sistem UI interaktif. Hubungi lewat `/contact` atau DM Instagram `@saipul16_`.'
+        }
+      });
+    } else if (lowerQuery.includes('what language') || lowerQuery.includes('languages spoken') || lowerQuery.includes('languages does syaiful speak')) {
+      results.push({
+        source: 'languages_direct_en',
+        question: 'Languages Spoken by Syaiful',
+        answer: '🌐 **Languages Spoken by Muhammad Syaiful Mukmin**\n\nSyaiful is proficient in four languages:\n• **Indonesian** (Native / Primary Language)\n• **Banjar** (Indigenous Language of South Kalimantan)\n• **English** (Technical Documentation & Professional Communication)\n• **Arabic** (Academic & Religious Studies)',
+        relevanceScore: 0.99,
+        matchedWords: queryWords.length,
+        matchType: 'exact',
+        language: 'en',
+        alternatives: {
+          indonesian: '🌐 **Kemampuan Bahasa Muhammad Syaiful Mukmin**\n\nSyaiful menguasai 4 bahasa:\n• **Bahasa Indonesia** (Bahasa Ibu / Utama)\n• **Bahasa Banjar** (Bahasa Daerah Kalimantan Selatan)\n• **Bahasa Inggris** (Dokumentasi Teknis & Komunikasi Profesional)\n• **Bahasa Arab** (Studi Akademik & Keagamaan)'
+        }
+      });
+    }
   }
 
   // 0. High-Precision Specialized Intent Handlers (O(1) Direct Routing untuk 200 Situasi Nyata)
@@ -243,6 +380,186 @@ function searchExactMatch(query, knowledgeBase) {
       source: 'qodam_direct',
       question: 'Arti Qodam Harimau Putih',
       answer: '🐅 **Fitur Cek Qodam Harimau Putih**\n\nQodam Harimau Putih di website ini berasosiasi dengan elemen tanah dan energi spiritual yang mencerminkan ketenangan batin, keteguhan prinsip, serta kepemimpinan karismatik yang tangguh sebagai pemimpin positif.',
+      relevanceScore: 0.99,
+      matchedWords: queryWords.length,
+      matchType: 'exact'
+    });
+  } else if (lowerQuery.includes('sempro') || lowerQuery.includes('seminar proposal')) {
+    results.push({
+      source: 'sempro_direct',
+      question: 'Tahapan Seminar Proposal (Sempro)',
+      answer: '🎓 **Tahapan Seminar Proposal (Sempro) Syaiful**\n\nSeminar Proposal merupakan langkah krusial memvalidasi gagasan penelitian sarjana di Program Studi S1 PGMI:\n• **01. Validasi Judul & Bab 1-3**: Penyusunan latar belakang, rumusan masalah, dan metodologi.\n• **02. Presentasi & Tanya Jawab**: Pemaparan slide deck 15-20 menit di hadapan dewan penguji.\n• **03. Revisi & Izin Penelitian**: Penyempurnaan catatan masukan dan penerbitan izin turun lapangan.\n\nDetail alur dapat Anda tinjau di rute `/sempro-skripsi`.',
+      relevanceScore: 0.99,
+      matchedWords: queryWords.length,
+      matchType: 'exact'
+    });
+  } else if (lowerQuery.includes('sidang skripsi') || lowerQuery.includes('munaqasyah') || (lowerQuery.includes('sidang') && lowerQuery.includes('sarjana'))) {
+    results.push({
+      source: 'sidang_direct',
+      question: 'Sidang Skripsi Munaqasyah Syaiful',
+      answer: '⚖️ **Sidang Skripsi (Munaqasyah) Syaiful**\n\nSidang Munaqasyah merupakan tahapan ujian akhir sarjana S1 PGMI untuk menguji:\n• Validitas dan keaslian data penelitian lapangan.\n• Kontribusi temuan terhadap pengembangan media edukasi interaktif.\n• Pertanggungjawaban karya ilmiah di depan majelis penguji.\n\nInformasi panduan lengkap dapat dilihat di rute `/sidang-skripsi`.',
+      relevanceScore: 0.99,
+      matchedWords: queryWords.length,
+      matchType: 'exact'
+    });
+  } else if (lowerQuery.includes('wisuda') || lowerQuery.includes('kelulusan sarjana') || lowerQuery.includes('jadwal wisuda')) {
+    results.push({
+      source: 'wisuda_direct',
+      question: 'Wisuda Akbar Sarjana Periode 2026',
+      answer: '🎓 **Wisuda Akbar Sarjana Periode 2026**\n\nMomen puncak kelulusan sarjana Syaiful dipersiapkan pada Periode 2026.\n\nDi halaman `/wisuda`, Anda dapat menikmati:\n• Countdown timer perayaan wisuda secara live.\n• Visual interaktif glassmorphism bertema emas (gold shimmer).\n• Formulir pendaftaran notifikasi email untuk pembaruan jadwal wisuda resmi.',
+      relevanceScore: 0.99,
+      matchedWords: queryWords.length,
+      matchType: 'exact'
+    });
+  } else if (lowerQuery.includes('download cv') || lowerQuery.includes('unduh cv') || lowerQuery.includes('minta cv') || lowerQuery.includes('lihat cv')) {
+    results.push({
+      source: 'cv_direct',
+      question: 'Curriculum Vitae (CV) Digital Syaiful',
+      answer: '📄 **Curriculum Vitae (CV) Digital Interaktif Syaiful**\n\nAnda dapat meninjau riwayat lengkap dan mengunduh CV Syaiful di halaman rute `/cv-saya`:\n• Ringkasan keahlian teknis (Frontend, UI/UX, AI, Clean Code).\n• Rekam jejak proyek aplikasi web dan pengalaman profesional.\n• Tombol unduh file CV format PDF terverifikasi.',
+      relevanceScore: 0.99,
+      matchedWords: queryWords.length,
+      matchType: 'exact'
+    });
+  } else if (lowerQuery.includes('jasa buat web') || lowerQuery.includes('bikin website') || lowerQuery.includes('pesan web') || lowerQuery.includes('hire syaiful') || (lowerQuery.includes('jasa') && lowerQuery.includes('web'))) {
+    results.push({
+      source: 'service_direct',
+      question: 'Layanan Pembuatan Website & Kolaborasi',
+      answer: '💼 **Layanan Pembuatan Website & Jasa Freelance Syaiful**\n\nSyaiful menerima proyek kolaborasi pembuatan web modern:\n• **Layanan**: Landing page interaktif, aplikasi web React/Tailwind, integrasi backend Supabase/Node.js, dan optimasi performa tinggi.\n• **Alur**: Konsultasi kebutuhan ➔ Desain UI/UX Figma ➔ Koding Clean Code ➔ Testing ➔ Deployment.\n• **Kontak**: Kirim pesan via form `/contact` atau DM Instagram `@saipul16_`.',
+      relevanceScore: 0.99,
+      matchedWords: queryWords.length,
+      matchType: 'exact'
+    });
+  } else if (lowerQuery.includes('streaming') || lowerQuery.includes('shorts video') || lowerQuery.includes('video edukasi')) {
+    results.push({
+      source: 'streaming_direct',
+      question: 'Fitur Streaming & Video Edukasi',
+      answer: '🎬 **Fitur Streaming & Shorts Portofolio**\n\nWebsite ini dilengkapi modul media multimedia edukatif di rute `/streming`:\n• **Video Panjang**: Pembahasan materi, demo proyek, dan rekaman kegiatan edukatif.\n• **Shorts**: Konten tips koding vertikal dan cuplikan visual pagelaran seni.\n• **Interaksi**: Mendukung like, bookmark, dan obrolan komentar realtime antar pengguna.',
+      relevanceScore: 0.99,
+      matchedWords: queryWords.length,
+      matchType: 'exact'
+    });
+  }
+
+  // ===== RELATIONAL CROSS-REFERENCING HANDLERS =====
+  // 1. Relasi Proyek Berdasarkan Teknologi (Tech Stack -> Projects)
+  const techRelMatch = lowerQuery.match(/(?:proyek|projek|project|aplikasi|karya).*?\b(?:memakai|menggunakan|pakai|pake|berbasis|dengan|tech)\s+([a-zA-Z0-9#+.-]+)/i) ||
+    lowerQuery.match(/([a-zA-Z0-9#+.-]+)\s+(?:proyek|projek|project|aplikasi)/i);
+  if (techRelMatch && Array.isArray(knowledgeBase.projects)) {
+    const rawTarget = techRelMatch[1].toLowerCase().trim();
+    if (!['apa', 'saja', 'yang', 'ini', 'itu', 'web', 'karya', 'bisa', 'ada'].includes(rawTarget)) {
+      const matchedProjects = knowledgeBase.projects.filter(p => {
+        const techList = Array.isArray(p.tech) ? p.tech.map(t => t.toLowerCase()) : [];
+        return techList.some(t => t === rawTarget || t.includes(rawTarget) || rawTarget.includes(t));
+      });
+      if (matchedProjects.length > 0) {
+        const projList = matchedProjects.map(p => `• **${p.title}** (${p.category || 'Web App'})\n  ${p.description || p.desc || ''}\n  *Teknologi: ${Array.isArray(p.tech) ? p.tech.join(', ') : p.tech}*${p.demoUrl ? `\n  🔗 [Live Demo](${p.demoUrl})` : ''}`).join('\n\n');
+        results.push({
+          source: 'relational_tech_project',
+          question: `Proyek Berbasis ${techRelMatch[1]}`,
+          answer: `💻 **Daftar Proyek Berbasis ${techRelMatch[1].toUpperCase()}**\n\nDitemukan ${matchedProjects.length} proyek yang dibangun menggunakan teknologi ini:\n\n${projList}\n\nIngin melihat detail arsitektur proyek tertentu atau mencoba live demo? Silakan beri tahu saya!`,
+          relevanceScore: 1.0,
+          matchedWords: queryWords.length,
+          matchType: 'relational'
+        });
+      }
+    }
+  }
+
+  // 2. Relasi Sertifikat Berdasarkan Topik / Bidang
+  const certTopicMatch = lowerQuery.match(/sertif(?:ikat|ikasi)?\s+(?:tentang\s+|seputar\s+|bidang\s+)?([a-zA-Z0-9#+.-]+)/i);
+  if (certTopicMatch && Array.isArray(knowledgeBase.certificates)) {
+    const topic = certTopicMatch[1].toLowerCase().trim();
+    if (!['resmi', 'apa', 'saja', 'yang', 'ini', 'itu', 'ada'].includes(topic)) {
+      const matches = knowledgeBase.certificates.filter(c => {
+        const text = `${c.name || ''} ${c.issuer || ''} ${c.description || ''}`.toLowerCase();
+        return text.includes(topic);
+      });
+      if (matches.length > 0) {
+        const list = matches.map(c => `• **${c.name || c.title}** (${c.issuer || 'Resmi'})\n  Tahun: ${c.date || c.year || '-'} | Kredensial: ${c.credentialId || 'Terverifikasi'}`).join('\n\n');
+        results.push({
+          source: 'relational_cert_topic',
+          question: `Sertifikasi Terkait ${certTopicMatch[1]}`,
+          answer: `🏆 **Sertifikasi Terkait "${certTopicMatch[1]}"**\n\nDitemukan ${matches.length} sertifikat yang relevan:\n\n${list}`,
+          relevanceScore: 0.98,
+          matchedWords: queryWords.length,
+          matchType: 'relational'
+        });
+      }
+    }
+  }
+
+  // 3. Core Values, Filosofi Kreatif & Langkah Selanjutnya (dari src/data/visi/data.json)
+  if (lowerQuery.includes('core values') || lowerQuery.includes('nilai inti') || (lowerQuery.includes('nilai') && lowerQuery.includes('prinsip'))) {
+    const cv = knowledgeBase.visiMisi?.coreValues;
+    const items = Array.isArray(cv?.items) ? cv.items : [];
+    const text = items.map(c => `• **${c.title}**: ${c.desc}`).join('\n\n');
+    results.push({
+      source: 'core_values_direct',
+      question: 'Core Values & Nilai Inti Syaiful',
+      answer: `💫 **Core Values (Nilai Inti) Muhammad Syaiful Mukmin**\n\nDalam berkarya, berinovasi, dan membangun solusi digital, Syaiful memegang 3 pilar nilai utama:\n\n${text || '• **Empathy**: Memahami sebelum mencipta.\n• **Creativity**: Berani berpikir berbeda & otentik.\n• **Growth**: Terus belajar dan berevolusi setiap hari.'}\n\nNilai-nilai ini menjadi kompas dalam setiap arsitektur kode dan kolaborasi profesional.`,
+      relevanceScore: 0.99,
+      matchedWords: queryWords.length,
+      matchType: 'exact'
+    });
+  } else if (lowerQuery.includes('filosofi kreatif') || (lowerQuery.includes('filosofi') && lowerQuery.includes('berkarya'))) {
+    const fk = knowledgeBase.visiMisi?.filosofiKreatif;
+    const fkText = Array.isArray(fk?.segments) ? fk.segments.map(s => s.text).join('') : (fk?.text || '');
+    results.push({
+      source: 'filosofi_kreatif_direct',
+      question: 'Filosofi Kreatif Syaiful',
+      answer: `🌱 **Filosofi Kreatif Muhammad Syaiful Mukmin**\n\n"${fkText || 'Kreativitas bagiku bukan sekadar hasil, tapi perjalanan memahami diri lewat karya. Setiap kesalahan adalah eksperimen, setiap ide adalah benih.'}"\n\nSeni, logika, dan empati bersatu membentuk identitas karya yang berjiwa dan bermakna bagi pengguna.`,
+      relevanceScore: 0.99,
+      matchedWords: queryWords.length,
+      matchType: 'exact'
+    });
+  } else if (lowerQuery.includes('langkah selanjutnya') || lowerQuery.includes('fase baru') || lowerQuery.includes('rencana masa depan')) {
+    const ls = knowledgeBase.visiMisi?.langkahSelanjutnya;
+    const lsText = ls ? `${ls.prefix || ''}${ls.highlight || ''}${ls.suffix || ''}` : '';
+    results.push({
+      source: 'langkah_selanjutnya_direct',
+      question: 'Langkah Selanjutnya & Arah Masa Depan',
+      answer: `🔮 **Langkah Selanjutnya & Arah Masa Depan**\n\n${lsText || 'Membangun ekosistem kreatif berbasis teknologi — tempat ide, kolaborasi, dan pembelajaran bersatu jadi ruang berkembangnya kreativitas muda.'}\n\n• **Misi**: Memberi makna digital yang manusiawi dan inklusif.`,
+      relevanceScore: 0.99,
+      matchedWords: queryWords.length,
+      matchType: 'exact'
+    });
+  }
+
+  // 4. AIDoc & Riwayat Arsitektur AI (dari src/data/AIDoc/data.json & riwayat.json)
+  if (lowerQuery.includes('riwayat ai') || lowerQuery.includes('evolusi ai') || lowerQuery.includes('sejarah saipulai') || lowerQuery.includes('changelog ai')) {
+    const riwayatList = Array.isArray(knowledgeBase.riwayat) ? knowledgeBase.riwayat : [];
+    const rText = riwayatList.slice(0, 4).map(r => `• **${r.version || 'Pembaruan'}** (${r.date || '-'}): ${r.summary || ''}`).join('\n\n');
+    results.push({
+      source: 'aidoc_riwayat',
+      question: 'Riwayat Evolusi SaipulAI',
+      answer: `📜 **Riwayat Evolusi & Pengembangan SaipulAI**\n\nBerikut tahapan penting perkembangan kecerdasan buatan SaipulAI:\n\n${rText || '• v1.0.0: Rilis arsitektur NLU lokal dan integrasi Universal Knowledge Base.'}\n\nDokumentasi teknis lengkap tersedia di rute \`/help/docs\`.`,
+      relevanceScore: 0.99,
+      matchedWords: queryWords.length,
+      matchType: 'exact'
+    });
+  }
+
+  // 5. Album Galeri Seni & Pagelaran (dari src/data/gallery/albums.json)
+  if (lowerQuery.includes('album galeri') || lowerQuery.includes('album foto') || lowerQuery.includes('pagelaran seni') || (lowerQuery.includes('album') && lowerQuery.includes('seni'))) {
+    const albums = Array.isArray(knowledgeBase.galleryAlbums) ? knowledgeBase.galleryAlbums : [];
+    const aList = albums.map(a => `• **${a.title || a.name}** (${a.category || 'Dokumentasi'})\n  ${a.description || 'Koleksi dokumentasi visual pagelaran seni dan studio cetak foto 5R.'}`).join('\n\n');
+    results.push({
+      source: 'gallery_albums_direct',
+      question: 'Daftar Album Galeri & Pagelaran Seni',
+      answer: `🎨 **Album Galeri Seni & Dokumentasi Visual**\n\nTersedia album visual eksklusif di portofolio:\n\n${aList || '• Pagelaran Seni Angkatan 22 UIN Antasari Banjarmasin\n• Studio Cetak Foto 5R Portofolio'}\n\nAnda dapat melihat karya visual selengkapnya di rute \`/gallery\`.`,
+      relevanceScore: 0.99,
+      matchedWords: queryWords.length,
+      matchType: 'exact'
+    });
+  }
+
+  // 6. Status Sistem & Pemeliharaan (dari src/data/maintenance/maintenanceData.json)
+  if (lowerQuery.includes('status sistem') || lowerQuery.includes('pemeliharaan') || lowerQuery.includes('maintenance')) {
+    const m = knowledgeBase.maintenance || {};
+    results.push({
+      source: 'maintenance_status',
+      question: 'Status Pemeliharaan Sistem',
+      answer: `🛡️ **Status Sistem & Pemeliharaan Website**\n\n• **Status**: ${m.isUnderMaintenance ? 'Dalam Pemeliharaan Aktif' : 'Semua Sistem Beroperasi Normal (Online)'}\n• **Kondisi Layanan**: Seluruh fitur website, navigasi, dan SaipulAI berfungsi optimal tanpa kendala.`,
       relevanceScore: 0.99,
       matchedWords: queryWords.length,
       matchType: 'exact'
@@ -514,18 +831,24 @@ function searchExactMatch(query, knowledgeBase) {
     lowerQuery.includes('waktu sekarang') ||
     lowerQuery.includes('sekarang jam') ||
     lowerQuery.includes('jam skrg') ||
+    lowerQuery.includes('what time') ||
+    lowerQuery.includes('current time') ||
     (lowerQuery.includes('jam') && lowerQuery.includes('sekarang'))
   ) {
+    const isEn = options.targetLanguage === 'en' || options.language === 'en' || lowerQuery.includes('time');
     const now = new Date();
-    const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
-    const dateStr = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString(isEn ? 'en-US' : 'id-ID', { hour: '2-digit', minute: '2-digit', hour12: isEn });
+    const dateStr = now.toLocaleDateString(isEn ? 'en-US' : 'id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     results.push({
       source: 'persona_time',
-      question: 'Waktu Saat Ini',
-      answer: `Saat ini menunjukkan pukul **${timeStr}** (berdasarkan waktu sistem perangkat Anda) pada hari **${dateStr}**.\n\nAda proyek, kodingan, atau fitur portofolio yang ingin Anda eksplorasi sekarang? Saya siap menemani! ⏰`,
+      question: isEn ? 'Current Time' : 'Waktu Saat Ini',
+      answer: isEn
+        ? `The current time is **${timeStr}** on **${dateStr}** (based on your device clock).\n\nIs there any project or topic you'd like to explore today? ⏰`
+        : `Saat ini menunjukkan pukul **${timeStr}** (berdasarkan waktu sistem perangkat Anda) pada hari **${dateStr}**.\n\nAda proyek, kodingan, atau fitur portofolio yang ingin Anda eksplorasi sekarang? Saya siap menemani! ⏰`,
       relevanceScore: 0.99,
       matchedWords: queryWords.length,
-      matchType: 'exact'
+      matchType: 'exact',
+      language: isEn ? 'en' : 'id'
     });
   } else if (
     (lowerQuery.includes('wib') && (lowerQuery.includes('wita') || lowerQuery.includes('wit'))) ||
@@ -562,17 +885,25 @@ function searchExactMatch(query, knowledgeBase) {
     lowerQuery.includes('sekarang hari apa') ||
     lowerQuery.includes('tanggal berapa sekarang') ||
     lowerQuery.includes('tanggal hari ini') ||
-    lowerQuery.includes('sekarang tanggal')
+    lowerQuery.includes('sekarang tanggal') ||
+    lowerQuery.includes('what day is today') ||
+    lowerQuery.includes('what is the date') ||
+    lowerQuery.includes('today date') ||
+    lowerQuery.includes("today's date")
   ) {
+    const isEn = options.targetLanguage === 'en' || options.language === 'en' || lowerQuery.includes('date') || lowerQuery.includes('day');
     const now = new Date();
-    const dateStr = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    const dateStr = now.toLocaleDateString(isEn ? 'en-US' : 'id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     results.push({
       source: 'persona_date',
-      question: 'Hari dan Tanggal Hari Ini',
-      answer: `Hari ini adalah **${dateStr}**.\n\nSemoga harimu menyenangkan dan produktif! Mau melihat proyek terbaru atau fitur interaktif apa di portofolio ini? 📅`,
+      question: isEn ? "Today's Date" : 'Hari dan Tanggal Hari Ini',
+      answer: isEn
+        ? `Today is **${dateStr}**.\n\nHope you have a wonderful and productive day! What would you like to explore in this portfolio? 📅`
+        : `Hari ini adalah **${dateStr}**.\n\nSemoga harimu menyenangkan dan produktif! Mau melihat proyek terbaru atau fitur interaktif apa di portofolio ini? 📅`,
       relevanceScore: 0.99,
       matchedWords: queryWords.length,
-      matchType: 'exact'
+      matchType: 'exact',
+      language: isEn ? 'en' : 'id'
     });
   }
 
@@ -1126,15 +1457,6 @@ function searchExactMatch(query, knowledgeBase) {
       matchedWords: queryWords.length,
       matchType: 'exact'
     });
-  } else if (lowerQuery.includes('who is muhammad syaiful mukmin')) {
-    results.push({
-      source: 'en_profile',
-      question: 'English Profile Inquiry',
-      answer: 'Muhammad Syaiful Mukmin is a dedicated Software Engineer and full-stack Web Developer from Indonesia, specializing in modern web applications, edutech innovation, and localized AI architectures.',
-      relevanceScore: 0.99,
-      matchedWords: queryWords.length,
-      matchType: 'exact'
-    });
   } else if (lowerQuery.includes('list the frontend technologies')) {
     results.push({
       source: 'en_frontend_stack',
@@ -1142,7 +1464,11 @@ function searchExactMatch(query, knowledgeBase) {
       answer: 'The primary frontend stack powering this portfolio features React 19, Tailwind CSS v4, and Vite for lightning-fast compilation and optimal rendering performance.',
       relevanceScore: 0.99,
       matchedWords: queryWords.length,
-      matchType: 'exact'
+      matchType: 'exact',
+      language: 'en',
+      alternatives: {
+        indonesian: 'Stack frontend utama yang membangun portofolio ini mencakup React 19, Tailwind CSS v4, dan Vite untuk performa kompilasi cepat dan rendering optimal.'
+      }
     });
   } else if (lowerQuery.includes('how can i contact the developer')) {
     results.push({
@@ -1151,7 +1477,11 @@ function searchExactMatch(query, knowledgeBase) {
       answer: 'You can easily contact the developer via LinkedIn, Instagram (@saipul16_), or through the official email channel at syaifulmukmin.dev@gmail.com.',
       relevanceScore: 0.99,
       matchedWords: queryWords.length,
-      matchType: 'exact'
+      matchType: 'exact',
+      language: 'en',
+      alternatives: {
+        indonesian: 'Anda dapat dengan mudah menghubungi pengembang melalui LinkedIn, Instagram (@saipul16_), atau lewat email resmi di syaifulmukmin.dev@gmail.com.'
+      }
     });
   } else if (lowerQuery.includes('spill tech stack')) {
     results.push({
@@ -1209,11 +1539,13 @@ function searchExactMatch(query, knowledgeBase) {
     });
   }
 
-  // 1. Search di AI knowledge base (ai_kb)
-  if (knowledgeBase.AI && typeof knowledgeBase.AI === 'object') {
-    for (const [question, answer] of Object.entries(knowledgeBase.AI)) {
+  // 1. Search di AI knowledge base (ai_kb / AI-base.json)
+  const aiKbSource = knowledgeBase.aiBase || knowledgeBase.AI;
+  if (aiKbSource && typeof aiKbSource === 'object') {
+    for (const [question, answer] of Object.entries(aiKbSource)) {
       const qLower = question.toLowerCase();
-      if (lowerQuery.includes(qLower) || qLower.includes(lowerQuery)) {
+      const qClean = qLower.replace(/[?!.,;:()]/g, ' ').trim();
+      if (lowerQuery.includes(qLower) || qLower.includes(lowerQuery) || lowerQuery.includes(qClean) || qClean.includes(lowerQuery)) {
         results.push({
           source: 'ai_kb',
           question,
@@ -1224,9 +1556,9 @@ function searchExactMatch(query, knowledgeBase) {
         });
         continue;
       }
-      const qContentWords = qLower.split(/\s+/).filter(w => !INDONESIAN_STOPWORDS.has(w) && w.length > 2);
+      const qContentWords = qClean.split(/\s+/).filter(w => !INDONESIAN_STOPWORDS.has(w) && w.length > 2);
       if (qContentWords.length === 0 || contentWords.length === 0) continue;
-      const matchCount = contentWords.filter(cw => 
+      const matchCount = contentWords.filter(cw =>
         qContentWords.some(qw2 => qw2.includes(cw) || cw.includes(qw2))
       ).length;
 
@@ -1309,11 +1641,20 @@ function searchExactMatch(query, knowledgeBase) {
     for (const item of allLangList) {
       const nameLower = (item.nama || item.name || '').toLowerCase();
       const slugLower = (item.slug || '').toLowerCase();
-      
-      // Match jika query menyebutkan nama bahasa/teknologi secara presisi
-      const isMatched = 
-        (nameLower && (lowerQuery.includes(nameLower) || (nameLower.length > 2 && queryWords.includes(nameLower)))) ||
-        (slugLower && lowerQuery.includes(slugLower));
+
+      // Match jika query menyebutkan nama bahasa/teknologi secara presisi (hindari false-positive substring untuk nama/slug pendek <= 2 karakter)
+      const isWordBoundaryMatch = (term) => {
+        if (!term) return false;
+        if (term.length <= 2) {
+          const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          return new RegExp(`(?:^|[\\s.,!?;'"])` + escaped + `(?:$|[\\s.,!?;'"])`, 'i').test(lowerQuery);
+        }
+        return lowerQuery.includes(term);
+      };
+
+      const isMatched =
+        (nameLower && isWordBoundaryMatch(nameLower)) ||
+        (slugLower && isWordBoundaryMatch(slugLower));
 
       if (isMatched) {
         const isProg = item.category === 'bahasa_pemrograman' || item.type === 'teknologi';
@@ -1324,7 +1665,7 @@ function searchExactMatch(query, knowledgeBase) {
         specAnswer += `• **Tingkat Kemahiran**: ${item.level}% (${item.tingkat || 'Aktif'})\n`;
         if (item.deskripsi) specAnswer += `• **Ringkasan**: ${item.deskripsi}\n`;
         if (item.penjelasan && item.penjelasan !== item.deskripsi) specAnswer += `• **Penjelasan**: ${item.penjelasan}\n`;
-        
+
         if (Array.isArray(item.kemampuan) && item.kemampuan.length > 0) {
           specAnswer += `• **Kemampuan Utama**: ${item.kemampuan.join(', ')}\n`;
         }
@@ -1347,11 +1688,12 @@ function searchExactMatch(query, knowledgeBase) {
         const targetSlug = item.slug || (item.nama || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-');
         specAnswer += `\n🔗 *Lihat halaman detail, framework, dan proyek terkait di*: \`/bahasa/detail/${targetSlug}\``;
 
+        const isAskingAboutProject = lowerQuery.includes('proyek') || lowerQuery.includes('project') || lowerQuery.includes('aplikasi');
         results.push({
           source: 'language_detail',
           question: `Detail ${item.nama || item.name}`,
           answer: specAnswer,
-          relevanceScore: 0.99,
+          relevanceScore: isAskingAboutProject ? 0.94 : 0.99,
           matchedWords: queryWords.length,
           matchType: 'exact'
         });
@@ -1386,7 +1728,7 @@ function searchExactMatch(query, knowledgeBase) {
     if (matchedCategory) {
       const catHobbies = rawHobbies.filter(h => h.category?.toLowerCase() === matchedCategory.toLowerCase());
       if (catHobbies.length > 0) {
-        const hobbyList = catHobbies.map(h => 
+        const hobbyList = catHobbies.map(h =>
           `• **${h.title}** (${h.metadata?.difficulty || 'Fleksibel'} | ⏱️ ${h.metadata?.timeRequired || 'Fleksibel'})\n  ${h.desc || ''}\n  🛠️ *Tools*: ${h.metadata?.tools?.join(', ') || 'Standar'}`
         ).join('\n\n');
 
@@ -1592,7 +1934,6 @@ function searchExactMatch(query, knowledgeBase) {
       matchType: 'exact'
     });
   } else if (isKKNQuery && knowledgeBase.academic?.overview) {
-    const kkn = knowledgeBase.academic.overview;
     results.push({
       source: 'academic_kkn',
       question: 'Kegiatan KKN di Desa Kundan Haruyan Dayak',
@@ -1633,7 +1974,7 @@ function searchExactMatch(query, knowledgeBase) {
       });
     } else if (isVisi || isMisi) {
       const visiText = vm.visi || 'Menjadi pendidik dan kreator media edukatif yang adaptif terhadap kemajuan teknologi dan inovasi digital, sekaligus menginspirasi melalui pembelajaran kreatif, interaktif, dan berdampak.';
-      const misiText = Array.isArray(vm.misi) 
+      const misiText = Array.isArray(vm.misi)
         ? vm.misi.map((m, idx) => `${idx + 1}. ${m}`).join('\n')
         : '1. Menciptakan solusi digital yang relevan & bermanfaat.\n2. Membangun ruang kolaboratif dan edukatif.\n3. Terus belajar dan berinovasi tanpa batas.\n4. Berkontribusi positif melalui teknologi dan empati kemanusiaan.';
       results.push({
@@ -1717,8 +2058,8 @@ function searchExactMatch(query, knowledgeBase) {
   }
 
   // 18. Search di Author Profiles (Profil Penulis Blog)
-  const authorList = Array.isArray(knowledgeBase.authorProfiles) 
-    ? knowledgeBase.authorProfiles 
+  const authorList = Array.isArray(knowledgeBase.authorProfiles)
+    ? knowledgeBase.authorProfiles
     : (knowledgeBase.authorProfiles && typeof knowledgeBase.authorProfiles === 'object' ? Object.values(knowledgeBase.authorProfiles) : []);
   if (authorList.length > 0) {
     const isAuthorQuery = lowerQuery.includes('penulis') || lowerQuery.includes('author') || (lowerQuery.includes('profil') && !lowerQuery.includes('visi'));
@@ -1823,48 +2164,315 @@ function searchExactMatch(query, knowledgeBase) {
   return results;
 }
 
+const UNIVERSAL_ENTRIES_CACHE = new WeakMap();
+
 /**
- * Search menggunakan synonyms dan variations
+ * Ekstraksi Universal Seluruh Entitas Knowledge Base (41 Kategori & 36 File JSON)
+ * Menghasilkan array terstruktur: { category, title, text, answer, url, metadata }
  */
-function searchWithSynonyms(query, knowledgeBase) {
+export function getUniversalKnowledgeEntries(kb) {
+  if (!kb || typeof kb !== 'object') return [];
+  if (UNIVERSAL_ENTRIES_CACHE.has(kb)) {
+    return UNIVERSAL_ENTRIES_CACHE.get(kb);
+  }
+
+  const entries = [];
+  const addEntry = (category, title, text, fullAnswer, url = null, metadata = {}) => {
+    if (!text && !fullAnswer) return;
+    entries.push({
+      category,
+      title: title || category,
+      text: `${title} ${text}`.toLowerCase(),
+      answer: fullAnswer || text,
+      url,
+      metadata
+    });
+  };
+
+  // 1. Proyek Web (src/data/projects.json)
+  if (Array.isArray(kb.projects)) {
+    for (const p of kb.projects) {
+      const techStr = Array.isArray(p.tech) ? p.tech.join(', ') : (p.tech || '');
+      const featStr = Array.isArray(p.features) ? p.features.join('; ') : '';
+      const tagsStr = Array.isArray(p.tags) ? p.tags.join(' ') : '';
+      const full = `💻 **Projek: ${p.title}**\n\n${p.description || p.desc || ''}\n\n• **Teknologi**: ${techStr || 'React, Web Modern'}\n• **Kategori**: ${p.category || 'Web Application'}${featStr ? `\n• **Fitur Unggulan**: ${featStr}` : ''}${p.demoUrl ? `\n• **Demo**: ${p.demoUrl}` : ''}${p.githubUrl ? `\n• **Repositori**: ${p.githubUrl}` : ''}`;
+      addEntry('projects', p.title, `${p.description || ''} ${techStr} ${featStr} ${tagsStr}`, full, p.demoUrl || '/projects', { project: p, tech: p.tech });
+    }
+  }
+
+  // 2. Bahasa & Teknologi (src/data/bahasa/data.json)
+  if (Array.isArray(kb.languages)) {
+    for (const l of kb.languages) {
+      const frameworks = Array.isArray(l.frameworks) ? l.frameworks.join(', ') : '';
+      const tools = Array.isArray(l.tools) ? l.tools.join(', ') : '';
+      const full = `🌐 **${l.name} (${l.categoryLabel || l.type || 'Bahasa & Teknologi'})**\n\n${l.desc || l.deskripsi || l.penjelasan || ''}\n\n• **Tingkat Penguasaan**: ${l.tingkatPenguasaan || l.level || 'Mahir'}${frameworks ? `\n• **Framework**: ${frameworks}` : ''}${tools ? `\n• **Tools**: ${tools}` : ''}\n• **Detail**: Pelajari selengkapnya di rute \`${l.detailUrl || `/bahasa/detail/${l.slug}`}\``;
+      addEntry('languages', l.name, `${l.desc || ''} ${frameworks} ${tools} ${l.category || ''}`, full, l.detailUrl, { language: l });
+    }
+  }
+
+  // 3. Pengalaman Kerja & Karir (src/data/pengalaman/experiences.json)
+  if (Array.isArray(kb.experiences)) {
+    for (const exp of kb.experiences) {
+      const highlights = Array.isArray(exp.highlights) ? exp.highlights.join('; ') : '';
+      const full = `💼 **Pengalaman: ${exp.position || exp.title}** (${exp.company || 'Freelance'})\n*Periode: ${exp.period || '-'}*\n\n${exp.description || ''}${highlights ? `\n\n• **Pencapaian**: ${highlights}` : ''}`;
+      addEntry('experiences', `${exp.position || exp.title} ${exp.company || ''}`, `${exp.description || ''} ${highlights}`, full, '/cv-saya', { experience: exp });
+    }
+  }
+
+  // 4. Soft Skills & Spesialisasi (src/data/skills/softskills.json & specializations.json)
+  if (Array.isArray(kb.skills)) {
+    for (const s of kb.skills) {
+      const full = `⚡ **Keahlian: ${s.name}**\n\n${s.description || ''}${s.level ? `\n• **Level**: ${s.level}` : ''}`;
+      addEntry('skills', s.name, s.description || '', full, '/softskills', { skill: s });
+    }
+  }
+  if (Array.isArray(kb.specializations)) {
+    for (const spec of kb.specializations) {
+      const skillsStr = Array.isArray(spec.skills) ? spec.skills.join(', ') : '';
+      const full = `🎯 **Spesialisasi: ${spec.title}**\n\n${spec.description || ''}\n• **Kompetensi**: ${skillsStr}`;
+      addEntry('specializations', spec.title, `${spec.description || ''} ${skillsStr}`, full, '/softskills', { specialization: spec });
+    }
+  }
+
+  // 5. Sertifikasi & Lisensi (src/data/sertif/certificates.json)
+  if (Array.isArray(kb.certificates)) {
+    for (const c of kb.certificates) {
+      const full = `🏆 **Sertifikat: ${c.name || c.title}**\n\n• **Penerbit**: ${c.issuer || 'Lembaga Resmi'}\n• **Tahun/Tanggal**: ${c.date || c.year || '-'}\n• **Kredensial**: ${c.credentialId || 'Terverifikasi'}${c.description ? `\n• **Deskripsi**: ${c.description}` : ''}`;
+      addEntry('certificates', c.name || c.title, `${c.issuer || ''} ${c.description || ''}`, full, '/certificates', { certificate: c });
+    }
+  }
+
+  // 6. Blog & Publikasi (src/data/blog/data.json)
+  if (Array.isArray(kb.blogs)) {
+    for (const b of kb.blogs) {
+      const tags = Array.isArray(b.tags) ? b.tags.join(', ') : '';
+      const full = `✍️ **Artikel Blog: ${b.title}**\n*Dipublikasikan: ${b.date || '-'} | Kategori: ${b.category || 'Teknologi'}*\n\n${b.excerpt || b.description || ''}\n\n• **Tags**: ${tags || '-'}\n• **Baca Selengkapnya**: Akses rute \`/blog/${b.slug || ''}\``;
+      addEntry('blogs', b.title, `${b.excerpt || ''} ${b.content || ''} ${tags}`, full, `/blog/${b.slug || ''}`, { blog: b });
+    }
+  }
+
+  // 7. Tanya Jawab Resmi / FAQ (src/data/helpbutton/faq/faqs.json)
+  if (Array.isArray(kb.faq)) {
+    for (const f of kb.faq) {
+      const full = `❓ **${f.question}**\n\n${f.answer}\n\n*(Kategori FAQ: ${f.category || 'Umum'})*`;
+      addEntry('faq', f.question, `${f.question} ${f.answer}`, full, '/help/faq', { faq: f });
+    }
+  }
+
+  // 8. Komitmen Layanan & Kode Etik (src/data/helpbutton/komit/commitments.json)
+  if (Array.isArray(kb.commitments)) {
+    for (const cm of kb.commitments) {
+      const title = cm.title || cm.pillar || 'Komitmen Layanan';
+      const full = `🤝 **Komitmen: ${title}**\n\n${cm.description || cm.desc || ''}`;
+      addEntry('commitments', title, cm.description || cm.desc || '', full, '/help/commitment', { commitment: cm });
+    }
+  }
+
+  // 9. Dokumentasi Sistem & AI (src/data/helpbutton/docs/docsSections.json)
+  if (Array.isArray(kb.documents)) {
+    for (const d of kb.documents) {
+      const items = Array.isArray(d.items) ? d.items.join('; ') : '';
+      const full = `📚 **Dokumentasi: ${d.title}**\n\n${d.content || d.description || ''}${items ? `\n• **Poin Utama**: ${items}` : ''}`;
+      addEntry('documents', d.title, `${d.content || ''} ${items}`, full, '/help/docs', { doc: d });
+    }
+  }
+
+  // 10. Visi, Misi, Core Values & Filosofi Kreatif (src/data/visi/data.json)
+  if (kb.visiMisi) {
+    const vm = kb.visiMisi;
+    if (vm.visi) {
+      addEntry('visi', 'Visi Syaiful', vm.visi, `🎯 **Visi Utama Syaiful**\n\n${vm.visi}`, '/visi');
+    }
+    if (Array.isArray(vm.misi)) {
+      const misiText = vm.misi.map((m, i) => `${i + 1}. ${m}`).join('\n');
+      addEntry('misi', 'Misi Strategis Syaiful', misiText, `🚀 **Misi Strategis Syaiful**\n\n${misiText}`, '/visi');
+    }
+    if (Array.isArray(vm.minatBakat)) {
+      const mbText = vm.minatBakat.map(m => `• **${m.title}**: ${m.desc}`).join('\n');
+      addEntry('minatBakat', 'Minat & Bakat Syaiful', mbText, `✨ **Minat & Bakat Syaiful**\n\n${mbText}`, '/visi');
+    }
+    if (vm.coreValues) {
+      const cvItems = Array.isArray(vm.coreValues.items) ? vm.coreValues.items : [];
+      const cvText = cvItems.map(c => `• **${c.title}**: ${c.desc}`).join('\n');
+      const full = `💫 **Core Values (Nilai Inti) Muhammad Syaiful Mukmin**\n\n${cvText || '• **Empathy**: Memahami sebelum mencipta.\n• **Creativity**: Berani berpikir berbeda & otentik.\n• **Growth**: Terus belajar dan berevolusi setiap hari.'}\n\nNilai-nilai ini menjadi kompas dalam setiap arsitektur kode dan kolaborasi profesional.`;
+      addEntry('coreValues', 'Core Values Nilai Inti Syaiful', `${cvText} empathy creativity growth`, full, '/visi');
+    }
+    if (vm.filosofiKreatif) {
+      const fk = vm.filosofiKreatif;
+      const fkText = Array.isArray(fk.segments) ? fk.segments.map(s => s.text).join('') : (fk.text || '');
+      if (fkText) {
+        addEntry('filosofiKreatif', 'Filosofi Kreatif Syaiful', fkText, `🌱 **Filosofi Kreatif Muhammad Syaiful Mukmin**\n\n"${fkText}"`, '/visi');
+      }
+    }
+    if (vm.langkahSelanjutnya) {
+      const ls = vm.langkahSelanjutnya;
+      const lsText = `${ls.prefix || ''}${ls.highlight || ''}${ls.suffix || ''} ${ls.subDescription || ''}`;
+      addEntry('langkahSelanjutnya', 'Langkah Selanjutnya & Masa Depan', lsText, `🔮 **Langkah Selanjutnya & Arah Masa Depan**\n\n${lsText}`, '/visi');
+    }
+    if (vm.quote) {
+      addEntry('quote', 'Kutipan Inspirasi Visi', `${vm.quote.text} ${vm.quote.author}`, `💬 *"${vm.quote.text}"* — **${vm.quote.author}**`, '/visi');
+    }
+  }
+
+  // 11. Profil & Tentang Saya (src/data/about/profile.json, cards, interests, collaborations)
+  if (kb.profile) {
+    const pr = kb.profile;
+    addEntry('profile', 'Profil & Biodata Syaiful', `${pr.name} ${pr.role} ${pr.bio} ${pr.location} ${pr.email}`, `👤 **Muhammad Syaiful Mukmin**\n\n• **Peran**: ${pr.role || 'Software Engineer & Full-Stack Web Developer'}\n• **Lokasi**: ${pr.location || 'Banjarmasin, Kalimantan Selatan'}\n• **Email**: ${pr.email || 'syaifulmukmin.dev@gmail.com'}\n• **Biografi**: ${pr.bio || 'Pengembang web yang berdedikasi menciptakan arsitektur bersih, interaktif, dan berdampak.'}`, '/about');
+  }
+  if (Array.isArray(kb.cards)) {
+    for (const c of kb.cards) {
+      addEntry('cards', c.title || c.header, `${c.description || ''} ${c.content || ''}`, `🗂️ **${c.title || c.header}**\n\n${c.description || c.content || ''}`, '/about');
+    }
+  }
+  if (Array.isArray(kb.collaborations)) {
+    for (const col of kb.collaborations) {
+      addEntry('collaborations', col.title || col.name, `${col.description || ''} ${col.role || ''}`, `🤝 **Kolaborasi: ${col.title || col.name}**\n\n${col.description || ''}`, '/about');
+    }
+  }
+
+  // 12. Dokumentasi & Riwayat Arsitektur AI (src/data/AIDoc/data.json & riwayat.json)
+  if (kb.aiDoc) {
+    const aid = kb.aiDoc;
+    addEntry('aidoc', 'Dokumentasi Sistem AI SaipulAI', `${aid.title || ''} ${aid.description || ''} ${JSON.stringify(aid.architecture || '')}`, `🤖 **Arsitektur SaipulAI (On-Device Cognitive Hub)**\n\n${aid.description || 'SaipulAI beroperasi 100% lokal di browser pengguna dengan mengombinasikan NLU, Micro-Neural 256-D Self-Attention, SmartKBQuery, dan Deterministic Math Engine.'}\n• **Privasi**: Tidak ada data kueri obrolan yang dikirim ke server luar.\n• **Single Source of Truth**: Terhubung ke 41 kategori pengetahuan portofolio.`, '/help/docs');
+  }
+  if (Array.isArray(kb.riwayat)) {
+    for (const r of kb.riwayat) {
+      const details = Array.isArray(r.details) ? r.details.join('; ') : '';
+      addEntry('riwayat', `Riwayat AI: ${r.version || r.title}`, `${r.date || ''} ${r.summary || ''} ${details}`, `📜 **Riwayat Evolusi AI (${r.version || 'Update'})**\n*Tanggal: ${r.date || '-'}*\n\n${r.summary || ''}${details ? `\n• ${details}` : ''}`, '/help/docs');
+    }
+  }
+
+  // 13. Galeri Foto & Karya Seni (src/data/gallery/albums.json, images.json, videos.json, shorts.json, foto/photos.json)
+  if (Array.isArray(kb.galleryAlbums)) {
+    for (const alb of kb.galleryAlbums) {
+      addEntry('galleryAlbums', alb.title || alb.name, `${alb.description || ''} ${alb.category || ''}`, `🎨 **Album Galeri: ${alb.title || alb.name}**\n*Kategori: ${alb.category || 'Dokumentasi'}*\n\n${alb.description || 'Dokumentasi visual pagelaran seni dan studio cetak foto 5R.'}\n• **Akses**: Kunjungi halaman galeri di rute \`/gallery\``, '/gallery');
+    }
+  }
+  if (Array.isArray(kb.photos)) {
+    for (const pho of kb.photos) {
+      addEntry('photos', pho.title || 'Foto Portofolio', `${pho.category || ''} ${pho.location || ''} ${pho.description || ''}`, `📸 **Karya Fotografi: ${pho.title}**\n\n• **Kategori**: ${pho.category || 'Visual Art'}\n• **Lokasi**: ${pho.location || 'Banjarmasin'}${pho.description ? `\n• **Deskripsi**: ${pho.description}` : ''}`, '/photography');
+    }
+  }
+
+  // 14. Akademik & Pengabdian KKN (kknOverview, kknStats, kknOutputs, kknPillars)
+  if (kb.academic) {
+    const ac = kb.academic;
+    const ov = ac.overview || {};
+    const full = `🎓 **Laporan Pengabdian KKN Desa Kundan Haruyan Dayak**\n*Durasi: ${ov.duration || '32 Hari'} (${ov.dates || '2024'})*\n\n${ov.description || 'Pengabdian mahasiswa di pedalaman Meratus mencakup festival budaya HARDAY FEST dan revitalisasi pendidikan di 4 sekolah mitra.'}\n• **Lokasi**: ${ov.location || 'Desa Kundan, HST, Kalsel'}\n• **Dokumentasi Lengkap**: Kunjungi rute \`/kkn\``;
+    addEntry('academic_kkn', 'KKN Desa Kundan Haruyan Dayak', `${ov.description || ''} ${ov.location || ''} harday fest`, full, '/kkn');
+  }
+
+  // 15. Hobi & Aktivitas Personal (src/data/hub/hobbiesData.json & helpbutton/chat/hobbies.json)
+  if (Array.isArray(kb.hobbies)) {
+    for (const h of kb.hobbies) {
+      const full = `🎯 **Hobi: ${h.name || h.title}**\n\n${h.description || h.desc || ''}${h.category ? `\n• **Kategori**: ${h.category}` : ''}`;
+      addEntry('hobbies', h.name || h.title, `${h.description || h.desc || ''} ${h.category || ''}`, full, '/hobbies');
+    }
+  }
+
+  // 16. Testimoni Klien & Rekan (src/data/testimoni/testimonials.json)
+  if (Array.isArray(kb.testimonials)) {
+    for (const t of kb.testimonials) {
+      const full = `⭐ **Testimoni dari ${t.name}** (${t.role || 'Klien'})\n\n"${t.quote || t.content || t.comment || 'Kolaborasi kerja yang sangat memuaskan dan tepat waktu.'}"`;
+      addEntry('testimonials', t.name, `${t.role || ''} ${t.quote || t.content || ''}`, full, '/testimoni');
+    }
+  }
+
+  // 17. Pendidikan & Kursus (src/data/pendidikan/data.json)
+  if (Array.isArray(kb.education)) {
+    for (const ed of kb.education) {
+      const full = `🎓 **${ed.title || ed.institution || 'Pendidikan'}**\n*${ed.year || ed.period || ''}*\n\n${ed.description || ed.major || ''}`;
+      addEntry('education', ed.title || ed.institution, `${ed.description || ''} ${ed.major || ''}`, full, '/education');
+    }
+  }
+
+  // 18. Roadmap Fitur Mendatang & Status Pemeliharaan (src/data/comingsoon/data.json & maintenanceData.json)
+  if (Array.isArray(kb.comingsoon)) {
+    for (const cs of kb.comingsoon) {
+      const full = `🚀 **Fitur Mendatang: ${cs.title}**\n\n${cs.description || ''}\n• **Status**: Sedang dalam tahap pengembangan aktif (${cs.progress || 'Roadmap'})`;
+      addEntry('comingsoon', cs.title, cs.description || '', full, '/coming-soon');
+    }
+  }
+  if (kb.maintenance && typeof kb.maintenance === 'object') {
+    const m = kb.maintenance;
+    addEntry('maintenance', 'Status Pemeliharaan Sistem', `${m.status || ''} ${m.message || ''}`, `🛡️ **Status Sistem & Pemeliharaan**\n\n• **Status**: ${m.isUnderMaintenance ? 'Dalam Pemeliharaan' : 'Sistem Beroperasi Normal (Online)'}\n• **Pesan**: ${m.message || 'Semua layanan portofolio, SaipulAI, dan fitur web berjalan stabil.'}`, '/');
+  }
+
+  // 19. Streaming Video & Shorts (src/data/streming/videosData.json & shortsData.json)
+  if (Array.isArray(kb.streamingVideos)) {
+    for (const sv of kb.streamingVideos) {
+      addEntry('streamingVideos', sv.title, `${sv.description || ''} ${sv.category || ''}`, `🎬 **Video Streaming: ${sv.title}**\n\n${sv.description || ''}${sv.views ? `\n• **Tayangan**: ${sv.views}` : ''}`, '/');
+    }
+  }
+
+  // 20. Navigasi Direktori Halaman Website
+  if (Array.isArray(kb.sitePages)) {
+    for (const sp of kb.sitePages) {
+      addEntry('sitePages', sp.title, `${sp.desc} ${sp.category} ${sp.path}`, `🔗 **Halaman: ${sp.title}** (\`${sp.path}\`)\n\n${sp.desc}\n• **Kategori**: ${sp.category}`, sp.path);
+    }
+  }
+
+  // 21. Entri AI Base (src/data/helpbutton/chat/AI-base.json)
+  const aiEntriesSource = kb.aiBase || kb.AI;
+  if (aiEntriesSource && typeof aiEntriesSource === 'object') {
+    for (const [q, a] of Object.entries(aiEntriesSource)) {
+      if (typeof a === 'string') addEntry('ai_base', q, q, a);
+    }
+  }
+
+  UNIVERSAL_ENTRIES_CACHE.set(kb, entries);
+  return entries;
+}
+
+/**
+ * Search menggunakan synonyms dan variations ke seluruh 41 kategori KB
+ */
+function searchWithSynonyms(query, knowledgeBase, options = {}) {
   const results = [];
-  const keywords = query.toLowerCase().split(/\s+/).filter(w => w.length > 2);
-  
-  // Expand query dengan synonyms
+  const lowerQuery = query.toLowerCase().trim();
+  const keywords = lowerQuery.split(/\s+/).filter(w => w.length > 2 && !INDONESIAN_STOPWORDS.has(w));
+  if (keywords.length === 0) return results;
+
+  const lang = options.targetLanguage === 'en' || options.language === 'en' ? 'en' : 'id';
+
+  // Expand query dengan synonyms dan lemma
   const expandedKeywords = new Set();
-  expandedKeywords.add(query.toLowerCase());
+  expandedKeywords.add(lowerQuery);
 
   for (const keyword of keywords) {
     expandedKeywords.add(keyword);
-    const synonyms = getSynonyms(keyword);
-    synonyms.forEach(s => expandedKeywords.add(s));
-    
+    const synonyms = getSynonyms(keyword, lang);
+    synonyms.forEach(s => expandedKeywords.add(s.toLowerCase()));
+
     // Add lemmatized form
-    const lemma = getLemma(keyword);
-    if (lemma) expandedKeywords.add(lemma);
+    const lemma = getLemma(keyword, lang);
+    if (lemma) expandedKeywords.add(lemma.toLowerCase());
   }
 
-  // Search dengan expanded keywords
-  if (knowledgeBase.AI && typeof knowledgeBase.AI === 'object') {
-    for (const [question, answer] of Object.entries(knowledgeBase.AI)) {
-      const questionLower = question.toLowerCase();
-      let maxScore = 0;
+  const entries = getUniversalKnowledgeEntries(knowledgeBase);
+  for (const entry of entries) {
+    let matchScore = 0;
+    let hitCount = 0;
 
-      for (const keyword of expandedKeywords) {
-        if (questionLower.includes(keyword)) {
-          maxScore = Math.max(maxScore, 0.8);
-        }
+    for (const kw of expandedKeywords) {
+      if (entry.text.includes(kw)) {
+        hitCount++;
+        const weight = kw === lowerQuery ? 0.92 : 0.82;
+        matchScore = Math.max(matchScore, weight);
       }
+    }
 
-      if (maxScore > 0) {
-        results.push({
-          source: 'ai_kb_synonym',
-          question,
-          answer,
-          relevanceScore: maxScore,
-          matchType: 'synonym'
-        });
-      }
+    if (matchScore > 0) {
+      const finalScore = Math.min(0.96, matchScore + (hitCount > 1 ? 0.05 : 0));
+      results.push({
+        source: `synonym_${entry.category}`,
+        question: entry.title,
+        answer: entry.answer,
+        relevanceScore: finalScore,
+        matchType: 'synonym',
+        category: entry.category,
+        url: entry.url
+      });
     }
   }
 
@@ -1872,26 +2480,44 @@ function searchWithSynonyms(query, knowledgeBase) {
 }
 
 /**
- * Fuzzy/semantic search untuk match yang less strict
+ * Fuzzy/semantic search toleran kesalahan ketik (typo) ke seluruh 41 kategori KB
  */
 function searchFuzzyMatch(query, knowledgeBase, threshold = 0.5) {
   const results = [];
-  const queryNormalized = normalizeWord(query.toLowerCase());
+  const lowerQuery = query.toLowerCase().trim();
+  const queryWords = lowerQuery.split(/\s+/).filter(w => w.length > 2 && !INDONESIAN_STOPWORDS.has(w));
+  if (queryWords.length === 0) return results;
 
-  // Calculate similarity score untuk setiap entry
-  if (knowledgeBase.AI && typeof knowledgeBase.AI === 'object') {
-    for (const [question, answer] of Object.entries(knowledgeBase.AI)) {
-      const similarity = calculateSimilarity(queryNormalized, question.toLowerCase());
-      
-      if (similarity >= threshold) {
-        results.push({
-          source: 'ai_kb_fuzzy',
-          question,
-          answer,
-          relevanceScore: similarity,
-          matchType: 'fuzzy'
-        });
+  const entries = getUniversalKnowledgeEntries(knowledgeBase);
+
+  for (const entry of entries) {
+    // 1. Cek similaritas string judul
+    const titleSim = calculateSimilarity(lowerQuery, entry.title.toLowerCase());
+
+    // 2. Cek similaritas kata per kata (word-level similarity)
+    let bestWordSim = 0;
+    const entryWords = entry.title.toLowerCase().split(/\s+/);
+    for (const qWord of queryWords) {
+      for (const eWord of entryWords) {
+        if (Math.abs(qWord.length - eWord.length) <= 2) {
+          const sim = calculateSimilarity(qWord, eWord);
+          if (sim > bestWordSim) bestWordSim = sim;
+        }
       }
+    }
+
+    const similarity = Math.max(titleSim, bestWordSim * 0.9);
+
+    if (similarity >= threshold) {
+      results.push({
+        source: `fuzzy_${entry.category}`,
+        question: entry.title,
+        answer: entry.answer,
+        relevanceScore: Math.min(0.94, similarity * 0.95),
+        matchType: 'fuzzy',
+        category: entry.category,
+        url: entry.url
+      });
     }
   }
 
@@ -1899,36 +2525,38 @@ function searchFuzzyMatch(query, knowledgeBase, threshold = 0.5) {
 }
 
 /**
- * Search untuk related concepts (lebih context-aware)
+ * Search untuk related concepts kontekstual ke seluruh 41 kategori KB
  */
 function searchRelatedConcepts(query, knowledgeBase) {
   const results = [];
-  
-  // Map topics ke knowledge items
   const topicMap = {
-    'ai': ['machine learning', 'neural network', 'deep learning'],
-    'machine learning': ['supervised', 'unsupervised', 'algorithm'],
-    'data': ['analysis', 'visualization', 'statistics'],
-    'programming': ['code', 'function', 'variable', 'class'],
-    'mathematics': ['calculus', 'algebra', 'statistics', 'probability']
+    'ai': ['machine learning', 'neural network', 'deep learning', 'saipulai', 'nlu', 'on-device', 'cognitive'],
+    'machine learning': ['supervised', 'unsupervised', 'algorithm', 'neural'],
+    'data': ['analysis', 'visualization', 'statistics', 'kalkulasi', 'prediksi'],
+    'programming': ['code', 'function', 'variable', 'class', 'react', 'javascript', 'frontend', 'arsitektur'],
+    'web': ['react', 'tailwind', 'frontend', 'website', 'portofolio', 'html', 'css', 'vite'],
+    'seni': ['pagelaran', 'galeri', 'fotografi', 'kreatif', 'visual', 'studio', 'karya'],
+    'karir': ['pengalaman', 'cv', 'freelance', 'software engineer', 'pekerjaan', 'posisi'],
+    'visi': ['misi', 'core values', 'filosofi', 'tujuan', 'langkah selanjutnya', 'prinsip']
   };
 
   const lowerQuery = query.toLowerCase();
+  const entries = getUniversalKnowledgeEntries(knowledgeBase);
+
   for (const [topic, relatedTerms] of Object.entries(topicMap)) {
     if (lowerQuery.includes(topic)) {
-      // Cari knowledge items tentang related terms
-      if (knowledgeBase.AI && typeof knowledgeBase.AI === 'object') {
-        for (const [question, answer] of Object.entries(knowledgeBase.AI)) {
-          if (relatedTerms.some(term => question.toLowerCase().includes(term))) {
-            results.push({
-              source: 'related_concept',
-              question,
-              answer,
-              relevanceScore: 0.65,
-              relatedTo: topic,
-              matchType: 'conceptual'
-            });
-          }
+      for (const entry of entries) {
+        if (relatedTerms.some(term => entry.text.includes(term))) {
+          results.push({
+            source: `related_${entry.category}`,
+            question: entry.title,
+            answer: entry.answer,
+            relevanceScore: 0.72,
+            relatedTo: topic,
+            matchType: 'conceptual',
+            category: entry.category,
+            url: entry.url
+          });
         }
       }
     }
@@ -1944,9 +2572,9 @@ function searchRelatedConcepts(query, knowledgeBase) {
 function calculateSimilarity(str1, str2) {
   const longer = str1.length > str2.length ? str1 : str2;
   const shorter = str1.length > str2.length ? str2 : str1;
-  
+
   if (longer.length === 0) return 1.0;
-  
+
   const editDistance = levenshteinDistance(longer, shorter);
   return (longer.length - editDistance) / longer.length;
 }
@@ -2004,7 +2632,7 @@ export function augmentResponseWithContext(response, knowledgeBase, userQuery) {
 
   if (related.length > 1) {
     const suggestions = related.slice(1).map(r => r.question).join('\n• ');
-    
+
     response.suggestedQuestions = [
       `Kamu juga tertarik dengan:\n• ${suggestions}`,
       `Topik terkait yang mungkin kamu mau tahu:\n• ${suggestions}`

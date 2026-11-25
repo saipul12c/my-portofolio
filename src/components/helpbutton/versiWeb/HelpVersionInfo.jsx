@@ -25,6 +25,7 @@ import {
 } from "../docs/lib/versionUtils";
 
 import plannedVersions from "../../../data/helpbutton/docs/plannedVersions.json";
+import HelpSubNav from "../HelpSubNav";
 const PLANNED_VERSIONS = plannedVersions;
 
 export default function HelpVersionInfo() {
@@ -230,6 +231,7 @@ export default function HelpVersionInfo() {
     <div className="min-h-screen bg-gradient-to-br from-[var(--color-gray-900)] via-[#0f1d32] to-[var(--color-gray-900)] text-white p-4 md:p-6 relative overflow-hidden">
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-8">
+        <HelpSubNav active="version" />
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 mb-2">

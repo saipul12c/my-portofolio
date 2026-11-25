@@ -54,7 +54,8 @@ export const MarkdownRenderer = ({ content, alignRight = false, currentUsername 
         remarkPlugins={[remarkGfm]}
         components={{
           // Code blocks & inline code
-          code({ node, inline, className, children, ...props }) {
+          code({ inline, className, children, ...allProps }) {
+            const { node: _Node, ...props } = allProps;
             const match = /language-(\w+)/.exec(className || '');
             const language = match ? match[1] : '';
             const codeString = String(children).replace(/\n$/, '');

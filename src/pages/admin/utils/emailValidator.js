@@ -1,4 +1,4 @@
-import { trustedEmailDomains, spamEmailDomains, trustedDomainSet, spamDomainSet } from './emailDomains';
+import { spamEmailDomains, trustedDomainSet, spamDomainSet } from './emailDomains';
 
 /**
  * Comprehensive Email Validation Utility - Enhanced 5x

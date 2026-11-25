@@ -172,7 +172,7 @@ export default function BlogAdminDashboard() {
         showToast('success', `Status artikel diubah menjadi: ${updated.status === 'published' ? 'Terbit' : 'Draf'}`);
         await loadAllData();
       }
-    } catch (err) {
+    } catch {
       showToast('error', 'Gagal mengubah status artikel');
     }
   };
@@ -184,7 +184,7 @@ export default function BlogAdminDashboard() {
         showToast('success', updated.featured ? 'Artikel ditandai sebagai Unggulan!' : 'Tanda unggulan dihapus.');
         await loadAllData();
       }
-    } catch (err) {
+    } catch {
       showToast('error', 'Gagal mengubah status unggulan');
     }
   };

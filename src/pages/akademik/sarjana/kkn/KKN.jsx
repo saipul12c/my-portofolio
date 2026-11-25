@@ -18,8 +18,6 @@ import {
   kknOverview,
   kknStats,
   kknPillars,
-  kknDailyLogs,
-  kknPhases,
   kknGallery,
   kknTeam,
   kknTestimonials,

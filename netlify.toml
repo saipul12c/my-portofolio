@@ -9,8 +9,8 @@
   status = 200
 
 [[redirects]]
-  from = "/api/saipul/*"
-  to = "/.netlify/functions/saipul/:splat"
+  from = "/api/saipul/"
+  to = "/.netlify/functions/saipul"
   status = 200
 
 [[redirects]]

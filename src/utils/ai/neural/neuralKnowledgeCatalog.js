@@ -180,6 +180,27 @@ export const TECHNICAL_KNOWLEDGE = [
     keywords: ["git", "branch", "commit", "merge", "pull request"],
     text: "Alur Git yang rapi: Gunakan feature branch terpisah dari `main`, tulis commit message konvensional (misal `feat:`, `fix:`, `refactor:`), lakukan testing sebelum merge, dan buat Pull Request terstruktur untuk review kode antar anggota tim.",
     category: "Technical & Coding"
+  },
+  {
+    id: "tech_rag_pipeline",
+    title: "Arsitektur Retrieval-Augmented Generation (RAG)",
+    keywords: ["rag", "retrieval", "augmented", "generation", "embeddings", "vector"],
+    text: "Arsitektur RAG di portofolio ini menghubungkan data dokumen/KB terstruktur dengan proses inferensi. Alurnya: dokumen diindeks menjadi representasi vektor semantik, kueri pengguna dicari dengan kemiripan kosinus, lalu cuplikan data paling relevan disisipkan ke context AI untuk menghasilkan respon faktual tanpa halusinasi.",
+    category: "Technical & Coding"
+  },
+  {
+    id: "tech_agentic_ai",
+    title: "Konsep Agentic AI & Tool Calling",
+    keywords: ["agentic", "ai agent", "tool calling", "otonom", "reasoning"],
+    text: "Agentic AI adalah sistem agen otonom yang memadukan penalaran bertahap (reasoning loop), memori multi-turn, serta kemampuan memanggil API/tools eksternal (tool calling). Berbeda dari chatbot statis biasa, AI agent mampu mengevaluasi outputnya sendiri dan menentukan langkah lanjutan hingga target tercapai.",
+    category: "Technical & Coding"
+  },
+  {
+    id: "tech_saipul_v8_architecture",
+    title: "Pembaruan Arsitektur SaipulAI v8.0.0",
+    keywords: ["v8.0.0", "settings", "text to speech", "tts", "sdk", "api"],
+    text: "SaipulAI v8.0.0 mengusung Zero-Dummy Architecture: menyederhanakan 8 tab pengaturan menjadi 4 tab fungsional 100% (Tampilan & Suara, Gaya & Karakter AI, Privasi & Data, Pintasan Keyboard), mengintegrasikan kontrol TTS Web Speech API, dan menyediakan Public REST API (/api/saipul) serta Web SDK client.",
+    category: "Technical & Coding"
   }
 ];
 
@@ -200,9 +221,9 @@ export const PERSONA_KNOWLEDGE = [
   },
   {
     id: "persona_dual_engine_api",
-    title: "Integrasi Dual-Engine SaipulAI v8.1.0 (On-Device & Public REST API)",
-    keywords: ["api", "rest api", "arsitektur", "dual engine", "integrasi", "v8.1.0", "endpoint", "sdk", "saipul api"],
-    text: "SaipulAI v8.1.0 mengintegrasikan dua pilar arsitektur cerdas: 1) Mesin On-Device Browser yang bekerja 100% lokal di browser pengguna untuk privasi total tanpa latensi server, dan 2) Public REST API & Web SDK mandiri di endpoint /api/saipul (serverless) yang memungkinkan pihak ketiga mengintegrasikan kecerdasan SaipulAI ke aplikasi luar, bot eksternal, atau skrip cURL dan Python dengan pemahaman portofolio dan kalkulator matematika yang selaras.",
+    title: "Integrasi Dual-Engine SaipulAI  v8.0.0 (On-Device & Public REST API)",
+    keywords: ["api", "rest api", "arsitektur", "dual engine", "integrasi", " v8.0.0", "endpoint", "sdk", "saipul api"],
+    text: "SaipulAI  v8.0.0 mengintegrasikan dua pilar arsitektur cerdas: 1) Mesin On-Device Browser yang bekerja 100% lokal di browser pengguna untuk privasi total tanpa latensi server, dan 2) Public REST API & Web SDK mandiri di endpoint /api/saipul (serverless) yang memungkinkan pihak ketiga mengintegrasikan kecerdasan SaipulAI ke aplikasi luar, bot eksternal, atau skrip cURL dan Python dengan pemahaman portofolio dan kalkulator matematika yang selaras.",
     category: "Conversational & Persona"
   },
   {
@@ -371,6 +392,41 @@ export const PERSONA_KNOWLEDGE = [
     title: "Doa & Harapan Sukses",
     keywords: ["aamiin", "terima kasih", "doa", "sukses"],
     text: "Aamiin ya Rabbal 'Alamin! Terima kasih banyak atas doa dan dukungan positif Anda. Semoga Anda juga senantiasa dilimpahi kesehatan, kemudahan, dan sukses luar biasa dalam setiap karya!",
+    category: "Conversational & Persona"
+  },
+  {
+    id: "persona_akademik_sempro",
+    title: "Tahapan Seminar Proposal (Sempro) Syaiful",
+    keywords: ["sempro", "seminar proposal", "skripsi", "tahapan", "proposal"],
+    text: "Halaman Seminar Proposal (/sempro-skripsi) mendokumentasikan 3 tahapan krusial riset sarjana S1 PGMI Syaiful: 1) Validasi Judul & Bab 1-3 (rumusan masalah dan metodologi), 2) Presentasi & Tanya Jawab kritis bersama dewan penguji, dan 3) Penyempurnaan catatan revisi hingga terbitnya izin penelitian lapangan.",
+    category: "Conversational & Persona"
+  },
+  {
+    id: "persona_akademik_sidang",
+    title: "Ujian Sidang Skripsi (Munaqasyah)",
+    keywords: ["sidang", "sidang skripsi", "munaqasyah", "kelulusan", "sarjana"],
+    text: "Sidang Skripsi Munaqasyah (/sidang-skripsi) merupakan tahapan puncak pengujian hasil penelitian sarjana di hadapan dewan penguji. Menilai keaslian temuan, kontribusi pedagogis bagi dunia pendidikan PGMI, dan validitas analisis data lapangan.",
+    category: "Conversational & Persona"
+  },
+  {
+    id: "persona_akademik_wisuda",
+    title: "Wisuda Akbar Sarjana Periode 2026",
+    keywords: ["wisuda", "kapan wisuda", "jadwal wisuda", "kelulusan", "2026", "sarjana"],
+    text: "Momen puncak kelulusan sarjana dirayakan melalui halaman Wisuda Akbar (/wisuda) dengan status Periode 2026. Halaman ini dilengkapi countdown timer perayaan kelulusan, glassmorphism emas elegan, serta formulir notifikasi email untuk jadwal resmi pendaftaran wisuda.",
+    category: "Conversational & Persona"
+  },
+  {
+    id: "persona_freelance_order",
+    title: "Alur Pemesanan Projek Web & Jasa Freelance",
+    keywords: ["jasa", "buat web", "hire", "harga", "freelance", "pesan web", "bikin website"],
+    text: "Untuk bekerja sama atau memesan jasa pembuatan website dengan Syaiful: 1) Diskusikan kebutuhan via form Kontak (/contact) atau DM Instagram @saipul16_, 2) Penentuan scope, tech stack (React/Vite/Tailwind/Supabase), dan timeline, 3) Desain prototipe UI/UX di Figma, 4) Pengembangan kode clean & testing, dan 5) Deployment & serah terima domain/hosting.",
+    category: "Conversational & Persona"
+  },
+  {
+    id: "persona_download_cv",
+    title: "Panduan Download & Akses CV Digital",
+    keywords: ["cv", "resume", "download cv", "unduh cv", "curriculum vitae"],
+    text: "Anda dapat melihat dan mengunduh Curriculum Vitae (CV) digital Syaiful melalui halaman rute `/cv-saya`. Di halaman tersebut tersedia ringkasan karir profesional, daftar keahlian teknologi, riwayat proyek, dan tombol unduh file CV PDF resmi.",
     category: "Conversational & Persona"
   }
 ];
@@ -549,6 +605,20 @@ export const COMPLEX_KNOWLEDGE = [
     title: "Pentingnya Komentar & Diskusi di Blog",
     keywords: ["feedback", "diskusi", "komunitas", "interaksi"],
     text: "Fitur komentar dan diskusi pada artikel blog sangat penting untuk membangun ruang interaksi dua arah antara penulis dan pembaca, menjaring feedback bermutu, serta menumbuhkan ekosistem komunitas pembelajar teknologi yang aktif.",
+    category: "Complex & Multi-Turn"
+  },
+  {
+    id: "complex_rag_vs_finetune",
+    title: "Perbandingan RAG vs Fine-Tuning untuk Kebutuhan AI",
+    keywords: ["rag vs finetuning", "fine-tuning", "retrieval", "kapan rag", "finetuning"],
+    text: "Pilih RAG jika Anda ingin AI menjawab data dinamis yang sering berubah (seperti katalog portofolio, database dokumen, harga) tanpa biaya komputasi training ulang dan bebas halusinasi. Pilih Fine-Tuning jika Anda ingin mengubah gaya bicara, struktur format output khusus, atau mengajarkan bahasa/terminologi domain sempit yang tidak dipahami model dasar.",
+    category: "Complex & Multi-Turn"
+  },
+  {
+    id: "complex_streaming_shorts",
+    title: "Integrasi Fitur Streaming & Shorts di Portofolio",
+    keywords: ["streaming", "shorts", "video player", "konten visual", "video"],
+    text: "Halaman `/streming` dan `/gallery` menghadirkan media edukasi multimedia interaktif, mencakup shorts vertikal video pembelajaran, video dokumentasi event, pemutar kustom adaptif, serta sistem komentar interaktif yang terhubung dengan akun komunitas pengguna.",
     category: "Complex & Multi-Turn"
   }
 ];

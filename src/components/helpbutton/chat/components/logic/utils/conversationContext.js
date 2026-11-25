@@ -301,4 +301,128 @@ export function checkIfNeedsHelp(message) {
   };
 }
 
+/**
+ * Analisis Dinamika Percakapan Multi-turn:
+ * Mendeteksi apakah input saat ini merupakan pengulangan (repeat), kelanjutan (follow-up),
+ * penyempitan konteks (refinement), atau pergeseran topik (topic shift).
+ * @param {string} currentMessage - pesan pengguna saat ini
+ * @param {Array|object} context - riwayat percakapan
+ * @returns {object} dinamika percakapan
+ */
+export function analyzeQueryDynamics(currentMessage, context) {
+  if (!currentMessage || typeof currentMessage !== 'string') {
+    return {
+      isRepeat: false,
+      repeatCount: 0,
+      isFollowUp: false,
+      isConstraintRefinement: false,
+      isTopicShift: false,
+      suggestedBridge: '',
+      previousUserMessage: null,
+      previousBotMessage: null,
+      currentTopics: [],
+      previousTopics: []
+    };
+  }
+
+  const cleanCurrent = currentMessage.toLowerCase().trim();
+  let msgs = [];
+  if (Array.isArray(context)) {
+    msgs = context;
+  } else if (context && typeof context.getContext === 'function') {
+    msgs = context.getContext();
+  } else if (context && Array.isArray(context.messages)) {
+    msgs = context.messages;
+  }
+
+  const userMessages = msgs
+    .filter(m => (m.role === 'user' || m.sender === 'user' || m.from === 'user'))
+    .map(m => (m.content || m.text || '').toLowerCase().trim())
+    .filter(Boolean);
+
+  const botMessages = msgs
+    .filter(m => (m.role === 'bot' || m.role === 'assistant' || m.sender === 'bot' || m.from === 'bot'))
+    .map(m => (m.content || m.text || '').trim())
+    .filter(Boolean);
+
+  const lastUserMsg = userMessages.length > 0 ? userMessages[userMessages.length - 1] : null;
+  const lastBotMsg = botMessages.length > 0 ? botMessages[botMessages.length - 1] : null;
+
+  // 1. Evaluasi Pengulangan (Repetition)
+  let isRepeat = false;
+  let repeatCount = 0;
+
+  if (lastUserMsg) {
+    if (cleanCurrent === lastUserMsg) {
+      isRepeat = true;
+      repeatCount = 1;
+      // Hitung berapa kali berturut-turut diulang
+      for (let i = userMessages.length - 2; i >= 0; i--) {
+        if (userMessages[i] === cleanCurrent) {
+          repeatCount++;
+        } else {
+          break;
+        }
+      }
+    } else {
+      // Jaccard similarity untuk variasi tipis yang pada intinya sama persis
+      const tokensA = new Set(cleanCurrent.split(/\s+/).filter(w => w.length > 2));
+      const tokensB = new Set(lastUserMsg.split(/\s+/).filter(w => w.length > 2));
+      if (tokensA.size > 0 && tokensB.size > 0) {
+        const intersection = [...tokensA].filter(x => tokensB.has(x)).length;
+        const union = new Set([...tokensA, ...tokensB]).size;
+        const sim = intersection / union;
+        if (sim >= 0.85) {
+          isRepeat = true;
+          repeatCount = 1;
+        }
+      }
+    }
+  }
+
+  // 2. Evaluasi Kelanjutan / Follow-up
+  const followUpMarkers = /^(terus|lalu|kemudian|setelah itu|kalau|kalo|bagaimana dengan|gimana dengan|bedanya apa|contohnya|misalnya|kenapa|mengapa|apa alasannya|apa lagi|yang mana|ada lagi|bisa jelaskan lebih|maksudnya)/i;
+  const followUpPronouns = /\b(yang tadi|itu tadi|tadi|yang kamu sebut|sebelumnya|hal tersebut)\b/i;
+  const isFollowUpQuery = !isRepeat && (followUpMarkers.test(cleanCurrent) || followUpPronouns.test(cleanCurrent));
+
+  // 3. Evaluasi Penyempitan / Refinement
+  const refinementMarkers = /^(maksudku|maksud saya|khususnya|terutama|yang pakai|cuma yang|hanya yang|spesifiknya|lebih tepatnya)/i;
+  const isConstraintRefinement = !isRepeat && refinementMarkers.test(cleanCurrent);
+
+  // 4. Evaluasi Pergeseran Topik (Topic Shift)
+  const currentTopics = extractTopics(cleanCurrent);
+  const previousTopics = lastUserMsg ? extractTopics(lastUserMsg) : [];
+  let isTopicShift = false;
+  if (!isRepeat && !isFollowUpQuery && !isConstraintRefinement && currentTopics.length > 0 && previousTopics.length > 0) {
+    const hasOverlap = currentTopics.some(t => previousTopics.includes(t));
+    if (!hasOverlap) {
+      isTopicShift = true;
+    }
+  }
+
+  // 5. Rumuskan suggested conversational bridge
+  let suggestedBridge = '';
+  if (isFollowUpQuery) {
+    suggestedBridge = 'Menyambung pembahasan sebelumnya, ';
+  } else if (isConstraintRefinement) {
+    suggestedBridge = 'Oh mengerti, mempersempit dari topik tadi: ';
+  } else if (isTopicShift && previousTopics.length > 0) {
+    const topicLabel = previousTopics[0].replace('_', ' ');
+    suggestedBridge = `Beralih dari topik ${topicLabel} tadi, `;
+  }
+
+  return {
+    isRepeat,
+    repeatCount,
+    isFollowUp: isFollowUpQuery,
+    isConstraintRefinement,
+    isTopicShift,
+    suggestedBridge,
+    previousUserMessage: lastUserMsg,
+    previousBotMessage: lastBotMsg,
+    currentTopics,
+    previousTopics
+  };
+}
+
 export { ConversationContextManager };

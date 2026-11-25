@@ -368,13 +368,21 @@ export function getContextResponse(context, userMessage) {
 /**
  * Analisis sentence dalam corpus
  * @param {string} sentence - kalimat yang akan dianalisis
+ * @param {array} [precomputedSimilar=null] - hasil pencarian similar sentences jika sudah dihitung sebelumnya
  * @returns {object} analisis lengkap
  */
-export function analyzeSentenceInCorpus(sentence) {
+export function analyzeSentenceInCorpus(sentence, precomputedSimilar = null, preferredLang = null) {
   const normalized = sentence.toLowerCase().trim();
-  const words = normalized.split(/\s+/);
-  const similar = findSimilarSentences(sentence, 0.5);
+  const words = normalized.split(/\s+/).filter(Boolean);
+  const similar = Array.isArray(precomputedSimilar) ? precomputedSimilar : findSimilarSentences(sentence, 0.5);
   
+  let detectedLang = preferredLang || (similar.length > 0 && similar[0].language ? similar[0].language : null);
+  if (!detectedLang) {
+    const enIndicators = ['the', 'is', 'are', 'what', 'how', 'who', 'where', 'when', 'why', 'can', 'you', 'i', 'hello', 'hi'];
+    const hasEn = words.some(w => enIndicators.includes(w));
+    detectedLang = hasEn ? 'en' : 'id';
+  }
+
   return {
     original: sentence,
     normalized: normalized,
@@ -383,7 +391,7 @@ export function analyzeSentenceInCorpus(sentence) {
     similarSentences: similar.slice(0, 3),
     possibleContext: similar.length > 0 ? similar[0].context : 'unknown',
     possibleType: similar.length > 0 ? similar[0].type : 'unknown',
-    language: sentence.match(/[a-z]/i) ? 'mixed' : 'unknown',
+    language: detectedLang,
     timestamp: new Date().toISOString()
   };
 }

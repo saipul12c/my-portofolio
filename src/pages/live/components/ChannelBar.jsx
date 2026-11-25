@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Hash, Code, Sparkles, Coffee } from 'lucide-react';
 
-export const CHANNELS = [
+const CHANNELS = [
   { id: 'umum', name: 'Umum', icon: Hash, desc: 'Diskusi & sinyal umum', color: 'from-cyan-500 to-blue-500' },
   { id: 'tanya-coding', name: 'Tanya-Coding', icon: Code, desc: 'Q&A solusi bug & coding', color: 'from-emerald-500 to-teal-500' },
   { id: 'projek-showcase', name: 'Showcase', icon: Sparkles, desc: 'Pamer karya & portofolio', color: 'from-purple-500 to-pink-500' },

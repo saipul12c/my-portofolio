@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Users,
   Shield,
@@ -185,7 +185,7 @@ const RoleDashboard = ({ user, onNavigate }) => {
 
 // Component untuk row user management
 const UserManagementRow = ({ user, currentUserRole }) => {
-  const [action] = useState(null);
+  const [action, setAction] = useState(null);
 
   if (!user) return null;
 
@@ -202,13 +202,18 @@ const UserManagementRow = ({ user, currentUserRole }) => {
       </div>
 
       <div className="flex items-center gap-3">
+        {action && (
+          <span className="px-2 py-0.5 rounded text-xs bg-cyan-500/20 text-cyan-300">
+            {action}
+          </span>
+        )}
         <span className="px-3 py-1 rounded-full text-sm bg-white/10 text-white">
           {user.role}
         </span>
 
         <button
           onClick={() => setAction('view')}
-          className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+          className={`px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm ${action === 'view' ? 'ring-2 ring-white/60' : ''}`}
         >
           View
         </button>
@@ -217,14 +222,14 @@ const UserManagementRow = ({ user, currentUserRole }) => {
           <>
             <button
               onClick={() => setAction('edit_role')}
-              className="px-3 py-1 bg-purple-500 text-white rounded hover:bg-purple-600 text-sm"
+              className={`px-3 py-1 bg-purple-500 text-white rounded hover:bg-purple-600 text-sm ${action === 'edit_role' ? 'ring-2 ring-white/60' : ''}`}
             >
               Change Role
             </button>
 
             <button
               onClick={() => setAction('ban')}
-              className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+              className={`px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm ${action === 'ban' ? 'ring-2 ring-white/60' : ''}`}
             >
               Ban
             </button>

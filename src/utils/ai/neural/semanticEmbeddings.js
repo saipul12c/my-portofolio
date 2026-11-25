@@ -289,7 +289,7 @@ export function generateEmbedding(text = '') {
   if (!text || typeof text !== 'string') return finalVec;
 
   const normalized = text.toLowerCase().trim();
-  const tokens = normalized.split(/[\s,.\-_!?:;()\[\]"'/]+/).filter(t => t.length > 0);
+  const tokens = normalized.split(/[\s,.\-_!?:;()[\]"'/]+/).filter(t => t.length > 0);
   if (tokens.length === 0) return finalVec;
 
   // 1. Bangun vektor token per kata (hingga 48 kata pertama untuk konteks kalimat mendalam)
@@ -346,7 +346,7 @@ export function generateEmbedding(text = '') {
  */
 export function calculateCosineSimilarity(vecA, vecB) {
   if (!vecA || !vecB || vecA.length === 0 || vecB.length === 0) return 0;
-  
+
   const minLen = Math.min(vecA.length, vecB.length);
   let dotProduct = 0;
   let normA = 0;
@@ -377,12 +377,12 @@ export const cosineSimilarity = calculateCosineSimilarity;
  */
 export function semanticSearch(query, documents = [], topK = 3) {
   const queryVec = generateEmbedding(query);
-  const qTokens = query.toLowerCase().split(/[\s,.\-_!?:;()\[\]"'/]+/).filter(t => t.length > 2);
+  const qTokens = query.toLowerCase().split(/[\s,.\-_!?:;()[\]"'/]+/).filter(t => t.length > 2);
 
   const scored = documents.map(doc => {
     const docText = typeof doc === 'string' ? doc : (doc.text || doc.title || doc.description || doc.content || '');
-    const docVec = doc.embedding && doc.embedding.length === EMBEDDING_DIM 
-      ? doc.embedding 
+    const docVec = doc.embedding && doc.embedding.length === EMBEDDING_DIM
+      ? doc.embedding
       : generateEmbedding(docText);
     const cosineSim = calculateCosineSimilarity(queryVec, docVec);
 

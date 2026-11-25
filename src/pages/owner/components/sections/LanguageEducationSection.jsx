@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { GraduationCap, Globe, BookOpen, ArrowRight, CheckCircle2, Award } from "lucide-react";
 import { SectionHeader } from "../ui/SectionHeader";
 import { ColorTag } from "../ui/ColorTag";
-import { generateColorFromString } from "../../utils/helpers";
 import { SLICE_LIMITS } from "../../utils/constants";
 
 /**

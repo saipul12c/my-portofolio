@@ -42,7 +42,7 @@ export default function PhotoModal({ photo, onClose, onNavigate }) {
           text: photo.description,
           url: window.location.href,
         });
-      } catch (err) {
+      } catch {
         // User cancelled share
       }
     } else {

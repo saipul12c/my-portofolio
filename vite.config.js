@@ -67,33 +67,36 @@ function saipulApiPlugin() {
     next();
   };
 
+  const registerSaipulMiddlewares = (middlewares) => {
+    middlewares.use(handleAssetImage);
+    middlewares.use(async (req, res, next) => {
+      const pathname = (req.url || '').split('?')[0];
+      if (pathname === '/api' || pathname.startsWith('/api/')) {
+        await saipulApiHandler(req, res);
+        return;
+      }
+      next();
+    });
+  };
+
   return {
     name: 'vite-plugin-saipul-api',
     configureServer(server) {
-      server.middlewares.use(handleAssetImage);
-      server.middlewares.use(async (req, res, next) => {
-        if (req.url?.startsWith('/api/saipul')) {
-          await saipulApiHandler(req, res);
-          return;
-        }
-        next();
-      });
+      registerSaipulMiddlewares(server.middlewares);
     },
     configurePreviewServer(server) {
-      server.middlewares.use(handleAssetImage);
-      server.middlewares.use(async (req, res, next) => {
-        if (req.url?.startsWith('/api/saipul')) {
-          await saipulApiHandler(req, res);
-          return;
-        }
-        next();
-      });
+      registerSaipulMiddlewares(server.middlewares);
     }
   };
 }
 
 // https://vite.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: {
+      '#kb-datasets': path.resolve(process.cwd(), 'src/utils/ai/datasets.browser.js'),
+    },
+  },
   define: {
     'import.meta.env.VITE_APP_VERSION': JSON.stringify(pkg.version),
     'import.meta.env.VITE_BUILD_TIME': JSON.stringify(currentBuildTime),

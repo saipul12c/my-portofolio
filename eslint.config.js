@@ -19,7 +19,11 @@ export default defineConfig([
     ],
     languageOptions: {
       ecmaVersion: 2020,
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        __APP_VERSION__: 'readonly',
+        __BUILD_TIME__: 'readonly',
+      },
       parserOptions: {
         ecmaVersion: 'latest',
         ecmaFeatures: { jsx: true },
@@ -35,6 +39,32 @@ export default defineConfig([
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
       'react/jsx-uses-react': 'error',
       'react/jsx-uses-vars': 'error',
+    },
+  },
+  {
+    files: [
+      'vite.config.js',
+      'update-role.js',
+      'api/**/*.js',
+      'bin/**/*.js',
+      'server/**/*.js',
+      'test/**/*.js',
+      'src/utils/ai/datasets.node.js',
+    ],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+  {
+    files: ['public/saipul-sdk.js'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        module: 'readonly',
+        define: 'readonly',
+      },
     },
   },
 ]);

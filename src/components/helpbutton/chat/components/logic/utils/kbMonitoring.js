@@ -24,11 +24,13 @@ class KBMonitor {
       errors: [],
       warnings: []
     };
+    // Aktifkan pemantauan internal metrik secara default
+    this.isMonitoring = true;
     try {
       // eslint-disable-next-line no-undef
-      this.isMonitoring = typeof process !== 'undefined' && process.env.NODE_ENV === 'development';
+      this.isDebug = typeof process !== 'undefined' && process.env.NODE_ENV === 'development';
     } catch {
-      this.isMonitoring = false;
+      this.isDebug = false;
     }
   }
 
@@ -39,17 +41,19 @@ class KBMonitor {
     if (!this.isMonitoring) return;
     
     this.stats.loadTime = loadTimeMs;
-    console.group('📊 KB Load Statistics');
-    console.log('Load Time:', `${loadTimeMs}ms`);
-    console.log('Loaded Items:', loadResult.loaded.length);
-    console.log('Failed Items:', loadResult.failed.length);
-    if (loadResult.warnings.length > 0) {
-      console.warn('Warnings:', loadResult.warnings);
+    if (this.isDebug) {
+      console.group('📊 KB Load Statistics');
+      console.log('Load Time:', `${loadTimeMs}ms`);
+      console.log('Loaded Items:', loadResult?.loaded?.length || 0);
+      console.log('Failed Items:', loadResult?.failed?.length || 0);
+      if (loadResult?.warnings?.length > 0) {
+        console.warn('Warnings:', loadResult.warnings);
+      }
+      if (loadResult?.errors && Object.keys(loadResult.errors).length > 0) {
+        console.error('Errors:', loadResult.errors);
+      }
+      console.groupEnd();
     }
-    if (Object.keys(loadResult.errors).length > 0) {
-      console.error('Errors:', loadResult.errors);
-    }
-    console.groupEnd();
   }
 
   /**

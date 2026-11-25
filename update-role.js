@@ -197,7 +197,9 @@ async function main() {
           app_metadata: { role: targetRole }
         });
       }
-    } catch (_) {}
+    } catch {
+      // Abaikan kegagalan sinkronisasi metadata auth opsional
+    }
 
     return data;
   }

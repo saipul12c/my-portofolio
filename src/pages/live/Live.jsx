@@ -88,7 +88,7 @@ function Live() {
   const [connectionStatus, setConnectionStatus] = useState('connecting'); // 'connecting', 'online', 'offline'
 
   // Hook Achievement Internal
-  const { userAchievements, loadAchievements, unlockAchievement } = useAchievements();
+  const { loadAchievements } = useAchievements();
 
   const [typingUsers, setTypingUsers] = useState({}); // { email: { username, timestamp } }
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
@@ -195,7 +195,6 @@ function Live() {
   const messageInputRef = useRef(null);
   const emojiPickerRef = useRef(null);
   const lastSentRef = useRef(0);
-  const fetchControllerRef = useRef(null);
   const userRef = useRef(user);
 
   useEffect(() => {
@@ -260,7 +259,7 @@ function Live() {
         return;
       }
 
-      let { data, error } = await supabase
+      let { data } = await supabase
         .from('users')
         .select('*')
         .eq('id', authUser.id)
@@ -626,7 +625,7 @@ function Live() {
       if (presenceChannel) supabase.removeChannel(presenceChannel);
       if (userProfileSubscription) supabase.removeChannel(userProfileSubscription);
     };
-  }, [user?.id]);
+  }, [user?.id, navigate]);
 
   // Load initial data
   useEffect(() => {
@@ -680,7 +679,7 @@ function Live() {
         configObj[item.key] = item.value;
       });
       setSystemConfig(configObj);
-    } catch (err) {
+    } catch {
       console.warn('System config fetch failed, using defaults');
     }
   };
@@ -847,7 +846,7 @@ function Live() {
       if (error) {
         // Fallback jika database belum menjalankan SQL migrasi channel/poll_data/is_best_answer
         if (error.message && (error.message.includes('channel') || error.message.includes('poll_data') || error.message.includes('is_best_answer'))) {
-          const { channel, is_best_answer, poll_data, ...legacyData } = messageData;
+          const { channel: _Channel, is_best_answer: _IsBestAnswer, poll_data: _PollData, ...legacyData } = messageData;
           const retryRes = await supabase.from('messages').insert([legacyData]).select();
           if (retryRes.error) throw retryRes.error;
           return { data: retryRes.data[0], error: null };
@@ -1126,11 +1125,6 @@ function Live() {
     } else {
       navigate('/Live-Discussion/login');
     }
-  };
-
-  // Navigate to profile
-  const goToProfile = () => {
-    navigate('/Live-Discussion/profile');
   };
 
   // Navigate to dashboard (for admins and moderators)
@@ -1442,17 +1436,6 @@ function Live() {
     } finally {
       setUploadingMedia(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
-    }
-  };
-
-  // Parse reply data - Supabase JSONB is already an object
-  const parseReplyData = (replyData) => {
-    if (!replyData) return null;
-    if (typeof replyData === 'object') return replyData;
-    try {
-      return JSON.parse(replyData);
-    } catch {
-      return null;
     }
   };
 

@@ -15,7 +15,6 @@ const LivestreamPage = ({ currentConfig }) => {
   if (!liveData) return null;
 
   const PageIcon = getIconComponent(liveData.icon);
-  const accentBorder = isCyan ? 'border-cyan-500/30' : 'border-rose-500/30';
   const accentText = isCyan ? 'text-cyan-400' : 'text-rose-400';
   const accentBg = isCyan ? 'bg-cyan-500/15' : 'bg-rose-500/15';
 

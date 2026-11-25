@@ -15,6 +15,15 @@ const ProjectPopup = ({
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
   const [isClosing, setIsClosing] = useState(false);
 
+  // Smooth close function
+  const handleClose = useCallback(() => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+      setIsClosing(false);
+    }, 300);
+  }, [onClose]);
+
   // Handle escape key untuk close modal
   useEffect(() => {
     const handleEsc = (e) => {
@@ -24,7 +33,7 @@ const ProjectPopup = ({
     };
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
-  }, [selectedProject, isClosing]);
+  }, [selectedProject, isClosing, handleClose]);
 
   // Track window width untuk responsivitas
   useEffect(() => {
@@ -53,15 +62,6 @@ const ProjectPopup = ({
     };
   }, [selectedProject]);
 
-  // Smooth close function
-  const handleClose = useCallback(() => {
-    setIsClosing(true);
-    setTimeout(() => {
-      onClose();
-      setIsClosing(false);
-    }, 300);
-  }, [onClose]);
-
   // Handle overlay click
   const handleOverlayClick = useCallback((e) => {
     if (e.target === e.currentTarget) {
@@ -81,7 +81,6 @@ const ProjectPopup = ({
   if (!selectedProject) return null;
 
   const isMobile = windowWidth < 768;
-  const isTablet = windowWidth >= 768 && windowWidth < 1024;
 
   // Animation variants
   const backdropVariants = {

@@ -1,12 +1,15 @@
 import { useRef, useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useChatbot } from "./logic/hook/useChatbot";
+import { useFileUpload } from "./logic/hook/useFileUpload";
 import { ChatHeader } from "./logic/components/ChatHeader";
 import { ChatMessage } from "./logic/components/ChatMessage";
 import { ChatInput } from "./logic/components/ChatInput";
+import { QuickActions } from "./logic/components/QuickActions";
 import { Suggestions } from "./logic/components/Suggestions";
 import ReportModal from "./logic/components/ReportModal";
-import Sentiment from "sentiment";
+import { analyzeSentiment } from "./logic/utils/nluProcessing";
+import { storageService } from "./logic/utils/storageService";
 
 export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, knowledgeStats = {} }) {
   const {
@@ -20,6 +23,7 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, kno
     closeSuggestionsForCurrent,
     choosePreferredResponse,
     recordFeedback,
+    activeQuickActions,
     handleSend,
     handleKeyDown,
     clearChat,
@@ -27,6 +31,11 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, kno
     generateBotReply,
     settings,
     isAgentOnline } = useChatbot(knowledgeBase, knowledgeStats);
+
+  const {
+    handleFileUpload: handleChatFileUpload,
+    isUploading: isChatUploading
+  } = useFileUpload(settings, null, setMessages);
   // Handler untuk quick actions (like, dislike, regenerate, report)
   const handleQuickAction = (action, messageId, extra) => {
     
@@ -73,7 +82,7 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, kno
         const updated = prev.filter(m => m.id !== messageId);
         try {
           if (!settings || !settings.privacyMode) {
-            localStorage.setItem("saipul_chat_history", JSON.stringify(updated));
+            storageService.set("saipul_chat_history", updated);
           }
         } catch (e) {
           console.error('Failed to update chat history after delete', e);
@@ -89,24 +98,25 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, kno
         // Open settings and switch to Files tab so user can upload
         try {
           if (onOpenSettings) onOpenSettings();
-          window.dispatchEvent(new CustomEvent('saipul_open_settings_tab', { detail: { tab: 'files' } }));
+          window.dispatchEvent(new CustomEvent('saipul_open_settings_tab', { detail: { tab: 'privacy' } }));
         } catch (e) { void e; }
-      } else if (typeof action === 'string' && action && !['like','dislike','regenerate','report','delete'].includes(action)) {
-        // Treat remaining string actions as quick prompts: fill input and send
+      } else if (typeof action === 'string' && action && !['like','dislike','regenerate','report','delete','report_view_context'].includes(action)) {
+        // Treat remaining string actions as quick prompts: send immediately without stale input closure
         try {
-          setInput(action);
-          setTimeout(() => handleSendWithSentiment(), 80);
+          handleSendWithSentiment(action);
         } catch (e) { console.error('Error executing quick action prompt', e); }
       }
   };
 
   const chatEndRef = useRef(null);
-  const sentimentAnalyzer = new Sentiment();
   const inputRef = useRef(null);
 
   const [toast, setToast] = useState({ show: false, text: "" });
   const [showHistory, setShowHistory] = useState(false);
-  const [sessions, setSessions] = useState(() => { try { return JSON.parse(localStorage.getItem('saipul_chat_sessions') || '[]'); } catch (e) { void e; return []; } });
+  const [sessions, setSessions] = useState(() => {
+    const raw = storageService.get('saipul_chat_sessions', []);
+    return Array.isArray(raw) ? raw : [];
+  });
 
   useEffect(() => {
     const handler = (e) => {
@@ -131,7 +141,8 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, kno
 
   useEffect(() => {
     const handler = () => {
-      try { setSessions(JSON.parse(localStorage.getItem('saipul_chat_sessions') || '[]')); } catch (e) { void e; setSessions([]); }
+      const raw = storageService.get('saipul_chat_sessions', []);
+      setSessions(Array.isArray(raw) ? raw : []);
     };
     window.addEventListener('saipul_sessions_updated', handler);
     return () => window.removeEventListener('saipul_sessions_updated', handler);
@@ -158,7 +169,8 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, kno
         // do not persist when privacyMode
         return null;
       }
-      const existing = JSON.parse(localStorage.getItem('saipul_chat_sessions') || '[]');
+      const rawExisting = storageService.get('saipul_chat_sessions', []);
+      const existing = Array.isArray(rawExisting) ? rawExisting : [];
       const title = (messages.find(m => m.from === 'user' && m.text && m.text.length > 0)?.text || messages[0]?.text || '').slice(0, 120);
       const session = {
         id: `sess_${Date.now()}`,
@@ -171,7 +183,7 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, kno
       existing.push(session);
       // cap sessions to last 50
       while (existing.length > 50) existing.shift();
-      localStorage.setItem('saipul_chat_sessions', JSON.stringify(existing));
+      storageService.set('saipul_chat_sessions', existing);
       try { window.dispatchEvent(new CustomEvent('saipul_sessions_updated', { detail: { count: existing.length } })); } catch (_e) { void _e; }
       setSessions(existing);
       return session;
@@ -192,10 +204,11 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, kno
 
   const loadSession = (id) => {
     try {
-      const all = JSON.parse(localStorage.getItem('saipul_chat_sessions') || '[]');
-      const s = all.find(x => x.id === id);
-      if (s && s.messages) {
-        setMessages(s.messages);
+      const rawAll = storageService.get('saipul_chat_sessions', []);
+      const all = Array.isArray(rawAll) ? rawAll : [];
+      const s = all.find(x => x && x.id === id);
+      if (s && Array.isArray(s.messages)) {
+        setMessages(s.messages.filter(m => m && typeof m === 'object'));
         setShowHistory(false);
       }
     } catch (e) { console.error('loadSession', e); }
@@ -203,24 +216,25 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, kno
 
   const deleteSession = (id) => {
     try {
-      const all = JSON.parse(localStorage.getItem('saipul_chat_sessions') || '[]');
-      const next = all.filter(x => x.id !== id);
-      localStorage.setItem('saipul_chat_sessions', JSON.stringify(next));
+      const rawAll = storageService.get('saipul_chat_sessions', []);
+      const all = Array.isArray(rawAll) ? rawAll : [];
+      const next = all.filter(x => x && x.id !== id);
+      storageService.set('saipul_chat_sessions', next);
       setSessions(next);
       try { window.dispatchEvent(new CustomEvent('saipul_sessions_updated', { detail: { count: next.length } })); } catch (_e) { void _e; }
     } catch (e) { console.error('deleteSession', e); }
   };
 
-  const analyzeSentiment = (text) => {
-    const result = sentimentAnalyzer.analyze(text);
-    if (result.score > 0) return "positive";
-    if (result.score < 0) return "negative";
-    return "neutral";
-  };
-
-  const handleSendWithSentiment = () => {
-    const sentiment = analyzeSentiment(input);
-    handleSend({ text: input, sentiment });
+  const handleSendWithSentiment = (overrideText = null) => {
+    const rawText = typeof overrideText === 'string' ? overrideText : input;
+    let sentiment = "neutral";
+    try {
+      const result = analyzeSentiment(rawText);
+      sentiment = result.sentiment;
+    } catch (e) {
+      console.debug('Sentiment analysis in ChatbotWindow:', e);
+    }
+    handleSend({ text: rawText, sentiment });
   };
 
   return (
@@ -233,6 +247,12 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, kno
         onOpenHistory={openHistory}
         onToggleSpeech={() => { try { window.dispatchEvent(new Event('saipul_toggle_speech')); } catch (e) { void e; } }}
         ttsEnabled={!!(settings && settings.voiceResponse)}
+      />
+
+      {/* Quick Actions Bar */}
+      <QuickActions
+        activeQuickActions={activeQuickActions || []}
+        handleQuickAction={handleQuickAction}
       />
 
       {/* Messages */}
@@ -265,10 +285,7 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, kno
                   <Suggestions
                     suggestions={suggestions}
                     setInput={(s) => setInput(s)}
-                    onSelect={(s) => {
-                      setInput(s);
-                      setTimeout(() => handleSendWithSentiment(), 80);
-                    }}
+                    onSelect={(s) => handleSendWithSentiment(s)}
                   />
                 </div>
               )}
@@ -287,6 +304,9 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, kno
           inputRef={inputRef}
           handleSend={handleSendWithSentiment}
           handleKeyDown={handleKeyDown}
+          onFileUpload={handleChatFileUpload}
+          isUploading={isChatUploading}
+          settings={settings}
         />
       </div>
 
@@ -302,7 +322,7 @@ export function ChatbotWindow({ onClose, onOpenSettings, knowledgeBase = {}, kno
       {/* History Modal */}
       {showHistory && (
         <div className="fixed inset-0 z-[12000] flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full h-full sm:h-auto max-w-lg bg-var(--saipul-modal-bg) rounded-none sm:rounded-lg p-4" style={{ background: 'var(--saipul-surface)', color: 'var(--saipul-text)', border: '1px solid var(--saipul-border)' }}>
+          <div className="w-full h-full sm:h-auto max-w-lg bg-[var(--saipul-modal-bg)] rounded-none sm:rounded-lg p-4" style={{ background: 'var(--saipul-surface)', color: 'var(--saipul-text)', border: '1px solid var(--saipul-border)' }}>
             <div className="flex justify-between items-center mb-3">
               <h4 className="font-semibold">Riwayat Obrolan</h4>
               <div className="flex gap-2">

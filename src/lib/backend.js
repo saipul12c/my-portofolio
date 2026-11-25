@@ -43,7 +43,7 @@ export const checkHealth = async (timeout = 3000) => {
     });
     clearTimeout(id);
     return res.ok;
-  } catch (err) {
+  } catch {
     clearTimeout(id);
     return false;
   }

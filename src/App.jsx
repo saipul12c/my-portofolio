@@ -321,6 +321,8 @@ export default function App() {
                                     <Route path="/help/faq/riwayat/ai/:slug" element={<HelpFAQriwayat />} />
                                     <Route path="/live-cs/security" element={<Keamanan />} />
                                     <Route path="/live-cs/privacy" element={<Privasi />} />
+                                    <Route path="/privacy" element={<Navigate to="/live-cs/privacy" replace />} />
+                                    <Route path="/security" element={<Navigate to="/live-cs/security" replace />} />
                                     <Route path="/help/panduan/keamanan" element={<Navigate to="/live-cs/security" replace />} />
                                     <Route path="/help/panduan/privasi" element={<Navigate to="/live-cs/privacy" replace />} />
 
@@ -413,7 +415,6 @@ export default function App() {
                                     <Route path="/Live-Discussion/profile/:email" element={<ProfileLive />} />
                                     <Route path="/Live-Discussion/dashboard" element={<DashboardLive />} />
 
-                                    <Route path="/projects" element={<RequireAuth><Projects /></RequireAuth>} />
                                     <Route path="/login" element={<Login />} />
                                     <Route path="/register" element={<Register />} />
                                     <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />

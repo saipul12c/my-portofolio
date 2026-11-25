@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { UserCheck, Music } from "lucide-react";
 import { useGalleryData } from "./hooks/useGalleryData";
@@ -6,12 +5,11 @@ import MediaNotFound from "./components/MediaNotFound";
 import GalleryShareBar from "./gallery/GalleryShareBar";
 import GalleryRecommendations from "./gallery/GalleryRecommendations";
 import UniversalMediaPlayer from "./components/UniversalMediaPlayer";
-import { sanitizeVideoUrl, sanitizeUrl } from "./utils/sanitizers";
+import { sanitizeUrl } from "./utils/sanitizers";
 
 export default function ShortDetail() {
   const { id } = useParams();
   const { allMedia, loading } = useGalleryData();
-  const [videoError, setVideoError] = useState(false);
 
   if (loading) return (
     <main className="min-h-screen flex items-center justify-center p-8 bg-[var(--color-gray-900)] text-white">
@@ -45,7 +43,6 @@ export default function ShortDetail() {
                 title={item.title}
                 isShort={true}
                 className="w-full max-h-[70vh]"
-                onError={() => setVideoError(true)}
               />
             </div>
 

@@ -2,11 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 import { Routes, Route, useLocation } from 'react-router-dom';
 // ✅ PERBAIKAN: Import langsung dari contexts, bukan dari hooks
-import { useAuth } from './contexts/AuthContext';
-import { useChat } from './contexts/ChatContext';
+import { useAuth } from './contexts/useAuth';
+import { useChat } from './contexts/useChat';
 import api from './lib/api';
 import { useNavigate } from 'react-router-dom';
-import { useCommunity } from '../../context/CommunityContext';
+import { useCommunity } from '../../context/useCommunity';
 import ServerSidebar from './components/layout/ServerSidebar';
 import ChannelSidebar from './components/layout/ChannelSidebar';
 import ChatArea from './components/layout/ChatArea';
@@ -168,7 +168,7 @@ const Komoniti = () => {
             try {
               const u = await api.users.get(userId).catch(() => null);
               if (u) setProfileMember(u);
-            } catch (e) { /* ignore */ }
+            } catch { /* ignore */ }
             setShowProfileModal(true);
           })();
           return;
@@ -316,7 +316,7 @@ const Komoniti = () => {
       )}
 
       {showDMModal && dmIdState && (
-        <DMModal dmId={dmIdState} onClose={() => { setShowDMModal(false); setDmIdState(null); try { if (location.pathname.includes('/dm/')) navigate('/discord', { replace: true }); } catch {} }} />
+        <DMModal dmId={dmIdState} onClose={() => { setShowDMModal(false); setDmIdState(null); try { if (location.pathname.includes('/dm/')) navigate('/discord', { replace: true }); } catch { /* ignore */ } }} />
       )}
     </div>
   );

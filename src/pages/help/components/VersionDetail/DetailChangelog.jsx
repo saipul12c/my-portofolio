@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { FaCode, FaCheckCircle, FaStar, FaBug, FaGlobe } from 'react-icons/fa';
 import { SmartText } from '../ai-docs/Shared/UIComponents';
 

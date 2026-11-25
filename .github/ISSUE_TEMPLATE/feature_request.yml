@@ -1,0 +1,56 @@
+name: Usulan Fitur / Peningkatan (Feature Request)
+description: Ajukan ide fitur baru, peningkatan UI/UX, atau kemampuan baru untuk SaipulAI dan portofolio
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Punya ide untuk meningkatkan **my-porto** atau **SaipulAI**? Jelaskan usulan Anda di bawah ini.
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Area Peningkatan
+      options:
+        - UI/UX & Halaman Portofolio
+        - SaipulAI (NLU, Math, Analytics, KB)
+        - SaipulAI REST API (/api/saipul) & CLI
+        - Performa & Optimasi Build
+        - Dokumentasi / Pengujian
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Masalah atau Kebutuhan yang Ingin Diselesaikan
+      description: Jelaskan latar belakang masalah atau kekurangan saat ini.
+      placeholder: "Saat ini saya kesulitan ketika..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solusi atau Fitur yang Diusulkan
+      description: Jelaskan secara jelas bagaimana fitur ini sebaiknya bekerja.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatif atau Referensi Tambahan (Opsional)
+      description: Sebutkan alternatif lain, contoh desain, atau pertimbangan aksesibilitas/kompatibilitas.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution_willingness
+    attributes:
+      label: Kesediaan Kontribusi
+      options:
+        - label: Saya bersedia mengerjakan Pull Request untuk usulan ini (mengikuti CONTRIBUTING.md)
+          required: false

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { LogOut } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { USER_ROLES, USER_TIERS } from '../../utils/constants';
 import { getTierColor, getRoleBadge, friendlyFetchError } from '../../utils/helpers';
@@ -14,7 +13,7 @@ const UserProfile = ({ onClose, member }) => {
   const { user, updateProfile, signOut } = useAuth();
   const isOwn = !member || member.id === user?.id;
   const displayUser = member || user || {};
-  const [username, setUsername] = useState(displayUser?.username || '');
+  const [username] = useState(displayUser?.username || '');
   const [loading, setLoading] = useState(false);
 
   const handleSave = async () => {
@@ -64,7 +63,7 @@ const UserProfile = ({ onClose, member }) => {
           if (key) map[key] = t.perks || t.features || t.description_list || null;
         });
         if (Object.keys(map).length > 0) setTierPerksRemote(map);
-      } catch (e) { /* ignore */ }
+      } catch { /* ignore */ }
     })();
     return () => { mounted = false; };
   }, []);
@@ -85,7 +84,7 @@ const UserProfile = ({ onClose, member }) => {
         } else {
           setFriendStatus('none');
         }
-      } catch (e) { setFriendStatus('none'); }
+      } catch { setFriendStatus('none'); }
     })();
     return () => { mounted = false; };
   }, [displayUser?.id]);
@@ -95,7 +94,7 @@ const UserProfile = ({ onClose, member }) => {
     setFriendLoading(true);
     setFriendResult(null);
     try {
-      const res = await api.friends.request(displayUser.id).catch((e) => Promise.reject(e));
+      await api.friends.request(displayUser.id).catch((e) => Promise.reject(e));
       setFriendResult({ ok: true, msg: 'Permintaan teman terkirim' });
       setFriendStatus('requested');
     } catch (err) {
@@ -131,18 +130,6 @@ const UserProfile = ({ onClose, member }) => {
       }
     } catch (e) {
       console.error('Create DM failed', e);
-    }
-  };
-
-  const reportAccount = async () => {
-    if (!displayUser?.id) return;
-    const reason = window.prompt('Berikan alasan pelaporan singkat untuk akun ini:');
-    if (!reason) return;
-    try {
-      await api.users.report(displayUser.id, { reason }).catch(() => null);
-      alert('Terima kasih. Laporan telah dikirim.');
-    } catch (e) {
-      alert('Gagal mengirim laporan.');
     }
   };
 

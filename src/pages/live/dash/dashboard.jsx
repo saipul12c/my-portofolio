@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
   Users, 
@@ -85,8 +85,9 @@ const Dashboard = () => {
   const [appeals, setAppeals] = useState([]);
   const [auditLogs, setAuditLogs] = useState([]);
   const [loadingReports, setLoadingReports] = useState(false);
-  const [loadingAppeals, setLoadingAppeals] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem('saipul_theme') || 'default');
+  const loadDashboardDataRef = useRef(null);
+  const fetchReportsRef = useRef(null);
 
   // System Config State (New Phase 2)
   const [systemConfigs, setSystemConfigs] = useState({
@@ -147,7 +148,7 @@ const Dashboard = () => {
           };
           setUser(userData);
           localStorage.setItem('local_user', JSON.stringify(userData));
-          loadDashboardData();
+          loadDashboardDataRef.current?.();
         }
       } catch (err) {
         console.error('Error verifying dashboard access:', err);
@@ -285,7 +286,7 @@ const Dashboard = () => {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, () => {
         const now = Date.now();
         if (now - lastRefresh > REFRESH_THRESHOLD) {
-          loadDashboardData();
+          loadDashboardDataRef.current?.();
           lastRefresh = now;
         }
       })
@@ -296,12 +297,12 @@ const Dashboard = () => {
         
         const now = Date.now();
         if (now - lastRefresh > REFRESH_THRESHOLD) {
-          loadDashboardData();
+          loadDashboardDataRef.current?.();
           lastRefresh = now;
         }
       })
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'reports' }, () => {
-        fetchReports();
+        fetchReportsRef.current?.();
       })
       .subscribe();
 
@@ -355,31 +356,6 @@ const Dashboard = () => {
     }
   };
 
-  // Delete user
-  const deleteUser = async (targetUser) => {
-    if (!canManageUser(targetUser)) {
-      alert('Peringatan Keamanan: Anda tidak memiliki wewenang untuk menghapus user ini (Izin Hierarki).');
-      return;
-    }
-
-    if (!confirm(`Apakah Anda yakin ingin menghapus user ${targetUser.nama}?`)) return;
-
-    try {
-      const { error } = await supabase.from('users').delete().eq('id', targetUser.id);
-
-      if (!error) {
-        await createAuditLog(targetUser.id, 'DELETE_USER', 'Pelanggaran berat (Admin action)');
-        alert('User deleted successfully!');
-        loadDashboardData();
-      } else {
-        throw error;
-      }
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      alert('Failed to delete user');
-    }
-  };
-
   // Toggle user status (Active / Banned)
   const toggleUserStatus = async (targetUser) => {
     if (!canManageUser(targetUser)) {
@@ -389,7 +365,6 @@ const Dashboard = () => {
     
     const isBanning = targetUser.status === 'aktif' || targetUser.status === 'active';
     const newStatus = isBanning ? 'banned' : 'aktif';
-    const actionLabel = isBanning ? 'BAN' : 'UNBAN';
     
     let reason = 'Restorasi akses normal';
     if (isBanning) {
@@ -500,7 +475,6 @@ const Dashboard = () => {
   };
 
   const fetchAppeals = async () => {
-    setLoadingAppeals(true);
     try {
       const { data, error } = await supabase
         .from('appeals')
@@ -510,8 +484,6 @@ const Dashboard = () => {
       setAppeals(data || []);
     } catch (err) {
       console.error('Error fetching appeals:', err);
-    } finally {
-      setLoadingAppeals(false);
     }
   };
 
@@ -561,6 +533,25 @@ const Dashboard = () => {
     } catch (err) {
       console.error('Error dismissing report:', err);
       alert('Gagal menghapus laporan');
+    }
+  };
+
+  const updateStatus = async (targetUser, newStatus) => {
+    if (!canManageUser(targetUser)) {
+      alert('Anda tidak memiliki izin untuk mengubah status user ini.');
+      return;
+    }
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ status: newStatus })
+        .eq('id', targetUser.id);
+      if (error) throw error;
+      await createAuditLog(targetUser.id, newStatus === 'nonaktif' ? 'BAN_USER' : 'UPDATE_STATUS', 'Tindakan moderasi laporan');
+      loadDashboardData();
+    } catch (err) {
+      console.error('Error updating user status:', err);
+      alert('Gagal memperbarui status user');
     }
   };
 
@@ -625,22 +616,8 @@ const Dashboard = () => {
     }
   };
 
-  // Upgrade user role
-  const upgradeUserRole = async (user, newRole) => {
-    try {
-      const { error } = await supabase.from('users').update({ role: newRole }).eq('id', user.id);
-
-      if (!error) {
-        alert(`Role user diubah menjadi ${newRole}!`);
-        loadDashboardData();
-      } else {
-        throw error;
-      }
-    } catch (error) {
-      console.error('Error upgrading user role:', error);
-      alert('Gagal mengubah role user');
-    }
-  };
+  loadDashboardDataRef.current = loadDashboardData;
+  fetchReportsRef.current = fetchReports;
 
   // Delete single message with media cleanup
   const deleteMessage = async (messageId) => {

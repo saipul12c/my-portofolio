@@ -21,7 +21,7 @@ export const MessageSearchModal = ({ isOpen, onClose, messages = [], onJumpToMes
 
       return true;
     }).slice(0, 30); // Limit to top 30 matches
-  }, [messages, searchTerm, mediaOnly]);
+  }, [isOpen, messages, searchTerm, mediaOnly]);
 
   if (!isOpen) return null;
 

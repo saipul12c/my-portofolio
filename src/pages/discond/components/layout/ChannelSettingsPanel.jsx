@@ -14,7 +14,7 @@ export default function ChannelSettingsPanel({ channelId, onSaved }) {
         const s = await api.channels.settings.get(channelId).catch(() => null);
         if (!mounted) return;
         setSettings(s || { muted: false, pinned_ids: [] });
-      } catch (e) { setSettings({ muted: false, pinned_ids: [] }); }
+      } catch { setSettings({ muted: false, pinned_ids: [] }); }
       finally { if (mounted) setLoading(false); }
     })();
     return () => { mounted = false; };

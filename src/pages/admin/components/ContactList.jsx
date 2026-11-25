@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { useState, useMemo, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import {

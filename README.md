@@ -1,19 +1,28 @@
-# 🌐 My Portfolio Website
+# 🌐 Syaiful Mukmin — Portfolio Website & SaipulAI
 
-**Selamat datang di repositori website portfolio pribadi!** Website ini menampilkan proyek-proyek, keterampilan, pengalaman profesional, galeri fotografi, blog, dan berbagai konten lainnya.
+[![Version](https://img.shields.io/badge/version-1.20.0-06b6d4?style=flat-square)](CHANGELOG.md)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg?style=flat-square)](LICENSE.md)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-syaiful--mukmin.netlify.app-10b981?style=flat-square&logo=netlify&logoColor=white)](https://syaiful-mukmin.netlify.app/)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg?style=flat-square)](CODE_OF_CONDUCT.md)
+[![Security Policy](https://img.shields.io/badge/Security-Policy-ef4444?style=flat-square)](SECURITY.md)
+
+**Website portofolio resmi & ekosistem AI interaktif oleh M. Syaiful Mukmin** — menampilkan katalog proyek, keahlian, pengalaman profesional, blog teknis, galeri fotografi 3D/visual, dokumentasi akademik, ruang diskusi real-time, serta asisten cerdas **SaipulAI v8.0.0** (Dual-Engine: inferensi lokal di browser + Public REST API `/api/saipul`).
+
+> 🔗 **Tautan Cepat:** [Website Live](https://syaiful-mukmin.netlify.app/) · [API Publik `/api/saipul`](#-api-publik-terbuka-third-party-access) · [Panduan Kontribusi](CONTRIBUTING.md) · [Keamanan](SECURITY.md) · [Aksesibilitas](ACCESSIBILITY.md) · [Hak Cipta Aset](COPYRIGHT.md)
 
 ---
 
 ## 📋 Tentang Proyek
 
-Website portfolio ini adalah platform lengkap yang dibangun dengan **React + Vite + Tailwind CSS** di frontend dan **Node.js + Express** di backend. Dirancang untuk memperkenalkan diri secara profesional sambil menampilkan karya-karya terbaik dan konten multimedia.
+Website portfolio ini dibangun dengan **React 19 + Vite 7 + Tailwind CSS v4** di sisi antarmuka modern, dipadukan dengan **Supabase** (database & autentikasi dengan Row Level Security), **Netlify Functions / Node.js HTTP** untuk endpoint publik **SaipulAI (`/api/saipul`)**, serta antarmuka CLI (`saipul-cli`). Platform ini dirancang untuk memperkenalkan profil profesional secara interaktif, mendokumentasikan karya kreatif, sekaligus menyediakan layanan tanya-jawab cerdas yang aman dan responsif.
 
 **Tech Stack:**
-- **Frontend:** React 19, Vite 7, Tailwind CSS v4 (`@tailwindcss/vite`), React Router v7, Framer Motion
-- **Backend & Data:** Supabase Client, Node.js, Express.js, Socket.IO
-- **Styling Architecture:** 100% Pure Tailwind CSS v4 (Zero legacy custom CSS files)
-- **Tools:** EmailJS, Lucide React, React Icons, React Window (virtualization)
-- **Features:** Dark/Light Theme Tokens, SEO Optimization, Error Boundary, Full Responsive Design
+- **Frontend & 3D:** React 19, Vite 7, Tailwind CSS v4 (`@tailwindcss/vite`), React Router v7, Framer Motion, Three.js (`@react-three/fiber`, `@react-three/drei`, `@react-three/rapier`)
+- **AI & NLP Engine (SaipulAI v8.0.0):** On-Device NLU (`compromise`, `fuse.js`, `sentiment`), Symbolic & Numerical Math (`mathjs`), Deep Neural Pipeline, Web SDK (`public/saipul-sdk.js`), & CLI (`bin/saipul-cli.js`)
+- **Backend, Data & Serverless:** Supabase (`@supabase/supabase-js`), Node.js HTTP / Netlify Functions (`/api/saipul`), Socket.IO Client
+- **Styling Architecture:** 100% Pure Tailwind CSS v4 (Zero legacy custom CSS files, `@theme` design tokens)
+- **Tools & Visualisasi:** EmailJS, Recharts, React Markdown (`remark-gfm`), Lucide React, React Icons, React Window (virtualization)
+- **Features & Protection:** Dark/Light Theme Tokens, SEO & JSON-LD, Error Boundary, Rate Limiting, Filter PII, & Responsive Design
 
 ---
 
@@ -85,35 +94,38 @@ Website portfolio ini adalah platform lengkap yang dibangun dengan **React + Vit
 
 ## ✨ Fitur Utama
 
-### 🎨 **UI/UX Features**
-- ✅ **Dark/Light Mode Toggle** - Switch tema gelap & terang
-- ✅ **Responsive Design** - Optimal di semua ukuran device (mobile, tablet, desktop)
-- ✅ **Smooth Scrolling Navigation** - Navigasi halus antar section
-- ✅ **Loading Animations** - Animasi smooth saat konten dimuat
-- ✅ **Hover Effects** - Efek interaktif yang menarik
-- ✅ **Error Boundary** - Error handling yang elegant
-- ✅ **Protected Error Page** - Halaman error yang aman & terstruktur
+### 🎨 **UI/UX & Visual 3D**
+- ✅ **100% Pure Tailwind CSS v4 & Design Tokens** - Styling berbasis `@theme` tokens di `src/index.css` dengan opsi switch tema (`default` / `dark` / `light`) pada modul Live Discussion
+- ✅ **3D Interactive Graphics** - Elemen visual 3D interaktif menggunakan `Three.js` (`@react-three/fiber`, `@react-three/drei`, `@react-three/rapier`)
+- ✅ **Responsive Design** - Optimal di semua ukuran perangkat (mobile, tablet, desktop)
+- ✅ **Animasi & Transisi Halus** - Animasi komponen dengan `Framer Motion` dan halaman loading transisi
+- ✅ **Global Error Boundary & Protected Error Pages** - Penanganan error terstruktur (`GlobalErrorBoundary`, `ProtectedErrorPage` untuk `/401`, `/403`, `/408`, `/500`, `/502`, `/503`) serta `LaunchGuard`
+- ✅ **Aksesibilitas (ARIA)** - Pelabelan `aria-label` pada kontrol navigasi, bantuan, notifikasi, dan chat (lihat [ACCESSIBILITY.md](ACCESSIBILITY.md))
 
-### 🚀 **Performance & Optimization**
-- ✅ **React Window Virtualization** - Performa optimal untuk list panjang
-- ✅ **Lazy Loading** - Loading komponen & gambar secara dinamis
-- ✅ **SEO Optimization** - Meta tags, structured data, React Helmet
-- ✅ **Code Splitting** - Bundle size optimization dengan Vite
+### 🤖 **Ekosistem SaipulAI v8.0.0**
+- ✅ **Dual-Engine Architecture** - Inferensi *on-device* langsung di browser yang selaras dengan Public REST API (`/api/saipul`) dan CLI (`bin/saipul-cli.js`)
+- ✅ **Bilingual NLU & Explainable AI (XAI)** - Pemahaman bahasa Indonesia/Inggris, deteksi sarkasme/sentimen/emosi, *confidence score*, dan inspeksi alur berpikir AI
+- ✅ **Math & Analytics Engine** - Kalkulator simbolik/numerik (`mathjs`: linear, kuadrat, integral, turunan) serta analitik statistik deterministik
+- ✅ **Multi-Turn Context & SSE Streaming** - Memori percakapan hingga 10 putaran dan dukungan *Server-Sent Events* (SSE)
+- ✅ **Kontrol Suara & 4 Tab Pengaturan Fungsional** - Dukungan Text-to-Speech & *speech recognition* Web Speech API, mode privasi, serta pintasan keyboard (`/help/chatbot/settings`)
 
-### 💻 **Developer Features**
-- ✅ **ESLint Configuration** - Code quality & consistency
-- ✅ **Modular Architecture** - Folder structure yang terorganisir
-- ✅ **Context API** - State management untuk error handling
-- ✅ **API Integration** - Backend routes untuk blog posts, projects
-- ✅ **Email Integration** - EmailJS untuk form kontak
+### 🚀 **Performa & Optimasi**
+- ✅ **List Virtualization** - Performa optimal untuk daftar panjang dengan `react-window` dan `@tanstack/react-virtual`
+- ✅ **Code Splitting & Lazy Loading** - Pemisahan *chunk* manual di `vite.config.js` (`vendor`, `three`, `motion`, `charts`, `nlp`, `supabase`, dll.) serta `React.lazy` & `Suspense`
+- ✅ **Asset Compression** - Kompresi otomatis `gzip` dan `brotli` (`.br`) pada build produksi via `vite-plugin-compression`
+- ✅ **SEO & Version Tracking** - Meta tags Open Graph/Twitter, JSON-LD *Structured Data*, `sitemap.xml`, `robots.txt`, dan deteksi pembaruan otomatis via `public/version.json` (`UpdateNotification`)
 
-### 📱 **Interaktif Elements**
-- ✅ **Help Button** - Bantuan & dokumentasi in-app
-- ✅ **Typing Animation** - Efek typing text dinamis
-- ✅ **Modal Popups** - Detail view dengan modal interaktif
-- ✅ **Form Validation** - Validasi input form
-- ✅ **Search & Filter** - Fitur pencarian & filtering konten
-- ✅ **Toast Notifications** - Notifikasi user feedback
+### 💻 **Developer, API, & Keamanan**
+- ✅ **Public REST API (`/api/saipul`) & Web SDK (`public/saipul-sdk.js`)** - Endpoint publik tanpa kredensial sensitif untuk integrasi eksternal, dilengkapi allowlist endpoint ketat (`404` untuk `/api/*` non-publik, `405` untuk metode selain `GET`/`POST`/`OPTIONS`)
+- ✅ **Proteksi API Lintas-Runtime** - Rate limiting (`30` req/menit/IP), batas payload `64 KB`, batas query `2500` karakter, sanitasi riwayat dialog, filter PII, serta header keamanan HTTP/CORS (berjalan di Vite middleware, Node HTTP `server/saipul-server.js`, dan Netlify Functions)
+- ✅ **Supabase Integration** - Autentikasi dan pengelolaan data dinamis (`@supabase/supabase-js`) dengan skema SQL & *Row Level Security* (`database_supa/`)
+- ✅ **ESLint & Automated Test Suites** - Konfigurasi ESLint (`eslint.config.js`) dan pengujian NLU, keamanan API, harmonisasi, CLI, serta benchmark (`test/`)
+- ✅ **Email Integration** - Pengiriman pesan form kontak melalui `EmailJS`
+
+### 📱 **Elemen Interaktif & Komunitas**
+- ✅ **Help System & Interactive AI Docs (`/help/*`)** - Dokumentasi SaipulAI dengan *Live API Playground* (`ApiDocs.jsx`), FAQ, riwayat versi, komitmen, serta halaman Keamanan & Privasi (`/live-cs/security`, `/live-cs/privacy`)
+- ✅ **Live Discussion Room & Blog Admin** - Ruang diskusi real-time (`/Live-Discussion`) dan dashboard manajemen blog terproteksi (`/blog-admin/*`)
+- ✅ **Pencarian, Filter, & Visualisasi** - Pencarian konten (`fuse.js`), grafik statistik (`recharts`), markdown rendering (`react-markdown`, `remark-gfm`), modal interaktif, dan notifikasi toast (`react-toastify`)
 
 ---
 
@@ -161,42 +173,22 @@ my-porto/
 │   ├── App.jsx                      # Root component & routing
 │   ├── main.jsx                     # Entry point
 │   └── ...
-├── backend/                          # Backend (Node.js + Express)
-│   ├── server.js                    # Express server setup
-│   ├── routes/
-│   │   ├── api.js                   # API routes
-│   │   ├── postsRoutes.js           # Blog posts API
-│   │   ├── dataRoutes.js            # Data API
-│   │   ├── galleryData.js           # Gallery API
-│   │   ├── projects.js              # Projects API
-│   │   └── ...
-│   ├── controllers/
-│   │   ├── postsController.js       # Blog posts controller
-│   │   ├── dataController.js        # Data controller
-│   │   └── ...
-│   ├── models/
-│   │   └── ...
-│   ├── middlewares/
-│   │   ├── validatePost.js
-│   │   └── ...
-│   ├── utils/
-│   │   ├── errorHandler.js
-│   │   ├── customErrors.js
-│   │   ├── controllerFactory.js
-│   │   └── fileHandler.js
-│   ├── data/                        # Data storage
-│   │   ├── projects.json
-│   │   ├── galleryData.json
-│   │   └── ...
-│   └── package.json
+├── api/                              # Public REST API Handler (SaipulAI)
+│   └── saipul.js                     # Endpoint publik /api/saipul (GET, POST, OPTIONS)
+├── server/                           # Standalone Node HTTP Server
+│   └── saipul-server.js              # Server mandiri port 3001 untuk /api/saipul
+├── netlify/functions/                # Netlify Serverless Functions
+│   └── saipul.js                     # Wrapper serverless untuk /api/saipul
+├── bin/                              # CLI Tools
+│   └── saipul-cli.js                 # SaipulAI CLI
+├── database_supa/                    # Skema SQL & RLS Supabase
 ├── public/                           # Static files
-│   ├── index.html
-│   ├── css/
-│   ├── JS/
+│   ├── saipul-sdk.js                 # Web SDK klien untuk /api/saipul
+│   ├── _redirects                    # Aturan routing Netlify (/api/saipul -> function)
 │   └── ...
-├── package.json                      # Frontend dependencies
-├── vite.config.js                   # Vite configuration
-└── README.md                        # This file
+├── package.json                      # Project dependencies & scripts
+├── vite.config.js                    # Vite configuration & dev/preview API middleware
+└── README.md                         # This file
 ```
 
 ---
@@ -205,69 +197,34 @@ my-porto/
 
 ### Prerequisites
 - Node.js v18+ 
-- npm atau yarn
+- npm
 
 ### Installation
 
 **1. Clone repository:**
 ```bash
-git clone <repository-url>
-cd my-porto
+git clone https://github.com/saipul12c/my-portofolio.git
+cd my-portofolio
 ```
 
-**2. Install frontend dependencies:**
+**2. Install dependencies:**
 ```bash
 npm install
-```
-
-**3. Install backend dependencies:**
-```bash
-cd backend
-npm install
-cd ..
 ```
 
 ### Development
 
-**1. Jalankan Vite dev server (frontend):**
+**1. Jalankan Vite dev server (frontend + middleware `/api/saipul`):**
 ```bash
 npm run dev
 ```
 Website akan terbuka di `http://localhost:5173`
 
-**2. Jalankan backend server (di terminal lain):**
+**2. Jalankan standalone API server (opsional, untuk menguji `/api/saipul` secara terpisah):**
 ```bash
-cd backend
-npm start
-# atau: node server.js
+npm run api:server
 ```
-Backend berjalan di `http://localhost:3000`
-
-### Using the local JSON Backend (recommended for development)
-
-This project includes a small JSON-based backend server in `backend/` that exposes REST endpoints and Socket.IO for chat. To make the frontend use this local backend instead of a remote backend, enable the backend proxy in the environment.
-
-1. Ensure the backend is running:
-
-```powershell
-cd backend; npm install; npm start
-```
-
-2. In project root, set the environment flag (this repository already sets it in `.env`):
-
-```bash
-VITE_USE_BACKEND_PROXY=true
-```
-
-3. Start the frontend dev server (in a separate terminal):
-
-```powershell
-npm run dev
-```
-
-When `VITE_USE_BACKEND_PROXY=true`, the frontend will call the local endpoints under `/api/*` (for example `/api/communities`, `/api/messages`, `/api/auth/*`) and receive data from the JSON files in `backend/data/`.
-
-If you'd rather use a remote backend instead of the local JSON server, set `VITE_USE_BACKEND_PROXY=false` in `.env` and provide your remote API configuration.
+Server SaipulAI API berjalan di `http://localhost:3001/api/saipul`
 
 ### Build
 
@@ -286,36 +243,27 @@ npm run preview
 ## 🔧 Fitur & Konfigurasi
 
 ### Environment Variables
-Buat `.env` file di root jika perlu konfigurasi API:
+Buat `.env` file di root (tidak di-commit ke Git) apabila mengaktifkan integrasi Supabase atau EmailJS:
 ```
-VITE_API_URL=http://localhost:3000/api
+VITE_SUPABASE_URL=<your-supabase-project-url>
+VITE_SUPABASE_PUBLISHABLE_KEY=<your-supabase-publishable-key>
 VITE_EMAIL_SERVICE_ID=<your-emailjs-id>
 ```
 
-### Backend Configuration
-Edit `backend/server.js` untuk konfigurasi:
-- PORT default: 3000
-- CORS settings
-- Static files directory
-
 ---
 
-## 📊 API Routes
+## 📊 API Publik Terbuka (Third-Party Access)
 
-### Blog Posts
-- `GET /api/posts` - Ambil semua posts
-- `GET /api/posts/:id` - Ambil post detail
-- `POST /api/posts` - Create post
-- `PUT /api/posts/:id` - Update post
-- `DELETE /api/posts/:id` - Delete post
+Satu-satunya endpoint REST API yang dibuka untuk integrasi pihak ketiga adalah **`/api/saipul`** (tanpa kredensial sensitif, dilindungi rate limit `30` req/menit/IP, batas payload `64 KB`, batas query `2500` karakter, serta filter PII):
 
-### Projects
-- `GET /api/projects` - Ambil semua proyek
-- `GET /api/projects/:id` - Ambil detail proyek
+| Endpoint | Metode | Kegunaan |
+|---|---|---|
+| `/api/saipul` | `GET` | Health check & metadata kapabilitas SaipulAI API |
+| `/api/saipul?q=<pertanyaan>` | `GET` | Quick query (opsional `&stream=true` untuk SSE) |
+| `/api/saipul` | `POST` | Chat, kalkulasi matematika, analitik statistik, & multi-turn context (`{ message, style, history, stream }`) |
+| `/api/saipul` | `OPTIONS` | CORS preflight untuk integrasi Web SDK (`public/saipul-sdk.js`) |
 
-### Gallery
-- `GET /api/gallery` - Ambil data galeri
-- `GET /api/gallery/:category` - Ambil galeri per kategori
+> **Endpoint Lain Tertutup (`404` / `405`):** Route internal atau legacy seperti `/api/posts`, `/api/projects`, `/api/gallery`, `/api/auth/*`, maupun metode `PUT`/`DELETE` **tidak dibuka** untuk pihak ketiga. Pengelolaan data dinamis portofolio dilakukan secara internal melalui Supabase (dengan Row Level Security) dan bundel data frontend.
 
 ---
 
@@ -373,10 +321,9 @@ Project ini telah sepenuhnya dimigrasi dan distandardisasi menggunakan **Tailwin
 - `react-toastify` - Toast notifications
 - `emailjs-com` - Email service
 
-### Backend
-- `express` - Web framework
-- `cors` - Cross-origin resource sharing
-- `body-parser` - Request parsing
+### Backend & Serverless
+- `@supabase/supabase-js` - Klien database & autentikasi (dilindungi RLS)
+- Node.js HTTP / Netlify Functions - Runtime untuk public API `/api/saipul` (`api/saipul.js`, `server/saipul-server.js`, `netlify/functions/saipul.js`)
 
 ---
 
@@ -389,38 +336,33 @@ Untuk berkontribusi:
 4. Push ke branch (`git push origin feature/AmazingFeature`)
 5. Buat Pull Request
 
+Baca panduan lengkap di [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), [SECURITY.md](SECURITY.md), dan [ACCESSIBILITY.md](ACCESSIBILITY.md).
+
 ---
 
 ## 📝 Lisensi
 
-Project ini dapat digunakan sesuai kebutuhan. Hubungi untuk informasi lisensi lebih lanjut.
+Kode sumber proyek ini dilisensikan di bawah [GNU AGPLv3](LICENSE.md). Konten, data pribadi, dan aset media memiliki pembatasan hak cipta tersendiri — lihat [COPYRIGHT.md](COPYRIGHT.md) untuk informasi lebih lanjut.
 
 ---
 
 ## 📞 Kontak
 
-Hubungi melalui:
+Hubungi melalui: `uju355@gmail.com`
  
 ---
 
-## 🛠️ Quick Dev: Jalankan Frontend + Backend
+## 🛠️ Quick Dev: Jalankan Frontend & SaipulAI API
 
-Untuk development jalankan frontend (Vite) dan backend (Express) di dua terminal terpisah. Backend di project ini secara default berjalan di port `8080`.
+Untuk development lokal:
 
 ```powershell
-# Terminal A: backend
-cd backend
-npm install
-copy .env.example .env
+# Jalankan frontend + middleware /api/saipul sekaligus:
 npm run dev
 
-# Terminal B: frontend (project root)
-cd ..
-npm install
-npm run dev
+# (Opsional) Jalankan server SaipulAI API mandiri di port 3001:
+npm run api:server
 ```
-
-Vite sudah dikonfigurasi untuk mem-proxy request `/api`, `/socket.io`, dan `/avatar` ke `http://localhost:8080` (lihat `vite.config.js`), sehingga `fetch('/api/...')` di frontend akan diarahkan ke backend tanpa perubahan tambahan.
 
 - **Form Kontak** - Di halaman `/admin/contact`
 - **Email** - Gunakan form kontak atau EmailJS
@@ -430,9 +372,9 @@ Vite sudah dikonfigurasi untuk mem-proxy request `/api`, `/socket.io`, dan `/ava
 
 ## 📊 Statistik Project
 
-- **Total Pages:** 20+
+- **Total Pages:** 25+
 - **Components:** 30+
-- **API Routes:** 15+
+- **Public API Endpoint:** 1 (`/api/saipul` — `GET`, `POST`, `OPTIONS`)
 - **Features:** 15+
 - **Responsive Breakpoints:** 6+
 
@@ -440,18 +382,20 @@ Vite sudah dikonfigurasi untuk mem-proxy request `/api`, `/socket.io`, dan `/ava
 
 ## ✅ Version History
 
-Latest version: **v1.20.0** (2026-11-15)
-- **Full Tailwind CSS Migration**: Penghapusan total file CSS lawas (`App.css`, `discond-theme.css`) dan refaktor seluruh modul ke utility classes Tailwind CSS murni.
-- **Index.css Streamlined**: Eliminasi lebih dari 180 baris CSS usang/mati untuk efisiensi bundle size maksimal.
-- **Modern Tech Architecture**: Pembaruan dependensi Vite + Tailwind v4 dan penyempurnaan integrasi real-time.
+Latest version: **v1.20.0** (2026-11-15 — pembaruan keamanan, lisensi, & dokumentasi hingga 2026-11-25)
+- **Full Tailwind CSS v4 Migration**: Penghapusan total stylesheet lawas (`App.css`, `discond-theme.css`), eliminasi >180 baris CSS usang di `src/index.css`, dan refaktor penuh ke utility classes Tailwind CSS murni.
+- **SaipulAI v8.0.0 Dual-Engine & CLI**: Penyelarasan mesin On-Device browser dengan Public REST API (`/api/saipul`), Web SDK (`public/saipul-sdk.js`), standalone server (`server/saipul-server.js`), Netlify Functions (`netlify/functions/saipul.js`), serta CLI (`bin/saipul-cli.js`) lengkap dengan NLU, *Math Engine* (`mathjs`), analitik statistik, multi-turn context, dan streaming SSE.
+- **Hardening & Pembatasan API Publik**: Pembatasan allowlist ketat agar hanya `/api/saipul` (`GET`, `POST`, `OPTIONS`) yang terbuka untuk pihak ketiga (`404`/`405` untuk endpoint dan metode lain), disertai rate limiting (`30` req/menit/IP), batas payload `64 KB`, filter PII, dan header keamanan HTTP.
+- **Sentralisasi Data & Modul Akademik**: Konsolidasi data JSON ke `src/data/` dan penataan modul akademik sarjana di `src/pages/akademik/sarjana/`.
+- **Lisensi, Hak Cipta, & Standar Komunitas GitHub**: Penerapan [LICENSE.md](LICENSE.md) (`AGPL-3.0`) untuk kode sumber, [COPYRIGHT.md](COPYRIGHT.md) (*All Rights Reserved*) untuk konten/aset pribadi, serta [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [ACCESSIBILITY.md](ACCESSIBILITY.md), dan `.github/ISSUE_TEMPLATE/`.
 
-Lihat `CHANGELOG.md` untuk history lengkap seluruh perubahan.
+Lihat [CHANGELOG.md](CHANGELOG.md) untuk riwayat lengkap rilis sebelumnya.
 
 ---
 
 ## 🙏 Credits
 
-Terima kasih kepada semua open-source libraries dan tools yang digunakan dalam project ini.
+Terima kasih kepada seluruh pengembang dan kontributor pustaka open-source yang digunakan pada proyek ini (React, Vite, Tailwind CSS, Framer Motion, Three.js, Supabase, mathjs, Lucide, dan ekosistem pendukung lainnya). Penggunaan ulang kode sumber tunduk pada [LICENSE.md](LICENSE.md), sementara aset serta konten pribadi dilindungi oleh [COPYRIGHT.md](COPYRIGHT.md).
 
 **Happy browsing! 🚀**
 
@@ -528,7 +472,7 @@ Jika Anda memiliki pertanyaan atau ingin berkolaborasi, silakan hubungi saya mel
 
 ## 📄 Lisensi
 
-Proyek ini dilisensikan di bawah [MIT License](LICENSE).
+Kode sumber proyek ini dilisensikan di bawah [GNU Affero General Public License v3.0 (AGPL-3.0)](LICENSE.md), sedangkan konten dan aset pribadi dilindungi ketentuan penggunaan terbatas di [COPYRIGHT.md](COPYRIGHT.md).
 
 ## 🙏 Acknowledgments
 

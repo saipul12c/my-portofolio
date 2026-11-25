@@ -13,11 +13,6 @@
  */
 
 import blogService from './BlogService';
-import { 
-  generateAuthorSlug, 
-  getBlogsByAuthor,
-  generateBreadcrumb 
-} from './routeIntegration';
 
 /**
  * CONTOH PENGGUNAAN 1: Mendapatkan single blog by slug

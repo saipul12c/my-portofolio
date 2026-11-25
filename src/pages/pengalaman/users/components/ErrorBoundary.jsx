@@ -3,12 +3,10 @@ import { AlertCircle, RefreshCw } from "lucide-react";
 
 const ErrorBoundary = ({ children, fallback }) => {
   const [hasError, setHasError] = useState(false);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const handleError = (error) => {
       setHasError(true);
-      setError(error);
       console.error('Error Boundary caught an error:', error);
     };
 

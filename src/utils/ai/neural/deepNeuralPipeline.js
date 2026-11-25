@@ -5,7 +5,7 @@
  * untuk penalaran semantik mendalam tanpa merusak arsitektur lama.
  */
 
-import { generateEmbedding, calculateCosineSimilarity, semanticSearch, EMBEDDING_DIM } from './semanticEmbeddings.js';
+import { generateEmbedding, semanticSearch, EMBEDDING_DIM } from './semanticEmbeddings.js';
 import { classifyNeuralIntent, NEURAL_CLASSES } from './microNeuralNet.js';
 import { initLargeScaleTransformer, isLargeScaleTransformerReady, getTransformerStatus } from './largeScaleTransformer.js';
 import {

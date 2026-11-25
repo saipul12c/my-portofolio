@@ -33,7 +33,7 @@ export function resolvePronouns(message, context) {
         }
       }
     }
-  } catch (e) { /* ignore */ }
+  } catch { /* ignore */ }
 
   antecedents = antecedents.filter(Boolean);
   const mapping = {};

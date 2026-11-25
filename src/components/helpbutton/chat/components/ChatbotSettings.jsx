@@ -1,10 +1,27 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect, useRef, useCallback } from "react";
-import { processFileGeneric, saveUploadedData, exportKnowledgeBase as exportKB, DEFAULT_ALLOWED_TYPES } from './logic/utils/fileProcessor';
+import { useEffect, useRef, useCallback } from "react";
+import { DEFAULT_ALLOWED_TYPES } from './logic/utils/fileProcessor';
 import { SettingsSidebar } from "./settings/bar/SettingsSidebar";
 import { SettingsContent } from "./settings/conten/SettingsContent";
 import { useSettings } from "./settings/hooks/useSettings";
 import { useFileManagement } from "./settings/hooks/useFileManagement";
+
+const TAB_ALIAS_MAP = {
+  general: 'umum',
+  appearance: 'umum',
+  performance: 'umum',
+  perform: 'umum',
+  umum: 'umum',
+  ai: 'ai',
+  data: 'ai',
+  behavior: 'ai',
+  privacy: 'privacy',
+  storage: 'privacy',
+  file: 'privacy',
+  files: 'privacy',
+  shortcuts: 'shortcuts',
+  advanced: 'shortcuts'
+};
 
 // Enhanced settings validation dari file kedua
 const validateSettings = (settings) => {
@@ -40,8 +57,12 @@ export function ChatbotSettings({
     uploadedFiles,
     fileStats,
     uploadProgress,
+    isUploading,
     loadFileStatistics,
+    handleFileUpload,
+    deleteSingleFile,
     clearUploadedData,
+    exportKnowledgeBase: baseExportKB,
     getFileIcon,
     formatFileSize
   } = useFileManagement(settings, updateKnowledgeBase, safeKnowledgeBase, knowledgeStats);
@@ -79,7 +100,7 @@ export function ChatbotSettings({
         console.warn("Error comparing settings:", err);
       }
       saveDebounceRef.current = null;
-    }, 500); 
+    }, 500);
 
 
     return () => {
@@ -97,7 +118,8 @@ export function ChatbotSettings({
       const tab = e?.detail?.tab;
       const context = e?.detail?.context;
       if (tab) {
-        handleSave("activeTab", tab);
+        const canonicalTab = TAB_ALIAS_MAP[String(tab).toLowerCase()] || tab;
+        handleSave("activeTab", canonicalTab);
       }
       if (context) {
         // store context in settings so child components can react
@@ -125,68 +147,12 @@ export function ChatbotSettings({
     onClose();
   }, [settings, handleSave, onClose]);
 
-  // Enhanced export knowledge base dengan performance settings
-  const enhancedExportKnowledgeBase = () => {
-    try {
-      const exportData = {
-        exportDate: new Date().toISOString(),
-        knowledgeBase: safeKnowledgeBase,
-        fileStats: fileStats,
-        settings: settings,
-        stats: knowledgeStats,
-        uploadedFiles: uploadedFiles
-      };
-      exportKB(exportData);
-      alert("Knowledge base berhasil diexport!");
-    } catch (e) {
-      console.error("Error exporting knowledge base:", e);
-      alert("Error exporting knowledge base.");
-    }
-  };
-
-  // Enhanced file upload handler dari file kedua dengan progress tracking
-  const enhancedHandleFileUpload = async (event) => {
-    if (!settings.enableFileUpload) {
-      alert('File upload dinonaktifkan. Aktifkan di pengaturan terlebih dahulu.');
-      return;
-    }
-
-    const files = Array.from(event.target.files);
-    if (!files.length) return;
-
-    let processedCount = 0;
-    const _totalFiles = files.length;
-
-    for (const file of files) {
-      try {
-        const fileData = await processFileGeneric(file, settings);
-        const { updatedData, updatedMetadata } = saveUploadedData(fileData);
-
-        if (updateKnowledgeBase) {
-          updateKnowledgeBase({ uploadedData: updatedData, fileMetadata: updatedMetadata });
-        }
-
-        processedCount++;
-        loadFileStatistics();
-      } catch (err) {
-        console.error(`Error processing file ${file.name}:`, err);
-        alert(`❌ Error processing ${file.name}: ${err.message}`);
-      }
-    }
-
-    if (processedCount > 0) {
-      alert(`✅ ${processedCount} file berhasil diupload dan diproses!`);
-    }
-  };
-
   // Determine theme style category for CSS targeting
   const theme = settings?.theme || 'dark';
   const isLightLike = ['light', 'sepia', 'solar', 'soft'].includes(theme) || (theme === 'system' && typeof window !== 'undefined' && !window.matchMedia('(prefers-color-scheme: dark)').matches);
   const themeStyleAttribute = isLightLike ? 'light' : 'dark';
 
   const modalRef = useRef(null);
-
-
 
   return (
     <AnimatePresence>
@@ -201,24 +167,26 @@ export function ChatbotSettings({
 
           <div className="flex flex-row h-[550px]">
             <SettingsSidebar
-              activeTab={settings.activeTab}
-              setActiveTab={(tab) => handleSave("activeTab", tab)}
+              activeTab={TAB_ALIAS_MAP[settings.activeTab] || settings.activeTab}
+              setActiveTab={(tab) => handleSave("activeTab", TAB_ALIAS_MAP[tab] || tab)}
             />
 
             <SettingsContent
-              activeTab={settings.activeTab}
+              activeTab={TAB_ALIAS_MAP[settings.activeTab] || settings.activeTab}
               settings={settings}
               handleSave={handleSave}
               handleReset={enhancedHandleReset}
               onClose={handleClose}
               uploadedFiles={uploadedFiles}
               fileStats={fileStats}
-              handleFileUpload={enhancedHandleFileUpload}
+              handleFileUpload={handleFileUpload}
+              deleteSingleFile={deleteSingleFile}
               clearUploadedData={clearUploadedData}
-              exportKnowledgeBase={enhancedExportKnowledgeBase}
+              exportKnowledgeBase={baseExportKB}
               getFileIcon={getFileIcon}
               formatFileSize={formatFileSize}
               uploadProgress={uploadProgress}
+              isUploading={isUploading}
               totalKBCategories={totalKBCategories}
               knowledgeStats={knowledgeStats}
               safeKnowledgeBase={safeKnowledgeBase}

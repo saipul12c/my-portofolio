@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Settings as SettingsIcon, Pin as PinIcon, Bell as BellIcon, BellOff, Trash2 } from 'lucide-react';
 import Modal from '../ui/Modal';
 import api from '../../lib/api';
-import { useChat } from '../../contexts/ChatContext';
 import PinnedMessages from './PinnedMessages';
 import MembersList from './MembersList';
 
@@ -12,7 +10,6 @@ const ChannelSettings = ({ channel, openTab = 'notifications', onClose }) => {
   const [settings, setSettings] = useState({ muted: false, pinned_ids: [] });
   const [name, setName] = useState(channel?.name || '');
   const [saving, setSaving] = useState(false);
-  const { messages } = useChat();
 
   useEffect(() => {
     if (!channel) return;
@@ -84,7 +81,7 @@ const ChannelSettings = ({ channel, openTab = 'notifications', onClose }) => {
                   const newSettings = { ...settings, pinned_ids: Array.from(ids) };
                   setSettings(newSettings);
                   api.channels.settings.set(channel.id, newSettings).catch(() => null);
-                } catch (e) { /* ignore */ }
+                } catch { /* ignore */ }
               }} />
             </div>
           )}

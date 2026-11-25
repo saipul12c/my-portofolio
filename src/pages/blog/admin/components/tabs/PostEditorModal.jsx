@@ -88,6 +88,7 @@ export default function PostEditorModal({
   const [lastAutosaved, setLastAutosaved] = useState(null);
   const [hasAutosaveAvailable, setHasAutosaveAvailable] = useState(false);
   const autosaveTimerRef = useRef(null);
+  const handleSubmitRef = useRef(null);
 
   // Inisialisasi data form saat modal dibuka
   useEffect(() => {
@@ -115,7 +116,6 @@ export default function PostEditorModal({
       setHasAutosaveAvailable(false);
     } else {
       // Form baru: periksa apakah ada autosave dari sesi sebelumnya
-      let restoredFromAutosave = false;
       try {
         const raw = localStorage.getItem(AUTOSAVE_STORAGE_KEY);
         if (raw) {
@@ -221,14 +221,14 @@ export default function PostEditorModal({
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
-        handleSubmit(null, status);
+        handleSubmitRef.current?.(null, status);
       }
     };
     if (isOpen) {
       window.addEventListener('keydown', handleKeyDown);
       return () => window.removeEventListener('keydown', handleKeyDown);
     }
-  }, [isOpen, title, slug, content, excerpt, status, scheduledAt]);
+  }, [isOpen, status]);
 
   // Otomatis sinkronkan slug dengan judul jika autoSlug aktif
   const handleTitleChange = (e) => {
@@ -395,6 +395,7 @@ export default function PostEditorModal({
       setIsSubmitting(false);
     }
   };
+  handleSubmitRef.current = handleSubmit;
 
   if (!isOpen) return null;
 

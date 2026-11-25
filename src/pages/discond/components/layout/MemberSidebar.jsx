@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from "framer-motion";
 import { Search, Plus, X } from 'lucide-react';
-import { useChat } from '../../contexts/ChatContext';
+import { useChat } from '../../contexts/useChat';
 import UserProfile from '../auth/UserProfile';
 
 const MemberSidebar = ({ mobileClose }) => {

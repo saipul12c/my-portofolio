@@ -25,6 +25,8 @@ export const LexicalDatabase = {
 
     // Technical/AI Terms
     technical: {
+      'proyek': { meaning: 'karya atau aplikasi yang dibangun', variations: ['project', 'projek', 'portofolio'], synonyms: ['projek', 'karya', 'aplikasi', 'portofolio'], level: 'technical' },
+      'keahlian': { meaning: 'kemampuan teknis', variations: ['skill', 'skills', 'kemampuan'], synonyms: ['skill', 'kemampuan', 'kompetensi'], level: 'technical' },
       'kecerdasan buatan': { meaning: 'sistem yang meniru intelegensi manusia', variations: ['ai', 'artificial intelligence'], synonyms: ['ai', 'machine intelligence', 'kecerdasan mesin'], level: 'academic' },
       'pembelajaran mesin': { meaning: 'teknik untuk mengajarkan komputer dari data', variations: ['machine learning', 'ml'], synonyms: ['supervised learning', 'unsupervised learning', 'pembelajaran terbimbing'], level: 'academic' },
       'jaringan saraf': { meaning: 'struktur komputasi yang meniru otak', variations: ['neural network', 'nn', 'deep learning'], synonyms: ['artificial neural network', 'ann'], level: 'academic' },
@@ -75,6 +77,8 @@ export const LexicalDatabase = {
     },
 
     technical: {
+      'project': { meaning: 'built software or work', variations: ['projects', 'app', 'portfolio'], synonyms: ['projects', 'work', 'application', 'portfolio'], level: 'technical' },
+      'skill': { meaning: 'technical capability', variations: ['skills', 'ability'], synonyms: ['skills', 'expertise', 'capability'], level: 'technical' },
       'artificial intelligence': { meaning: 'simulation of human intelligence by machines', variations: ['ai', 'ai system'], synonyms: ['machine intelligence', 'intelligent system'], level: 'academic' },
       'machine learning': { meaning: 'technique to teach computers from data', variations: ['ml', 'learning'], synonyms: ['statistical learning', 'data-driven learning'], level: 'academic' },
       'neural network': { meaning: 'computational structure mimicking brain', variations: ['nn', 'network', 'deep learning'], synonyms: ['artificial neural network', 'ann'], level: 'academic' },
@@ -102,9 +106,38 @@ export const LexicalDatabase = {
     'data-data': { indonesian: 'data', english: 'data', category: 'technical' },
     'algoritma-algorithm': { indonesian: 'algoritma', english: 'algorithm', category: 'technical' },
     'senang-happy': { indonesian: 'senang', english: 'happy', category: 'emotions' },
-    'sedih-sad': { indonesian: 'sedih', english: 'sad', category: 'emotions' }
+    'sedih-sad': { indonesian: 'sedih', english: 'sad', category: 'emotions' },
+    'proyek-project': { indonesian: 'projek', english: 'projects', category: 'general' },
+    'pengalaman-experience': { indonesian: 'pengalaman kerja', english: 'work experience', category: 'general' },
+    'keahlian-skills': { indonesian: 'keahlian', english: 'skills', category: 'general' },
+    'sertifikat-certificate': { indonesian: 'sertifikat', english: 'certificates', category: 'general' },
+    'pendidikan-education': { indonesian: 'pendidikan', english: 'education', category: 'general' },
+    'kontak-contact': { indonesian: 'kontak', english: 'contact', category: 'general' },
+    'bantuan-help': { indonesian: 'bantuan', english: 'help', category: 'general' },
+    'tentang-about': { indonesian: 'tentang', english: 'about', category: 'general' }
   }
 };
+
+/**
+ * Menerjemahkan istilah menggunakan bilingualMappings
+ * @param {string} text - kata atau frasa yang dicari
+ * @param {string} targetLang - 'en' atau 'id'
+ * @returns {string|null} terjemahan atau null
+ */
+export function getBilingualTranslation(text, targetLang = 'en') {
+  if (!text || typeof text !== 'string') return null;
+  const lower = text.toLowerCase().trim();
+
+  for (const mapping of Object.values(LexicalDatabase.bilingualMappings)) {
+    if (targetLang === 'en' && mapping.indonesian.toLowerCase() === lower) {
+      return mapping.english;
+    }
+    if (targetLang === 'id' && mapping.english.toLowerCase() === lower) {
+      return mapping.indonesian;
+    }
+  }
+  return null;
+}
 
 /**
  * Find lemma (base form) dari sebuah kata
@@ -114,7 +147,8 @@ export const LexicalDatabase = {
  */
 export function getLemma(word, language = 'id') {
   const normalized = word.toLowerCase().trim();
-  const db = language === 'id' ? LexicalDatabase.indonesian : LexicalDatabase.english;
+  const lang = language === 'en' ? 'en' : 'id';
+  const db = lang === 'en' ? LexicalDatabase.english : LexicalDatabase.indonesian;
   
   // Cari di semua kategori
   for (const category of Object.values(db)) {
@@ -141,7 +175,8 @@ export function getLemma(word, language = 'id') {
  */
 export function getSynonyms(word, language = 'id') {
   const normalized = word.toLowerCase().trim();
-  const db = language === 'id' ? LexicalDatabase.indonesian : LexicalDatabase.english;
+  const lang = language === 'en' ? 'en' : 'id';
+  const db = lang === 'en' ? LexicalDatabase.english : LexicalDatabase.indonesian;
   
   for (const category of Object.values(db)) {
     for (const [key, data] of Object.entries(category)) {
@@ -162,7 +197,8 @@ export function getSynonyms(word, language = 'id') {
  */
 export function getWordMeaning(word, language = 'id') {
   const normalized = word.toLowerCase().trim();
-  const db = language === 'id' ? LexicalDatabase.indonesian : LexicalDatabase.english;
+  const lang = language === 'en' ? 'en' : 'id';
+  const db = lang === 'en' ? LexicalDatabase.english : LexicalDatabase.indonesian;
   
   for (const [category, words] of Object.entries(db)) {
     for (const [key, data] of Object.entries(words)) {
@@ -204,7 +240,8 @@ export function getWordMeaning(word, language = 'id') {
  */
 export function getWordVariants(word, language = 'id') {
   const normalized = word.toLowerCase().trim();
-  const db = language === 'id' ? LexicalDatabase.indonesian : LexicalDatabase.english;
+  const lang = language === 'en' ? 'en' : 'id';
+  const db = lang === 'en' ? LexicalDatabase.english : LexicalDatabase.indonesian;
   
   for (const category of Object.values(db)) {
     for (const [key, data] of Object.entries(category)) {
@@ -225,7 +262,8 @@ export function getWordVariants(word, language = 'id') {
  */
 export function normalizeWord(word, language = 'id') {
   const normalized = word.toLowerCase().trim();
-  const db = language === 'id' ? LexicalDatabase.indonesian : LexicalDatabase.english;
+  const lang = language === 'en' ? 'en' : 'id';
+  const db = lang === 'en' ? LexicalDatabase.english : LexicalDatabase.indonesian;
   
   // Cari exact match
   for (const category of Object.values(db)) {

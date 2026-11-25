@@ -268,7 +268,10 @@ class BlogService {
 const blogService = new BlogService([]);
 
 // Validate on initialization
-if (typeof process !== 'undefined' && process?.env?.NODE_ENV === 'development') {
+if (
+  import.meta?.env?.DEV ||
+  (typeof globalThis !== 'undefined' && globalThis.process?.env?.NODE_ENV === 'development')
+) {
   blogService.validateConsistency();
 }
 

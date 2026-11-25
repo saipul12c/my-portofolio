@@ -1,5 +1,5 @@
 import React from 'react';
-import { useChat } from '../../contexts/ChatContext';
+import { useChat } from '../../contexts/useChat';
 import { useNavigate } from 'react-router-dom';
 
 export default function MembersList({ onClose }) {

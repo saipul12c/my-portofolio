@@ -13,7 +13,6 @@ import {
   toggleBookmark,
   recordView,
   recordShare,
-  getShareCount,
   getUserRating,
   submitRating,
   fetchPostBySlug,
@@ -418,21 +417,22 @@ export default function BlogDetail() {
     setIsLiked(getLikeStatus(slug));
     setIsBookmarked(getBookmarkStatus(slug));
 
-    // --- TRACK TOPIK UNTUK AI ---
-    if (post) {
-      const topicData = {
-        name: post.category || (post.tags && post.tags[0]) || "Umum",
-        title: post.title,
-        timestamp: Date.now()
-      };
-      localStorage.setItem('saipul_ai_last_topic', JSON.stringify(topicData));
-    }
-
     return () => {
       if (typeof unsubComments === 'function') unsubComments();
       document.body.style.overflow = "auto";
     };
   }, [slug]);
+
+  // Track topik artikel untuk konteks AI setelah post termuat
+  useEffect(() => {
+    if (!post) return;
+    const topicData = {
+      name: post.category || (post.tags && post.tags[0]) || "Umum",
+      title: post.title,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('saipul_ai_last_topic', JSON.stringify(topicData));
+  }, [post]);
 
   const handleToggleLike = async () => {
     if (!post) return;

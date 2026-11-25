@@ -98,7 +98,6 @@ export function checkClaimAgainstKB(claim, kb, opts = {}) {
   const sources = top.map(r => ({ section: r.entry.section, id: r.entry.id || null, score: r.score, details: r.raw }));
 
   // composite confidence normalized to 0..1
-  const maxPossible = top.length > 0 ? top[0].score : 1;
   const confidence = Math.max(0, Math.min(1, score));
 
   return { verified, score, confidence, best: best ? best.entry : null, sources };

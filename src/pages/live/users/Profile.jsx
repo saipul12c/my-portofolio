@@ -35,7 +35,7 @@ const Profile = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const { userAchievements: achievements, loadAchievements, unlockAchievement } = useAchievements();
+  const { userAchievements: achievements, loadAchievements } = useAchievements();
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({ nama: '', bio: '' });
   const [message, setMessage] = useState({ type: '', text: '' });
@@ -55,7 +55,7 @@ const Profile = () => {
             try {
               const u = JSON.parse(savedRaw);
               currentEmail = u?.email;
-            } catch (e) {
+            } catch {
               /* ignore parse error */
             }
           }
@@ -98,7 +98,7 @@ const Profile = () => {
       }
     };
     loadUserData();
-  }, [email]);
+  }, [email, loadAchievements, navigate]);
 
   const saveProfile = async () => {
     try {
@@ -118,7 +118,7 @@ const Profile = () => {
         setTimeout(() => setMessage({ type: '', text: '' }), 3000);
         setIsEditing(false);
       }
-    } catch (err) {
+    } catch {
       setMessage({ type: 'error', text: 'Sync Failure' });
       setTimeout(() => setMessage({ type: '', text: '' }), 3000);
     }

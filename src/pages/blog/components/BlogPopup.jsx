@@ -361,7 +361,6 @@ function TagsSection({ tags, onClosePopup }) {
 
 // 🚀 Sticky Bottom Action Bar
 function PopupFooter({ post, onClosePopup }) {
-  const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const [shares, setShares] = useState(post?.shares || 0);
 

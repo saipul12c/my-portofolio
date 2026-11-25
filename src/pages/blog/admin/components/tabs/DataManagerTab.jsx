@@ -17,8 +17,6 @@ import { exportBlogBackup, importBlogBackup, resetBlogToSeed } from '../../servi
 import { isSupabaseConfigured } from '../../../../../lib/supabaseClient';
 
 export default function DataManagerTab({ 
-  posts = [], 
-  stats, 
   onDataChanged, 
   setToast 
 }) {
@@ -32,7 +30,7 @@ export default function DataManagerTab({
     if (typeof window === 'undefined') return '0 KB';
     let total = 0;
     for (let x in localStorage) {
-      if (localStorage.hasOwnProperty(x) && x.startsWith('blog_')) {
+      if (Object.prototype.hasOwnProperty.call(localStorage, x) && x.startsWith('blog_')) {
         total += ((localStorage[x].length + x.length) * 2);
       }
     }

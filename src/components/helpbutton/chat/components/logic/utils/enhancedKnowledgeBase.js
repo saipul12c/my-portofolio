@@ -134,6 +134,145 @@ Tools populer: NLTK, spaCy, Hugging Face Transformers, dsb.
       `,
       relatedConcepts: ['ai', 'machine_learning', 'corpus_linguistics'],
       applications: ['chatbot', 'sentiment_analysis', 'translation', 'question_answering']
+    },
+
+    'deep_learning': {
+      id: 'node_dl_01',
+      name: 'Deep Learning',
+      aliases: ['dl', 'deep neural network', 'pembelajaran mendalam'],
+      definition: 'Sub-bidang machine learning yang memanfaatkan artificial neural networks dengan banyak lapisan tersembunyi (deep architecture)',
+      category: 'technology',
+      properties: {
+        isAbstract: true,
+        domain: 'technology',
+        complexity: 'advanced',
+        learningLevel: 'advanced'
+      },
+      expandedDescription: `
+Deep Learning menggunakan deep neural networks untuk mengekstrak fitur berjenjang secara otomatis dari data mentah berskala masif (gambar, audio, teks).
+
+Arsitektur Populer:
+1. Convolutional Neural Networks (CNN) untuk visual/citra
+2. Recurrent Neural Networks (RNN & LSTM) untuk data sekuensial
+3. Transformers untuk pemodelan bahasa dan multimodal
+
+Deep Learning adalah pendorong utama revolusi AI modern.
+      `,
+      relatedConcepts: ['machine_learning', 'neural_networks', 'transformer', 'computer_vision']
+    },
+
+    'large_language_model': {
+      id: 'node_llm_01',
+      name: 'Large Language Model (LLM)',
+      aliases: ['llm', 'model bahasa besar', 'gpt', 'generative ai'],
+      definition: 'Model kecerdasan buatan berskala miliaran parameter yang dilatih pada korpus teks raksasa untuk memahami dan menghasilkan bahasa alami',
+      category: 'technology',
+      properties: {
+        isAbstract: true,
+        domain: 'technology',
+        complexity: 'advanced',
+        learningLevel: 'advanced'
+      },
+      expandedDescription: `
+Large Language Model (LLM) memanfaatkan arsitektur Transformer untuk memprediksi token berikutnya berdasarkan konteks sebelumnya.
+
+Kemampuan Inti LLM:
+1. Pemahaman konteks percakapan multi-turn
+2. Penalaran logika dan pemecahan masalah (Chain of Thought)
+3. Penulisan kode, ringkasan teks, dan terjemahan bahasa
+4. Adaptasi tugas baru via prompt engineering dan in-context learning
+      `,
+      relatedConcepts: ['transformer', 'nlp', 'deep_learning', 'rag', 'agentic_ai']
+    },
+
+    'transformer': {
+      id: 'node_trans_01',
+      name: 'Transformer Architecture',
+      aliases: ['transformer', 'self-attention', 'arsitektur transformer'],
+      definition: 'Arsitektur deep learning berbasis mekanisme self-attention yang memproses seluruh urutan token secara simultan',
+      category: 'technology',
+      properties: {
+        isAbstract: true,
+        domain: 'technology',
+        complexity: 'advanced',
+        learningLevel: 'advanced'
+      },
+      expandedDescription: `
+Diperkenalkan dalam makalah 'Attention Is All You Need' (2017), Transformer menggantikan RNN dengan memproses token secara paralel melalui multi-head attention.
+
+Komponen Utama:
+- Multi-Head Self-Attention
+- Positional Encoding
+- Feed-Forward Networks & Residual Connections
+- Layer Normalization
+      `,
+      relatedConcepts: ['large_language_model', 'deep_learning', 'neural_networks']
+    },
+
+    'rag': {
+      id: 'node_rag_01',
+      name: 'Retrieval-Augmented Generation (RAG)',
+      aliases: ['rag', 'retrieval augmented generation', 'knowledge retrieval'],
+      definition: 'Metode menggabungkan retrieval dokumen dari knowledge base dengan model generatif untuk menghasilkan respon yang faktual dan up-to-date',
+      category: 'technology',
+      properties: {
+        isAbstract: true,
+        domain: 'technology',
+        complexity: 'advanced',
+        learningLevel: 'intermediate'
+      },
+      expandedDescription: `
+RAG memecahkan masalah halusinasi AI dengan memberikan konteks dokumen nyata ke prompt model saat proses inferensi.
+
+Alur Kerja RAG:
+1. Indexing: Dokumen diubah menjadi vector embeddings
+2. Retrieval: Kueri dicocokkan menggunakan similarity search (Cosine/HNSW)
+3. Augmentation: Dokumen relevan disisipkan ke context prompt
+4. Generation: LLM merumuskan jawaban berbasis data terverifikasi
+      `,
+      relatedConcepts: ['large_language_model', 'nlp', 'deep_learning']
+    },
+
+    'agentic_ai': {
+      id: 'node_agent_01',
+      name: 'Agentic AI & Multi-Agent Systems',
+      aliases: ['agentic ai', 'ai agent', 'agen ai', 'multi-agent'],
+      definition: 'Paradigma sistem kecerdasan buatan yang bertindak mandiri dengan kemampuan perencanaan, pemanggilan alat (tool calling), dan adaptasi lingkungan',
+      category: 'technology',
+      properties: {
+        isAbstract: true,
+        domain: 'technology',
+        complexity: 'advanced',
+        learningLevel: 'advanced'
+      },
+      expandedDescription: `
+Agentic AI melampaui chatbot konvensional dengan kemampuan mengambil inisiatif dan mengeksekusi alur kerja multi-langkah.
+
+Pilar Agentic AI:
+1. Planning: Memecah target besar menjadi subtugas terarah
+2. Memory: Mengingat riwayat jangka pendek dan panjang
+3. Tool Use: Menjalankan kode, memanggil API, membaca database
+4. Action & Reflection: Mengevaluasi output dan memperbaiki kesalahan sendiri
+      `,
+      relatedConcepts: ['large_language_model', 'ai', 'rag']
+    },
+
+    'computer_vision': {
+      id: 'node_cv_01',
+      name: 'Computer Vision',
+      aliases: ['cv', 'penglihatan komputer', 'vision'],
+      definition: 'Bidang kecerdasan buatan yang memungkinkan komputer memahami, menganalisis, dan mengekstrak informasi bermakna dari data visual/citra',
+      category: 'technology',
+      properties: {
+        isAbstract: true,
+        domain: 'technology',
+        complexity: 'advanced',
+        learningLevel: 'intermediate'
+      },
+      expandedDescription: `
+Computer Vision melatih model untuk mengenali objek, wajah, tulisan (OCR), dan gerakan dalam foto maupun video.
+      `,
+      relatedConcepts: ['deep_learning', 'neural_networks', 'ai']
     }
   },
 
@@ -155,6 +294,48 @@ Tools populer: NLTK, spaCy, Hugging Face Transformers, dsb.
       type: 'has_subcategory',
       weight: 0.9,
       description: 'Neural Networks adalah teknik machine learning yang populer'
+    },
+    {
+      source: 'neural_networks',
+      target: 'deep_learning',
+      type: 'has_subcategory',
+      weight: 0.95,
+      description: 'Deep Learning adalah arsitektur neural networks dengan banyak layer'
+    },
+    {
+      source: 'deep_learning',
+      target: 'transformer',
+      type: 'has_subcategory',
+      weight: 0.95,
+      description: 'Transformer adalah arsitektur unggulan dalam deep learning'
+    },
+    {
+      source: 'transformer',
+      target: 'large_language_model',
+      type: 'enables',
+      weight: 0.98,
+      description: 'Arsitektur Transformer menjadi fondasi utama Large Language Model'
+    },
+    {
+      source: 'large_language_model',
+      target: 'rag',
+      type: 'integrates_with',
+      weight: 0.92,
+      description: 'RAG memperkaya LLM dengan data referensi aktual'
+    },
+    {
+      source: 'large_language_model',
+      target: 'agentic_ai',
+      type: 'powers',
+      weight: 0.95,
+      description: 'LLM berfungsi sebagai otak penalaran utama bagi Agentic AI'
+    },
+    {
+      source: 'deep_learning',
+      target: 'computer_vision',
+      type: 'powers',
+      weight: 0.9,
+      description: 'Deep learning memberdayakan sistem Computer Vision modern'
     },
     {
       source: 'ai',

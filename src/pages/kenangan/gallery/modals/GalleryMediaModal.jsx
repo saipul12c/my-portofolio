@@ -4,14 +4,12 @@ import {
   Eye, Tag, UserCheck, Music, Download, Copy, Check, MapPin, 
   Calendar, Camera, Layers, Sparkles, ExternalLink 
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import UniversalMediaPlayer from "../../components/UniversalMediaPlayer";
 import { sanitizeUrl, generateAltText } from "../../utils/sanitizers";
 
 export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, currentIndex = 0, setCurrentIndex }) {
-  const navigate = useNavigate();
-  const [mediaError, setMediaError] = useState(false);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [copied, setCopied] = useState(false);
@@ -20,15 +18,16 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
   const isArraySrc = Array.isArray(selectedMedia?.src);
   const srcLength = isArraySrc ? selectedMedia.src.length : 1;
   const isAlbum = selectedMedia?.type === "album" || isArraySrc;
+  const mediaId = selectedMedia?.id;
+  const initialLikes = selectedMedia?.engagement?.likes || 0;
 
   useEffect(() => {
-    if (selectedMedia) {
+    if (mediaId) {
       setLiked(false);
-      setLikeCount(selectedMedia.engagement?.likes || 0);
-      setMediaError(false);
+      setLikeCount(initialLikes);
       setCopied(false);
     }
-  }, [selectedMedia?.id]);
+  }, [mediaId, initialLikes]);
 
   const handleToggleLike = useCallback(() => {
     setLiked((prev) => {
@@ -38,7 +37,7 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
     });
   }, []);
 
-  const handleCopyLink = async () => {
+  const handleCopyLink = useCallback(async () => {
     const url = `${window.location.origin}/gallery?media=${selectedMedia?.id || ""}&type=${selectedMedia?.type || ""}`;
     try {
       await navigator.clipboard.writeText(url);
@@ -47,7 +46,7 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
     } catch (err) {
       console.error("Gagal menyalin link:", err);
     }
-  };
+  }, [selectedMedia]);
 
   const handleNativeShare = useCallback(async () => {
     const url = `${window.location.origin}/gallery?media=${selectedMedia?.id || ""}&type=${selectedMedia?.type || ""}`;
@@ -64,7 +63,7 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
     } else {
       handleCopyLink();
     }
-  }, [selectedMedia]);
+  }, [selectedMedia, handleCopyLink]);
 
   const handleDownload = async () => {
     if (isDownloading) return;
@@ -258,7 +257,6 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
                     exit={{ opacity: 0, scale: 0.98 }}
                     transition={{ duration: 0.2 }}
                     className="w-full h-full max-h-[58vh] md:max-h-[75vh] object-contain rounded-xl"
-                    onError={() => setMediaError(true)}
                   />
                 </AnimatePresence>
 
@@ -316,7 +314,6 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
                   src={sanitizeUrl(selectedMedia.src)}
                   alt={generateAltText(selectedMedia)}
                   className="w-full h-full max-h-[58vh] md:max-h-[75vh] object-contain rounded-xl"
-                  onError={() => setMediaError(true)}
                 />
               </div>
             ) : (
@@ -332,7 +329,6 @@ export default function GalleryMediaModal({ selectedMedia, setSelectedMedia, cur
                   loop
                   playsInline
                   className="max-h-[58vh] md:max-h-[75vh] rounded-xl"
-                  onError={() => setMediaError(true)}
                 />
               </div>
             )}

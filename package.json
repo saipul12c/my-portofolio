@@ -3,12 +3,23 @@
   "private": true,
   "version": "1.20.0",
   "type": "module",
+  "imports": {
+    "#kb-datasets": {
+      "browser": "./src/utils/ai/datasets.browser.js",
+      "default": "./src/utils/ai/datasets.node.js"
+    }
+  },
+  "bin": {
+    "saipul": "./bin/saipul-cli.js",
+    "saipul-cli": "./bin/saipul-cli.js"
+  },
   "scripts": {
     "dev": "vite",
     "dev:all": "concurrently \"npm --prefix backend run dev\" \"npm run dev\"",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "cli": "node bin/saipul-cli.js",
     "api:server": "node server/saipul-server.js",
     "test": "node ./test-contact.js",
     "test:nlu": "node test/testNaturalNLU.js",

@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Search, Bot, X, Sparkles, History, CheckCircle2, 
-  ChevronDown, ExternalLink, Lightbulb, Target, 
+import {
+  Search, Bot, X, Sparkles, History, CheckCircle2,
+  ChevronDown, ExternalLink, Lightbulb, Target,
   Zap, Clock, MessageSquare, Users, Settings, Plus, LayoutGrid, Cpu, Trophy, BarChart3, HelpCircle, Award, BookOpen, GraduationCap, RotateCcw,
   Languages, Fingerprint, ShieldCheck
 } from "lucide-react";
@@ -37,16 +37,16 @@ const CourseCard = ({ course }) => {
       className="mt-4 p-6 rounded-[2rem] bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20 shadow-xl relative"
     >
       <div className="absolute -top-3 -right-3 bg-purple-500 text-white text-[8px] font-black px-3 py-1.5 rounded-lg shadow-lg rotate-12 flex items-center gap-1.5">
-         <Award className="w-3 h-3" /> VERIFIED_CERT
+        <Award className="w-3 h-3" /> VERIFIED_CERT
       </div>
       <div className="flex flex-col sm:flex-row items-center gap-6">
         <div className="w-16 h-16 rounded-2xl bg-slate-900 border border-white/10 flex items-center justify-center text-3xl shadow-xl flex-shrink-0">
-           {course.logo || "📜"}
+          {course.logo || "📜"}
         </div>
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-2">
-             <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-[9px] font-black uppercase rounded border border-purple-500/30">{course.provider}</span>
-             <span className="text-slate-500 text-[10px] font-bold">{course.year}</span>
+            <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-[9px] font-black uppercase rounded border border-purple-500/30">{course.provider}</span>
+            <span className="text-slate-500 text-[10px] font-bold">{course.year}</span>
           </div>
           <h4 className="text-white font-bold text-lg tracking-tight leading-tight">{course.title}</h4>
           <p className="text-slate-400 text-xs italic line-clamp-2">"{course.description}"</p>
@@ -115,10 +115,10 @@ const EntityGallery = ({ children, title, icon: Icon }) => (
     </div>
     <div className="flex gap-5 overflow-x-auto pb-4 px-2 no-scrollbar snap-x snap-mandatory">
       {React.Children.map(children, (child, i) => (
-        <motion.div 
-          key={i} 
-          initial={{ opacity: 0, x: 20 }} 
-          animate={{ opacity: 1, x: 0 }} 
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
           transition={{ delay: i * 0.15 }}
           className="min-w-[280px] sm:min-w-[320px] snap-center first:pl-0 last:pr-4"
         >
@@ -142,7 +142,7 @@ const Typewriter = ({ text }) => {
   return <div className="whitespace-pre-wrap">{currentText.split("**").map((p, i) => i % 2 === 1 ? <strong key={i} className="text-cyan-400 font-bold">{p}</strong> : p)}</div>;
 };
 
-const ProjectAI = ({ onSearch, onSelectProject }) => {
+const ProjectAI = ({ onSelectProject }) => {
   const navigate = useNavigate();
   const [inputValue, setInputValue] = useState("");
   const [activeSearch, setActiveSearch] = useState("");
@@ -200,7 +200,7 @@ const ProjectAI = ({ onSearch, onSelectProject }) => {
             <div className="flex items-center justify-between px-8 py-6 border-b border-white/5 bg-white/[0.02]">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-cyan-400 rounded-2xl flex items-center justify-center text-white shadow-lg">
-                   {React.createElement(currentStyle.icon, { className: "w-6 h-6" })}
+                  {React.createElement(currentStyle.icon, { className: "w-6 h-6" })}
                 </div>
                 <div>
                   <h3 className="text-white font-bold text-lg leading-tight">Jawaban AI</h3>
@@ -213,199 +213,199 @@ const ProjectAI = ({ onSearch, onSelectProject }) => {
             </div>
 
             <div className="p-8 sm:p-10 space-y-10">
-               {isThinking ? (
-                 <div className="h-48 flex flex-col items-center justify-center gap-6">
-                    <div className="flex gap-4">
-                       {[1, 2, 3].map(i => <motion.div key={i} animate={{ y: [0, -12, 0] }} transition={{ repeat: Infinity, duration: 1, delay: i*0.2 }} className="w-3 h-3 bg-cyan-500 rounded-full" />)}
-                    </div>
-                    <span className="text-[10px] font-black text-cyan-400 tracking-[0.4em] uppercase animate-pulse">{thinkingLabels[thinkingStep]?.text}</span>
-                 </div>
-               ) : (
-                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-                    {/* User Question Bar */}
-                    <div className="space-y-2">
-                       <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                          <MessageSquare className="w-3 h-3 text-cyan-500" /> Pertanyaan Anda:
-                       </div>
-                       <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-slate-300 text-sm italic">
-                          "{activeSearch}"
-                       </div>
-                    </div>
-
-                    {/* AI Answer Card */}
-                    <div className="space-y-3">
-                       <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                          <Sparkles className="w-3 h-3 text-cyan-500" /> Analisis Cerdas:
-                       </div>
-                       <div className="bg-slate-900/50 border border-cyan-500/20 rounded-3xl p-6 sm:p-8 text-slate-200 text-base sm:text-lg leading-relaxed shadow-inner">
-                          <Typewriter text={aiResponse?.answer || ""} />
-                          
-                          {/* Options if clarification */}
-                          {aiResponse?.isClarification && aiResponse?.answer.includes('\n-') && (
-                            <div className="mt-6 flex flex-wrap gap-3">
-                               {aiResponse.answer.split('\n- ').slice(1).map((opt, i) => (
-                                 <button key={i} onClick={() => { setInputValue(opt.trim()); setActiveSearch(opt.trim()); }}
-                                   className="px-5 py-2.5 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold rounded-xl hover:bg-cyan-500 hover:text-white transition-all shadow-md"
-                                 >
-                                   {opt.trim()}
-                                 </button>
-                               ))}
-                            </div>
-                          )}
-                       </div>
-                    </div>
-
-                     {/* Related Entities (Project/Course/Blog) */}
-                     <div className="space-y-12">
-                        {/* Single Matches (Priority) */}
-                        {aiResponse?.matchedCourse && (
-                          <div className="space-y-3">
-                             <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold uppercase tracking-widest px-2">
-                                <GraduationCap className="w-3.5 h-3.5 text-cyan-500" /> Sertifikasi Relevan:
-                             </div>
-                             <CourseCard course={aiResponse.matchedCourse} />
-                          </div>
-                        )}
-                        
-                        {aiResponse?.matchedBlog && (
-                          <div className="space-y-3">
-                             <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold uppercase tracking-widest px-2">
-                                <BookOpen className="w-3.5 h-3.5 text-cyan-500" /> Artikel Blog Terkait:
-                             </div>
-                             <BlogCard blog={aiResponse.matchedBlog} />
-                          </div>
-                        )}
-
-                        {/* Collections / Galleries */}
-                        {aiResponse?.relatedBlogs && (
-                          <EntityGallery title="Daftar Artikel Blog" icon={BookOpen}>
-                            {aiResponse.relatedBlogs.map(blog => <BlogCard key={blog.id} blog={blog} />)}
-                          </EntityGallery>
-                        )}
-
-                        {aiResponse?.relatedCourses && (
-                          <EntityGallery title="Explore Sertifikasi" icon={GraduationCap}>
-                            {aiResponse.relatedCourses.map(course => <CourseCard key={course.id} course={course} />)}
-                          </EntityGallery>
-                        )}
-
-                        {aiResponse?.relatedProjects && (
-                          <EntityGallery title="Mahakarya Terbaru" icon={LayoutGrid}>
-                            {/* Update: In a real scenario, we'd have a ProjectCard specifically for AI view */}
-                            {aiResponse.relatedProjects.map(proj => (
-                              <div key={proj.id} className="p-6 rounded-[2rem] bg-slate-900 border border-white/5 hover:border-cyan-500/30 transition-all group">
-                                <div className="space-y-4">
-                                  <div className="flex justify-between items-start">
-                                    <div className="p-3 bg-cyan-500/10 rounded-2xl text-cyan-400 group-hover:bg-cyan-500 group-hover:text-white transition-all">
-                                      <LayoutGrid className="w-5 h-5" />
-                                    </div>
-                                    <span className="text-[9px] font-black px-2 py-1 bg-white/5 rounded-lg text-slate-500">{proj.year}</span>
-                                  </div>
-                                  <div>
-                                    <h4 className="text-white font-bold group-hover:text-cyan-400 transition-colors uppercase tracking-tight">{proj.title}</h4>
-                                    <p className="text-slate-400 text-xs mt-1 line-clamp-2 md:line-clamp-1 italic">"{proj.overview}"</p>
-                                  </div>
-                                  <div className="flex flex-wrap gap-2 pt-2">
-                                    {proj.tech.slice(0, 3).map((t, i) => <span key={i} className="text-[8px] font-bold text-slate-500 bg-white/5 px-2 py-0.5 rounded uppercase">{t}</span>)}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </EntityGallery>
-                        )}
-                       </div>
-                        
-                       {aiResponse?.matchedProject && (
-                         <div className="space-y-3 pt-8">
-                            <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold uppercase tracking-widest px-2">
-                               <LayoutGrid className="w-3.5 h-3.5 text-cyan-500" /> Karya Terkait:
-                            </div>
-                            <div className="p-6 sm:p-8 bg-white/[0.03] border border-white/10 rounded-[2.5rem] transition-all">
-                               <div className="flex flex-col md:flex-row items-center gap-10">
-                                  <img src={aiResponse.matchedProject.image} className="w-full md:w-56 h-40 rounded-3xl object-cover border-2 border-white/10 shadow-lg" alt="" />
-                                  <div className="flex-1 space-y-4">
-                                     <div>
-                                        <h4 className="text-white font-bold text-2xl leading-tight">{aiResponse.matchedProject.title}</h4>
-                                        <p className="text-slate-500 text-xs font-medium uppercase tracking-wider mt-1">{aiResponse.matchedProject.category} • ⭐ {aiResponse.matchedProject.rating}</p>
-                                     </div>
-                                     <TimelineVisualizer timeline={aiResponse.matchedProject.timeline} />
-                                     <div className="pt-4 border-t border-white/5">
-                                        <button onClick={() => onSelectProject(aiResponse.matchedProject)} 
-                                          className="w-full sm:w-auto px-8 py-3 bg-white text-slate-950 hover:bg-cyan-500 hover:text-white font-bold text-xs rounded-xl transition-all shadow-lg active:scale-95"
-                                        >
-                                          LIHAT DETAIL KARYA
-                                        </button>
-                                     </div>
-                                  </div>
-                               </div>
-                            </div>
-                         </div>
-                       )}
-                     </motion.div>
-                   )}
+              {isThinking ? (
+                <div className="h-48 flex flex-col items-center justify-center gap-6">
+                  <div className="flex gap-4">
+                    {[1, 2, 3].map(i => <motion.div key={i} animate={{ y: [0, -12, 0] }} transition={{ repeat: Infinity, duration: 1, delay: i * 0.2 }} className="w-3 h-3 bg-cyan-500 rounded-full" />)}
+                  </div>
+                  <span className="text-[10px] font-black text-cyan-400 tracking-[0.4em] uppercase animate-pulse">{thinkingLabels[thinkingStep]?.text}</span>
                 </div>
+              ) : (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+                  {/* User Question Bar */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                      <MessageSquare className="w-3 h-3 text-cyan-500" /> Pertanyaan Anda:
+                    </div>
+                    <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-slate-300 text-sm italic">
+                      "{activeSearch}"
+                    </div>
+                  </div>
 
-             {/* Actionable Quick Chips */}
-             {aiResponse?.relatedEntities && (
-               <div className="mx-8 mb-6 p-4 rounded-2xl bg-slate-900/80 border border-cyan-500/20 space-y-2">
-                 <div className="flex items-center gap-2 text-xs font-bold text-cyan-400">
-                   <Sparkles className="w-4 h-4" /> Aksi Cepat & Eksplorasi Terkait:
-                 </div>
-                 <div className="flex flex-wrap gap-2">
-                   {aiResponse.relatedEntities.blogs?.length > 0 && (
-                     <button
-                       onClick={() => navigate(`/blog?search=${encodeURIComponent(activeSearch)}`)}
-                       className="px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
-                     >
-                       <BookOpen className="w-3.5 h-3.5" />
-                       Baca Artikel Blog ({aiResponse.relatedEntities.blogs.length})
-                     </button>
-                   )}
-                   {aiResponse.relatedEntities.skills?.length > 0 && (
-                     <button
-                       onClick={() => navigate(`/skills`)}
-                       className="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
-                     >
-                       <Zap className="w-3.5 h-3.5" />
-                       Cek Kompetensi Skill ({aiResponse.relatedEntities.skills.length})
-                     </button>
-                   )}
-                   {aiResponse.relatedEntities.certificates?.length > 0 && (
-                     <button
-                       onClick={() => navigate(`/certificates`)}
-                       className="px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
-                     >
-                       <GraduationCap className="w-3.5 h-3.5" />
-                       Lihat Sertifikat ({aiResponse.relatedEntities.certificates.length})
-                     </button>
-                   )}
-                   {aiResponse.relatedEntities.testimonials?.length > 0 && (
-                     <button
-                       onClick={() => navigate(`/pengalaman/testimoni`)}
-                       className="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
-                     >
-                       <Award className="w-3.5 h-3.5" />
-                       Ulasan & Testimoni ({aiResponse.relatedEntities.testimonials.length})
-                     </button>
-                   )}
-                   <button
-                     onClick={() => {
-                       const helpBtn = document.querySelector('[aria-label="Buka Menu Bantuan"]');
-                       if (helpBtn) helpBtn.click();
-                     }}
-                     className="px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
-                   >
-                     <MessageSquare className="w-3.5 h-3.5" />
-                     Diskusi Langsung di Live Chat
-                   </button>
-                 </div>
-               </div>
-             )}
+                  {/* AI Answer Card */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                      <Sparkles className="w-3 h-3 text-cyan-500" /> Analisis Cerdas:
+                    </div>
+                    <div className="bg-slate-900/50 border border-cyan-500/20 rounded-3xl p-6 sm:p-8 text-slate-200 text-base sm:text-lg leading-relaxed shadow-inner">
+                      <Typewriter text={aiResponse?.answer || ""} />
+
+                      {/* Options if clarification */}
+                      {aiResponse?.isClarification && aiResponse?.answer.includes('\n-') && (
+                        <div className="mt-6 flex flex-wrap gap-3">
+                          {aiResponse.answer.split('\n- ').slice(1).map((opt, i) => (
+                            <button key={i} onClick={() => { setInputValue(opt.trim()); setActiveSearch(opt.trim()); }}
+                              className="px-5 py-2.5 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold rounded-xl hover:bg-cyan-500 hover:text-white transition-all shadow-md"
+                            >
+                              {opt.trim()}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Related Entities (Project/Course/Blog) */}
+                  <div className="space-y-12">
+                    {/* Single Matches (Priority) */}
+                    {aiResponse?.matchedCourse && (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold uppercase tracking-widest px-2">
+                          <GraduationCap className="w-3.5 h-3.5 text-cyan-500" /> Sertifikasi Relevan:
+                        </div>
+                        <CourseCard course={aiResponse.matchedCourse} />
+                      </div>
+                    )}
+
+                    {aiResponse?.matchedBlog && (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold uppercase tracking-widest px-2">
+                          <BookOpen className="w-3.5 h-3.5 text-cyan-500" /> Artikel Blog Terkait:
+                        </div>
+                        <BlogCard blog={aiResponse.matchedBlog} />
+                      </div>
+                    )}
+
+                    {/* Collections / Galleries */}
+                    {aiResponse?.relatedBlogs && (
+                      <EntityGallery title="Daftar Artikel Blog" icon={BookOpen}>
+                        {aiResponse.relatedBlogs.map(blog => <BlogCard key={blog.id} blog={blog} />)}
+                      </EntityGallery>
+                    )}
+
+                    {aiResponse?.relatedCourses && (
+                      <EntityGallery title="Explore Sertifikasi" icon={GraduationCap}>
+                        {aiResponse.relatedCourses.map(course => <CourseCard key={course.id} course={course} />)}
+                      </EntityGallery>
+                    )}
+
+                    {aiResponse?.relatedProjects && (
+                      <EntityGallery title="Mahakarya Terbaru" icon={LayoutGrid}>
+                        {/* Update: In a real scenario, we'd have a ProjectCard specifically for AI view */}
+                        {aiResponse.relatedProjects.map(proj => (
+                          <div key={proj.id} className="p-6 rounded-[2rem] bg-slate-900 border border-white/5 hover:border-cyan-500/30 transition-all group">
+                            <div className="space-y-4">
+                              <div className="flex justify-between items-start">
+                                <div className="p-3 bg-cyan-500/10 rounded-2xl text-cyan-400 group-hover:bg-cyan-500 group-hover:text-white transition-all">
+                                  <LayoutGrid className="w-5 h-5" />
+                                </div>
+                                <span className="text-[9px] font-black px-2 py-1 bg-white/5 rounded-lg text-slate-500">{proj.year}</span>
+                              </div>
+                              <div>
+                                <h4 className="text-white font-bold group-hover:text-cyan-400 transition-colors uppercase tracking-tight">{proj.title}</h4>
+                                <p className="text-slate-400 text-xs mt-1 line-clamp-2 md:line-clamp-1 italic">"{proj.overview}"</p>
+                              </div>
+                              <div className="flex flex-wrap gap-2 pt-2">
+                                {proj.tech.slice(0, 3).map((t, i) => <span key={i} className="text-[8px] font-bold text-slate-500 bg-white/5 px-2 py-0.5 rounded uppercase">{t}</span>)}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </EntityGallery>
+                    )}
+                  </div>
+
+                  {aiResponse?.matchedProject && (
+                    <div className="space-y-3 pt-8">
+                      <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold uppercase tracking-widest px-2">
+                        <LayoutGrid className="w-3.5 h-3.5 text-cyan-500" /> Karya Terkait:
+                      </div>
+                      <div className="p-6 sm:p-8 bg-white/[0.03] border border-white/10 rounded-[2.5rem] transition-all">
+                        <div className="flex flex-col md:flex-row items-center gap-10">
+                          <img src={aiResponse.matchedProject.image} className="w-full md:w-56 h-40 rounded-3xl object-cover border-2 border-white/10 shadow-lg" alt="" />
+                          <div className="flex-1 space-y-4">
+                            <div>
+                              <h4 className="text-white font-bold text-2xl leading-tight">{aiResponse.matchedProject.title}</h4>
+                              <p className="text-slate-500 text-xs font-medium uppercase tracking-wider mt-1">{aiResponse.matchedProject.category} • ⭐ {aiResponse.matchedProject.rating}</p>
+                            </div>
+                            <TimelineVisualizer timeline={aiResponse.matchedProject.timeline} />
+                            <div className="pt-4 border-t border-white/5">
+                              <button onClick={() => onSelectProject(aiResponse.matchedProject)}
+                                className="w-full sm:w-auto px-8 py-3 bg-white text-slate-950 hover:bg-cyan-500 hover:text-white font-bold text-xs rounded-xl transition-all shadow-lg active:scale-95"
+                              >
+                                LIHAT DETAIL KARYA
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </div>
+
+            {/* Actionable Quick Chips */}
+            {aiResponse?.relatedEntities && (
+              <div className="mx-8 mb-6 p-4 rounded-2xl bg-slate-900/80 border border-cyan-500/20 space-y-2">
+                <div className="flex items-center gap-2 text-xs font-bold text-cyan-400">
+                  <Sparkles className="w-4 h-4" /> Aksi Cepat & Eksplorasi Terkait:
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {aiResponse.relatedEntities.blogs?.length > 0 && (
+                    <button
+                      onClick={() => navigate(`/blog?search=${encodeURIComponent(activeSearch)}`)}
+                      className="px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
+                    >
+                      <BookOpen className="w-3.5 h-3.5" />
+                      Baca Artikel Blog ({aiResponse.relatedEntities.blogs.length})
+                    </button>
+                  )}
+                  {aiResponse.relatedEntities.skills?.length > 0 && (
+                    <button
+                      onClick={() => navigate(`/softskills`)}
+                      className="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
+                    >
+                      <Zap className="w-3.5 h-3.5" />
+                      Cek Kompetensi Skill ({aiResponse.relatedEntities.skills.length})
+                    </button>
+                  )}
+                  {aiResponse.relatedEntities.certificates?.length > 0 && (
+                    <button
+                      onClick={() => navigate(`/certificates`)}
+                      className="px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
+                    >
+                      <GraduationCap className="w-3.5 h-3.5" />
+                      Lihat Sertifikat ({aiResponse.relatedEntities.certificates.length})
+                    </button>
+                  )}
+                  {aiResponse.relatedEntities.testimonials?.length > 0 && (
+                    <button
+                      onClick={() => navigate(`/testimoni`)}
+                      className="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
+                    >
+                      <Award className="w-3.5 h-3.5" />
+                      Ulasan & Testimoni ({aiResponse.relatedEntities.testimonials.length})
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      const helpBtn = document.querySelector('[aria-label="Buka Menu Bantuan"]');
+                      if (helpBtn) helpBtn.click();
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-xs font-semibold transition-all flex items-center gap-1.5"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    Diskusi Langsung di Live Chat
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Footer */}
             <div className="px-8 py-4 bg-white/[0.02] border-t border-white/5 flex flex-wrap justify-center items-center gap-6 text-[9px] font-bold tracking-widest text-slate-600">
-               <span className="flex items-center gap-1.5"><ShieldCheck className="w-3 h-3 text-emerald-500" /> MASTER_DATA_SYNCED</span>
-               <span className="flex items-center gap-1.5"><Fingerprint className="w-3 h-3 text-blue-500" /> CROSS_DOMAIN_READY</span>
+              <span className="flex items-center gap-1.5"><ShieldCheck className="w-3 h-3 text-emerald-500" /> MASTER_DATA_SYNCED</span>
+              <span className="flex items-center gap-1.5"><Fingerprint className="w-3 h-3 text-blue-500" /> CROSS_DOMAIN_READY</span>
             </div>
           </motion.div>
         )}

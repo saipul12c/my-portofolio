@@ -14,7 +14,6 @@ const EarlyAccessPage = ({ currentConfig }) => {
   const isCyan = currentConfig.themeColor === 'cyan';
   const perks = currentConfig.perks || [];
 
-  const accentBorder = isCyan ? 'border-cyan-500/30' : 'border-amber-500/30';
   const accentText = isCyan ? 'text-cyan-400' : 'text-amber-400';
   const btnGradient = isCyan ? 'from-cyan-500 via-teal-500 to-blue-600' : 'from-amber-500 via-orange-500 to-rose-600';
 

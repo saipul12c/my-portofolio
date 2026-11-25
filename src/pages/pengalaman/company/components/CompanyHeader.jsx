@@ -64,7 +64,7 @@ const Navigation = ({ companyData, mobileMenuOpen, setMobileMenuOpen }) => {
 };
 
 // Main Header Component
-const MainHeader = ({ info, analytics }) => {
+const MainHeader = ({ info }) => {
   const navigate = useNavigate();
 
   const handleContactClick = () => {

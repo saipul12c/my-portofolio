@@ -23,7 +23,7 @@ function readJsonSafe(relPath, fallback = {}) {
     const fullPath = path.resolve(rootDir, relPath);
     if (!fs.existsSync(fullPath)) return fallback;
     return JSON.parse(fs.readFileSync(fullPath, 'utf8'));
-  } catch (err) {
+  } catch {
     return fallback;
   }
 }

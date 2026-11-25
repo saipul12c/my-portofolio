@@ -5,7 +5,6 @@
  */
 
 import { INTENT_TYPES } from './advancedIntentClassifier';
-import { extractTopics } from './conversationContext';
 
 /**
  * Clarification prompt types
@@ -22,8 +21,8 @@ export const CLARIFICATION_TYPES = {
 /**
  * Generate clarification prompt yang user-friendly
  */
-export function generateClarificationPrompt(situation, context = {}) {
-  const { type, data, message } = situation;
+export function generateClarificationPrompt(situation) {
+  const { type, data } = situation;
 
   const prompts = {
     [CLARIFICATION_TYPES.AMBIGUOUS_ENTITY]: () => {
@@ -56,7 +55,7 @@ export function generateClarificationPrompt(situation, context = {}) {
     [CLARIFICATION_TYPES.CONTEXT_DEPENDENCY]: () => {
       const { contextWhat, examples } = data;
       return {
-        text: `Jawabannya tergantung dari ${contextWhat}.\n\nContoh:\n${examples.map((ex, i) => `• Jika ${ex.condition}: ${ex.consequence}`).join('\n')}\n\nSitua sianmu yang mana? 🤷`,
+        text: `Jawabannya tergantung dari ${contextWhat}.\n\nContoh:\n${examples.map((ex) => `• Jika ${ex.condition}: ${ex.consequence}`).join('\n')}\n\nSitua sianmu yang mana? 🤷`,
         followUpRequired: true,
         examples
       };
@@ -104,7 +103,7 @@ export function generateClarificationPrompt(situation, context = {}) {
 /**
  * Detect situations yang perlu clarification
  */
-export function detectClarificationNeeded(message, context = {}, knowledgeBase = {}) {
+export function detectClarificationNeeded(message, context = {}) {
   const situations = [];
   const lowerMsg = message.toLowerCase();
 
@@ -204,7 +203,7 @@ export function detectClarificationNeeded(message, context = {}, knowledgeBase =
 /**
  * Smart fallback response ketika bot uncertain
  */
-export function generateSmartFallback(message, confidence, context = {}) {
+export function generateSmartFallback(message, confidence) {
   // Categorize fallback type based on confidence
   let fallbackType = 'generic';
   
@@ -262,8 +261,6 @@ export function parseUserClarification(userResponse, previousClarification) {
     providedInformation: {},
     confidence: 0
   };
-
-  const lowerResponse = userResponse.toLowerCase();
 
   // If it was a numbered choice
   const choiceMatch = userResponse.match(/^(\d+)/);

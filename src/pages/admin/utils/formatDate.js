@@ -55,7 +55,7 @@ export const formatSheetDBDateToHuman = (dateString) => {
       minute: '2-digit',
       hour12: false
     }).format(date);
-  } catch (error) {
+  } catch {
     return formatDate(dateString);
   }
 };

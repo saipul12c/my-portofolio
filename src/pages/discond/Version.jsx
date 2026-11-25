@@ -13,7 +13,7 @@ export default function Version() {
         const s = await api.siteStats().catch(() => null);
         if (!mounted) return;
         setInfo(s || null);
-      } catch (e) {
+      } catch {
         // ignore
       } finally {
         if (mounted) setLoading(false);

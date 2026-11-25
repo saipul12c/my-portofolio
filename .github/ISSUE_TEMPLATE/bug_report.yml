@@ -1,0 +1,81 @@
+name: Laporan Bug (Bug Report)
+description: Laporkan error, tampilan rusak, atau perilaku tidak sesuai pada portofolio maupun SaipulAI
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Terima kasih telah melaporkan bug di **my-porto**! Mohon isi detail di bawah selengkap mungkin.
+        **Catatan:** Jika temuan berkaitan dengan celah keamanan atau kebocoran data, jangan kirim di sini — lihat [SECURITY.md](https://github.com/saipul12c/my-portofolio/blob/main/SECURITY.md).
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Bagian yang Terdampak
+      description: Pilih modul atau area aplikasi tempat bug terjadi.
+      options:
+        - Frontend UI / Halaman Portofolio
+        - SaipulAI Chat / NLU / Knowledge Base
+        - SaipulAI REST API (/api/saipul)
+        - Server / Netlify Functions / CLI
+        - Form Kontak / Supabase / EmailJS
+        - Build / Lint / Konfigurasi (Vite/Tailwind)
+    validations:
+      required: true
+
+  - type: input
+    id: page_url
+    attributes:
+      label: Halaman, Rute, atau Endpoint Terkait
+      description: Sebutkan path rute atau file terkait (jika diketahui).
+      placeholder: "Contoh: /projek, /live-cs/security, atau POST /api/saipul"
+    validations:
+      required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Deskripsi Bug
+      description: Jelaskan masalah yang terjadi secara singkat dan jelas.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Langkah Reproduksi (Steps to Reproduce)
+      description: Langkah-langkah untuk memunculkan ulang error tersebut.
+      placeholder: |
+        1. Buka halaman '...'
+        2. Klik tombol '...'
+        3. Kirim input '...'
+        4. Muncul error '...'
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_vs_actual
+    attributes:
+      label: Perilaku yang Diharapkan vs Aktual
+      description: Apa yang seharusnya terjadi, dan apa yang sebenarnya terjadi?
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Lingkungan (Browser / OS / Versi Node)
+      placeholder: "Contoh: Chrome 130 / Windows 11 / Node.js v20"
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log Error / Screenshot (Opsional)
+      description: Tempel pesan error console browser, terminal, atau lampirkan screenshot.
+      render: shell
+    validations:
+      required: false

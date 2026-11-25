@@ -1,17 +1,136 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef, memo } from "react";
+import React, { useState, useEffect, useMemo, useCallback, memo } from "react";
+import { Link } from "react-router-dom";
 import * as Icons from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import docsData from "../../../data/helpbutton/docs/docsSections.json";
+import HelpSubNav from "../HelpSubNav";
 
-// --- HELPER COMPONENTS ---
+// --- HELPER UTILITIES & COMPONENTS ---
 
-const SectionItem = memo(({ 
-  section, 
-  index, 
-  isOpen, 
-  onToggle,
-  getStatusColor,
-  getVersionTypeColor
+const TECHNICAL_ACRONYMS = new Set(["ai", "api", "pwa", "seo", "css", "fps", "pii", "sdk"]);
+
+/**
+ * Formats camelCase or snake_case object keys into readable labels.
+ * @param {string} key
+ * @returns {string}
+ */
+const formatTechnicalKey = (key) =>
+  String(key)
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/[_-]+/g, " ")
+    .trim()
+    .split(/\s+/)
+    .map((word) =>
+      TECHNICAL_ACRONYMS.has(word.toLowerCase())
+        ? word.toUpperCase()
+        : word.charAt(0).toUpperCase() + word.slice(1)
+    )
+    .join(" ");
+
+const isShortTagArray = (arr) =>
+  arr.every(
+    (item) =>
+      typeof item === "string" &&
+      !item.includes(" - ") &&
+      !item.includes(" -> ") &&
+      item.length <= 42
+  );
+
+const TechnicalValue = ({ value }) => {
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return <span className="text-gray-500 italic text-[11px]">None</span>;
+    }
+
+    if (isShortTagArray(value)) {
+      return (
+        <div className="flex flex-wrap gap-1.5">
+          {value.map((item, idx) => (
+            <span
+              key={idx}
+              className="px-2 py-0.5 rounded-md bg-blue-500/10 border border-blue-500/20 text-blue-300 font-mono text-[10px] leading-relaxed break-all max-w-full"
+            >
+              {item}
+            </span>
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <ul className="space-y-1.5">
+        {value.map((item, idx) => {
+          const text = String(item);
+          const sepIdx = text.indexOf(" - ");
+          return (
+            <li key={idx} className="flex items-start gap-2 text-[11px] leading-relaxed min-w-0">
+              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-400/70 flex-shrink-0" />
+              <span className="min-w-0 break-words">
+                {sepIdx !== -1 ? (
+                  <>
+                    <span className="font-mono text-blue-300 break-all">{text.slice(0, sepIdx)}</span>
+                    <span className="text-gray-400"> — {text.slice(sepIdx + 3)}</span>
+                  </>
+                ) : (
+                  <span className="font-mono text-blue-300 break-all">{text}</span>
+                )}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    );
+  }
+
+  if (value && typeof value === "object") {
+    return (
+      <div className="space-y-2 pl-3 border-l border-white/10">
+        {Object.entries(value).map(([subKey, subVal]) => (
+          <div key={subKey} className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5 sm:gap-3 text-[11px] min-w-0">
+            <span className="text-gray-400 flex-shrink-0">{formatTechnicalKey(subKey)}</span>
+            <div className="min-w-0 sm:text-right">
+              <TechnicalValue value={subVal} />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  const displayValue = typeof value === "boolean" ? (value ? "Yes" : "No") : String(value);
+  return <span className="text-blue-300 font-mono text-[11px] leading-relaxed break-words">{displayValue}</span>;
+};
+
+const TechnicalEntryList = ({ entries }) => (
+  <div className="space-y-3">
+    {entries.map(([k, v]) => {
+      const isComplex = Array.isArray(v) || (v !== null && typeof v === "object");
+      return (
+        <div
+          key={k}
+          className={`border-b border-white/5 pb-3 last:border-b-0 last:pb-0 min-w-0 ${
+            isComplex
+              ? "flex flex-col gap-2"
+              : "flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 sm:gap-4"
+          }`}
+        >
+          <span className="text-gray-400 text-[11px] font-medium flex-shrink-0">
+            {formatTechnicalKey(k)}
+          </span>
+          <div className={`min-w-0 ${isComplex ? "w-full" : "sm:text-right"}`}>
+            <TechnicalValue value={v} />
+          </div>
+        </div>
+      );
+    })}
+  </div>
+);
+
+const SectionItem = memo(({
+  section,
+  index,
+  isOpen,
+  onToggle
 }) => {
   const IconComponent = Icons[section.icon] || Icons.BookOpen;
 
@@ -22,9 +141,8 @@ const SectionItem = memo(({
       transition={{ duration: 0.5, delay: (index % 6) * 0.05 }}
       className={`relative group ${isOpen ? 'z-20 mb-6' : 'mb-3'}`}
     >
-      <div className={`glass-card rounded-3xl border border-white/5 overflow-hidden transition-all duration-500 ${
-        isOpen ? 'ring-2 ring-cyan-500/50 shadow-[0_0_30px_rgba(6,182,212,0.15)] bg-slate-900/90' : 'hover:bg-white/5'
-      }`}>
+      <div className={`bg-slate-900/60 backdrop-blur-xl rounded-3xl border border-white/5 overflow-hidden transition-all duration-500 ${isOpen ? 'ring-2 ring-cyan-500/50 shadow-[0_0_30px_rgba(6,182,212,0.15)] bg-slate-900/90' : 'hover:bg-white/5'
+        }`}>
         <button
           onClick={() => onToggle(index)}
           className="w-full flex flex-col sm:flex-row items-center p-6 sm:p-7 text-left outline-none group"
@@ -38,7 +156,7 @@ const SectionItem = memo(({
             </div>
           </div>
 
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 w-full">
             <div className="flex flex-wrap items-center gap-3 mb-2">
               <h2 className="text-xl sm:text-2xl font-black text-white group-hover:text-cyan-300 transition-colors tracking-tight">
                 {section.title || "Untitled Section"}
@@ -55,10 +173,16 @@ const SectionItem = memo(({
             </p>
 
             <div className="flex flex-wrap items-center gap-4 text-[10px] text-gray-500 font-medium">
-              <div className="flex items-center gap-1.5">
-                <Icons.Layers size={14} className="text-cyan-500" />
-                <span>v{section.version || '1.0'}</span>
-              </div>
+              <Link
+                to="/help/version"
+                onClick={(e) => e.stopPropagation()}
+                title={`Lihat rincian versi v${section.version || '1.0'} di Riwayat Versi`}
+                className="flex items-center gap-1.5 text-gray-400 hover:text-cyan-300 transition-colors group/ver"
+              >
+                <Icons.Layers size={14} className="text-cyan-500 group-hover/ver:scale-110 transition-transform" />
+                <span className="group-hover/ver:underline">v{section.version || '1.0'}</span>
+                <Icons.ExternalLink size={10} className="opacity-50 group-hover/ver:opacity-100" />
+              </Link>
               <div className="flex items-center gap-1.5">
                 <Icons.Clock size={14} className="text-blue-500" />
                 <span>{section.estimatedReadTime || '5 min'}</span>
@@ -76,9 +200,8 @@ const SectionItem = memo(({
           <div className="flex-shrink-0 ml-4 hidden sm:block">
             <motion.div
               animate={{ rotate: isOpen ? 180 : 0 }}
-              className={`p-3 rounded-xl border border-white/10 transition-all ${
-                isOpen ? 'bg-cyan-500 text-white shadow-lg' : 'bg-white/5 text-gray-500 group-hover:text-white'
-              }`}
+              className={`p-3 rounded-xl border border-white/10 transition-all ${isOpen ? 'bg-cyan-500 text-white shadow-lg' : 'bg-white/5 text-gray-500 group-hover:text-white'
+                }`}
             >
               <Icons.ChevronDown size={20} />
             </motion.div>
@@ -87,10 +210,8 @@ const SectionItem = memo(({
 
         <AnimatePresence>
           {isOpen && (
-            <SectionContent 
-              section={section} 
-              getStatusColor={getStatusColor} 
-              getVersionTypeColor={getVersionTypeColor} 
+            <SectionContent
+              section={section}
             />
           )}
         </AnimatePresence>
@@ -99,17 +220,39 @@ const SectionItem = memo(({
   );
 });
 
-const SectionContent = memo(({ section, getStatusColor, getVersionTypeColor }) => {
+const SectionContent = memo(({ section }) => {
   const [activeTab, setActiveTab] = useState('overview');
 
-  const allTabs = [
-    { id: 'overview', label: 'Overview', icon: Icons.LayoutGrid, hasData: true },
-    { id: 'system', label: 'System', icon: Icons.Cpu, hasData: !!(section.compatibility || section.performanceMetrics) },
-    { id: 'dev', label: 'Technical', icon: Icons.Code2, hasData: !!(section.saipulaiUpgrade || section.technicalDetails) },
-    { id: 'history', label: 'Changelog', icon: Icons.History, hasData: !!(section.changelog?.length > 0 || section.versionHistory?.length > 0) },
-  ];
+  const tabs = useMemo(() => {
+    const allTabs = [
+      { id: 'overview', label: 'Overview', icon: Icons.LayoutGrid, hasData: true },
+      { id: 'system', label: 'System', icon: Icons.Cpu, hasData: !!(section.compatibility || section.performanceMetrics) },
+      { id: 'dev', label: 'Technical', icon: Icons.Code2, hasData: !!(section.saipulaiUpgrade || section.technicalDetails) },
+      { id: 'history', label: 'Changelog', icon: Icons.History, hasData: !!(section.changelog?.length > 0 || section.versionHistory?.length > 0) },
+    ];
+    return allTabs.filter(t => t.hasData);
+  }, [section]);
 
-  const tabs = allTabs.filter(t => t.hasData);
+  const architectureEntries = useMemo(() => {
+    const updates = section.saipulaiUpgrade?.technicalUpdates;
+    if (updates && Object.keys(updates).length > 0) {
+      return Object.entries(updates);
+    }
+    const perf = section.saipulaiUpgrade?.performance;
+    if (perf && Object.keys(perf).length > 0) {
+      return Object.entries(perf);
+    }
+    return [];
+  }, [section]);
+
+  const upgradeHighlights = useMemo(() => {
+    if (section.saipulaiUpgrade?.userBenefits?.length > 0) {
+      return section.saipulaiUpgrade.userBenefits;
+    }
+    return Object.values(section.saipulaiUpgrade?.keyFeatures || {})
+      .map((item) => item?.name)
+      .filter(Boolean);
+  }, [section]);
 
   // Fallback to first available tab if activeTab is not in filtered list
   useEffect(() => {
@@ -131,14 +274,13 @@ const SectionContent = memo(({ section, getStatusColor, getVersionTypeColor }) =
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex flex-shrink-0 items-center gap-2 px-5 py-3 text-[9px] font-black uppercase tracking-[0.2em] transition-all relative ${
-              activeTab === tab.id ? 'text-cyan-400' : 'text-gray-500 hover:text-gray-300'
-            }`}
+            className={`flex flex-shrink-0 items-center gap-2 px-5 py-3 text-[9px] font-black uppercase tracking-[0.2em] transition-all relative ${activeTab === tab.id ? 'text-cyan-400' : 'text-gray-500 hover:text-gray-300'
+              }`}
           >
             <tab.icon size={14} />
             {tab.label}
             {activeTab === tab.id && (
-              <motion.div 
+              <motion.div
                 layoutId="activeTabUnderline"
                 className="absolute bottom-0 left-0 w-full h-0.5 bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.8)]"
               />
@@ -173,15 +315,15 @@ const SectionContent = memo(({ section, getStatusColor, getVersionTypeColor }) =
                     {section.subsections.map((sub, i) => {
                       const hasContent = sub.subtitle || sub.details || sub.tips || sub.codeSnippet;
                       if (!hasContent) return null;
-                      
+
                       return (
-                        <div key={i} className="p-5 rounded-2xl bg-white/[0.01] border border-white/5 hover:bg-white/[0.03] transition-all">
+                        <div key={i} className="min-w-0 p-5 rounded-2xl bg-white/[0.01] border border-white/5 hover:bg-white/[0.03] transition-all">
                           {sub.subtitle && <h4 className="font-black text-cyan-400 mb-2 uppercase tracking-widest text-[10px]">{sub.subtitle}</h4>}
                           {sub.details && <p className="text-xs text-gray-400 leading-relaxed mb-3">{sub.details}</p>}
                           {sub.tips && (
                             <div className="flex items-start gap-2 p-3 bg-cyan-500/5 border border-cyan-500/10 rounded-xl mb-3">
-                               <Icons.Info size={14} className="text-cyan-400 mt-0.5 flex-shrink-0" />
-                               <p className="text-[11px] italic text-cyan-200/70 leading-snug">{sub.tips}</p>
+                              <Icons.Info size={14} className="text-cyan-400 mt-0.5 flex-shrink-0" />
+                              <p className="text-[11px] italic text-cyan-200/70 leading-snug">{sub.tips}</p>
                             </div>
                           )}
                           {sub.codeSnippet && (
@@ -202,20 +344,21 @@ const SectionContent = memo(({ section, getStatusColor, getVersionTypeColor }) =
             {activeTab === 'system' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {section.compatibility ? (
-                  <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+                  <div className="min-w-0 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
                     <h3 className="text-xs font-black text-white mb-6 uppercase tracking-widest flex items-center gap-2">
-                       <Icons.Cpu className="text-blue-500" size={18} />
-                       Environment
+                      <Icons.Cpu className="text-blue-500" size={18} />
+                      Environment
                     </h3>
                     <div className="space-y-3">
                       {[
                         { label: 'Min Version', val: `v${section.compatibility.minRequired}`, icon: Icons.Minimize2 },
                         { label: 'Safe Deploy', val: `v${section.compatibility.testedUpTo}`, icon: Icons.ShieldCheck },
                         { label: 'API Schema', val: section.compatibility.apiCompatibility, icon: Icons.Route },
+                        ...(section.compatibility.aiVersion ? [{ label: 'AI Version', val: `v${section.compatibility.aiVersion}`, icon: Icons.Bot }] : []),
                       ].map((item, i) => (
-                        <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
-                          <span className="flex items-center gap-2 text-[10px] text-gray-500 font-medium lowercase">
-                            <item.icon size={14} className="text-blue-400" />
+                        <div key={i} className="flex items-center justify-between gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+                          <span className="flex items-center gap-2 text-[10px] text-gray-400 font-medium lowercase">
+                            <item.icon size={14} className="text-blue-400 flex-shrink-0" />
                             {item.label}
                           </span>
                           <span className="text-[10px] font-black text-white font-mono">{item.val}</span>
@@ -223,10 +366,30 @@ const SectionContent = memo(({ section, getStatusColor, getVersionTypeColor }) =
                       ))}
                     </div>
                   </div>
-                ) : (
+                ) : !section.performanceMetrics && (
                   <div className="col-span-2 p-10 text-center border border-dashed border-white/10 rounded-2xl">
-                     <Icons.ShieldX className="mx-auto text-gray-700 mb-3" size={32} />
-                     <p className="text-gray-500 text-xs italic">System compatibility parameters not specified for this module.</p>
+                    <Icons.ShieldX className="mx-auto text-gray-700 mb-3" size={32} />
+                    <p className="text-gray-500 text-xs italic">System compatibility parameters not specified for this module.</p>
+                  </div>
+                )}
+
+                {(section.performanceMetrics || section.compatibility?.browserSupport?.length > 0) && (
+                  <div className="min-w-0 p-6 rounded-2xl bg-white/[0.02] border border-white/5 space-y-5">
+                    <h3 className="text-xs font-black text-white uppercase tracking-widest flex items-center gap-2">
+                      <Icons.Activity className="text-cyan-400" size={18} />
+                      {section.performanceMetrics ? 'Performance & Support' : 'Browser Support'}
+                    </h3>
+                    {section.compatibility?.browserSupport?.length > 0 && (
+                      <div className="space-y-2">
+                        <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider block">
+                          Supported Browsers
+                        </span>
+                        <TechnicalValue value={section.compatibility.browserSupport} />
+                      </div>
+                    )}
+                    {section.performanceMetrics && (
+                      <TechnicalEntryList entries={Object.entries(section.performanceMetrics)} />
+                    )}
                   </div>
                 )}
               </div>
@@ -234,37 +397,55 @@ const SectionContent = memo(({ section, getStatusColor, getVersionTypeColor }) =
 
             {activeTab === 'dev' && (
               <div className="space-y-6">
-                {section.saipulaiUpgrade ? (
-                  <div className="p-8 rounded-[2rem] bg-gradient-to-br from-purple-900/20 via-blue-900/10 to-transparent border border-purple-500/20 relative overflow-hidden group">
-                     <Icons.Bot size={60} className="absolute -bottom-2 -right-2 text-purple-500/10 group-hover:text-purple-500/20 transition-all rotate-12" />
-                     <h3 className="text-xl font-black text-white mb-6 tracking-tighter uppercase">Intelligence Core</h3>
-                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="space-y-4">
-                           <p className="text-gray-400 text-sm leading-relaxed">{section.saipulaiUpgrade.summary}</p>
-                           <div className="flex flex-wrap gap-2">
-                              {section.saipulaiUpgrade.userBenefits?.map((b, i) => (
-                                <span key={i} className="px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-lg text-[9px] text-purple-300 font-bold uppercase">
-                                  ✓ {b}
-                                </span>
-                              ))}
-                           </div>
+                {section.saipulaiUpgrade && (
+                  <div className="p-6 sm:p-8 rounded-[2rem] bg-gradient-to-br from-purple-900/20 via-blue-900/10 to-transparent border border-purple-500/20 relative overflow-hidden group">
+                    <Icons.Bot size={60} className="absolute -bottom-2 -right-2 text-purple-500/10 group-hover:text-purple-500/20 transition-all rotate-12 pointer-events-none" />
+                    <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+                      <h3 className="text-xl font-black text-white tracking-tighter uppercase">Intelligence Core</h3>
+                      {section.saipulaiUpgrade.version && (
+                        <span className="px-3 py-1 rounded-full bg-purple-500/15 border border-purple-500/30 text-[10px] font-mono font-bold text-purple-300">
+                          SaipulAI v{section.saipulaiUpgrade.version}
+                        </span>
+                      )}
+                    </div>
+                    <div className={`grid grid-cols-1 ${architectureEntries.length > 0 ? "lg:grid-cols-2" : ""} gap-8`}>
+                      <div className="space-y-4 min-w-0">
+                        <p className="text-gray-400 text-sm leading-relaxed">{section.saipulaiUpgrade.summary}</p>
+                        {upgradeHighlights.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {upgradeHighlights.map((b, i) => (
+                              <span key={i} className="px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-lg text-[9px] text-purple-300 font-bold uppercase leading-snug break-words max-w-full">
+                                ✓ {b}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      {architectureEntries.length > 0 && (
+                        <div className="min-w-0 space-y-3 bg-black/25 p-5 rounded-2xl border border-white/5">
+                          <h4 className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] mb-3">Architecture Status</h4>
+                          <TechnicalEntryList entries={architectureEntries} />
                         </div>
-                        <div className="space-y-3 bg-black/20 p-5 rounded-2xl border border-white/5">
-                           <h4 className="text-[8px] font-black text-white uppercase tracking-[0.2em] mb-2 opacity-50">Architecture Status</h4>
-                           {Object.entries(section.saipulaiUpgrade.technicalUpdates || {}).map(([k, v], i) => (
-                             <div key={i} className="flex justify-between text-[10px] border-b border-white/5 pb-2">
-                                <span className="text-gray-600 capitalize">{k}</span>
-                                <span className="text-blue-400 font-mono">{String(v)}</span>
-                             </div>
-                           ))}
-                        </div>
-                     </div>
+                      )}
+                    </div>
                   </div>
-                ) : (
+                )}
+
+                {section.technicalDetails && (
+                  <div className="p-6 sm:p-8 rounded-2xl bg-white/[0.02] border border-white/5 space-y-4 min-w-0">
+                    <h4 className="text-xs font-black text-white uppercase tracking-widest flex items-center gap-2">
+                      <Icons.Wrench className="text-cyan-400" size={16} />
+                      Technical Details
+                    </h4>
+                    <TechnicalEntryList entries={Object.entries(section.technicalDetails)} />
+                  </div>
+                )}
+
+                {!section.saipulaiUpgrade && !section.technicalDetails && (
                   <div className="p-12 text-center border border-dashed border-white/10 rounded-3xl">
-                     <Icons.Code size={40} className="mx-auto text-gray-800 mb-4 opacity-50" />
-                     <h4 className="text-white font-black text-xs uppercase tracking-widest mb-2">Technical Engine: Standard</h4>
-                     <p className="text-gray-500 text-[10px] max-w-sm mx-auto leading-relaxed">Advanced AI technical specifications are only available for Intelligence-enabled modules. This section uses standard protocol architecture.</p>
+                    <Icons.Code size={40} className="mx-auto text-gray-800 mb-4 opacity-50" />
+                    <h4 className="text-white font-black text-xs uppercase tracking-widest mb-2">Technical Engine: Standard</h4>
+                    <p className="text-gray-500 text-[10px] max-w-sm mx-auto leading-relaxed">Advanced AI technical specifications are only available for Intelligence-enabled modules. This section uses standard protocol architecture.</p>
                   </div>
                 )}
               </div>
@@ -276,38 +457,47 @@ const SectionContent = memo(({ section, getStatusColor, getVersionTypeColor }) =
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     {section.versionHistory.map((v, i) => (
                       <div key={i} className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 text-center transition-all hover:bg-white/[0.04]">
-                         <div className="text-lg font-black text-white mb-1 tracking-tighter">v{v.version}</div>
-                         <div className="text-[8px] font-bold text-gray-500 mb-3 uppercase tracking-widest">{v.date}</div>
-                         <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
-                           v.status === 'CURRENT' ? 'bg-cyan-500 text-white' : 'bg-white/5 text-gray-600'
-                         }`}>
-                           {v.status}
-                         </span>
+                        <div className="text-lg font-black text-white mb-1 tracking-tighter">v{v.version}</div>
+                        <div className="text-[8px] font-bold text-gray-500 mb-3 uppercase tracking-widest">{v.date}</div>
+                        <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${v.status === 'CURRENT' ? 'bg-cyan-500 text-white' : 'bg-white/5 text-gray-600'
+                          }`}>
+                          {v.status}
+                        </span>
                       </div>
                     ))}
                   </div>
                 )}
-                
+
                 {section.changelog?.length > 0 ? (
                   <div className="relative pl-8 border-l border-white/10 space-y-8 mt-8">
-                     {section.changelog.map((log, i) => (
-                       <div key={i} className="relative">
-                          <div className="absolute -left-[calc(2rem+0.5px)] top-1.5 w-3 h-3 rounded-full bg-cyan-500 border-2 border-[#020617] shadow-lg" />
-                          <div className="flex items-center gap-3 mb-2">
-                             <span className="text-sm font-black text-cyan-400">v{log.version}</span>
-                             <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">{log.date}</span>
-                          </div>
-                          <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5 text-gray-400 text-xs leading-relaxed">
-                             {log.changes}
-                          </div>
-                       </div>
-                     ))}
+                    {section.changelog.map((log, i) => (
+                      <div key={i} className="relative">
+                        <div className="absolute -left-[calc(2rem+0.5px)] top-1.5 w-3 h-3 rounded-full bg-cyan-500 border-2 border-[#020617] shadow-lg" />
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="text-sm font-black text-cyan-400">v{log.version}</span>
+                          <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">{log.date}</span>
+                        </div>
+                        <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5 text-gray-400 text-xs leading-relaxed">
+                          {log.changes}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <div className="p-10 text-center text-gray-600 text-xs italic">
-                     No secondary changelog records found for this release cycle.
+                    No secondary changelog records found for this release cycle.
                   </div>
                 )}
+
+                <div className="pt-4 border-t border-white/5 flex justify-end">
+                  <Link
+                    to="/help/version"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors group/allver"
+                  >
+                    <span>Buka Riwayat Versi & Changelog Lengkap</span>
+                    <Icons.ArrowRight size={13} className="group-hover/allver:translate-x-1 transition-transform" />
+                  </Link>
+                </div>
               </div>
             )}
           </motion.div>
@@ -358,8 +548,8 @@ export default function Doct() {
 
     if (debouncedSearch) {
       const query = debouncedSearch.toLowerCase();
-      result = result.filter(section => 
-        section.title?.toLowerCase().includes(query) || 
+      result = result.filter(section =>
+        section.title?.toLowerCase().includes(query) ||
         section.content?.toLowerCase().includes(query) ||
         section.tags?.some(tag => tag.toLowerCase().includes(query))
       );
@@ -391,23 +581,9 @@ export default function Doct() {
     setOpenIndex(prev => (prev === index ? null : index));
   }, []);
 
-  const getStatusColor = useCallback((status) => {
-    switch (status) {
-      case 'CURRENT': return 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30';
-      default: return 'bg-white/5 text-gray-500 border border-white/10';
-    }
-  }, []);
-
-  const getVersionTypeColor = useCallback((type) => {
-    switch (type) {
-      case 'major': return 'border-red-500/50 text-red-400';
-      default: return 'border-white/10 text-gray-400';
-    }
-  }, []);
-
   return (
     <div className="min-h-screen bg-[var(--color-gray-900)] text-gray-100 flex flex-col items-center py-12 sm:py-20 px-4 sm:px-6 relative overflow-hidden font-sans selection:bg-cyan-500 selection:text-white">
-      
+
       {/* Background Glows */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <div className="absolute top-[-5%] left-[-10%] w-[50%] h-[50%] bg-cyan-600/10 blur-[120px] rounded-full animate-pulse"></div>
@@ -421,7 +597,9 @@ export default function Doct() {
         transition={{ duration: 1, ease: "easeOut" }}
         className="text-center max-w-5xl mb-20 relative z-10"
       >
-        <motion.div 
+        <HelpSubNav active="docs" />
+
+        <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 200, damping: 25 }}
@@ -429,7 +607,7 @@ export default function Doct() {
         >
           <div className="relative group">
             <div className="absolute inset-0 bg-cyan-500/30 blur-[60px] rounded-full group-hover:bg-cyan-500/50 transition-all duration-700"></div>
-            <div className="relative glass-effect p-6 rounded-3xl border border-white/20 shadow-xl">
+            <div className="relative bg-slate-900/70 backdrop-blur-xl p-6 rounded-3xl border border-white/20 shadow-xl">
               <Icons.LayoutDashboard className="text-cyan-400" size={32} />
             </div>
           </div>
@@ -440,15 +618,15 @@ export default function Doct() {
             System
           </span>
           <br />
-          <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent animate-gradient-fast">
+          <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
             Documentation
           </span>
         </h1>
-        
+
         <p className="text-lg sm:text-xl text-gray-400 leading-relaxed max-w-3xl mx-auto mb-12 font-light">
-          Master the system with 
-          <span className="text-white font-bold italic"> precision guides</span>, 
-          <span className="text-white font-bold italic"> real-time insights</span>, and 
+          Master the system with
+          <span className="text-white font-bold italic"> precision guides</span>,
+          <span className="text-white font-bold italic"> real-time insights</span>, and
           <span className="text-white font-bold italic"> intelligence hubs</span>.
         </p>
 
@@ -468,19 +646,18 @@ export default function Doct() {
           </div>
 
           <div className="flex flex-wrap justify-center gap-2">
-             {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-500 border ${
-                    selectedCategory === cat
-                      ? "bg-cyan-500 text-white border-cyan-400 shadow-[0_5px_20px_rgba(6,182,212,0.3)] -translate-y-1"
-                      : "bg-white/5 border-white/5 text-gray-500 hover:bg-white/10 hover:border-white/20"
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-500 border ${selectedCategory === cat
+                  ? "bg-cyan-500 text-white border-cyan-400 shadow-[0_5px_20px_rgba(6,182,212,0.3)] -translate-y-1"
+                  : "bg-white/5 border-white/5 text-gray-500 hover:bg-white/10 hover:border-white/20"
                   }`}
-                >
-                  {cat}
-                </button>
-              ))}
+              >
+                {cat}
+              </button>
+            ))}
           </div>
         </div>
       </motion.div>
@@ -488,73 +665,70 @@ export default function Doct() {
       {/* Main Results Grid */}
       <div className="w-full max-w-5xl relative z-10">
         <AnimatePresence mode="wait">
-           {filteredSections.length > 0 ? (
-             <motion.div 
-               key={`grid-${selectedCategory}-${debouncedSearch}`}
-               initial={{ opacity: 0 }}
-               animate={{ opacity: 1 }}
-               exit={{ opacity: 0 }}
-               className="grid grid-cols-1 gap-6"
-             >
-               {paginatedSections.map((section, index) => {
-                 const actualIndex = (currentPage - 1) * itemsPerPage + index;
-                 return (
-                   <SectionItem
-                     key={`section-${section.id}-${actualIndex}`}
-                     section={section}
-                     index={actualIndex}
-                     isOpen={openIndex === actualIndex}
-                     onToggle={toggleSection}
-                     getStatusColor={getStatusColor}
-                     getVersionTypeColor={getVersionTypeColor}
-                   />
-                 );
-               })}
-             </motion.div>
-           ) : (
-             <motion.div 
-               initial={{ opacity: 0 }}
-               animate={{ opacity: 1 }}
-               className="py-24 text-center glass-card rounded-[2rem] border-white/10 shadow-xl"
-             >
-                <Icons.SearchX size={64} className="text-gray-800 mx-auto mb-6 opacity-50" />
-                <h2 className="text-2xl font-black text-white mb-4 tracking-tighter uppercase">No Results Found</h2>
-                <p className="text-gray-500 max-w-md mx-auto text-sm leading-relaxed">We couldn't find any documentation matching your current filters. Try resetting or adjusting your search.</p>
-                <button 
-                  onClick={() => { setSearchQuery(""); setSelectedCategory("All"); }} 
-                  className="mt-8 px-6 py-3 bg-cyan-500/20 border border-cyan-500/40 rounded-xl text-cyan-400 font-bold uppercase text-[10px] tracking-widest hover:bg-cyan-500 hover:text-white transition-all"
-                >
-                  Reset Filters
-                </button>
-             </motion.div>
-           )}
+          {filteredSections.length > 0 ? (
+            <motion.div
+              key={`grid-${selectedCategory}-${debouncedSearch}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="grid grid-cols-1 gap-6"
+            >
+              {paginatedSections.map((section, index) => {
+                const actualIndex = (currentPage - 1) * itemsPerPage + index;
+                return (
+                  <SectionItem
+                    key={`section-${section.id}-${actualIndex}`}
+                    section={section}
+                    index={actualIndex}
+                    isOpen={openIndex === actualIndex}
+                    onToggle={toggleSection}
+                  />
+                );
+              })}
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="py-24 text-center bg-slate-900/60 backdrop-blur-xl rounded-[2rem] border border-white/10 shadow-xl"
+            >
+              <Icons.SearchX size={64} className="text-gray-800 mx-auto mb-6 opacity-50" />
+              <h2 className="text-2xl font-black text-white mb-4 tracking-tighter uppercase">No Results Found</h2>
+              <p className="text-gray-500 max-w-md mx-auto text-sm leading-relaxed">We couldn't find any documentation matching your current filters. Try resetting or adjusting your search.</p>
+              <button
+                onClick={() => { setSearchQuery(""); setSelectedCategory("All"); }}
+                className="mt-8 px-6 py-3 bg-cyan-500/20 border border-cyan-500/40 rounded-xl text-cyan-400 font-bold uppercase text-[10px] tracking-widest hover:bg-cyan-500 hover:text-white transition-all"
+              >
+                Reset Filters
+              </button>
+            </motion.div>
+          )}
         </AnimatePresence>
 
         {/* Scaled Down Pagination */}
         {totalPages > 1 && (
           <div className="mt-20 flex justify-center items-center gap-6">
-             <button
+            <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
               className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-cyan-500 hover:text-white transition-all disabled:opacity-5"
             >
               <Icons.ChevronLeft size={20} />
             </button>
-            
+
             <div className="flex gap-2">
-               {[...Array(totalPages)].map((_, i) => (
-                 <button
+              {[...Array(totalPages)].map((_, i) => (
+                <button
                   key={i}
                   onClick={() => setCurrentPage(i + 1)}
-                  className={`w-10 h-10 rounded-xl border flex items-center justify-center text-sm font-bold transition-all duration-500 ${
-                    currentPage === i + 1 
-                      ? "bg-gradient-to-br from-cyan-400 to-blue-600 text-white border-white/30 shadow-lg scale-110" 
-                      : "bg-white/5 border-white/5 text-gray-600 hover:text-white hover:border-white/20"
-                  }`}
-                 >
-                   {i + 1}
-                 </button>
-               ))}
+                  className={`w-10 h-10 rounded-xl border flex items-center justify-center text-sm font-bold transition-all duration-500 ${currentPage === i + 1
+                    ? "bg-gradient-to-br from-cyan-400 to-blue-600 text-white border-white/30 shadow-lg scale-110"
+                    : "bg-white/5 border-white/5 text-gray-600 hover:text-white hover:border-white/20"
+                    }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
             </div>
 
             <button
@@ -570,18 +744,18 @@ export default function Doct() {
 
       {/* Aesthetic Footer - Scaled Down */}
       <footer className="mt-40 w-full max-w-6xl py-20 border-t border-white/5 text-center relative">
-         <div className="mb-8 flex justify-center gap-10">
-            {[Icons.Github, Icons.Twitter, Icons.Linkedin, Icons.TerminalSquare, Icons.Globe].map((Icon, i) => (
-              <div key={i} className="relative group cursor-pointer">
-                 <Icon size={24} className="text-gray-700 hover:text-white relative z-10 transition-all duration-500 hover:scale-125" />
-              </div>
-            ))}
-         </div>
-         <p className="text-gray-700 text-[9px] font-black uppercase tracking-[0.8em] mb-4">Autonomous System &bull; Portfolio 2.0</p>
-         <div className="flex justify-center items-center gap-3 text-gray-800 text-[7px] font-bold uppercase tracking-widest">
-            <span>System Status: Online</span>
-            <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></div>
-         </div>
+        <div className="mb-8 flex justify-center gap-10">
+          {[Icons.Github, Icons.Twitter, Icons.Linkedin, Icons.TerminalSquare, Icons.Globe].map((Icon, i) => (
+            <div key={i} className="relative group cursor-pointer">
+              <Icon size={24} className="text-gray-700 hover:text-white relative z-10 transition-all duration-500 hover:scale-125" />
+            </div>
+          ))}
+        </div>
+        <p className="text-gray-700 text-[9px] font-black uppercase tracking-[0.8em] mb-4">Autonomous System &bull; Portfolio 2.0</p>
+        <div className="flex justify-center items-center gap-3 text-gray-800 text-[7px] font-bold uppercase tracking-widest">
+          <span>System Status: Online</span>
+          <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></div>
+        </div>
       </footer>
     </div>
   );

@@ -32,7 +32,6 @@ const ONLINE_QRIS_URL =
 // --- Sub-Komponen: Kartu Menggantung (Ultimate Physics Badge) ---
 function HangingBadge({ profile }) {
   const [isFlipped, setIsFlipped] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const isDraggingRef = useRef(false);
 
   // --- PHYSICS ENGINE ---
@@ -243,8 +242,6 @@ function HangingBadge({ profile }) {
             isDraggingRef.current = false;
           }, 150);
         }}
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
         onClick={handleFlip}
         onKeyDown={handleKeyDown}
         tabIndex={0}

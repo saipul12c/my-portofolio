@@ -1,0 +1,48 @@
+name: Laporan Aksesibilitas (Accessibility Issue)
+description: Laporkan hambatan navigasi keyboard, screen reader, kontras warna, atau aksesibilitas lainnya
+title: "[A11y]: "
+labels:
+  - accessibility
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Terima kasih telah membantu menjadikan **my-porto** lebih inklusif (lihat [ACCESSIBILITY.md](https://github.com/saipul12c/my-portofolio/blob/main/ACCESSIBILITY.md)).
+
+  - type: input
+    id: target_page
+    attributes:
+      label: Halaman atau Komponen Terdampak
+      placeholder: "Contoh: Navbar, HelpMenu, Modal Galeri (/foto), atau ChatbotWindow"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: assistive_tech
+    attributes:
+      label: Metode Akses / Teknologi Bantu
+      options:
+        - Navigasi Keyboard (Tab / Enter / Escape)
+        - Screen Reader (NVDA / JAWS / VoiceOver / TalkBack)
+        - Kontras Warna / Zoom / Ukuran Teks
+        - Sensitivitas Gerak / Animasi (Reduced Motion)
+        - Tampilan Mobile / Responsivitas Sentuh
+        - Lainnya
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue_detail
+    attributes:
+      label: Deskripsi Kendala Aksesibilitas
+      description: Jelaskan hambatan yang dialami dan bagaimana seharusnya perilaku aksesibelnya.
+    validations:
+      required: true
+
+  - type: input
+    id: env
+    attributes:
+      label: Browser & Perangkat
+      placeholder: "Contoh: Firefox / NVDA / Windows 11 atau Safari / VoiceOver / iOS"
+    validations:
+      required: false

@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Hash, Volume2, Plus, Users, Settings, X } from 'lucide-react';
-import { useChat } from '../../contexts/ChatContext';
-import { useAuth } from '../../contexts/AuthContext';
+import { useChat } from '../../contexts/useChat';
+import { useAuth } from '../../contexts/useAuth';
 import { useEffect, useState } from 'react';
 import api from '../../lib/api';
 

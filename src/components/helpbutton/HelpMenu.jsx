@@ -273,9 +273,9 @@ export default function HelpMenu({ onOpenChat, chatbotEnabled = false, roomEnabl
           subtitle="Hubungi Agent & Diskusi Langsung"
           icon={MessageCircle}
           to="/Live-Discussion"
-          disabled={false}
+          disabled={!roomEnabled}
           label="LIVE"
-          disabledMessage="Fitur ini sedang aktif"
+          disabledMessage={roomEnabled ? "Fitur ini sedang aktif" : "Room diskusi sedang dinonaktifkan"}
         />
         <HelpMenuItem
           title="Komitmen / Kebijakan"

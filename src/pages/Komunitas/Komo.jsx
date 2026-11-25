@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabaseClient';
 import { motion } from "framer-motion";
 import { 
   Users, 
@@ -13,7 +12,7 @@ import CommunityFilters from './components/CommunityFilters';
 import CommunityGrid from './components/CommunityGrid';
 import CommunityModal from './components/CommunityModal';
 import CommunityForm from './components/CommunityForm';
-import { useCommunity } from '../../context/CommunityContext';
+import { useCommunity } from '../../context/useCommunity';
 import communityApi from './lib/communityApi';
 import { uploadMedia } from '../../utils/storageHelper';
 
@@ -199,7 +198,7 @@ const Komunitas = () => {
       }
 
       // Destructure image_file out of formData for database submission
-      const { image_file, ...submissionData } = formData;
+      const { image_file: _ImageFile, ...submissionData } = formData;
       
       const communityData = {
         ...submissionData,

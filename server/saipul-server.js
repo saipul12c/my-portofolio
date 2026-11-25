@@ -32,7 +32,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, HOST, () => {
   console.log('========================================================');
-  console.log(`🤖 SaipulAI Standalone Server v8.1.0 aktif!`);
+  console.log(`🤖 SaipulAI Standalone Server  v8.0.0 aktif!`);
   console.log(`📡 URL API: http://localhost:${PORT}/api/saipul`);
   console.log(`💡 Health Check: http://localhost:${PORT}/api/saipul`);
   console.log(`🔒 Zero Sensitive Keys • CORS Enabled • PII Filter Active`);

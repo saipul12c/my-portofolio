@@ -22,7 +22,6 @@ const MobileLayout = memo(({
   copied,
   activeTab,
   setActiveTab,
-  stats,
   certificates = [],
   projects = [],
   openCertModal

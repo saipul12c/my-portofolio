@@ -10,49 +10,14 @@ import {
   Feather, Cloud, ThumbsUp, Search, Filter, X,
   Bot, Send, History
 } from "lucide-react";
-import askAI, { getAISuggestions, getCyclingSuggestions, getAIStatistics } from "../faq/AI/Bot";
+import askAI, {
+  getAISuggestions,
+  getCyclingSuggestions,
+  saveAISearchHistory,
+  getAISearchHistory,
+  AI_SEARCH_HISTORY_COLORS
+} from "../faq/AI/Bot";
 import { Link, useNavigate } from "react-router-dom";
-
-// Utility untuk menyimpan riwayat ke localStorage
-const HISTORY_KEY = 'ai_search_history';
-const HISTORY_MAX_ITEMS = 20;
-
-const saveToHistory = (query, answer = '', type = 'ai') => {
-  try {
-    const historyItem = {
-      id: Date.now().toString(36) + Math.random().toString(36).substr(2),
-      query,
-      answer,
-      type,
-      timestamp: new Date().toISOString(),
-      page: window.location.pathname
-    };
-    const existingHistory = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-    const filteredHistory = existingHistory.filter(item =>
-      item.query.toLowerCase() !== query.toLowerCase()
-    );
-    const newHistory = [historyItem, ...filteredHistory].slice(0, HISTORY_MAX_ITEMS);
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(newHistory));
-    return newHistory;
-  } catch (error) {
-    console.error('Error saving to history:', error);
-    return [];
-  }
-};
-
-const getHistory = () => {
-  try {
-    return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-  } catch (error) {
-    return [];
-  }
-};
-
-const colorVariants = [
-  "from-cyan-500 to-blue-500",
-  "from-purple-500 to-pink-500",
-  "from-amber-500 to-orange-500"
-];
 
 // Update iconMap untuk mendukung semua ikon
 const iconMap = {
@@ -133,8 +98,7 @@ export default function HelpCommitmentItem() {
   const [showAiAnswer, setShowAiAnswer] = useState(false);
   const [suggestionsList, setSuggestionsList] = useState(getAISuggestions());
   const [suggestionIndex, setSuggestionIndex] = useState(0);
-  const [aiStats, setAiStats] = useState({ totalQuestions: 0, successRate: 0 });
-  const [searchHistory, setSearchHistory] = useState(getHistory());
+  const [searchHistory, setSearchHistory] = useState(() => getAISearchHistory());
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [aiRelevance, setAiRelevance] = useState(0);
 
@@ -302,11 +266,8 @@ export default function HelpCommitmentItem() {
       const result = await askAI(q, filteredCommitments);
       setAiAnswer(result.text);
       setAiRelevance(result.relevance);
-      const updatedHistory = saveToHistory(q, result.text, 'ai');
+      const updatedHistory = saveAISearchHistory(q, result.text, 'ai');
       setSearchHistory(updatedHistory);
-
-      const stats = getAIStatistics();
-      setAiStats(stats);
     } catch (error) {
       setAiAnswer(`Maaf, terjadi kesalahan: ${error.message}. Silakan coba lagi.`);
     } finally {
@@ -346,16 +307,11 @@ export default function HelpCommitmentItem() {
     };
   }, []);
 
-  useEffect(() => {
-    const stats = getAIStatistics();
-    setAiStats(stats);
-  }, []);
-
   const quickExamples = useMemo(() => {
     return suggestionsList.slice(0, 3).map((text, idx) => ({
       text: text.length > 40 ? text.substring(0, 40) + "..." : text,
       fullText: text,
-      color: colorVariants[idx % colorVariants.length]
+      color: AI_SEARCH_HISTORY_COLORS[idx % AI_SEARCH_HISTORY_COLORS.length]
     }));
   }, [suggestionsList]);
 
@@ -718,8 +674,8 @@ export default function HelpCommitmentItem() {
                   key={tag}
                   onClick={() => handleTagToggle(tag)}
                   className={`px-3 py-1.5 text-sm rounded-full transition-colors ${selectedTags.includes(tag)
-                      ? 'bg-pink-500 text-white'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    ? 'bg-pink-500 text-white'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                     }`}
                 >
                   {tag} {selectedTags.includes(tag) && '✓'}
@@ -777,7 +733,7 @@ export default function HelpCommitmentItem() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <div 
+                  <div
                     className="hidden sm:flex items-center gap-2 px-4 py-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-bold cursor-help whitespace-nowrap"
                     title={`Jawaban ini memiliki ${aiRelevance}% relevansi dengan pertanyaan Anda.`}
                   >
@@ -909,8 +865,8 @@ export default function HelpCommitmentItem() {
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
                       className={`px-4 py-2 rounded-lg transition-colors ${currentPage === pageNum
-                          ? 'bg-pink-500 text-white'
-                          : 'bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
+                        ? 'bg-pink-500 text-white'
+                        : 'bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
                         }`}
                     >
                       {pageNum}

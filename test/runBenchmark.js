@@ -19,7 +19,7 @@ function readJsonSafe(relPath, fallback = {}) {
     if (!fs.existsSync(fullPath)) return fallback;
     const raw = fs.readFileSync(fullPath, 'utf8');
     return JSON.parse(raw);
-  } catch (err) {
+  } catch {
     return fallback;
   }
 }
@@ -67,7 +67,7 @@ async function runBenchmark() {
   try {
     const kknModule = await import(pathToFileURL(path.resolve(rootDir, 'src/pages/akademik/sarjana/kkn/data/kknData.js')).href);
     if (kknModule.kknOverview) kknOverview = kknModule.kknOverview;
-  } catch (e) { }
+  } catch { /* fallback to default kknOverview */ }
 
   const visiMisiData = {
     visi: "Menjadi pendidik dan kreator media edukatif yang adaptif terhadap kemajuan teknologi dan inovasi digital, sekaligus menginspirasi melalui pembelajaran kreatif, interaktif, dan berdampak.",

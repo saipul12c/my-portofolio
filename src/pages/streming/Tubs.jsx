@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, Suspense } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/useAuth';
 import { 
   Sliders, MoreVertical, Search, TrendingUp, 
   Video, Camera, Plus, Sparkles, Zap
@@ -30,7 +30,6 @@ const Tubs = () => {
   const [activeFilter, setActiveFilter] = useState('All');
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [fetchedUser, setFetchedUser] = useState(null);
-  const [loadingData, setLoadingData] = useState(true);
   const [notifications] = useState(NOTIFICATIONS);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [sortBy, setSortBy] = useState('recommended');
@@ -48,7 +47,6 @@ const Tubs = () => {
     let mounted = true;
     const load = async (q = searchQuery, cat = activeFilter) => {
       try {
-        setLoadingData(true);
         // Use centralized API client
         const [videosJson, shortsJson, usersJson] = await Promise.all([
           api.videos.list(q, cat).catch(() => []),
@@ -69,8 +67,6 @@ const Tubs = () => {
         else setFetchedUser(usersJson || null);
       } catch (err) {
         console.error('Failed to load streaming data', err);
-      } finally {
-        setLoadingData(false);
       }
     };
     load();

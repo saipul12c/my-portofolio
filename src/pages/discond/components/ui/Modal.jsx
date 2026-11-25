@@ -43,7 +43,7 @@ const Modal = ({ children, onClose, size = 'md', ariaLabel = 'Dialog' }) => {
     document.addEventListener('keydown', handleKey);
     return () => {
       document.removeEventListener('keydown', handleKey);
-      try { previouslyFocused.current?.focus(); } catch (e) { /* ignore */ }
+      try { previouslyFocused.current?.focus(); } catch { /* ignore */ }
     };
   }, [onClose]);
 

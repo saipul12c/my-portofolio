@@ -8,7 +8,8 @@ import {
   FaPlusCircle,
   FaCheckCircle
 } from "react-icons/fa";
-import { FormattedText, FileTree, detectFiles } from "../Shared/UIComponents";
+import { FormattedText, FileTree } from "../Shared/UIComponents";
+import { detectFiles } from "../Shared/fileDetection";
 
 const Changelog = ({ aiDocData }) => {
   // Utility to determine change category based on description

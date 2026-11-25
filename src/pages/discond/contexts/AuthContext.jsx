@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { friendlyFetchError } from '../utils/helpers';
 import { AuthContext } from './AuthContextObject';
 import api from '../lib/api';
@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const data = await api.auth.me();
         setUser(data);
-      } catch (err) {
+      } catch {
         localStorage.removeItem('token');
       } finally {
         setLoading(false);
@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
       const data = await api.auth.me();
       setUser(data);
       return;
-    } catch (err) {
+    } catch {
       const localUser = {
         id: userId || `local-${Date.now()}`,
         username: localStorage.getItem('username') || 'localuser',
@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }) => {
         if (data?.token) localStorage.setItem('token', data.token);
         await fetchUserProfile(data?.user?.id || data?.id);
         return { error: null };
-      } catch (err) {
+      } catch {
         const mockUser = { id: `local-${Date.now()}`, username: username || email.split('@')[0], email, role: 'user', tier: 'bronze' };
         localStorage.setItem('token', 'local-dev-token');
         localStorage.setItem('username', mockUser.username);
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }) => {
         await fetchUserProfile(data?.user?.id || data?.id);
         return { error: null };
       } catch (err) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (import.meta.env?.MODE !== 'production') {
           const mockUser = { id: `local-${Date.now()}`, username: email.split('@')[0], email, role: 'user', tier: 'bronze' };
           localStorage.setItem('token', 'local-dev-token');
           localStorage.setItem('username', mockUser.username);
@@ -123,12 +123,6 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const context = React.useContext(AuthContext);
-  if (context === undefined) throw new Error('useAuth must be used within an AuthProvider');
-  return context;
 };
 
 export default AuthProvider;

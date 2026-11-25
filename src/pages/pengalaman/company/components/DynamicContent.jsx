@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import OverviewTab from "./tabs/OverviewTab";
 import PortfolioTab from "./tabs/PortfolioTab";
 import TimelineTab from "./tabs/TimelineTab";

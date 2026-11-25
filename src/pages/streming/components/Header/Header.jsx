@@ -17,14 +17,12 @@ const Header = ({
   toggleSidebar,
   toggleTheme,
   isDarkMode,
-  user,
   notifications,
   onUploadClick,
   onShortsClick
 }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [showUserMenu, setShowUserMenu] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const inputRef = useRef(null);
 
@@ -61,7 +59,6 @@ const Header = ({
     if (e.key === 'Escape') {
       setShowSuggestions(false);
       setShowNotifications(false);
-      setShowUserMenu(false);
     }
   };
 
@@ -71,7 +68,6 @@ const Header = ({
       if (!event.target.closest('.header-dropdown')) {
         setShowSuggestions(false);
         setShowNotifications(false);
-        setShowUserMenu(false);
         setShowSettings(false);
       }
     };

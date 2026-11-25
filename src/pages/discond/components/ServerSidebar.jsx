@@ -2,12 +2,10 @@ import { motion } from "framer-motion";
 import { Plus, MessageCircle, Users, Crown } from 'lucide-react';
 import { useState } from 'react';
 import AuthButtons from './auth/AuthButtons';
-import { useChat } from '../contexts/ChatContext';
-import { useAuth } from '../contexts/AuthContext';
+import { useChat } from '../contexts/useChat';
 
-const ServerSidebar = ({ onAuthRequest, mobileClose }) => {
+const ServerSidebar = ({ onAuthRequest }) => {
   const { servers, selectedServer, setSelectedServer, createServer } = useChat();
-  const { user } = useAuth();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newServerName, setNewServerName] = useState('');
 
@@ -35,7 +33,7 @@ const ServerSidebar = ({ onAuthRequest, mobileClose }) => {
               ? 'bg-cyan-600 text-white rounded-2xl' 
               : 'bg-[#36393f] text-gray-300 hover:bg-cyan-600 hover:text-white hover:rounded-2xl'
           }`}
-          onClick={() => onServerSelect(null)}
+          onClick={() => setSelectedServer(null)}
         >
           <MessageCircle className="w-6 h-6" />
         </motion.button>

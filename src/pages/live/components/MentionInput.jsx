@@ -5,7 +5,6 @@ import { supabase } from '../../../lib/supabaseClient';
 
 export const MentionInput = ({ value, onChange, onMention }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
@@ -59,7 +58,6 @@ export const MentionInput = ({ value, onChange, onMention }) => {
       if (charBeforeAt === '' || /\s/.test(charBeforeAt)) {
         const afterAt = text.substring(lastAtIndex + 1);
         if (/^[a-zA-Z0-9_]*$/.test(afterAt)) {
-          setSearchQuery(afterAt);
           setShowSuggestions(true);
           
           if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
@@ -80,7 +78,6 @@ export const MentionInput = ({ value, onChange, onMention }) => {
     
     onChange(newValue);
     setShowSuggestions(false);
-    setSearchQuery('');
     
     if (onMention) onMention(user);
     inputRef.current?.focus();

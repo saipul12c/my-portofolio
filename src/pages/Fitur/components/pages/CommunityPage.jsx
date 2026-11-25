@@ -14,7 +14,6 @@ const CommunityPage = ({ currentConfig }) => {
   if (!communityData) return null;
 
   const PageIcon = getIconComponent(communityData.icon);
-  const accentBorder = isCyan ? 'border-cyan-500/30' : 'border-emerald-500/30';
   const accentText = isCyan ? 'text-cyan-400' : 'text-emerald-400';
   const accentBg = isCyan ? 'bg-cyan-500/15' : 'bg-emerald-500/15';
 
@@ -258,7 +257,7 @@ const CommunityPage = ({ currentConfig }) => {
                     onClick={() => handleRSVP(event.name)}
                     className={`w-full py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 cursor-pointer ${isRegistered
                       ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
-                      : `bg-white/10 hover:bg-white/20 text-white border border-white/15 hover:border-${accentColor}-400/40`
+                      : `bg-white/10 hover:bg-white/20 text-white border border-white/15 ${isCyan ? 'hover:border-cyan-400/40' : 'hover:border-emerald-400/40'}`
                       }`}
                   >
                     {isRegistered ? (

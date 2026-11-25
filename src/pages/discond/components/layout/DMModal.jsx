@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import Modal from '../ui/Modal';
 import api from '../../lib/api';
 import { io } from 'socket.io-client';
@@ -17,7 +17,7 @@ export default function DMModal({ dmId, onClose }) {
         const data = await api.dm.messages.list(dmId).catch(() => null);
         if (!mounted) return;
         setMessages(Array.isArray(data) ? data : []);
-      } catch (e) {
+      } catch {
         // ignore
       } finally {
         if (mounted) setLoading(false);
@@ -34,9 +34,9 @@ export default function DMModal({ dmId, onClose }) {
           setMessages(prev => [...prev, msg]);
         }
       });
-    } catch (e) { socket = null; }
+    } catch { socket = null; }
 
-    return () => { mounted = false; if (socket) try { socket.disconnect(); } catch {} };
+    return () => { mounted = false; if (socket) try { socket.disconnect(); } catch { /* ignore */ } };
   }, [dmId]);
 
   const post = async () => {

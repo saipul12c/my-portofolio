@@ -1,50 +1,34 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { DEFAULT_SETTINGS } from '../../../config.js';
 import { SETTINGS_KEY } from '../../logic/utils/fileProcessor';
 import { storageService } from '../../logic/utils/storageService';
-import { PALETTES, ACCENT_COLORS } from '../settingsConfig.js';
+import { applySaipulThemeToRoot } from '../settingsConfig.js';
 
 export function useSettings(knowledgeBase = {}, initialTab = null) {
-  const [settings, setSettings] = useState({ 
-    ...DEFAULT_SETTINGS,
-    activeTab: initialTab || DEFAULT_SETTINGS.activeTab
+  const [settings, setSettings] = useState(() => {
+    const base = {
+      ...DEFAULT_SETTINGS,
+      activeTab: initialTab || DEFAULT_SETTINGS.activeTab
+    };
+    try {
+      const savedSettings = storageService.get(SETTINGS_KEY);
+      if (savedSettings && typeof savedSettings === 'object') {
+        return {
+          ...base,
+          ...savedSettings,
+          activeTab: initialTab || savedSettings.activeTab || base.activeTab
+        };
+      }
+    } catch (e) {
+      console.error("Error loading settings:", e);
+    }
+    return base;
   });
+  const isFirstMountRef = useRef(true);
 
   // Apply theme/accent to :root so entire app (chat window, buttons, etc.) inherits colors
   useEffect(() => {
-    try {
-      const applyPalette = (theme = settings.theme, accent = settings.accent) => {
-        const acc = ACCENT_COLORS[accent] || ACCENT_COLORS['cyan'];
-        const th = PALETTES[theme] || PALETTES['dark'];
-
-        const root = document?.documentElement?.style;
-        if (!root) return;
-
-        root.setProperty('--saipul-accent', acc.accent);
-        root.setProperty('--saipul-accent-2', acc.accent2);
-        root.setProperty('--saipul-accent-gradient', `linear-gradient(90deg, ${acc.accent}, ${acc.accent2})`);
-        // additional aliases used in some components
-        root.setProperty('--saipul-accent-1', acc.accent);
-        root.setProperty('--saipul-accent-contrast', acc.accent2);
-        root.setProperty('--saipul-modal-bg', th.surface);
-        root.setProperty('--saipul-surface', th.surface);
-        root.setProperty('--saipul-bg-card', (theme === 'dark' || theme === 'midnight') ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)');
-        root.setProperty('--saipul-bg-input', (theme === 'dark' || theme === 'midnight') ? 'rgba(255,255,255,0.05)' : '#ffffff');
-        root.setProperty('--saipul-text', th.text);
-        root.setProperty('--saipul-text-primary', th.text);
-        root.setProperty('--saipul-text-secondary', (theme === 'dark' || theme === 'midnight') ? '#94a3b8' : '#475569');
-        root.setProperty('--saipul-text-muted', th.muted);
-        root.setProperty('--saipul-muted', th.muted);
-        root.setProperty('--saipul-border', th.border);
-        // helper colors
-        root.setProperty('--saipul-button-hover', acc.accent2 + '33');
-        root.setProperty('--saipul-muted-text', th.muted);
-      };
-
-      applyPalette(settings.theme, settings.accent);
-    } catch (err) {
-      console.warn('Failed to apply theme to :root', err);
-    }
+    applySaipulThemeToRoot(settings.theme, settings.accent);
   }, [settings.theme, settings.accent]);
 
   const safeKnowledgeBase = useMemo(() => ({
@@ -67,16 +51,13 @@ export function useSettings(knowledgeBase = {}, initialTab = null) {
       typeof value === 'object' && value !== null ? Object.keys(value).length > 0 : false;
   }).length, [safeKnowledgeBase]);
 
-  useEffect(() => {
-    try {
-      const savedSettings = storageService.get(SETTINGS_KEY);
-      if (savedSettings) {
-        setSettings(prev => ({ ...prev, ...savedSettings }));
-      }
-    } catch (e) {
-      console.error("Error loading settings:", e);
+  const [prevInitialTab, setPrevInitialTab] = useState(initialTab);
+  if (initialTab !== prevInitialTab) {
+    setPrevInitialTab(initialTab);
+    if (initialTab) {
+      setSettings(prev => (prev.activeTab === initialTab ? prev : { ...prev, activeTab: initialTab }));
     }
-  }, []);
+  }
 
   const handleSave = useCallback((key, value) => {
     setSettings(prev => {
@@ -89,10 +70,12 @@ export function useSettings(knowledgeBase = {}, initialTab = null) {
     });
   }, []);
 
-  // Dedicated effect for side effects like persistence and notification
-  // This is the safest way to avoid update loops
+  // Persist only after initial mount so saved user settings aren't overwritten with defaults
   useEffect(() => {
-    // Skip on first mount if needed, or always sync
+    if (isFirstMountRef.current) {
+      isFirstMountRef.current = false;
+      return;
+    }
     try {
       storageService.set(SETTINGS_KEY, settings);
       window.dispatchEvent(new Event("storage"));

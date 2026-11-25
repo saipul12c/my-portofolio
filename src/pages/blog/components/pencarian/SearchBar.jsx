@@ -16,6 +16,8 @@ export default function SearchBar({
   const [searchHistory, setSearchHistory] = useState([]);
   const inputRef = useRef(null);
   const listRef = useRef(null);
+  const latestSearchTermRef = useRef(searchTerm);
+  latestSearchTermRef.current = searchTerm;
 
   // === 📜 Load search history ===
   useEffect(() => {
@@ -25,20 +27,18 @@ export default function SearchBar({
 
   // Sync with parent searchTerm (e.g. from URL or AI result)
   useEffect(() => {
-    if (searchTerm !== localSearchValue) {
-      setLocalSearchValue(searchTerm);
-    }
+    setLocalSearchValue(searchTerm);
   }, [searchTerm]);
 
   // Debounce external search update
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (localSearchValue !== searchTerm) {
+      if (localSearchValue !== latestSearchTermRef.current) {
         setSearchTerm(localSearchValue);
       }
     }, 400);
     return () => clearTimeout(timer);
-  }, [localSearchValue]);
+  }, [localSearchValue, setSearchTerm]);
 
   // === 💾 Save search term ===
   const saveToHistory = (term) => {

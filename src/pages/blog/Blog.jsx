@@ -18,7 +18,6 @@ import BlogPopup from "./components/BlogPopup";
 
 export default function Blog() {
   const [blogList, setBlogList] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -43,11 +42,8 @@ export default function Blog() {
             setBlogList(posts);
             blogService.setBlogs(posts);
           }
-          if (isMounted) setIsLoading(false);
         })
-        .catch(() => {
-          if (isMounted) setIsLoading(false);
-        });
+        .catch(() => {});
     };
 
     loadPosts();

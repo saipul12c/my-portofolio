@@ -5,6 +5,7 @@
 
 import { getSmartReply } from '../../../components/helpbutton/chat/components/logic/utils/responseGenerator';
 import { getUnifiedKnowledgeBase, setDiscussionRoomData } from '../../../utils/ai/knowledgeBase';
+import { extractKeywords } from '../../../utils/ai/nlpCore';
 
 export const isAiMentioned = (content) => {
   if (!content) return false;
@@ -22,11 +23,11 @@ export const generateAiRoomReply = async (userQuery, senderName = 'Teman') => {
   }
 
   try {
-    // Panggil mesin respon NLP Saipul dengan Knowledge Base terpadu (JSON, Author Profile, Experiences, Gallery)
+    // Panggil mesin respon NLP Saipul dengan Knowledge Base terpadu 
     const kb = getUnifiedKnowledgeBase();
     const replyObj = getSmartReply(
       userQuery,
-      { aiEnabled: true, personality: 'friendly' },
+      { aiEnabled: true, responseStyle: 'friendly' },
       [],
       kb,
       null,
@@ -77,12 +78,26 @@ export const summarizeMessages = (messages = []) => {
     .slice(0, 3)
     .map(([name, count]) => `${name} (${count} pesan)`);
 
-  // Ekstraksi cuplikan topik
+  // Ekstraksi topik & kata kunci nyata menggunakan NLP Core
   const sampleContents = messages.slice(-15).map(m => m.content).filter(Boolean);
-  const codeMentions = sampleContents.filter(c => c.includes('```') || c.includes('code') || c.includes('bug')).length;
-  const questionMentions = sampleContents.filter(c => c.includes('?') || c.includes('bagaimana') || c.includes('kenapa')).length;
+  const codeMentions = sampleContents.filter(c => c.includes('```') || /\b(code|bug|error|api|react)\b/i.test(c)).length;
+  const questionMentions = sampleContents.filter(c => c.includes('?') || /\b(bagaimana|kenapa|apa|gimana)\b/i.test(c)).length;
+
+  const keywordFreq = {};
+  for (const text of sampleContents) {
+    for (const kw of extractKeywords(text)) {
+      keywordFreq[kw] = (keywordFreq[kw] || 0) + 1;
+    }
+  }
+  const topKeywords = Object.entries(keywordFreq)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([kw]) => kw);
 
   const points = [];
+  if (topKeywords.length > 0) {
+    points.push(`Kata kunci utama yang sering dibahas: ${topKeywords.join(', ')}.`);
+  }
   if (codeMentions > 0) {
     points.push(`Terdapat ${codeMentions} diskusi teknis atau potongan kode program yang dibagikan.`);
   }
@@ -91,10 +106,14 @@ export const summarizeMessages = (messages = []) => {
   }
   points.push(`Total ${messages.length} pesan sinyal tercatat dalam sesi riwayat ini.`);
 
+  const detectedTopic = topKeywords.length >= 2
+    ? `Diskusi: ${topKeywords.slice(0, 3).join(', ')}`
+    : (codeMentions > 0 ? 'Diskusi Teknis & Solusi Coding' : 'Obrolan Komunitas & Kolaborasi Projek');
+
   return {
-    topic: codeMentions > 0 ? 'Diskusi Teknis & Solusi Coding' : 'Obrolan Komunitas & Kolaborasi Projek',
+    topic: detectedTopic,
     points,
     activeUsers: sortedUsers,
-    summary: `Diskusi saat ini dipimpin oleh interaksi aktif dari ${sortedUsers[0] || 'komunitas'} dengan fokus pada pertukaran ide dan solusi.`
+    summary: `Diskusi dipimpin interaksi aktif dari ${sortedUsers[0] || 'komunitas'}${topKeywords.length ? ` dengan fokus topik sekitar ${topKeywords.slice(0, 3).join(', ')}` : ''}.`
   };
 };

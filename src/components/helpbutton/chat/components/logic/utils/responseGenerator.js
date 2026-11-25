@@ -2,7 +2,7 @@ import { calculateMath } from './mathCalculator';
 import { getKnowledgeResponse } from './knowledgeBase';
 import { handleConversion } from './conversions';
 import { generatePrediction, analyzeData, calculateStatistics } from './analytics';
-import { extractThemes, getRandomItem, simpleNER } from './helpers';
+import { simpleNER } from './helpers';
 import { getFileIcon } from './fileIcons';
 import { CHATBOT_VERSION, LIVE_CS_PATH } from '../../../config.js';
 import aiDocData from '../../../../../../data/AIDoc/data.json';
@@ -12,7 +12,8 @@ import {
   detectCharacter, 
   wrapResponseWithEmotion
 } from './emotionEngine';
-  import { detectPII, redactPII } from './piiDetector';
+import { detectPII, redactPII } from './piiDetector';
+import { checkClaimAgainstKB } from './factChecker';
 import { 
   isSaipulAIReference,
   generateSaipulAIResponse,
@@ -25,22 +26,20 @@ import {
 import { kbMonitor } from './kbMonitoring';
 
 // ===== NEW NLP IMPORTS =====
-import { getSynonyms } from './lexicalDatabase';
+import { getSynonyms, getBilingualTranslation } from './lexicalDatabase';
 import { getExpressionVariations } from './languageCorpus';
-import { quickNLU } from './nluProcessing';
+import { quickNLU, detectSarcasmAndIrony, detectLanguage } from './nluProcessing';
 import { 
   generateComprehensiveAnswer as generateEnhancedAnswer,
   findKnowledgeNode,
-  getRelatedConcepts,
-  validateKnowledgeStatement,
-  expandKnowledgeBase,
-  inferNewKnowledge
+  getRelatedConcepts
 } from './enhancedKnowledgeBase';
 import { generateSmartFallback } from './clarificationSystem';
 
 // ===== GREETING & SIMPLE PATTERN RECOGNITION =====
 import { recognizeGreeting } from './greetingRecognizer';
 import { findBestFAQMatch } from './faqIntegration';
+import { analyzeQueryDynamics } from './conversationContext';
 
 /**
  * Integrasi data.json dan riwayat.json ke dalam proses pembuatan respon
@@ -55,15 +54,31 @@ import { findBestFAQMatch } from './faqIntegration';
 export function getSmartReply(msg, settings, conversationContext, safeKnowledgeBase, knowledgeStats, intent) {
   const text = msg.toLowerCase().trim();
 
-  // ===== ENHANCED TEXT PROCESSING =====
+  // ===== ENHANCED TEXT PROCESSING & MULTI-LANGUAGE RESOLUTION =====
   const textAnalysis = enhancedTextProcessing(msg);
-  const processedText = textAnalysis.normalized || text;
+
+  // Resolusi bahasa: manual via settings ('id' | 'en' | 'id-en') atau otomatis ('auto')
+  const langSetting = settings?.language || 'auto';
+  const detectedLangInfo = detectLanguage(msg);
+  let activeLang = 'id';
+  if (langSetting === 'en') {
+    activeLang = 'en';
+  } else if (langSetting === 'id') {
+    activeLang = 'id';
+  } else {
+    // Mode 'auto' atau 'id-en': ikuti bahasa input pengguna
+    activeLang = detectedLangInfo.language === 'en' ? 'en' : 'id';
+  }
+  const isBilingualRequested = langSetting === 'id-en';
 
   // Absolute response rules enforcement (safety / non-fabrication)
   try {
     const illegalPattern = /(make a bomb|how to make a bomb|explode|assassin|kill someone|murder|hack into|ddos|how to hack|steal|rob bank)/i;
     if (illegalPattern.test(text)) {
-      return { text: 'Maaf, saya tidak dapat membantu dengan permintaan yang berbahaya atau ilegal.', source: { type: 'policy', id: 'no_illegal' }, confidence: 1 };
+      const safeMsg = activeLang === 'en'
+        ? 'Sorry, I cannot assist with harmful, dangerous, or illegal requests.'
+        : 'Maaf, saya tidak dapat membantu dengan permintaan yang berbahaya atau ilegal.';
+      return { text: safeMsg, language: activeLang, source: { type: 'policy', id: 'no_illegal' }, confidence: 1 };
     }
   } catch (e) { 
     console.error('Safety check failed:', e);
@@ -92,7 +107,10 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
       } catch (e) {
         console.debug('Failed to log rate limit moderation flag:', e);
       }
-      return { text: 'Terlalu banyak permintaan dalam waktu singkat. Mohon tunggu beberapa detik sebelum mencoba lagi.', source: { type: 'throttle' }, confidence: 0.2 };
+      const rateLimitMsg = activeLang === 'en'
+        ? 'Too many requests in a short time. Please wait a few seconds before trying again.'
+        : 'Terlalu banyak permintaan dalam waktu singkat. Mohon tunggu beberapa detik sebelum mencoba lagi.';
+      return { text: rateLimitMsg, language: activeLang, source: { type: 'throttle' }, confidence: 0.2 };
     }
     entries.push(now);
     try { 
@@ -113,12 +131,15 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
         const flags = JSON.parse(localStorage.getItem('saipul_moderation_flags') || '[]');
         flags.push({ type: 'pii_detected', ts: new Date().toISOString(), detections: piiDetections.slice(0,5) });
         localStorage.setItem('saipul_moderation_flags', JSON.stringify(flags.slice(-200)));
-      } catch (e) {}
+      } catch { /* ignore storage error */ }
 
       // enforce strict PII protection by default
       if (settings?.enforcePIIProtection !== false) {
         const redacted = redactPII(msg, { replaceMap: { email: '[REDACTED_EMAIL]', phone: '[REDACTED_PHONE]' } });
-        return { text: `Maaf, saya mendeteksi informasi sensitif (PII) dalam pesan Anda dan tidak dapat memprosesnya. Contoh yang disamarkan: "${(redacted.text || '').slice(0, 200)}". Silakan hapus info sensitif dan coba lagi.`, source: { type: 'policy', id: 'pii_block' }, confidence: 1 };
+        const piiMsg = activeLang === 'en'
+          ? `Sorry, sensitive personal information (PII) was detected in your message and cannot be processed. Redacted preview: "${(redacted.text || '').slice(0, 200)}". Please remove sensitive details and try again.`
+          : `Maaf, saya mendeteksi informasi sensitif (PII) dalam pesan Anda dan tidak dapat memprosesnya. Contoh yang disamarkan: "${(redacted.text || '').slice(0, 200)}". Silakan hapus info sensitif dan coba lagi.`;
+        return { text: piiMsg, language: activeLang, source: { type: 'policy', id: 'pii_block' }, confidence: 1 };
       }
     }
   } catch (e) { 
@@ -189,21 +210,116 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
     console.warn('Failed to analyze local reports for caution Note:', e);
   }
 
+  // ===== DINAMIKA PERCAKAPAN MULTI-TURN & SARKASME =====
+  const queryDynamics = analyzeQueryDynamics(msg, conversationContext);
+
+  // 1. Periksa Sarkasme & Makna Tersirat (Sarcasm & Pragmatic Inversion)
+  // Menangkap nuansa kalimat secara utuh seperti: "Mantap sekali, baru dipakai sehari sudah rusak"
+  const sarcasmCheck = detectSarcasmAndIrony(msg);
+  if (sarcasmCheck && sarcasmCheck.isSarcastic) {
+    const sarcasticResponses = [
+      `Waduh, aku minta maaf banget mendengarnya! 😔 Memang menyebalkan sekali kalau sesuatu yang baru dipakai atau dicoba langsung bermasalah atau rusak.\n\nBoleh ceritakan lebih detail kendalanya di bagian mana? Biar aku bantu cari solusinya bareng-bareng.`,
+      `Aduh, mohon maaf ya atas pengalaman yang tidak menyenangkan ini. 🥺 Aku sangat paham kekesalanmu kalau yang diharapkan bagus ternyata cepat rusak atau bermasalah. Ceritakan detailnya, aku siap bantu carikan solusinya!`,
+      `Waduh, aku paham betul rasa frustrasimu. 😔 Baru dipakai tapi sudah rusak tentu bikin kecewa. Boleh kasih tahu bagian mana yang bermasalah? Biar kita cari solusinya bersama.`
+    ];
+    return {
+      text: (cautionNote ? `${cautionNote}\n\n` : '') + sarcasticResponses[Math.floor(Math.random() * sarcasticResponses.length)],
+      source: { type: 'sarcasm_handler', id: sarcasmCheck.type },
+      confidence: 0.95,
+      emotion: { emotion: 'empathetic', emoji: '❤️', name: 'empati' },
+      character: characterData.character
+    };
+  }
+
+  // 2. Evaluasi Pengulangan Input yang Sama (Repetition & Consistency Engine)
+  if (queryDynamics.isRepeat) {
+    const hasClearMath = /\b(hitung|calculate|berapa|hasil|kalkulator|math|solve|^=)\b|[\d]\s*[+\-*/^]\s*[\d]|(?:integral|turunan|derivative|sqrt|sin|cos|tan|log|abs)/i.test(text);
+    if (hasClearMath) {
+      let mathRes = null;
+      try { mathRes = calculateMath(text, settings.calculationPrecision); } catch { mathRes = null; }
+      if (mathRes) {
+        const mathAns = mathRes.result !== undefined ? mathRes.result : (mathRes.text || '');
+        const mathVariation = queryDynamics.repeatCount === 1
+          ? `Perhitungannya tetap konsisten ya: **${mathAns}**.\n\nAda angka atau rumus lain yang mau kita hitung?`
+          : `Masih **${mathAns}** ya! 😄 Rumus dan hukum matematikanya mutlak. Mau coba tantangan rumus lain?`;
+        return {
+          text: (cautionNote ? `${cautionNote}\n\n` : '') + mathVariation,
+          source: { type: 'math_repeat_consistent' },
+          confidence: 1.0,
+          emotion: emotionData.primary,
+          character: characterData.character
+        };
+      }
+    }
+
+    const convRes = handleConversion(text);
+    if (convRes) {
+      const convVariation = queryDynamics.repeatCount === 1
+        ? `Hasil konversinya tetap sama ya: **${convRes}**.\n\nAda satuan lain yang ingin kamu ubah?`
+        : `Masih **${convRes}** ya! Tetap konsisten. Butuh konversi satuan lain?`;
+      return {
+        text: (cautionNote ? `${cautionNote}\n\n` : '') + convVariation,
+        source: { type: 'conversion_repeat_consistent' },
+        confidence: 0.98,
+        emotion: emotionData.primary,
+        character: characterData.character
+      };
+    }
+
+    // Jika diulang berturut-turut untuk ke-2 kalinya atau lebih (repeatCount >= 2)
+    if (queryDynamics.repeatCount >= 2) {
+      const repeatPrompts = [
+        `Hehe, kamu menanyakan hal yang sama persis nih! 😄\n\nAdakah bagian dari penjelasanku tadi yang masih bikin bingung atau butuh contoh konkret yang lebih sederhana? Ceritakan bagian mana yang ingin kita bedah lebih dalam ya!`,
+        `Pertanyaannya masih persis seperti sebelumnya nih 😉 Apakah kamu lagi menguji konsistensiku, atau ada poin spesifik yang belum terjawab dengan memuaskan? Kasih tahu aku bagian mana yang perlu diperjelas!`,
+        `Aku perhatikan pertanyaan ini sudah diulang beberapa kali. Biar diskusinya lebih efektif, coba sebutkan apa fokus utama atau kendala yang sedang kamu hadapi terkait topik ini!`
+      ];
+      return {
+        text: (cautionNote ? `${cautionNote}\n\n` : '') + repeatPrompts[Math.floor(Math.random() * repeatPrompts.length)],
+        source: { type: 'system', id: 'repeat_clarification_prompt' },
+        confidence: 0.95,
+        emotion: emotionData.primary,
+        character: characterData.character
+      };
+    }
+  }
+
   // ===== NEW: FAQ & COMMITMENT INTEGRATION (High Priority) =====
   // Cek FAQ dan Komitmen sebelum greeting untuk memastikan pertanyaan teknis & profil terjawab akurat
   const faqMatch = findBestFAQMatch(msg);
   if (faqMatch && faqMatch.score > 80) {
     const isCommitment = faqMatch.item?.source === 'commitment';
+    const isEn = activeLang === 'en';
     const headerTitle = isCommitment 
-      ? `🤝 **${faqMatch.item.question || 'Nilai & Komitmen Syaiful'}**`
-      : `❓ **${faqMatch.item.question || 'Informasi FAQ'}**`;
+      ? (isEn ? `🤝 **${faqMatch.item.question_en || faqMatch.item.question || "Syaiful's Values & Commitments"}**` : `🤝 **${faqMatch.item.question || 'Nilai & Komitmen Syaiful'}**`)
+      : (isEn ? `❓ **${faqMatch.item.question_en || faqMatch.item.question || 'FAQ Information'}**` : `❓ **${faqMatch.item.question || 'Informasi FAQ'}**`);
     const sourceFooter = isCommitment
-      ? `💡 *Informasi ini diambil dari pilar komitmen & dedikasi Muhammad Syaiful Mukmin.*`
-      : `💡 *Jawaban ini diambil dari basis data FAQ kami.*`;
+      ? (isEn ? `💡 *This information is based on Muhammad Syaiful Mukmin's dedication and commitments.*` : `💡 *Informasi ini diambil dari pilar komitmen & dedikasi Muhammad Syaiful Mukmin.*`)
+      : (isEn ? `💡 *This answer is sourced from our official FAQ knowledge base.*` : `💡 *Jawaban ini diambil dari basis data FAQ kami.*`);
+
+    let faqBody = faqMatch.item.answer;
+    if (queryDynamics.isRepeat && queryDynamics.repeatCount === 1) {
+      faqBody = isEn
+        ? `💡 *Clarifying from a more concise perspective:*\n\n${faqBody}`
+        : `💡 *Menjawab kembali dengan sudut pandang yang lebih ringkas:*\n\n${paraphraseContent(faqBody, [], settings)}`;
+    } else if (queryDynamics.suggestedBridge) {
+      faqBody = `${queryDynamics.suggestedBridge}\n\n${faqBody}`;
+    }
+
+    const englishBody = faqMatch.item.answer_en || translateToEnglish(faqBody);
+    const primaryBody = isEn ? englishBody : faqBody;
+    const secondaryBody = isEn ? faqBody : englishBody;
+
+    const fullPrimary = (typeof cautionNote !== 'undefined' && cautionNote ? `${cautionNote}\n\n` : '') + 
+                        `${headerTitle}\n\n${primaryBody}\n\n${sourceFooter}`;
+    const fullSecondary = `${headerTitle}\n\n${secondaryBody}\n\n${sourceFooter}`;
 
     return {
-      text: (typeof cautionNote !== 'undefined' ? `${cautionNote}\n\n` : '') + 
-            `${headerTitle}\n\n${faqMatch.item.answer}\n\n${sourceFooter}`,
+      text: fullPrimary,
+      language: isEn ? 'en' : 'id',
+      alternatives: {
+        english: isEn ? fullPrimary : fullSecondary,
+        indonesian: isEn ? fullSecondary : fullPrimary
+      },
       source: { type: 'faq', id: `faq_${faqMatch.item.id}` },
       confidence: Math.min(faqMatch.score / 150, 0.95),
       emotion: emotionData.primary,
@@ -214,8 +330,16 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
   // ===== NEW: LIVE CS CONTEXT CHECK =====
   // Jika sedang di halaman Live CS, berikan respon minimal agar tidak mengganggu agen manusia
   if (settings?.settingsContext === 'live-cs') {
+    const isEn = activeLang === 'en';
+    const textId = "👋 Saya sedang standby menemani Anda di Room Diskusi. Silakan berinteraksi dengan agen kami atau kirim pesan di sini jika ada pertanyaan teknis singkat.";
+    const textEn = "👋 I'm currently on standby accompanying you in the Discussion Room. Feel free to chat with our live agents or send quick questions here.";
     return {
-      text: "👋 Saya sedang standby menemani Anda di Room Diskusi. Silakan berinteraksi dengan agen kami atau kirim pesan di sini jika ada pertanyaan teknis singkat.",
+      text: isEn ? textEn : textId,
+      language: isEn ? 'en' : 'id',
+      alternatives: {
+        english: textEn,
+        indonesian: textId
+      },
       source: { type: 'system', id: 'live_cs_context' },
       confidence: 1.0,
       emotion: 'friendly'
@@ -229,9 +353,17 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
   
   // Perbaikan loop: Jika input adalah 'Hubungi Agen' (berasal dari klik tombol/saran), 
   // berikan respon yang lebih definitif bukannya mengulang saran yang sama.
-  if (text === 'hubungi agen' || text === 'hubungi cs') {
+  if (text === 'hubungi agen' || text === 'hubungi cs' || text === 'contact agent' || text === 'contact cs') {
+    const isEn = activeLang === 'en';
+    const textId = `🎧 **Menghubungkan ke Live CS**\n\nSilakan klik tombol **"Hubungi Agen Sekarang"** di atas untuk diarahkan ke Room Diskusi kami.\n\nJika tombol tidak muncul, Anda bisa langsung mengakses menu **Room Diskusi** dari halaman utama.`;
+    const textEn = `🎧 **Connecting to Live CS**\n\nPlease click the **"Connect to Agent Now"** button above to be redirected to our Discussion Room.\n\nIf the button doesn't appear, you can access the **Discussion Room** directly from the main navigation.`;
     return {
-      text: `🎧 **Menghubungkan ke Live CS**\n\nSilakan klik tombol **"Hubungi Agen Sekarang"** di atas untuk diarahkan ke Room Diskusi kami.\n\nJika tombol tidak muncul, Anda bisa langsung mengakses menu **Room Diskusi** dari halaman utama.`,
+      text: isEn ? textEn : textId,
+      language: isEn ? 'en' : 'id',
+      alternatives: {
+        english: textEn,
+        indonesian: textId
+      },
       source: { type: 'system', id: 'live_cs_direct' },
       confidence: 1.0,
       action: 'suggest_live_cs' // Pastikan tombol tetap muncul
@@ -239,21 +371,43 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
   }
 
   if (isAskingForCS) {
+    const isEn = activeLang === 'en';
+    const textId = `🎧 **Pusat Bantuan & Live CS**\n\nSaya mengerti Anda ingin bantuan lebih lanjut. Anda dapat menghubungi agen manusia melalui **Room Diskusi** kami.\n\nKlik tombol di bawah untuk bergabung ke diskusi atau beralih ke mode bantuan langsung.`;
+    const textEn = `🎧 **Help Center & Live CS**\n\nI understand you'd like more in-depth human assistance. You can reach out to our team in the **Discussion Room**.\n\nClick below to join the discussion or switch to live agent support.`;
     return {
-      text: `🎧 **Pusat Bantuan & Live CS**\n\nSaya mengerti Anda ingin bantuan lebih lanjut. Anda dapat menghubungi agen manusia melalui **Room Diskusi** kami.\n\nKlik tombol di bawah untuk bergabung ke diskusi atau beralih ke mode bantuan langsung.`,
+      text: isEn ? textEn : textId,
+      language: isEn ? 'en' : 'id',
+      alternatives: {
+        english: textEn,
+        indonesian: textId
+      },
       source: { type: 'system', id: 'live_cs_referral' },
       confidence: 1.0,
-      suggestedTopics: ['Hubungi Agen', 'Panduan Keamanan', 'Kembali ke Bot'],
+      suggestedTopics: isEn ? ['Contact Agent', 'Security Guide', 'Back to Bot'] : ['Hubungi Agen', 'Panduan Keamanan', 'Kembali ke Bot'],
       action: 'suggest_live_cs'
     };
   }
 
   // ===== NEW: GREETING & SIMPLE PATTERN RECOGNITION =====
   // Check for greetings dan simple interactions sebelum advanced processing
-  const greetingResponse = recognizeGreeting(msg, updatedProfile);
+  const greetingResponse = recognizeGreeting(msg, updatedProfile, { targetLanguage: activeLang, language: langSetting });
   if (greetingResponse) {
+    let greetText = greetingResponse.text;
+    if (queryDynamics.isRepeat && queryDynamics.repeatCount === 1 && !greetingResponse.isComplaint) {
+      greetText = activeLang === 'en'
+        ? 'Hello again! Still right here 😄 Would you like to continue our discussion or explore something new?'
+        : `Halo lagi! Masih standby di sini nih 😄 Ada yang ingin kita lanjut bahas atau mau eksplor topik baru?`;
+    }
+    const altLang = activeLang === 'en' ? 'indonesian' : 'english';
+    const altText = greetingResponse.alternatives?.[altLang] || (activeLang === 'en' ? greetText : translateToEnglish(greetText));
     return {
       ...greetingResponse,
+      text: greetText,
+      language: greetingResponse.language || activeLang,
+      alternatives: isBilingualRequested || activeLang === 'en' ? {
+        english: activeLang === 'en' ? greetText : altText,
+        indonesian: activeLang === 'id' ? greetText : (greetingResponse.alternatives?.indonesian || greetText)
+      } : (greetingResponse.alternatives || {}),
       emotion: emotionData.primary,
       character: characterData.character
     };
@@ -263,8 +417,18 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
   if (isSaipulAIReference(msg)) {
     const aiResponse = generateSaipulAIResponse(msg);
     if (aiResponse) {
+      let aiText = aiResponse.text;
+      if (activeLang === 'en') {
+        aiText = "✨ I'm SaipulAI - your personal intelligent assistant! I'm here to help you learn, analyze, and explore projects and technology. Pleasure to meet you! 😊";
+      }
       return {
         ...aiResponse,
+        text: aiText,
+        language: activeLang,
+        alternatives: isBilingualRequested ? {
+          english: activeLang === 'en' ? aiText : translateToEnglish(aiResponse.text),
+          indonesian: aiResponse.text
+        } : {},
         emotion: emotionData.primary,
         character: characterData.character
       };
@@ -304,11 +468,20 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
         const enhancedAnswer = generateEnhancedAnswer(msg, safeNlu);
 
         if (enhancedAnswer && enhancedAnswer.success && (enhancedAnswer.confidence || 0) > 0.6) {
-          const finalText = (settings && settings.enforceOriginalResponses !== false)
+          const rawAnswer = (settings && settings.enforceOriginalResponses !== false)
             ? paraphraseContent(enhancedAnswer.answer, enhancedAnswer.relatedNodes || [], settings)
             : enhancedAnswer.answer;
+          const isEn = activeLang === 'en';
+          const englishText = translateToEnglish(rawAnswer);
+          const indonesianText = rawAnswer;
+          const primaryText = isEn ? englishText : indonesianText;
           return {
-            text: finalText,
+            text: primaryText,
+            language: activeLang,
+            alternatives: {
+              english: englishText,
+              indonesian: indonesianText
+            },
             source: enhancedAnswer.source,
             confidence: enhancedAnswer.confidence,
             relatedConcepts: enhancedAnswer.relatedNodes ? enhancedAnswer.relatedNodes.map(n => n.name) : []
@@ -322,10 +495,6 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
   }
 
   // helper: apply response style
-  const styles = [
-    'concise', 'formal', 'friendly', 'technical', 'humorous', 'terse', 'elaborate', 'poetic', 'empathetic', 'step-by-step'
-  ];
-
   function applyStyle(raw, style) {
     if (!raw) return raw;
     switch ((style || '').toLowerCase()) {
@@ -412,7 +581,8 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
     const loc = timeMatch[1].trim().toLowerCase();
     // prefer user's saved timezone if location matches profile
     const profileRaw = JSON.parse(localStorage.getItem('saipul_profile') || '{}');
-    let tz = profileRaw.timezone || timezoneMap[loc] || (loc.match(/^gmt([+-]?\d+)/i) ? `Etc/GMT${RegExp.$1.startsWith('-') ? RegExp.$1 : `+${RegExp.$1}`}` : null);
+    const gmtMatch = loc.match(/^gmt([+-]?\d+)/i);
+    let tz = profileRaw.timezone || timezoneMap[loc] || (gmtMatch ? `Etc/GMT${gmtMatch[1].startsWith('-') ? gmtMatch[1] : `+${gmtMatch[1]}`}` : null);
     const formatted = tz ? formatNowForTimezone(tz) : formatNowForTimezone('UTC');
     const tzLabel = tz || 'UTC';
     return { text: `Waktu saat ini di ${loc} (${tzLabel}): ${formatted}`, source: { type: 'time' }, confidence: 0.95 };
@@ -437,7 +607,7 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
     let s = input.toLowerCase();
 
     // normalize common connectors
-    s = s.replace(/[,?\.!]/g, ' ');
+    s = s.replace(/[,?.!]/g, ' ');
 
     const replacements = [
       // operators (id -> symbol)
@@ -511,19 +681,28 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
   if (conversionResult) return { text: conversionResult, source: { type: 'conversion' }, confidence: 0.98 };
 
   if (text.includes('prediksi') || text.includes('forecast')) {
-    if (text.includes('harga') || text.includes('saham')) return { text: generatePrediction('harga', text), source: { type: 'prediction', id: 'harga' }, confidence: 0.6 };
-    if (text.includes('cuaca') || text.includes('weather')) return { text: generatePrediction('cuaca', text), source: { type: 'prediction', id: 'cuaca' }, confidence: 0.6 };
-    if (text.includes('penjualan') || text.includes('sales')) return { text: generatePrediction('penjualan', text), source: { type: 'prediction', id: 'penjualan' }, confidence: 0.6 };
-    return { text: (cautionNote ? `${cautionNote}\n\n` : '') + generatePrediction('umum', text), source: { type: 'prediction', id: 'umum' }, confidence: 0.6 };
+    if (text.includes('harga') || text.includes('saham') || text.includes('crypto') || text.includes('kripto') || text.includes('emas')) {
+      return { text: generatePrediction('harga', text, safeKnowledgeBase), source: { type: 'prediction', id: 'harga' }, confidence: 0.85 };
+    }
+    if (text.includes('cuaca') || text.includes('weather') || text.includes('hujan') || text.includes('suhu')) {
+      return { text: generatePrediction('cuaca', text, safeKnowledgeBase), source: { type: 'prediction', id: 'cuaca' }, confidence: 0.85 };
+    }
+    if (text.includes('penjualan') || text.includes('sales') || text.includes('omset') || text.includes('omzet') || text.includes('revenue')) {
+      return { text: generatePrediction('penjualan', text, safeKnowledgeBase), source: { type: 'prediction', id: 'penjualan' }, confidence: 0.85 };
+    }
+    const generalPrediction = generatePrediction('umum', text, safeKnowledgeBase);
+    if (generalPrediction) {
+      return { text: (cautionNote ? `${cautionNote}\n\n` : '') + generalPrediction, source: { type: 'prediction', id: 'umum' }, confidence: 0.8 };
+    }
   }
 
-  const analysisResult = analyzeData(text);
+  const analysisResult = analyzeData(text, safeKnowledgeBase);
   if (analysisResult) return { text: (cautionNote ? `${cautionNote}\n\n` : '') + analysisResult, source: { type: 'analysis' }, confidence: 0.9 };
 
-  const statsResult = calculateStatistics(text);
-  if (statsResult) return { text: (cautionNote ? `${cautionNote}\n\n` : '') + statsResult, source: { type: 'statistics' }, confidence: 0.9 };
+  const statsResult = calculateStatistics(text, safeKnowledgeBase);
+  if (statsResult) return { text: (cautionNote ? `${cautionNote}\n\n` : '') + statsResult, source: { type: 'statistics' }, confidence: 0.95 };
 
-  const knowledgeResponse = getKnowledgeResponse(text, safeKnowledgeBase, settings);
+  const knowledgeResponse = getKnowledgeResponse(text, safeKnowledgeBase, { ...settings, targetLanguage: activeLang, language: langSetting });
   if (knowledgeResponse) {
     // Record successful KB query
     const sourceType = knowledgeResponse.source?.type || 'unknown';
@@ -537,7 +716,28 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
         console.warn('Failed to apply response style:', e);
       }
     }
-    return knowledgeResponse;
+
+    if (queryDynamics.isRepeat && queryDynamics.repeatCount === 1) {
+      knowledgeResponse.text = activeLang === 'en'
+        ? `💡 *You seem to be asking something similar. Let me clarify from another angle:*\n\n${knowledgeResponse.text}`
+        : `💡 *Sepertinya kamu menanyakan hal yang sama ya. Biar makin jelas dari sudut pandang lain:*\n\n${paraphraseContent(knowledgeResponse.text, [], settings)}`;
+    } else if (queryDynamics.suggestedBridge && !knowledgeResponse.text.startsWith('Menyambung') && !knowledgeResponse.text.startsWith('Beralih')) {
+      knowledgeResponse.text = `${queryDynamics.suggestedBridge}\n\n${knowledgeResponse.text}`;
+    }
+
+    const kbLang = knowledgeResponse.language || activeLang;
+    const kbText = knowledgeResponse.text;
+    const englishAlt = kbLang === 'en' ? kbText : (knowledgeResponse.alternatives?.english || translateToEnglish(kbText));
+    const indonesianAlt = kbLang === 'id' ? kbText : (knowledgeResponse.alternatives?.indonesian || translateToIndonesian(kbText));
+
+    return {
+      ...knowledgeResponse,
+      language: kbLang,
+      alternatives: {
+        english: englishAlt,
+        indonesian: indonesianAlt
+      }
+    };
   }
 
   // Record failed KB query
@@ -572,11 +772,37 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
     }
   }
 
-  if (text.includes('halo') || text.includes('hai') || text.includes('hi') || text.includes('hello'))
-    return { text: (cautionNote ? `${cautionNote}\n\n` : '') + `Hai juga! 👋 Aku SaipulAI v${CHATBOT_VERSION} Enhanced dengan kemampuan:\n\n• 🧮 **Matematika Lanjutan** & Scientific Computing\n• 📊 **Multi-format File Processing** (PDF, DOCX, XLSX, Images)\n• 🤖 **Dynamic Knowledge Base** Integration\n• 🎯 **Context-Aware Intelligent Responses**\n• 📁 **Advanced File Management** & Metadata\n• 🔍 **Smart Search** Across All Data Sources\n\n💡 **Tips**: Coba upload file atau tanyakan tentang topik spesifik!`, source: { type: 'system', id: 'greeting' }, confidence: 0.7 };
+  if (text.includes('halo') || text.includes('hai') || text.includes('hi') || text.includes('hello')) {
+    const isEn = activeLang === 'en';
+    const textId = `Hai juga! 👋 Aku SaipulAI v${CHATBOT_VERSION} Enhanced dengan kemampuan:\n\n• 🧮 **Matematika Lanjutan** & Scientific Computing\n• 📊 **Multi-format File Processing** (PDF, DOCX, XLSX, Images)\n• 🤖 **Dynamic Knowledge Base** Integration\n• 🎯 **Context-Aware Intelligent Responses**\n• 📁 **Advanced File Management** & Metadata\n• 🔍 **Smart Search** Across All Data Sources\n\n💡 **Tips**: Coba upload file atau tanyakan tentang topik spesifik!`;
+    const textEn = `Hello there! 👋 I'm SaipulAI v${CHATBOT_VERSION} Enhanced with capabilities:\n\n• 🧮 **Advanced Mathematics** & Scientific Computing\n• 📊 **Multi-format File Processing** (PDF, DOCX, XLSX, Images)\n• 🤖 **Dynamic Knowledge Base** Integration\n• 🎯 **Context-Aware Intelligent Responses**\n• 📁 **Advanced File Management** & Metadata\n• 🔍 **Smart Search** Across All Data Sources\n\n💡 **Tip**: Try uploading files or asking about projects and technical topics!`;
+    return { 
+      text: (cautionNote ? `${cautionNote}\n\n` : '') + (isEn ? textEn : textId), 
+      language: isEn ? 'en' : 'id',
+      alternatives: {
+        english: textEn,
+        indonesian: textId
+      },
+      source: { type: 'system', id: 'greeting' }, 
+      confidence: 0.7 
+    };
+  }
 
-  if (text.includes('terima kasih') || text.includes('thanks') || text.includes('thank you')) 
-    return { text: (typeof cautionNote !== 'undefined' ? `${cautionNote}\n\n` : '') + "Sama-sama! 😊 Senang bisa membantu analisis dan pencarian informasimu. Jika ada yang lain, jangan ragu untuk bertanya!", source: { type: 'system', id: 'thanks' }, confidence: 0.7 };
+  if (text.includes('terima kasih') || text.includes('thanks') || text.includes('thank you')) {
+    const isEn = activeLang === 'en';
+    const textId = "Sama-sama! 😊 Senang bisa membantu analisis dan pencarian informasimu. Jika ada yang lain, jangan ragu untuk bertanya!";
+    const textEn = "You're very welcome! 😊 Glad to assist with your analysis and questions. If you need anything else, feel free to ask!";
+    return { 
+      text: (typeof cautionNote !== 'undefined' ? `${cautionNote}\n\n` : '') + (isEn ? textEn : textId), 
+      language: isEn ? 'en' : 'id',
+      alternatives: {
+        english: textEn,
+        indonesian: textId
+      },
+      source: { type: 'system', id: 'thanks' }, 
+      confidence: 0.7 
+    };
+  }
 
   if (text.includes('versi') || text.includes('version')) {
     // Integrasi info dari data.json dan riwayat.json
@@ -655,8 +881,6 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
     };
   }
 
-  const lastUserMessages = conversationContext.filter(msg => msg.role === 'user').slice(-3);
-  const commonThemes = extractThemes(lastUserMessages);
   // --- Retrieval-Augmented Generation (RAG) helpers ---
   function normalizeText(s) {
     return (s || '').toString().replace(/\s+/g, ' ').trim().toLowerCase();
@@ -747,7 +971,12 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
     const dataIntegrationAnswer = generateComprehensiveAnswer(msg, safeKnowledgeBase || {});
     if (dataIntegrationAnswer && dataIntegrationAnswer.trim().length > 20) {
       // Wrap response dengan emotion & character
-      const base = (cautionNote ? `${cautionNote}\n\n` : '') + dataIntegrationAnswer;
+      let base = (cautionNote ? `${cautionNote}\n\n` : '') + dataIntegrationAnswer;
+      if (queryDynamics.isRepeat && queryDynamics.repeatCount === 1) {
+        base = `💡 *Sepertinya kamu menanyakan hal yang sama ya. Biar makin jelas dari sudut pandang lain:*\n\n` + base;
+      } else if (queryDynamics.suggestedBridge && !base.startsWith('Menyambung') && !base.startsWith('Beralih')) {
+        base = `${queryDynamics.suggestedBridge}\n\n${base}`;
+      }
       const paraphrased = (settings && settings.enforceOriginalResponses !== false) ? paraphraseContent(base, [], settings) : base;
       const emotionallyAdjustedResponse = wrapResponseWithEmotion(
         paraphrased,
@@ -774,9 +1003,14 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
       const ragAnswer = synthesizeAnswers(msg, ragCandidates, { style: settings.responseStyle });
       // Only promote RAG response when confidence looks reasonable
       if (ragAnswer && ragAnswer.confidence >= 0.5) {
+        const factCheck = checkClaimAgainstKB(ragAnswer.text, safeKnowledgeBase || {}, {
+          threshold: 0.25,
+          sourceBoosts: { uploadedData: 1.5, AI: 1.2 }
+        });
+        const calibratedConf = factCheck.verified ? Math.min(0.95, Math.max(ragAnswer.confidence, factCheck.confidence)) : ragAnswer.confidence;
         const base = (cautionNote ? `${cautionNote}\n\n` : '') + ragAnswer.text;
         const paraphrased = (settings && settings.enforceOriginalResponses !== false) ? paraphraseContent(base, ragCandidates, settings) : base;
-        return { text: paraphrased, source: { type: 'rag', sources: ragAnswer.sources }, confidence: ragAnswer.confidence };
+        return { text: paraphrased, source: { type: 'rag', sources: ragAnswer.sources, factChecked: factCheck.verified }, confidence: calibratedConf };
       }
     }
   } catch (e) {
@@ -803,7 +1037,13 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
 
   // Use Intelligent Smart Fallback instead of static messages
   const smartFallback = generateSmartFallback(msg, 0.35, conversationContext);
-  const styledResponse = applyStyle(smartFallback.text, settings.responseStyle || 'neutral');
+  let rawFallbackText = smartFallback.text;
+  if (queryDynamics.suggestedBridge && !rawFallbackText.startsWith('Menyambung') && !rawFallbackText.startsWith('Beralih')) {
+    rawFallbackText = `${queryDynamics.suggestedBridge}${rawFallbackText}`;
+  } else if (queryDynamics.isRepeat && queryDynamics.repeatCount === 1) {
+    rawFallbackText = `💡 *Kamu menanyakan hal serupa lagi. Biar lebih jelas:*\n\n${rawFallbackText}`;
+  }
+  const styledResponse = applyStyle(rawFallbackText, settings.responseStyle || 'neutral');
   
   // ===== NEW: WRAP FALLBACK RESPONSE WITH EMOTION & CHARACTER =====
   const finalResponse = wrapResponseWithEmotion(
@@ -812,16 +1052,37 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
     characterData,
     settings
   );
-  
-  const finalResult = {
-    text: finalResponse,
-    source: smartFallback.source,
-    confidence: smartFallback.confidence || 0.45,
-    emotion: emotionData.primary,
-    character: characterData.character,
-    suggestedTopics: ['Matematika', 'AI Concepts', 'Upload File', 'Profil Pemilik'],
-    suggestion: smartFallback.suggestion
-  };
+
+  let finalResult;
+  if (activeLang === 'en') {
+    const enFallbackText = "I'm not completely certain I have the exact information for that in my portfolio knowledge base yet.\n\nHere are some topics you can explore:\n• Syaiful's **featured web projects** and live demos (`/projects`)\n• His **work experience**, **skills**, and **official certifications**\n• Complex mathematical calculations, or upload documents and images for analysis!";
+    const styledEn = applyStyle(enFallbackText, settings.responseStyle || 'neutral');
+    const finalEn = wrapResponseWithEmotion(styledEn, emotionData, characterData, settings);
+    finalResult = {
+      text: finalEn,
+      language: 'en',
+      source: { type: 'smart_fallback_en' },
+      confidence: 0.5,
+      emotion: emotionData.primary,
+      character: characterData.character,
+      suggestedTopics: ['Projects', 'Skills', 'Experience', 'Math', 'Upload File'],
+      alternatives: {
+        english: finalEn,
+        indonesian: finalResponse
+      }
+    };
+  } else {
+    finalResult = {
+      text: finalResponse,
+      language: 'id',
+      source: smartFallback.source,
+      confidence: smartFallback.confidence || 0.45,
+      emotion: emotionData.primary,
+      character: characterData.character,
+      suggestedTopics: ['Matematika', 'AI Concepts', 'Upload File', 'Profil Pemilik'],
+      suggestion: smartFallback.suggestion
+    };
+  }
 
   // ===== EVALUATE RESPONSE QUALITY =====
   try {
@@ -838,7 +1099,7 @@ export function getSmartReply(msg, settings, conversationContext, safeKnowledgeB
     );
 
     // Generate bilingual response if needed
-    const detectedLanguage = nluAnalysis?.components?.language?.language || 'id';
+    const detectedLanguage = activeLang;
     const bilingualResponse = generateBilingualResponse(finalResult.text, detectedLanguage, nluAnalysis);
 
     // Update final result with bilingual capabilities
@@ -911,43 +1172,26 @@ export function paraphraseContent(rawText, candidates = [], settings = {}) {
     // respect explicit opt-out
     if (settings && settings.enforceOriginalResponses === false) return rawText;
 
+    // Jaga keutuhan format markdown, daftar poin, blok kode, atau rute portofolio agar fakta tidak terpotong
+    if (/(\*\*|```|^•|\n- |\/[a-z0-9-]+|\d+\.)/m.test(rawText)) {
+      return rawText;
+    }
+
     const sentences = rawText.split(/(?<=[.?!])\s+/).map(s => s.trim()).filter(Boolean);
-    // take highest-quality sentences but avoid copying very long snippets
-    const shortSentences = sentences.map(s => s.length > 240 ? s.split(/[,;:-]/)[0] + '...' : s).slice(0, 6);
+    const shortSentences = sentences.slice(0, 8);
 
-    // synonym-based subtle rewrites
-    const rewritten = shortSentences.map(sent => {
-      const tokens = sent.split(/(\s+)/);
-      // replace roughly 10-20% of longer words with synonyms
-      return tokens.map(tok => {
-          if (!/^[A-Za-z0-9]{4,}$/.test(tok)) return tok;
-          try {
-            const syns = getSynonyms(tok.toLowerCase(), settings.language || 'id') || [];
-            if (syns && syns.length > 0 && Math.random() < 0.16) {
-              // preserve capitalization
-              const rep = syns[0];
-              if (/^[A-Z]/.test(tok)) return rep.charAt(0).toUpperCase() + rep.slice(1);
-              return rep;
-            }
-          } catch { /* ignore */ }
-          return tok;
-        }).join('');
-    }).join(' ');
-
-    // add brief synthesis sentence connecting ideas
+    // add brief synthesis sentence connecting ideas when multiple candidates provided
     let connector = '';
     if (candidates && candidates.length > 0) connector = `Ringkasan hasil integrasi dari ${Math.min(3, candidates.length)} sumber terkait.`;
 
-    const paraphrased = `${rewritten}${connector ? '\n\n' + connector : ''}`;
+    const body = shortSentences.join(' ');
+    const paraphrased = `${body}${connector ? '\n\n' + connector : ''}`;
 
-    // ensure we append citations minimally (no verbatim quotes)
-    const srcs = (candidates || []).slice(0,3).map(c => c.source || c.fileName || c.id).filter(Boolean);
-    const citation = srcs.length ? `
-
-Sumber: ${[...new Set(srcs)].join(', ')}` : '';
+    const srcs = (candidates || []).slice(0, 3).map(c => c.source || c.fileName || c.id).filter(Boolean);
+    const citation = srcs.length ? `\n\nSumber: ${[...new Set(srcs)].join(', ')}` : '';
 
     return paraphrased + citation;
-    } catch {
+  } catch {
     return rawText;
   }
 }
@@ -1006,7 +1250,7 @@ export function addRelatedConceptsSuggestions(nluResult, baseResponse) {
       if (!value) continue;
       const node = findKnowledgeNode(value);
       if (node) {
-        const related = Array.isArray(getRelatedConcepts) ? getRelatedConcepts(node.id, 1) : [];
+        const related = typeof getRelatedConcepts === 'function' ? getRelatedConcepts(node.id, 1) : [];
         (related || []).slice(0, 2).forEach(rel => { if (rel && rel.name) suggestions.push(rel.name); });
       }
     } catch { /* ignore individual errors */ }
@@ -1149,7 +1393,6 @@ function calculateCoherenceScore(response) {
     const transitions = ['dan', 'atau', 'tetapi', 'namun', 'karena', 'sehingga', 'maka', 'oleh karena itu'];
     
     for (let i = 1; i < sentences.length; i++) {
-      const prevSentence = sentences[i-1].toLowerCase();
       const currSentence = sentences[i].toLowerCase();
       
       if (transitions.some(t => currSentence.startsWith(t))) {
@@ -1384,31 +1627,119 @@ export function logResponseEvaluation(evaluation, metadata = {}) {
  * @returns {object} bilingual response object
  */
 export function generateBilingualResponse(baseResponse, detectedLanguage, nluResult = {}) {
+  const isEn = detectedLanguage === 'en' || (nluResult.language && nluResult.language.language === 'en');
   const result = {
     primary: baseResponse,
-    language: 'id',
+    language: isEn ? 'en' : 'id',
     alternatives: {},
-    confidence: 0.8
+    confidence: 0.85
   };
 
-  // Jika input dalam bahasa Inggris, prioritaskan respon bahasa Inggris
-  if (detectedLanguage === 'en' || (nluResult.language && nluResult.language.language === 'en')) {
-    const englishResponse = translateToEnglish(baseResponse, nluResult);
-    if (englishResponse) {
-      result.primary = englishResponse;
-      result.language = 'en';
-      result.alternatives.indonesian = baseResponse;
-      result.confidence = Math.min(1, (nluResult.language?.confidence || 0.5) + 0.2);
-    }
+  if (isEn) {
+    const indonesianResponse = translateToIndonesian(baseResponse, nluResult);
+    result.language = 'en';
+    result.primary = baseResponse;
+    result.alternatives = {
+      english: baseResponse,
+      indonesian: indonesianResponse || baseResponse
+    };
   } else {
-    // Input bahasa Indonesia, tapi berikan opsi bahasa Inggris
     const englishResponse = translateToEnglish(baseResponse, nluResult);
-    if (englishResponse) {
-      result.alternatives.english = englishResponse;
-    }
+    result.language = 'id';
+    result.primary = baseResponse;
+    result.alternatives = {
+      indonesian: baseResponse,
+      english: englishResponse || baseResponse
+    };
   }
 
   return result;
+}
+
+/**
+ * Translate English response ke bahasa Indonesia
+ * @param {string} englishText - teks dalam bahasa Inggris
+ * @param {object} context - konteks untuk terjemahan yang lebih baik
+ * @returns {string} terjemahan bahasa Indonesia
+ */
+export function translateToIndonesian(englishText) {
+  if (!englishText || typeof englishText !== 'string') return '';
+  
+  // Jika teks sudah mayoritas bahasa Indonesia, kembalikan langsung
+  const detected = detectLanguage(englishText);
+  if (detected.language === 'id' && detected.confidence > 0.7) {
+    return englishText;
+  }
+
+  // 1. Cek terjemahan langsung dari kamus bilingual
+  const directMapping = getBilingualTranslation(englishText, 'id');
+  if (directMapping) return directMapping;
+
+  // Frasa umum portofolio & respons bahasa Inggris ke Indonesia
+  const phraseReplacements = [
+    { from: /Syaiful's Work Experience & Career/gi, to: "Pengalaman Kerja & Karir Syaiful" },
+    { from: /Work Experience & Career Track Record/gi, to: "Pengalaman Kerja & Rekam Jejak Karir" },
+    { from: /Featured Web Projects by Syaiful/gi, to: "Katalog Projek Web Unggulan Syaiful" },
+    { from: /Featured Web Projects/gi, to: "Projek Web Unggulan" },
+    { from: /Core Specialization & Skills of Syaiful/gi, to: "Spesialisasi Inti & Keahlian Utama Syaiful" },
+    { from: /Core Specialization & Tech Stack/gi, to: "Spesialisasi Inti & Tech Stack Utama" },
+    { from: /Official Certifications & Credentials/gi, to: "Sertifikasi Resmi & Kredensial" },
+    { from: /Official Certifications & Licenses/gi, to: "Sertifikat & Lisensi Resmi" },
+    { from: /Official Certifications/gi, to: "Sertifikasi Resmi" },
+    { from: /Languages Spoken by Muhammad Syaiful Mukmin/gi, to: "Kemampuan Bahasa Muhammad Syaiful Mukmin" },
+    { from: /Collaboration & Web Development Services/gi, to: "Kolaborasi & Layanan Pengembangan Web" },
+    { from: /Web Development Services & Collaboration/gi, to: "Layanan Pembuatan Website & Kolaborasi" },
+    { from: /Syaiful's Life & Career Vision/gi, to: "Visi Hidup & Karir Syaiful" },
+    { from: /Muhammad Syaiful Mukmin Biography/gi, to: "Biografi & Profil Muhammad Syaiful Mukmin" },
+    { from: /Mathematical Logic Calculation/gi, to: "Perhitungan Logika Matematika" },
+    { from: /Calculation Result/gi, to: "Hasil Perhitungan" },
+    { from: /How can I help you\?/gi, to: "Ada yang bisa saya bantu?" },
+    { from: /Is there anything I can help you with\?/gi, to: "Ada yang bisa aku bantu?" },
+    { from: /Happy to help/gi, to: "Senang bisa membantu" },
+    { from: /Thank you very much/gi, to: "Terima kasih banyak" },
+    { from: /Thank you/gi, to: "Terima kasih" },
+    { from: /You're welcome/gi, to: "Sama-sama" },
+    { from: /You're very welcome/gi, to: "Sama-sama! Dengan senang hati" },
+    { from: /Good morning/gi, to: "Selamat pagi" },
+    { from: /Good afternoon/gi, to: "Selamat siang" },
+    { from: /Good evening/gi, to: "Selamat sore" },
+    { from: /Good night/gi, to: "Selamat malam" },
+    { from: /Discussion Room/gi, to: "Room Diskusi" },
+    { from: /Help Center & Live Support/gi, to: "Pusat Bantuan & Live CS" },
+    { from: /Help Center & Live CS/gi, to: "Pusat Bantuan & Live CS" },
+    { from: /Connect to Live CS/gi, to: "Hubungi Live CS" },
+    { from: /Connecting to Live CS/gi, to: "Menghubungkan ke Live CS" },
+    { from: /I'm SaipulAI - your personal intelligent assistant!/gi, to: "Saya SaipulAI - asisten cerdas pribadi Anda!" }
+  ];
+
+  let indonesianText = englishText;
+  for (const { from, to } of phraseReplacements) {
+    indonesianText = indonesianText.replace(from, to);
+  }
+
+  // Dictionary terjemahan kata umum English -> Indonesian
+  const enToIdDict = {
+    'hello': 'halo', 'hi': 'hai', 'hey': 'hai',
+    'sorry': 'maaf', 'what': 'apa', 'how': 'bagaimana',
+    'why': 'mengapa', 'when': 'kapan', 'where': 'di mana',
+    'who': 'siapa', 'can': 'bisa', 'cannot': 'tidak bisa',
+    'not': 'tidak', 'yes': 'ya', 'good': 'baik',
+    'bad': 'buruk', 'help': 'bantuan', 'problem': 'masalah',
+    'error': 'kendala', 'successful': 'berhasil', 'failed': 'gagal',
+    'data': 'data', 'information': 'informasi', 'explanation': 'penjelasan',
+    'example': 'contoh', 'question': 'pertanyaan', 'answer': 'jawaban'
+  };
+
+  const words = indonesianText.split(/(\s+)/);
+  const translated = words.map(chunk => {
+    const clean = chunk.toLowerCase().replace(/[^\w]/g, '');
+    if (enToIdDict[clean]) {
+      return chunk.replace(new RegExp(`\\b${clean}\\b`, 'i'), enToIdDict[clean]);
+    }
+    return chunk;
+  });
+
+  return translated.join('').replace(/\s+/g, ' ').trim();
 }
 
 /**
@@ -1417,100 +1748,79 @@ export function generateBilingualResponse(baseResponse, detectedLanguage, nluRes
  * @param {object} context - konteks untuk terjemahan yang lebih baik
  * @returns {string} terjemahan bahasa Inggris
  */
-function translateToEnglish(indonesianText, context = {}) {
-  // Dictionary terjemahan umum
-  const translationDict = {
-    // Greetings
-    'halo': 'hello', 'hai': 'hi', 'selamat pagi': 'good morning',
-    'selamat siang': 'good afternoon', 'selamat sore': 'good evening',
-    'selamat malam': 'good night', 'terima kasih': 'thank you',
-    'sama-sama': 'you\'re welcome', 'maaf': 'sorry',
-
-    // Common phrases
-    'apa kabar': 'how are you', 'saya baik': 'I\'m fine',
-    'bagaimana': 'how', 'kenapa': 'why', 'kapan': 'when',
-    'di mana': 'where', 'siapa': 'who', 'apa': 'what',
-    'berapa': 'how much', 'bisa': 'can', 'tidak': 'no',
-    'ya': 'yes', 'baik': 'good', 'buruk': 'bad',
-
-    // Technical terms
-    'saya tidak mengerti': 'I don\'t understand',
-    'bisa jelaskan': 'can you explain',
-    'tolong': 'please help', 'bantuan': 'help',
-    'masalah': 'problem', 'error': 'error',
-    'berhasil': 'successful', 'gagal': 'failed',
-
-    // Knowledge base terms
-    'data': 'data', 'informasi': 'information',
-    'penjelasan': 'explanation', 'contoh': 'example',
-    'pertanyaan': 'question', 'jawaban': 'answer'
-  };
-
-  // Pattern-based translations untuk frasa umum
-  const patternTranslations = [
-    {
-      pattern: /halo, (saya|aku) (.+)/i,
-      replacement: (match, pronoun, name) => `Hello, I'm ${name}`
-    },
-    {
-      pattern: /terima kasih (.+)/i,
-      replacement: (match, reason) => `Thank you ${reason}`
-    },
-    {
-      pattern: /saya (ingin|mau) (.+)/i,
-      replacement: (match, verb, thing) => `I want ${translatePhrase(thing)}`
-    },
-    {
-      pattern: /bisa (kau|kamu|anda) (.+)/i,
-      replacement: (match, pronoun, action) => `Can you ${translatePhrase(action)}`
-    },
-    {
-      pattern: /(apa|bagaimana) cara (.+)/i,
-      replacement: (match, question, topic) => `How to ${translatePhrase(topic)}`
-    }
-  ];
-
-  let englishText = indonesianText.toLowerCase();
-
-  // Apply pattern translations first
-  for (const { pattern, replacement } of patternTranslations) {
-    englishText = englishText.replace(pattern, replacement);
+export function translateToEnglish(indonesianText, context = {}) {
+  if (!indonesianText || typeof indonesianText !== 'string') return '';
+  
+  // Jika teks sudah mayoritas bahasa Inggris, kembalikan langsung
+  const detected = detectLanguage(indonesianText);
+  if (detected.language === 'en' && detected.confidence > 0.7) {
+    return indonesianText;
   }
 
-  // Word-by-word translation
-  const words = englishText.split(/\s+/);
-  const translatedWords = words.map(word => {
-    // Remove punctuation for lookup
-    const cleanWord = word.replace(/[^\w]/g, '');
-    const translation = translationDict[cleanWord] || cleanWord;
+  // 1. Cek terjemahan langsung dari kamus bilingual
+  const directMapping = getBilingualTranslation(indonesianText, 'en');
+  if (directMapping) return directMapping;
 
-    // Restore punctuation
-    return word.replace(cleanWord, translation);
-  });
+  // Frasa umum portofolio & respons
+  const phraseReplacements = [
+    { from: /pengalaman kerja dan karir syaiful/gi, to: "Syaiful's Work Experience & Career" },
+    { from: /pengalaman kerja & karir syaiful/gi, to: "Syaiful's Work Experience & Career" },
+    { from: /katalog projek web unggulan syaiful/gi, to: "Featured Web Projects by Syaiful" },
+    { from: /projek web unggulan syaiful/gi, to: "Featured Web Projects by Syaiful" },
+    { from: /spesialisasi & keahlian utama syaiful/gi, to: "Core Specialization & Skills of Syaiful" },
+    { from: /spesialisasi inti & tech stack/gi, to: "Core Specialization & Tech Stack" },
+    { from: /visi hidup & karir syaiful/gi, to: "Syaiful's Life & Career Vision" },
+    { from: /sertifikat & lisensi resmi syaiful/gi, to: "Official Certifications & Licenses" },
+    { from: /sertifikat resmi yang dimiliki/gi, to: "Official Certifications Held" },
+    { from: /kemampuan bahasa muhammad syaiful mukmin/gi, to: "Languages Spoken by Muhammad Syaiful Mukmin" },
+    { from: /layanan pembuatan website & kolaborasi/gi, to: "Web Development Services & Collaboration" },
+    { from: /perhitungan logika matematika/gi, to: "Mathematical Logic Calculation" },
+    { from: /hasil perhitungan/gi, to: "Calculation Result" },
+    { from: /perhitungan dievaluasi secara presisi oleh mesin logika saipulai/gi, to: "Calculation precisely evaluated by SaipulAI logic engine." },
+    { from: /ada yang bisa saya bantu\?/gi, to: "How can I help you?" },
+    { from: /ada yang bisa aku bantu\?/gi, to: "Is there anything I can help you with?" },
+    { from: /senang bisa membantu/gi, to: "Happy to help" },
+    { from: /terima kasih banyak/gi, to: "Thank you very much" },
+    { from: /terima kasih/gi, to: "Thank you" },
+    { from: /sama-sama/gi, to: "You're welcome" },
+    { from: /selamat pagi/gi, to: "Good morning" },
+    { from: /selamat siang/gi, to: "Good afternoon" },
+    { from: /selamat sore/gi, to: "Good evening" },
+    { from: /selamat malam/gi, to: "Good night" },
+    { from: /pusat bantuan & live cs/gi, to: "Help Center & Live CS" },
+    { from: /menghubungkan ke live cs/gi, to: "Connecting to Live CS" }
+  ];
 
-  let result = translatedWords.join(' ');
+  let englishText = indonesianText;
+  for (const { from, to } of phraseReplacements) {
+    englishText = englishText.replace(from, to);
+  }
 
-  // Post-processing untuk grammar dan fluency
-  result = postProcessEnglish(result, context);
-
-  return result;
-}
-
-/**
- * Translate phrase dengan context awareness
- * @param {string} phrase - frasa yang akan diterjemahkan
- * @returns {string} terjemahan
- */
-function translatePhrase(phrase) {
-  const phraseDict = {
-    'membuat': 'make', 'menggunakan': 'use', 'menjalankan': 'run',
-    'menginstall': 'install', 'mengupdate': 'update', 'menghapus': 'delete',
-    'mencari': 'search', 'menemukan': 'find', 'melihat': 'see',
-    'membaca': 'read', 'menulis': 'write', 'mengedit': 'edit',
-    'menyimpan': 'save', 'memuat': 'load', 'mengunduh': 'download'
+  // Dictionary terjemahan kata umum
+  const translationDict = {
+    'halo': 'hello', 'hai': 'hi',
+    'maaf': 'sorry', 'apa': 'what', 'kabar': 'news',
+    'bagaimana': 'how', 'kenapa': 'why', 'kapan': 'when',
+    'dimana': 'where', 'siapa': 'who', 'berapa': 'how much',
+    'bisa': 'can', 'tidak': 'not', 'ya': 'yes',
+    'baik': 'good', 'buruk': 'bad', 'tolong': 'please help',
+    'bantuan': 'help', 'masalah': 'problem', 'error': 'error',
+    'berhasil': 'successful', 'gagal': 'failed', 'data': 'data',
+    'informasi': 'information', 'penjelasan': 'explanation',
+    'contoh': 'example', 'pertanyaan': 'question', 'jawaban': 'answer'
   };
 
-  return phraseDict[phrase.toLowerCase()] || phrase;
+  // Replace individual common words if whole phrase not matched
+  const words = englishText.split(/(\s+)/);
+  const translated = words.map(chunk => {
+    const clean = chunk.toLowerCase().replace(/[^\w]/g, '');
+    if (translationDict[clean]) {
+      return chunk.replace(new RegExp(`\\b${clean}\\b`, 'i'), translationDict[clean]);
+    }
+    return chunk;
+  });
+
+  return postProcessEnglish(translated.join(''), context);
 }
 
 /**
@@ -1558,7 +1868,7 @@ function postProcessEnglish(text, context = {}) {
  * @param {object} context - konteks percakapan
  * @returns {string} respon bahasa Inggris
  */
-export function generateEnglishResponse(intent, entities = {}, context = {}) {
+export function generateEnglishResponse(intent) {
   const responses = {
     greeting: [
       "Hello! I'm SaipulAI, your intelligent assistant. How can I help you today?",
@@ -1609,20 +1919,8 @@ export function enhancedTextProcessing(text) {
   
   const normalized = text.toLowerCase().trim();
   const words = normalized.split(/\s+/).filter(w => w.length > 0);
-  
-  // Basic language detection (ID vs EN)
-  const indonesianIndicators = ['yang', 'dan', 'ini', 'itu', 'adalah', 'saya', 'apa', 'bagaimana'];
-  const englishIndicators = ['the', 'and', 'this', 'that', 'is', 'i', 'what', 'how'];
-  
-  let idScore = 0;
-  let enScore = 0;
-  
-  words.forEach(word => {
-    if (indonesianIndicators.includes(word)) idScore++;
-    if (englishIndicators.includes(word)) enScore++;
-  });
-  
-  const language = enScore > idScore ? 'en' : 'id';
+  const detected = detectLanguage(text);
+  const language = detected.language || 'id';
   
   return {
     original: text,
@@ -1631,6 +1929,7 @@ export function enhancedTextProcessing(text) {
     wordCount: words.length,
     words,
     language,
+    confidence: detected.confidence,
     timestamp: new Date().toISOString()
   };
 }

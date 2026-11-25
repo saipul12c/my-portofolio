@@ -15,7 +15,7 @@ const VideoCard = ({ video, onVideoClick, onMenuAction }) => {
   useEffect(() => {
     try {
       setIsLiked(likedVideos.isLiked(video.id));
-    } catch (err) {
+    } catch {
       // ignore
     }
   }, [video.id]);

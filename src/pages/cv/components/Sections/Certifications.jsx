@@ -9,9 +9,11 @@ const VISIBLE_COUNT = 2;
 const ROTATE_INTERVAL = 2000; // 2 detik sekali
 
 const Certifications = ({ certificates = [] }) => {
-  const allCerts = certificates && certificates.length > 0 
-    ? certificates 
-    : (fallbackCertificatesData.certificates || []);
+  const allCerts = useMemo(() => (
+    certificates && certificates.length > 0
+      ? certificates
+      : (fallbackCertificatesData.certificates || [])
+  ), [certificates]);
 
   const [startIndex, setStartIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);

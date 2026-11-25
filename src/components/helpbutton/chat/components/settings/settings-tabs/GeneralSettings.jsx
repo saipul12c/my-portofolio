@@ -51,6 +51,7 @@ export function GeneralSettings({ settings, handleSave }) {
             value={settings.profile?.location || ''}
             onChange={(e) => {
               const v = e.target.value;
+              handleSave("profile", { ...settings.profile, location: v });
               try { 
                 window.dispatchEvent(new CustomEvent('saipul_profile_updated', { detail: { location: v } })); 
               } catch (_e) { 

@@ -32,7 +32,7 @@ const Login = () => {
         if (isExplicitLogout) {
           try {
             await supabase.auth.signOut();
-          } catch (_) {}
+          } catch { /* ignore */ }
           localStorage.removeItem('local_user');
           return;
         }
@@ -49,7 +49,7 @@ const Login = () => {
         if (!localUserRaw) {
           try {
             await supabase.auth.signOut();
-          } catch (_) {}
+          } catch { /* ignore */ }
           return;
         }
 
@@ -77,7 +77,7 @@ const Login = () => {
         if (!verifiedRole && localUserRaw) {
           try {
             verifiedRole = JSON.parse(localUserRaw)?.role;
-          } catch (_) {}
+          } catch { /* ignore */ }
         }
         verifiedRole = (verifiedRole || authUser.app_metadata?.role || 'USER').toUpperCase();
 

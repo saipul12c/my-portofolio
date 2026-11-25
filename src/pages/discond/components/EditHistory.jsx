@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function EditHistory({ messageId, edits = [] }) {
+export default function EditHistory({ edits = [] }) {
   return (
     <div className="dc-edit-history">
       <h4>Edit history</h4>

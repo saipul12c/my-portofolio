@@ -5,7 +5,6 @@ import { Link, useNavigate } from "react-router-dom";
 
 const SkillCardComponent = ({
   bahasa,
-  isProgramming = false,
   isList = false,
   isExpanded = false,
   onToggle

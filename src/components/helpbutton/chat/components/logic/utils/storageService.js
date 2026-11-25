@@ -19,6 +19,9 @@ class StorageService {
    * Priority: localStorage > sessionStorage > memory
    */
   detectStorageType() {
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      return 'memory';
+    }
     try {
       const test = '__test__';
       localStorage.setItem(test, test);

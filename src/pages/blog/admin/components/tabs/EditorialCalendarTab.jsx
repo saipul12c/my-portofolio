@@ -68,7 +68,6 @@ export default function EditorialCalendarTab({
 
     // Hari dalam bulan aktif
     for (let d = 1; d <= daysInCurrentMonth; d++) {
-      const curDate = new Date(year, month, d);
       // Format YYYY-MM-DD lokal
       const mStr = String(month + 1).padStart(2, '0');
       const dStr = String(d).padStart(2, '0');

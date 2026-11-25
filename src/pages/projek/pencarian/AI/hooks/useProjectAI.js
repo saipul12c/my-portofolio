@@ -13,7 +13,6 @@ import faqsData from "../../../../../data/helpbutton/faq/faqs.json";
 import commitmentsData from "../../../../../data/helpbutton/komit/commitments.json";
 
 // AI CORE UTILITIES
-import { cleanText, extractKeywords, detectIntents } from "../../../../../utils/ai/nlpCore";
 import { findRelatedEntities } from "../../../../../utils/ai/knowledgeBase";
 import { recordAITopic, getCrossAgentGreeting } from "../../../../../utils/ai/sessionMemory";
 
@@ -324,7 +323,7 @@ const dialogReducer = (state, action) => {
 // ============================================================================
 const analyzeQueryAdvanced = (text, context, knowledgeGraph) => {
   const doc = nlp(text.toLowerCase());
-  const sentiment = detectSentiment(text, context);
+  const sentiment = detectSentiment(text);
   
   // SEMANTIC MODIFIERS
   const modifiers = {
@@ -336,10 +335,10 @@ const analyzeQueryAdvanced = (text, context, knowledgeGraph) => {
 
   const intent = classifyIntentAdvanced(text, doc, context, modifiers);
   const explicit = extractExplicitEntitiesAdvanced(text, doc, knowledgeGraph);
-  const referenced = resolveContextReferenceAdvanced(text, context, knowledgeGraph);
+  const referenced = resolveContextReferenceAdvanced(text, context);
   
   let resolvedEntities = referenced ? [referenced] : explicit;
-  const needsClarification = checkIfClarificationNeeded(intent, resolvedEntities, text);
+  const needsClarification = checkIfClarificationNeeded(intent, resolvedEntities);
   const preferences = extractPreferences(text);
   
   return {
@@ -350,7 +349,7 @@ const analyzeQueryAdvanced = (text, context, knowledgeGraph) => {
   };
 };
 
-const detectSentiment = (text, context) => {
+const detectSentiment = (text) => {
   if (/(keren|hebat|wow|suka|mantap|luar|banget|good|nice|top|mantul)/i.test(text)) return 'positive';
   if (/(bingung|pusing|sulit|susah|mana|gimana|cara|maksud|bantu|jelaskan|tidak paham|kurang jelas)/i.test(text)) return 'puzzled';
   return 'neutral';
@@ -418,7 +417,7 @@ const extractExplicitEntitiesAdvanced = (text, doc, knowledgeGraph) => {
   return entities;
 };
 
-const resolveContextReferenceAdvanced = (text, context, knowledgeGraph) => {
+const resolveContextReferenceAdvanced = (text, context) => {
   if (!/(itu|tadi|sebelumnya|yang|tersebut|dia|nya|proyek|kursus|blog|faq)\b/i.test(text)) return null;
   if (context.lastMentioned.project) return { type: 'project', value: context.lastMentioned.project.title, data: context.lastMentioned.project };
   if (context.lastMentioned.course) return { type: 'course', value: context.lastMentioned.course.title, data: context.lastMentioned.course };
@@ -426,7 +425,7 @@ const resolveContextReferenceAdvanced = (text, context, knowledgeGraph) => {
   return null;
 };
 
-const checkIfClarificationNeeded = (intent, resolvedEntities, text) => {
+const checkIfClarificationNeeded = (intent, resolvedEntities) => {
   const requiresSpecificEntity = ['FEATURE_INQUIRY', 'TECH_INQUIRY', 'IMPACT_INQUIRY', 'TIMELINE_INQUIRY'].includes(intent.type);
   if (requiresSpecificEntity && resolvedEntities.length === 0) {
     return { question: "Mohon maaf, konteks kalimat Anda merujuk pada detail spesifik. Bisa sebutkan nama proyek atau kursus yang dimaksud?", options: null };
@@ -453,6 +452,10 @@ export const useProjectAI = (searchTerm, debounceDelay = 300) => {
   const [aiResponse, setAiResponse] = useState(null);
   const [debouncedTerm, setDebouncedTerm] = useState(searchTerm);
   const [dialogState, dispatch] = useReducer(dialogReducer, initialState);
+  const dialogStateRef = useRef(dialogState);
+  useEffect(() => {
+    dialogStateRef.current = dialogState;
+  }, [dialogState]);
   
   const timeoutRef = useRef(null);
   const debounceRef = useRef(null);
@@ -477,8 +480,6 @@ export const useProjectAI = (searchTerm, debounceDelay = 300) => {
 
   const knowledgeGraph = useMemo(() => buildKnowledgeGraph(projects, courses, blogs, softSkillsData), [projects, courses, blogs]);
   
-  const fusePro = useMemo(() => new Fuse(projects, { keys: ["title", "overview", "tech", "tags"], threshold: 0.35 }), [projects]);
-  const fuseEdu = useMemo(() => new Fuse(courses, { keys: ["title", "provider", "skills_learned"], threshold: 0.35 }), [courses]);
   const fuseBlog = useMemo(() => new Fuse(blogs, { keys: ["title", "category", "tags", "excerpt"], threshold: 0.35 }), [blogs]);
   const fuseFaq = useMemo(() => new Fuse(faqs, { keys: ["question", "answer"], threshold: 0.35 }), [faqs]);
 
@@ -502,7 +503,7 @@ export const useProjectAI = (searchTerm, debounceDelay = 300) => {
     const relatedEntities = findRelatedEntities(term);
 
     const analysis = analyzeQueryAdvanced(term, state, knowledgeGraph);
-    const { intent, resolvedEntities, sentiment, isFollowUp, needsClarification, preferences, modifiers } = analysis;
+    const { intent, resolvedEntities, sentiment, isFollowUp, needsClarification, preferences } = analysis;
     
     if (Object.keys(preferences).length) dispatch({ type: 'UPDATE_PREFERENCES', payload: preferences });
     
@@ -546,20 +547,23 @@ export const useProjectAI = (searchTerm, debounceDelay = 300) => {
         }
         insightType = "vibe";
         break;
-      case 'FAQ_INQUIRY':
+      case 'FAQ_INQUIRY': {
         const faqMatch = fuseFaq.search(term).map(r => r.item)[0];
         if (faqMatch) answers.push(`**T**: ${faqMatch.question}\n**J**: ${faqMatch.answer}`);
         else answers.push("Gunakan menu FAQ untuk bantuan navigasi atau pertanyaan teknis portofolio.");
         break;
-      case 'COMMITMENT_INQUIRY':
+      }
+      case 'COMMITMENT_INQUIRY': {
         const commitMatch = commits.find(c => term.toLowerCase().includes(c.title.toLowerCase()) || c.desc.toLowerCase().includes(term.toLowerCase())) || commits[0];
         answers.push(`**Komitmen Syaiful**: ${commitMatch.title}. \n\n${commitMatch.desc}`);
         break;
-      case 'SKILL_INQUIRY':
+      }
+      case 'SKILL_INQUIRY': {
         const skillMatch = skills.find(s => term.toLowerCase().includes(s.name.toLowerCase()));
         if (skillMatch) answers.push(`**${skillMatch.name}**: ${skillMatch.description} (Level: ${skillMatch.level})`);
         else answers.push(`Dalam aspek interpersonal, Syaiful memiliki soft skill seperti **${skills.slice(0, 3).map(s => s.name).join(", ")}**.`);
         break;
+      }
       case 'PROFILE_INQUIRY':
         answers.push(`Secara keseluruhan, Syaiful mengelola **${profileSummary.totalPro} proyek**, **${profileSummary.totalCert} sertifikasi**, dan **${profileSummary.totalBlog} artikel**. Keahlian utamanya: **${profileSummary.topTech.join(", ")}**.`);
         ctaSuggestion = true;
@@ -591,11 +595,12 @@ export const useProjectAI = (searchTerm, debounceDelay = 300) => {
         else if (matchedCourse) answers.push(`Hasil dari kursus ini adalah penguasaan skill: ${matchedCourse.skills_learned.join(", ")}.`);
         else answers.push("Setiap langkah Syaiful didasari pada keinginan untuk menjawab tantangan nyata.");
         break;
-      case 'RELATION_INQUIRY':
+      case 'RELATION_INQUIRY': {
         const virtualRel = knowledgeGraph.relations.find(r => r.blogId === matchedBlog?.title || r.projectId === matchedProject?.title);
         if (virtualRel) answers.push(`Konteks kalimat Anda menghubungkan **${matchedBlog?.title || matchedProject?.title}** melalui kesamaan tag: **${virtualRel.tag || virtualRel.sharedSkills?.join(", ")}**.`);
         else answers.push("Data kami saling terhubung melalui ekosistem teknologi yang konsisten.");
         break;
+      }
       case 'GREETING':
         answers.push(`Halo! Saya asisten master yang kini dibekali pemahaman konteks kalimat. Anda bisa bertanya tentang apapun di portofolio Syaiful.`);
         break;
@@ -633,7 +638,7 @@ export const useProjectAI = (searchTerm, debounceDelay = 300) => {
       timeoutRef.current = setTimeout(() => {
         setThinkingStep(3);
         timeoutRef.current = setTimeout(() => {
-          try { generateResponse(debouncedTerm, dialogState); } catch (e) { console.error(e); } finally { setIsThinking(false); setThinkingStep(0); }
+          try { generateResponse(debouncedTerm, dialogStateRef.current); } catch (e) { console.error(e); } finally { setIsThinking(false); setThinkingStep(0); }
         }, 800);
       }, 700);
     }, 600);

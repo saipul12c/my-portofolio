@@ -180,7 +180,7 @@ const SoftSkillsAI = memo(({ isOpen, onClose, skills = [], initialQuery = "" }) 
                                 )}
                                 {lastBotMessage.relatedEntities.certificates?.length > 0 && (
                                   <button
-                                    onClick={() => navigate('/sertifikat')}
+                                    onClick={() => navigate('/certificates')}
                                     className="px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-400/30 text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer"
                                   >
                                     🎓 Sertifikasi ({lastBotMessage.relatedEntities.certificates.length})

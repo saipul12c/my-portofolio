@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { useSettings } from '../../settings/hooks/useSettings';
+import { saipulAnalytics } from '../utils/analytics';
+import { redactPII as redactPIIHelper } from '../utils/piiDetector';
+import { storageService } from '../utils/storageService';
 
 export default function ReportModal({ open, onClose, onSubmit, messageId, message, messageText, conversationId, messageTimestamp }) {
   const [reason, setReason] = useState('Lainnya');
@@ -58,7 +61,7 @@ export default function ReportModal({ open, onClose, onSubmit, messageId, messag
       }
     };
     document.addEventListener('keydown', handleKey);
-    try { first && first.focus(); } catch (e) {}
+    try { first && first.focus(); } catch { /* ignore focus error */ }
     return () => document.removeEventListener('keydown', handleKey);
   }, [open, onClose]);
 
@@ -139,37 +142,28 @@ export default function ReportModal({ open, onClose, onSubmit, messageId, messag
     try {
       const key = 'saipul_last_report';
       const hash = btoa(unescape(encodeURIComponent(JSON.stringify({ messageId: payload.messageId, reason: payload.reason, details: payload.details }))));
-      const last = JSON.parse(localStorage.getItem(key) || '{}');
+      const last = storageService.get(key, {}) || {};
       const now = Date.now();
       if (last.hash === hash && now - (last.ts || 0) < 60000) {
         setError('Anda baru saja mengirim laporan serupa. Mohon tunggu sebentar.');
         return;
       }
-      localStorage.setItem(key, JSON.stringify({ hash, ts: now }));
-    } catch (e) {
-      // ignore localStorage errors
+      storageService.set(key, { hash, ts: now });
+    } catch {
+      // ignore storage errors
     }
 
-    // redact PII automatically from details & contactInfo and messageSnippet
-    const redactPII = (text = '') => {
-      if (!text) return text;
-      // mask emails
-      let out = text.replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, '[redacted_email]');
-      // mask phone numbers (simple)
-      out = out.replace(/(\+?\d[\d\s()\-]{5,}\d)/g, '[redacted_phone]');
-      // mask ID-like numbers (e.g., long digit sequences)
-      out = out.replace(/\b\d{9,}\b/g, '[redacted_id]');
-      return out;
-    };
+    // redact PII automatically via shared piiDetector helper
+    const redactText = (text = '') => redactPIIHelper(String(text || '')).text;
 
-    const safePayload = { ...payload, details: payload.details.map(d => redactPII(d)), contactInfo: redactPII(payload.contactInfo), messageSnippet: redactPII(payload.messageSnippet) };
+    const safePayload = { ...payload, details: payload.details.map(d => redactText(d)), contactInfo: redactText(payload.contactInfo), messageSnippet: redactText(payload.messageSnippet) };
 
     // telemetry: basic event if analytics enabled in settings
     try {
-      if (settings?.enableAnalytics && window?.saipul_analytics?.trackEvent) {
-        window.saipul_analytics.trackEvent('report_submit_attempt', { category: payload.category, severity: payload.severity });
+      if (settings?.enableAnalytics) {
+        (window?.saipul_analytics || saipulAnalytics).trackEvent('report_submit_attempt', { category: payload.category, severity: payload.severity });
       }
-    } catch (e) {}
+    } catch { /* ignore analytics error */ }
 
     setSending(true);
     if (onSubmit) {
@@ -180,11 +174,11 @@ export default function ReportModal({ open, onClose, onSubmit, messageId, messag
         if (result && typeof result.then === 'function') {
           await result;
         }
-      } catch (e) {
-        console.error('onSubmit handler failed', e);
+      } catch (err) {
+        console.error('onSubmit handler failed', err);
         setError('Gagal mengirim laporan. Silakan coba lagi.');
         setSending(false);
-        try { if (settings?.enableAnalytics && window?.saipul_analytics?.trackEvent) window.saipul_analytics.trackEvent('report_submit_failure'); } catch (e) {}
+        try { if (settings?.enableAnalytics) (window?.saipul_analytics || saipulAnalytics).trackEvent('report_submit_failure'); } catch { /* ignore */ }
         return;
       }
     }
@@ -192,18 +186,19 @@ export default function ReportModal({ open, onClose, onSubmit, messageId, messag
     // persist report locally (best-effort) so response generator can use it
     try {
       const keyReports = 'saipul_chat_reports';
-      const existing = JSON.parse(localStorage.getItem(keyReports) || '[]');
+      const existing = storageService.get(keyReports, []);
+      const safeExisting = Array.isArray(existing) ? existing : [];
       const toStore = { ...safePayload, storedAt: new Date().toISOString() };
-      existing.push(toStore);
+      safeExisting.push(toStore);
       // keep only recent 200 reports to bound size
-      const trimmed = existing.slice(-200);
-      try { localStorage.setItem(keyReports, JSON.stringify(trimmed)); } catch (e) { /* ignore storage errors */ }
-    } catch (e) { /* ignore */ }
+      const trimmed = safeExisting.slice(-200);
+      try { storageService.set(keyReports, trimmed); } catch { /* ignore storage errors */ }
+    } catch { /* ignore */ }
 
     // show success screen then allow user to close
     setSubmitted(true);
     setSending(false);
-    try { if (settings?.enableAnalytics && window?.saipul_analytics?.trackEvent) window.saipul_analytics.trackEvent('report_submit_success'); } catch (e) {}
+    try { if (settings?.enableAnalytics) (window?.saipul_analytics || saipulAnalytics).trackEvent('report_submit_success'); } catch { /* ignore */ }
   };
 
   // file upload helpers

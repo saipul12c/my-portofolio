@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const MetricCard = ({ metric, index }) => {
+const MetricCard = ({ metric }) => {
   const content = (
     <div className="text-center bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-blue-900/40 hover:border-cyan-400/50 transition-all hover:scale-105 group cursor-pointer">
       <div className="text-2xl mb-2">{metric.icon}</div>

@@ -12,7 +12,7 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
-import { getAdminCredentials, updateAdminCredentials, getAdminSession } from '../../services/blogAdminAuth';
+import { getAdminCredentials, updateAdminCredentials } from '../../services/blogAdminAuth';
 
 export default function SettingsTab({ 
   onProfileUpdated, 

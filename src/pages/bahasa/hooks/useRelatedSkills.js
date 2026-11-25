@@ -4,10 +4,9 @@ import softskillsData from "../../../data/skills/softskills.json";
 /**
  * Hook untuk menemukan soft skills yang terkait dengan bahasa/teknologi tertentu
  * @param {string} skillName - Nama bahasa atau teknologi
- * @param {boolean} isProgramming - Apakah ini adalah bahasa pemrograman
  * @returns {Array} - Array soft skills yang terkait
  */
-export const useRelatedSkills = (skillName, isProgramming = false) => {
+export const useRelatedSkills = (skillName) => {
   return useMemo(() => {
     if (!skillName || !softskillsData.skills) return [];
 
@@ -45,5 +44,5 @@ export const useRelatedSkills = (skillName, isProgramming = false) => {
     }
 
     return relatedSkills.slice(0, 3); // Ambil max 3 skills
-  }, [skillName, isProgramming]);
+  }, [skillName]);
 };

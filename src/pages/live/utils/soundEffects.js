@@ -59,7 +59,7 @@ export const playSendSound = () => {
 
     osc.start(now);
     osc.stop(now + 0.1);
-  } catch (err) {
+  } catch {
     // Ignore audio autoplay restrictions
   }
 };
@@ -88,7 +88,7 @@ export const playReceiveSound = () => {
 
     osc.start(now);
     osc.stop(now + 0.13);
-  } catch (err) {
+  } catch {
     // Ignore audio error
   }
 };
@@ -127,7 +127,7 @@ export const playMentionSound = () => {
     gain2.connect(ctx.destination);
     osc2.start(now + 0.08);
     osc2.stop(now + 0.3);
-  } catch (err) {
+  } catch {
     // Ignore audio error
   }
 };

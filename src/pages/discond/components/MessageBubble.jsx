@@ -1,7 +1,7 @@
 import React from 'react';
 import PresenceDot from './PresenceDot';
 
-const MessageBubble = ({ msg, member, sameAuthor }) => {
+const MessageBubble = ({ msg, sameAuthor }) => {
   const time = msg.created_at ? new Date(msg.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '';
   return (
     <div className={`flex space-x-3 p-2 ${sameAuthor ? 'mt-1' : ''}`}>

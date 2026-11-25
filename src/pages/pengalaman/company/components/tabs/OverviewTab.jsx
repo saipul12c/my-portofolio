@@ -2,11 +2,7 @@ import { motion } from "framer-motion";
 import { containerVariants } from "../../animations/variants";
 
 const OverviewTab = ({ 
-  companyData, 
-  activeGalleryImage, 
-  setActiveGalleryImage, 
-  autoPlay, 
-  setAutoPlay 
+  companyData
 }) => {
   if (!companyData?.info) {
     return <div className="text-gray-400">Tidak ada data perusahaan</div>;

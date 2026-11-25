@@ -120,7 +120,7 @@ export function sanitizeFilename(filename) {
   if (!filename || typeof filename !== 'string') return 'download';
   
   return filename
-    .replace(/[^a-z0-9_\-\.]/gi, '_') // Only allow alphanumeric, underscore, dash, dot
+    .replace(/[^a-z0-9_\-.]/gi, '_') // Only allow alphanumeric, underscore, dash, dot
     .replace(/_{2,}/g, '_') // Remove consecutive underscores
     .replace(/^[._]+|[._]+$/g, '') // Remove leading/trailing dots and underscores
     .toLowerCase()
@@ -222,7 +222,7 @@ export function validateVideoSource(src) {
       isLocal,
       sanitizedSrc: isValid ? parsed.href : null
     };
-  } catch (err) {
+  } catch {
     return { isValid: false, isLocal: false, sanitizedSrc: null };
   }
 }

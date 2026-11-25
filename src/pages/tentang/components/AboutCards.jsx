@@ -140,7 +140,7 @@ const InteractiveCard = ({ children, className = "", colors }) => {
   );
 };
 
-function AboutCards({ cards = [], imageSrc }) {
+function AboutCards({ cards = [] }) {
   if (!cards.length) return null;
 
   return (
