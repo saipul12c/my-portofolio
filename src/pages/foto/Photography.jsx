@@ -1,6 +1,5 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import Maintenance from "../errors/Maintenance";
 import { getSynchronizedPhotos } from "./utils/syncGalleryToPhotos";
 
 import BackgroundGlow from "./foto/BackgroundGlow";
@@ -23,8 +22,6 @@ export default function Photography() {
   const [viewMode, setViewMode] = useState("grid");
   const galleryRef = useRef(null);
   const photosPerPage = 9;
-
-  const isMaintenance = false;
 
   // 🔍 Filter dan sort optimal
   const filteredAndSortedPhotos = useMemo(() => {
@@ -146,8 +143,6 @@ export default function Photography() {
     setSearchTerm("");
     setCurrentPage(1);
   }, []);
-
-  if (isMaintenance) return <Maintenance />;
 
   return (
     <main className="min-h-screen bg-[var(--color-gray-900)] text-white flex flex-col items-center px-4 sm:px-6 md:px-8 lg:px-20 py-6 md:py-10 lg:py-16 relative overflow-hidden">

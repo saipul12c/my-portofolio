@@ -129,6 +129,23 @@ export const setKnowledgeBaseBlogs = (blogs = []) => {
   }
 };
 
+// Cache status Maintenance dinamis dari Supabase / MaintenanceContext
+let runtimeMaintenanceStatus = null;
+export const setMaintenanceStatusData = (snapshot = null) => {
+  if (snapshot && typeof snapshot === 'object') {
+    runtimeMaintenanceStatus = snapshot;
+  }
+};
+
+export const getDynamicMaintenanceData = () => {
+  const base = maintenanceData || {};
+  if (!runtimeMaintenanceStatus) return base;
+  return {
+    ...base,
+    ...runtimeMaintenanceStatus,
+  };
+};
+
 // Cache room diskusi dinamis dari Live Room / Supabase
 let runtimeDiscussionMessages = [];
 export const setDiscussionRoomData = (messages = []) => {
@@ -251,7 +268,7 @@ export const getUnifiedKnowledgeBase = () => {
     streamingUser: streamingUserData || {},
     discussionRoom: getDiscussionRoomData(),
     comingsoon: extractArray(comingSoonData),
-    maintenance: maintenanceData || {},
+    maintenance: getDynamicMaintenanceData(),
     qodam: extractArray(qodamData),
     zodiac: extractArray(zodiacData),
     academic: {

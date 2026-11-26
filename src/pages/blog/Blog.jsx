@@ -7,6 +7,7 @@ import { useBlogFilters } from "./hooks/useBlogFilters";
 import { useDebounce } from "../../hooks/useDebounce";
 import { POSTS_PER_PAGE } from "./utils/constants";
 import { fetchAllPosts, subscribeToBlogPosts, formatSupabasePost } from "./services/blogSupabase";
+import { normalizeAuthorSlug } from "./services/authorProfileService";
 import blogService from "./helpers/BlogService";
 
 // Import komponen modular
@@ -114,7 +115,7 @@ export default function Blog() {
   // Event handlers
   const handleAuthorClick = (e, author) => {
     e.stopPropagation();
-    const slug = author.toLowerCase().replace(/\s+/g, '-');
+    const slug = normalizeAuthorSlug(author);
     navigate(`/blog/authors/${slug}`, {
       state: { authorName: author }
     });

@@ -25,7 +25,7 @@ import {
   ShieldCheck,
   Hash
 } from 'lucide-react';
-import { supabase } from '../../../lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from '../../../lib/supabaseClient';
 import { useAchievements, ACHIEVEMENTS } from '../hooks/useAchievements';
 
 const Profile = () => {
@@ -42,6 +42,10 @@ const Profile = () => {
 
   useEffect(() => {
     const loadUserData = async () => {
+      if (!isSupabaseConfigured || !supabase) {
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       try {
         let currentEmail = null;
@@ -68,18 +72,36 @@ const Profile = () => {
 
         const targetEmail = email || currentEmail;
         if (targetEmail) {
-          const { data, error } = await supabase.from('users').select('*').eq('email', targetEmail);
-          if (!error && data?.length > 0) {
-            const u = data[0];
+          let u = null;
+          const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('email', targetEmail)
+            .maybeSingle();
+
+          if (!error && data) {
+            u = data;
+          } else {
+            // Fallback ke RPC profil publik jika melihat profil user lain (email dilindungi RLS)
+            const nameGuess = decodeURIComponent(targetEmail).split('@')[0];
+            const { data: pubRows } = await supabase
+              .rpc('get_public_profiles')
+              .or(`nama.ilike.${nameGuess},id.eq.${targetEmail}`);
+            if (Array.isArray(pubRows) && pubRows.length > 0) {
+              u = pubRows[0];
+            }
+          }
+
+          if (u) {
             const role = u.role?.toUpperCase() || 'USER';
             const profile = {
               id: u.id,
               nama: u.nama,
-              email: u.email,
+              email: u.email || 'Privasi Dilindungi',
               role,
               roleName: role.replace('_', ' '),
               messageCount: parseInt(u.message_count) || 0,
-              joinDate: u.tanggal_daftar || 'N/A',
+              joinDate: u.tanggal_daftar || u.created_at || 'N/A',
               status: u.status || 'aktif',
               bio: u.bio || 'Enter a sophisticated status update...'
             };

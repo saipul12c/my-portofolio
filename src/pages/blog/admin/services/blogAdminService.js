@@ -4,8 +4,20 @@
  * Mendukung penyimpanan lokal persisten instan + sinkronisasi dua arah ke Supabase.
  */
 
-import { supabase } from '../../../../lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from '../../../../lib/supabaseClient';
 import { getDynamicMetrics, setDynamicMetrics } from '../../services/blogSupabase';
+import { getAdminSession } from './blogAdminAuth';
+
+const canSyncCloudWrite = async () => {
+  if (!isSupabaseConfigured || !supabase) return false;
+  if (getAdminSession()?.authMode !== 'supabase') return false;
+  try {
+    const { data, error } = await supabase.auth.getUser();
+    return !error && Boolean(data?.user);
+  } catch {
+    return false;
+  }
+};
 
 const STORAGE_POSTS_KEY = 'blog_custom_posts';
 const STORAGE_CATEGORIES_KEY = 'blog_custom_categories';
@@ -248,7 +260,7 @@ export const getAdminPosts = async () => {
 
   // 2. Jika Supabase aktif, coba sinkronkan data terbaru dari server
   try {
-    if (supabase) {
+    if (isSupabaseConfigured && supabase) {
       const { data, error } = await supabase
         .from('blog_posts')
         .select('*')
@@ -434,42 +446,42 @@ export const createPost = async (postData) => {
     totalRatings: newPost.totalRatings
   });
 
-  // 2. Simpan ke Supabase jika tersedia
-  try {
-    if (supabase) {
-      await supabase.from('blog_posts').insert({
-        slug: newPost.slug,
-        title: newPost.title,
-        meta_title: newPost.metaTitle,
-        meta_description: newPost.metaDescription,
-        excerpt: newPost.excerpt,
-        content: newPost.content,
-        author: newPost.author,
-        author_avatar: newPost.authorAvatar,
-        author_bio: newPost.authorBio,
-        author_link: newPost.authorLink,
-        date: newPost.date,
-        updated_at: newPost.updatedAt,
-        status: newPost.status,
-        thumbnail: newPost.thumbnail,
-        image_full: newPost.imageFull,
-        category: newPost.category,
-        tags: newPost.tags,
-        read_time: newPost.readTime,
-        word_count: newPost.wordCount,
-        reading_level: newPost.readingLevel,
-        views: newPost.views,
-        likes: newPost.likes,
-        shares: newPost.shares,
-        rating: newPost.rating,
-        total_ratings: newPost.totalRatings,
-        featured: newPost.featured,
-        cover_video: newPost.coverVideo || null,
-        gallery: Array.isArray(newPost.gallery) ? newPost.gallery : []
-      });
+  // 2. Simpan ke Supabase hanya jika sesi Admin Supabase terautentikasi
+  if (await canSyncCloudWrite()) {
+    const { error } = await supabase.from('blog_posts').insert({
+      slug: newPost.slug,
+      title: newPost.title,
+      meta_title: newPost.metaTitle,
+      meta_description: newPost.metaDescription,
+      excerpt: newPost.excerpt,
+      content: newPost.content,
+      author: newPost.author,
+      author_avatar: newPost.authorAvatar,
+      author_bio: newPost.authorBio,
+      author_link: newPost.authorLink,
+      date: newPost.date,
+      updated_at: newPost.updatedAt,
+      status: newPost.status,
+      thumbnail: newPost.thumbnail,
+      image_full: newPost.imageFull,
+      category: newPost.category,
+      tags: newPost.tags,
+      read_time: newPost.readTime,
+      word_count: newPost.wordCount,
+      reading_level: newPost.readingLevel,
+      views: newPost.views,
+      likes: newPost.likes,
+      shares: newPost.shares,
+      rating: newPost.rating,
+      total_ratings: newPost.totalRatings,
+      featured: newPost.featured,
+      cover_video: newPost.coverVideo || null,
+      gallery: Array.isArray(newPost.gallery) ? newPost.gallery : []
+    });
+    if (error) {
+      console.warn('⚠️ Gagal simpan post ke Supabase:', error.message);
+      throw new Error(`Tersimpan di lokal, namun gagal sinkron ke Supabase: ${error.message}`);
     }
-  } catch (err) {
-    console.warn('⚠️ Gagal simpan post ke Supabase (tersimpan secara lokal):', err);
   }
 
   return newPost;
@@ -530,39 +542,40 @@ export const updatePost = async (identifier, updatedFields) => {
     });
   }
 
-  // Sync ke Supabase jika aktif
-  try {
-    if (supabase) {
-      await supabase
-        .from('blog_posts')
-        .update({
-          title: merged.title,
-          slug: merged.slug,
-          meta_title: merged.metaTitle,
-          meta_description: merged.metaDescription,
-          excerpt: merged.excerpt,
-          content: merged.content,
-          author: merged.author,
-          author_avatar: merged.authorAvatar,
-          author_bio: merged.authorBio,
-          author_link: merged.authorLink,
-          updated_at: merged.updatedAt,
-          status: merged.status,
-          thumbnail: merged.thumbnail,
-          image_full: merged.imageFull,
-          category: merged.category,
-          tags: merged.tags,
-          read_time: merged.readTime,
-          word_count: merged.wordCount,
-          reading_level: merged.readingLevel,
-          featured: merged.featured,
-          cover_video: merged.coverVideo || null,
-          gallery: Array.isArray(merged.gallery) ? merged.gallery : []
-        })
-        .or(`id.eq.${current.id},slug.eq.${current.slug}`);
+  // Sync ke Supabase jika sesi Admin Supabase terautentikasi
+  if (await canSyncCloudWrite()) {
+    const { error } = await supabase
+      .from('blog_posts')
+      .update({
+        title: merged.title,
+        slug: merged.slug,
+        meta_title: merged.metaTitle,
+        meta_description: merged.metaDescription,
+        excerpt: merged.excerpt,
+        content: merged.content,
+        author: merged.author,
+        author_avatar: merged.authorAvatar,
+        author_bio: merged.authorBio,
+        author_link: merged.authorLink,
+        updated_at: merged.updatedAt,
+        status: merged.status,
+        thumbnail: merged.thumbnail,
+        image_full: merged.imageFull,
+        category: merged.category,
+        tags: merged.tags,
+        read_time: merged.readTime,
+        word_count: merged.wordCount,
+        reading_level: merged.readingLevel,
+        featured: merged.featured,
+        cover_video: merged.coverVideo || null,
+        gallery: Array.isArray(merged.gallery) ? merged.gallery : []
+      })
+      .eq('slug', current.slug);
+
+    if (error) {
+      console.warn('⚠️ Gagal update post ke Supabase:', error.message);
+      throw new Error(`Tersimpan di lokal, namun gagal sinkron update ke Supabase: ${error.message}`);
     }
-  } catch (err) {
-    console.warn('⚠️ Gagal update post ke Supabase (tersimpan secara lokal):', err);
   }
 
   return merged;
@@ -579,16 +592,17 @@ export const deletePost = async (identifier) => {
   const filtered = posts.filter(p => p.id !== identifier && p.slug !== identifier);
   localStorage.setItem(STORAGE_POSTS_KEY, JSON.stringify(filtered));
 
-  // Sync delete ke Supabase
-  try {
-    if (supabase) {
-      await supabase
-        .from('blog_posts')
-        .delete()
-        .or(`id.eq.${target.id},slug.eq.${target.slug}`);
+  // Sync delete ke Supabase jika sesi Admin Supabase terautentikasi
+  if (await canSyncCloudWrite()) {
+    const { error } = await supabase
+      .from('blog_posts')
+      .delete()
+      .eq('slug', target.slug);
+
+    if (error) {
+      console.warn('⚠️ Gagal delete post dari Supabase:', error.message);
+      throw new Error(`Dihapus dari lokal, namun gagal hapus di Supabase: ${error.message}`);
     }
-  } catch (err) {
-    console.warn('⚠️ Gagal delete post dari Supabase (terhapus secara lokal):', err);
   }
 
   return true;
@@ -700,7 +714,7 @@ export const getAllComments = async () => {
 
   // Jika Supabase aktif, ambil juga dari tabel blog_comments
   try {
-    if (supabase) {
+    if (isSupabaseConfigured && supabase) {
       const { data, error } = await supabase
         .from('blog_comments')
         .select('*')
@@ -749,9 +763,13 @@ export const deleteAdminComment = async (commentId, postSlug) => {
       }
     }
 
-    // 3. Sync Supabase
-    if (supabase) {
-      await supabase.from('blog_comments').delete().eq('id', commentId);
+    // 3. Sync Supabase jika sesi Admin Supabase terautentikasi dan ID valid (bukan ID lokal sementara)
+    if (await canSyncCloudWrite() && commentId && !String(commentId).startsWith('local_')) {
+      const { error } = await supabase.from('blog_comments').delete().eq('id', commentId);
+      if (error) {
+        console.warn('Error deleting comment from Supabase:', error.message);
+        return false;
+      }
     }
     return true;
   } catch (e) {
@@ -939,12 +957,12 @@ export const bulkDeletePosts = async (identifiers = []) => {
 
   localStorage.setItem(STORAGE_POSTS_KEY, JSON.stringify(remaining));
 
-  if (supabase && toDelete.length > 0) {
-    try {
-      const slugs = toDelete.map(p => p.slug);
-      await supabase.from('blog_posts').delete().in('slug', slugs);
-    } catch (err) {
-      console.warn('Gagal bulk delete dari Supabase:', err);
+  if (toDelete.length > 0 && await canSyncCloudWrite()) {
+    const slugs = toDelete.map(p => p.slug);
+    const { error } = await supabase.from('blog_posts').delete().in('slug', slugs);
+    if (error) {
+      console.warn('Gagal bulk delete dari Supabase:', error.message);
+      throw new Error(`Dihapus dari lokal, namun gagal bulk delete di Supabase: ${error.message}`);
     }
   }
 
@@ -971,14 +989,14 @@ export const bulkUpdatePostStatus = async (identifiers = [], newStatus = 'publis
 
   localStorage.setItem(STORAGE_POSTS_KEY, JSON.stringify(updated));
 
-  if (supabase) {
-    try {
-      const slugs = posts.filter(p => idSet.has(String(p.id)) || idSet.has(String(p.slug))).map(p => p.slug);
-      if (slugs.length > 0) {
-        await supabase.from('blog_posts').update({ status: newStatus }).in('slug', slugs);
+  if (await canSyncCloudWrite()) {
+    const slugs = posts.filter(p => idSet.has(String(p.id)) || idSet.has(String(p.slug))).map(p => p.slug);
+    if (slugs.length > 0) {
+      const { error } = await supabase.from('blog_posts').update({ status: newStatus }).in('slug', slugs);
+      if (error) {
+        console.warn('Gagal bulk update status ke Supabase:', error.message);
+        throw new Error(`Tersimpan di lokal, namun gagal bulk update status di Supabase: ${error.message}`);
       }
-    } catch (err) {
-      console.warn('Gagal bulk update status ke Supabase:', err);
     }
   }
 
@@ -1005,14 +1023,14 @@ export const bulkUpdatePostCategory = async (identifiers = [], newCategory) => {
 
   localStorage.setItem(STORAGE_POSTS_KEY, JSON.stringify(updated));
 
-  if (supabase) {
-    try {
-      const slugs = posts.filter(p => idSet.has(String(p.id)) || idSet.has(String(p.slug))).map(p => p.slug);
-      if (slugs.length > 0) {
-        await supabase.from('blog_posts').update({ category: newCategory }).in('slug', slugs);
+  if (await canSyncCloudWrite()) {
+    const slugs = posts.filter(p => idSet.has(String(p.id)) || idSet.has(String(p.slug))).map(p => p.slug);
+    if (slugs.length > 0) {
+      const { error } = await supabase.from('blog_posts').update({ category: newCategory }).in('slug', slugs);
+      if (error) {
+        console.warn('Gagal bulk update category ke Supabase:', error.message);
+        throw new Error(`Tersimpan di lokal, namun gagal bulk update kategori di Supabase: ${error.message}`);
       }
-    } catch (err) {
-      console.warn('Gagal bulk update category ke Supabase:', err);
     }
   }
 

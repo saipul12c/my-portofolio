@@ -179,10 +179,10 @@ Psikologi game menawarkan wawasan mendalam tentang motivasi manusia yang dapat m
 Tantangan terbesar bukanlah teknis, tetapi paradigmatik: memindahkan fokus dari ''bagaimana mengajar'' ke ''bagaimana orang belajar''. Dengan memahami dan menerapkan prinsip-prinsip psikologi game, kita dapat menciptakan sistem pendidikan yang tidak hanya lebih efektif dalam transfer pengetahuan, tetapi juga lebih manusiawi dalam memenuhi kebutuhan psikologis dasar pembelajar.
 
 Game bukanlah solusi ajaib untuk semua masalah pendidikan, tetapi mereka adalah lensa yang kuat untuk memahami motivasi manusia dan kerangka yang efektif untuk mendesain pengalaman pembelajaran di abad ke-21.',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2026-03-10',
   '2026-03-15',
   'published',
@@ -459,10 +459,10 @@ Masa depan bukan tentang menggantikan guru dengan teknologi, tetapi tentang memb
 Tantangan transformasi ini besar, tetapi potensi hasilnya jauh lebih besar: guru yang lebih efektif, siswa yang lebih terinspirasi, dan sistem pendidikan yang benar-benar mempersiapkan generasi muda untuk masa depan yang kompleks dan penuh peluang.
 
 Perjalanan menuju masa depan profesi guru telah dimulai. Pertanyaannya bukan apakah kita akan berubah, tetapi bagaimana kita akan membentuk perubahan tersebut. Pilihan ada di tangan kita: apakah kita akan menjadi korban perubahan atau arsitek masa depan yang kita inginkan?',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2026-04-05',
   '2026-04-12',
   'published',
@@ -768,10 +768,10 @@ Game edukasi terbaik adalah yang menghormati kecerdasan pembelajar, memberikan t
 Dengan pendekatan yang tepat, game edukasi dapat mengubah pembelajaran dari tugas yang membosankan menjadi petualangan yang menarik, dari transfer pengetahuan pasif menjadi konstruksi pengetahuan aktif, dan dari pengalaman yang terisolasi menjadi perjalanan kolaboratif.
 
 Masa depan pendidikan tidak akan seluruhnya berupa game, tetapi game akan menjadi bagian integral dari ekosistem pembelajaran yang kaya dan beragam. Tantangannya besar, tetapi potensinya untuk mengubah cara kita belajar dan mengajar lebih besar lagi.',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2026-05-20',
   '2026-05-28',
   'published',
@@ -1075,10 +1075,10 @@ Kurikulum yang relevan untuk abad ke-21 harus menyeimbangkan pengetahuan konten 
 Yang paling penting, kurikulum baru harus mengakui dan menghargai kemanusiaan pembelajar—potensi unik mereka, minat mereka, dan hak mereka untuk menjadi agen aktif dalam pendidikan mereka sendiri. Kurikulum bukanlah sesuatu yang dilakukan kepada siswa, tetapi sesuatu yang dilakukan dengan dan oleh siswa.
 
 Tantangan implementasi besar, tetapi alternatifnya—melanjutkan dengan kurikulum yang semakin tidak relevan—jauh lebih berisiko. Dengan visi yang jelas, kepemimpinan yang berani, kolaborasi yang tulus, dan komitmen untuk pembelajaran berkelanjutan, kita dapat menciptakan sistem pendidikan yang benar-benar mempersiapkan generasi muda untuk masa depan yang penuh tantangan dan peluang.',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2026-06-15',
   '2026-06-22',
   'published',
@@ -1396,10 +1396,10 @@ Tantangan etika dalam edtech kompleks dan saling terkait, tetapi tidak dapat dia
 Tujuan akhir bukanlah untuk menghambat inovasi, tetapi untuk mengarahkannya ke jalur yang bermanfaat dan adil. Teknologi pendidikan memiliki potensi luar biasa untuk memperluas akses, mempersonalisasi pembelajaran, dan mengembangkan keterampilan abad ke-21—tetapi hanya jika dikembangkan dan diimplementasikan dengan integritas etika yang kuat.
 
 Sebagai pendidik, developer, pembuat kebijakan, orang tua, dan siswa, kita semua memiliki peran dalam membentuk masa depan edtech. Mari kita pastikan bahwa masa depan itu etis, adil, dan benar-benar melayani kebutuhan semua pembelajar.',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2026-07-10',
   '2026-07-18',
   'published',

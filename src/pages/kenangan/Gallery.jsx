@@ -1,7 +1,6 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import Maintenance from "../errors/Maintenance";
 
 import GalleryShorts from "./gallery/GalleryShorts";
 import GalleryPhotos from "./gallery/GalleryPhotos";
@@ -25,7 +24,6 @@ export default function Gallery() {
   const [filterSettings, setFilterSettings] = useState({ searchTerm: "", tags: [] });
   const [searchParams, setSearchParams] = useSearchParams();
   const videoRef = useRef(null);
-  const isMaintenance = false;
 
   const { shorts, images, videos, albums, allTags, allMedia, filterMedia } = useGalleryData();
 
@@ -123,8 +121,6 @@ export default function Gallery() {
     setSelectedMedia(media);
     setCurrentIndex(0);
   }, []);
-
-  if (isMaintenance) return <Maintenance />;
 
   return (
     <main className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center px-6 sm:px-10 md:px-20 py-24 relative overflow-hidden">

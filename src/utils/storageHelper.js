@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabaseClient';
+import { assertSupabase } from '../lib/supabaseClient';
 
 /**
  * Upload a file to a Supabase bucket and return its public URL.
@@ -15,13 +15,14 @@ export const uploadMedia = async (file, bucket = 'media', folder = '') => {
     const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
     const filePath = folder ? `${folder}/${fileName}` : fileName;
 
-    const { error: uploadError } = await supabase.storage
+    const client = assertSupabase();
+    const { error: uploadError } = await client.storage
       .from(bucket)
       .upload(filePath, file);
 
     if (uploadError) throw uploadError;
 
-    const { data } = supabase.storage
+    const { data } = client.storage
       .from(bucket)
       .getPublicUrl(filePath);
 
@@ -41,11 +42,15 @@ export const deleteMedia = async (url, bucket = 'media') => {
   try {
     // Extract path from public URL
     // Format: https://[project].supabase.co/storage/v1/object/public/[bucket]/[path]
+    if (!url || typeof url !== 'string') return;
     const urlParts = url.split(`/storage/v1/object/public/${bucket}/`);
     if (urlParts.length < 2) return;
 
-    const filePath = urlParts[1];
-    const { error } = await supabase.storage
+    const rawPath = urlParts[1].split('?')[0];
+    if (!rawPath) return;
+    const filePath = decodeURIComponent(rawPath);
+    const client = assertSupabase();
+    const { error } = await client.storage
       .from(bucket)
       .remove([filePath]);
 

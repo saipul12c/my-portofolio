@@ -14,7 +14,7 @@ import { getAnimationByInput, getLoadingVariants } from '../utils/animationMappe
 import { readStoredUploadedData } from '../utils/fileProcessor.js';
 import { storageService } from '../utils/storageService';
 import { logResponseQuality, saipulAnalytics } from '../utils/analytics';
-import { supabase, isSupabaseConfigured } from '../../../../../../lib/supabaseClient';
+import { isSupabaseConfigured, subscribeOnlinePresence } from '../../../../../../lib/supabaseClient';
 import { recordAITopic } from '../../../../../../utils/ai/sessionMemory';
 import { getUnifiedKnowledgeBase } from '../../../../../../utils/ai/knowledgeBase';
 import { scheduleSilentBenchmarkLearning } from '../../../../../../utils/ai/benchmarkLearner.js';
@@ -105,34 +105,15 @@ export function useChatbot(knowledgeBase, knowledgeStats) {
   useEffect(() => {
     if (!isSupabaseConfigured) return;
 
-    let channel = null;
-    try {
-      // Gunakan channel 'online-users' sesuai dengan implementasi di Live.jsx
-      channel = supabase.channel('online-users');
-
-      channel
-        .on('presence', { event: 'sync' }, () => {
-          const state = channel.presenceState() || {};
-          // Ambil semua presence dan filter berdasarkan role admin/moderator
-          const onlineAgents = Object.values(state).flat().filter(
-            presence => presence && (presence.role === 'ADMIN' || presence.role === 'SUPER_ADMIN' || presence.role === 'MODERATOR')
-          );
-          setIsAgentOnline(onlineAgents.length > 0);
-        })
-        .subscribe();
-    } catch (err) {
-      console.warn('Agent presence subscription failed:', err);
-    }
-
-    return () => {
-      if (channel) {
-        try {
-          supabase.removeChannel(channel);
-        } catch {
-          // Abaikan error cleanup channel
-        }
+    return subscribeOnlinePresence({
+      onSync: (state) => {
+        // Ambil semua presence dan filter berdasarkan role admin/moderator
+        const onlineAgents = Object.values(state || {}).flat().filter(
+          presence => presence && (presence.role === 'ADMIN' || presence.role === 'SUPER_ADMIN' || presence.role === 'MODERATOR')
+        );
+        setIsAgentOnline(onlineAgents.length > 0);
       }
-    };
+    });
   }, []);
 
   const [messages, setMessages] = useState(() => {

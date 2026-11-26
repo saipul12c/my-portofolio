@@ -1,7 +1,6 @@
 // About.jsx
 import React, { useMemo } from "react";
 import { Helmet } from "react-helmet";
-import Maintenance from "../errors/Maintenance";
 import LoadingScreen from "./components/LoadingScreen";
 
 import AboutHeader from "./components/AboutHeader";
@@ -36,13 +35,6 @@ export default function About() {
       featuredHobbies: (hobbiesData || []).slice(0, 6),
     };
   }, []);
-
-  // 🔧 Toggle mode maintenance
-  const isMaintenance = false;
-
-  if (isMaintenance) {
-    return <Maintenance />;
-  }
 
   if (!profile || cards.length === 0) {
     return <LoadingScreen />;

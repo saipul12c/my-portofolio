@@ -1,4 +1,4 @@
-import { supabase } from '../../../lib/supabaseClient';
+import { assertSupabase } from '../../../lib/supabaseClient';
 
 const mapCommunity = (c) => ({
   ...c,
@@ -22,7 +22,8 @@ const mapCommunity = (c) => ({
 
 export const communities = {
   list: async () => {
-    const { data, error } = await supabase
+    const client = assertSupabase();
+    const { data, error } = await client
       .from('communities')
       .select('*')
       .order('name', { ascending: true });
@@ -32,7 +33,8 @@ export const communities = {
   },
 
   get: async (id) => {
-    const { data, error } = await supabase
+    const client = assertSupabase();
+    const { data, error } = await client
       .from('communities')
       .select('*')
       .eq('id', id)
@@ -43,7 +45,8 @@ export const communities = {
   },
 
   create: async (communityData) => {
-    const { data, error } = await supabase
+    const client = assertSupabase();
+    const { data, error } = await client
       .from('communities')
       .insert([{ ...communityData, created_at: new Date().toISOString() }])
       .select();
@@ -53,7 +56,8 @@ export const communities = {
   },
 
   update: async (id, communityData) => {
-    const { data, error } = await supabase
+    const client = assertSupabase();
+    const { data, error } = await client
       .from('communities')
       .update({ ...communityData, updated_at: new Date().toISOString() })
       .eq('id', id)
@@ -64,7 +68,8 @@ export const communities = {
   },
 
   delete: async (id) => {
-    const { error } = await supabase
+    const client = assertSupabase();
+    const { error } = await client
       .from('communities')
       .delete()
       .eq('id', id);
@@ -74,7 +79,8 @@ export const communities = {
   },
 
   getStats: async () => {
-    const { data, error } = await supabase
+    const client = assertSupabase();
+    const { data, error } = await client
       .from('communities')
       .select('members, category, is_active');
     

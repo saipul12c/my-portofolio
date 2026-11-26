@@ -12,6 +12,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { isSupabaseConfigured } from '../../../../lib/supabaseClient';
+import { getAdminSession } from '../services/blogAdminAuth';
 
 export default function DashboardNavbar({
   activeTabTitle,
@@ -22,7 +23,9 @@ export default function DashboardNavbar({
   onEditPost,
   lastUpdatedTime
 }) {
-  const isOnline = isSupabaseConfigured;
+  const adminSession = getAdminSession();
+  const isCloudAuth = Boolean(isSupabaseConfigured && adminSession?.authMode === 'supabase');
+  const syncMode = !isSupabaseConfigured ? 'local' : (isCloudAuth ? 'cloud' : 'readonly');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -206,12 +209,26 @@ export default function DashboardNavbar({
 
         {/* Status Sinkronisasi Supabase vs Local */}
         <div
-          title={isOnline ? "Terhubung ke Supabase Cloud Database (Sinkronisasi Otomatis)" : "Penyimpanan Browser Lokal (Offline-first / Instant Storage)"}
+          title={
+            syncMode === 'cloud'
+              ? 'Terhubung ke Supabase Cloud (Terautentikasi Admin — Sinkronisasi Cloud Aktif)'
+              : syncMode === 'readonly'
+                ? 'Supabase terhubung (Mode Login Lokal — perubahan hanya tersimpan di browser ini)'
+                : 'Penyimpanan Browser Lokal (Offline-first / Instant Storage)'
+          }
           className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-slate-950/70 border border-white/10 text-xs"
         >
-          <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-400 animate-pulse' : 'bg-cyan-400'}`} />
+          <span
+            className={`w-2 h-2 rounded-full ${
+              syncMode === 'cloud'
+                ? 'bg-emerald-400 animate-pulse'
+                : syncMode === 'readonly'
+                  ? 'bg-amber-400'
+                  : 'bg-cyan-400'
+            }`}
+          />
           <span className="text-gray-300 text-[10px] font-mono">
-            {isOnline ? 'Supabase' : 'Local'}
+            {syncMode === 'cloud' ? 'Supabase' : syncMode === 'readonly' ? 'Mode Lokal' : 'Local'}
           </span>
         </div>
 

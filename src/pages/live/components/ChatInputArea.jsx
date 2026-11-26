@@ -1,15 +1,15 @@
 import React, { lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  AlertTriangle, 
-  Edit2, 
-  Reply, 
-  Plus, 
-  Paperclip, 
-  Lock, 
-  Smile, 
-  Send, 
-  ShieldAlert, 
+import {
+  AlertTriangle,
+  Edit2,
+  Reply,
+  Plus,
+  Paperclip,
+  Lock,
+  Smile,
+  Send,
+  ShieldAlert,
   X,
   Code,
   Bold,
@@ -74,7 +74,7 @@ export const ChatInputArea = ({
   return (
     <div className="w-full">
       {isMuted ? (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="p-6 sm:p-8 bg-orange-500/10 border border-orange-500/20 rounded-[2rem] text-center"
@@ -87,8 +87,8 @@ export const ChatInputArea = ({
             Sinyal Anda dihentikan sementara hingga {new Date(user.muteUntil).toLocaleString()}
           </p>
           <div className="bg-black/20 p-4 rounded-xl border border-white/5 inline-block text-left max-w-md mx-auto">
-             <span className="text-[9px] font-black uppercase text-orange-400 italic block mb-1">Alasan Moderator:</span>
-             <p className="text-xs text-orange-200/80 italic">"{user.muteReason || 'Peringatan standar komunitas.'}"</p>
+            <span className="text-[9px] font-black uppercase text-orange-400 italic block mb-1">Alasan Moderator:</span>
+            <p className="text-xs text-orange-200/80 italic">"{user.muteReason || 'Peringatan standar komunitas.'}"</p>
           </div>
         </motion.div>
       ) : (
@@ -96,7 +96,7 @@ export const ChatInputArea = ({
           {/* Reply / Edit Context Bar */}
           <AnimatePresence>
             {(replyTo || editingMessage) && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
@@ -116,8 +116,8 @@ export const ChatInputArea = ({
                       </p>
                     </div>
                   </div>
-                  <button 
-                    onClick={editingMessage ? cancelEdit : cancelReply} 
+                  <button
+                    onClick={editingMessage ? cancelEdit : cancelReply}
                     className="p-1.5 sm:p-2 hover:bg-[var(--theme-surface)] rounded-xl transition-colors text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] shrink-0"
                     title="Batalkan"
                   >
@@ -153,7 +153,7 @@ export const ChatInputArea = ({
           </AnimatePresence>
 
           {/* Markdown & AI Quick Format Bar (Mobile-friendly horizontal scroll) */}
-          <div className="flex items-center gap-1.5 mb-2 px-1 max-w-4xl mx-auto w-full overflow-x-auto scrollbar-none py-0.5">
+          <div className="flex items-center gap-1 sm:gap-1.5 mb-1.5 sm:mb-2 px-0.5 sm:px-1 max-w-4xl mx-auto w-full overflow-x-auto scrollbar-none py-0.5">
             <button
               type="button"
               onClick={() => insertText('```javascript\n// Tulis kode disini\n```')}
@@ -200,32 +200,32 @@ export const ChatInputArea = ({
           </div>
 
           {/* Input Form */}
-          <form 
-            onSubmit={editingMessage ? (e) => { e.preventDefault(); handleSaveEdit(); } : handleSendMessage} 
-            className="flex items-end gap-2 sm:gap-3 max-w-4xl mx-auto w-full"
+          <form
+            onSubmit={editingMessage ? (e) => { e.preventDefault(); handleSaveEdit(); } : handleSendMessage}
+            className="flex items-end gap-1.5 sm:gap-2 lg:gap-3 max-w-4xl mx-auto w-full"
           >
             {/* Attachment Button */}
             <div className="flex flex-col gap-2 relative shrink-0">
-               <button 
-                 type="button" 
-                 onClick={() => fileInputRef.current?.click()}
-                 disabled={uploadingMedia}
-                 className="w-11 h-11 sm:w-12 sm:h-12 bg-[var(--theme-surface-hover)] hover:bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] transition-all text-[var(--theme-text-muted)] hover:text-cyan-400 active:scale-95 flex items-center justify-center shadow-sm disabled:opacity-50"
-                 title="Kirim Gambar / Lampiran"
-               >
-                 {uploadingMedia ? (
-                   <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-cyan-400/20 border-t-cyan-400 rounded-full animate-spin" />
-                 ) : (
-                   <Paperclip className="w-4 h-4 sm:w-5 sm:h-5" />
-                 )}
-               </button>
-               <input 
-                 type="file" 
-                 ref={fileInputRef} 
-                 className="hidden" 
-                 accept="image/*" 
-                 onChange={handleFileSelect}
-               />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadingMedia}
+                className="w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 bg-[var(--theme-surface-hover)] hover:bg-[var(--theme-surface)] rounded-xl sm:rounded-2xl border border-[var(--theme-border)] transition-all text-[var(--theme-text-muted)] hover:text-cyan-400 active:scale-95 flex items-center justify-center shadow-sm disabled:opacity-50"
+                title="Kirim Gambar / Lampiran"
+              >
+                {uploadingMedia ? (
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-cyan-400/20 border-t-cyan-400 rounded-full animate-spin" />
+                ) : (
+                  <Paperclip className="w-4 h-4 sm:w-5 sm:h-5" />
+                )}
+              </button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={handleFileSelect}
+              />
             </div>
 
             {/* Message Textarea Container */}
@@ -240,8 +240,8 @@ export const ChatInputArea = ({
               ) : (
                 <>
                   <div className="absolute left-3 sm:left-4 bottom-2.5 sm:bottom-3 z-10" ref={emojiPickerRef}>
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                       className="p-1.5 sm:p-2 hover:bg-[var(--theme-surface-hover)] rounded-xl transition-colors text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] active:scale-95"
                       title="Pilih Emoji"
@@ -255,11 +255,11 @@ export const ChatInputArea = ({
                             Memuat Emoji...
                           </div>
                         }>
-                          <EmojiPicker 
-                            onEmojiClick={handleEmojiClick} 
-                            theme={theme === 'light' ? 'light' : 'dark'} 
-                            width={window.innerWidth < 640 ? 280 : 320} 
-                            height={380} 
+                          <EmojiPicker
+                            onEmojiClick={handleEmojiClick}
+                            theme={theme === 'light' ? 'light' : 'dark'}
+                            width={window.innerWidth < 640 ? 280 : 320}
+                            height={380}
                           />
                         </Suspense>
                       </div>
@@ -280,9 +280,8 @@ export const ChatInputArea = ({
               )}
 
               {/* Character Limit Indicator */}
-              <div className={`absolute right-4 bottom-3 sm:bottom-4 text-[9px] sm:text-[10px] font-black tracking-tight ${
-                newMessage.length > 1000 ? 'text-red-400 font-bold' : 'text-[var(--theme-text-muted)] opacity-60'
-              }`}>
+              <div className={`absolute right-4 bottom-3 sm:bottom-4 text-[9px] sm:text-[10px] font-black tracking-tight ${newMessage.length > 1000 ? 'text-red-400 font-bold' : 'text-[var(--theme-text-muted)] opacity-60'
+                }`}>
                 {newMessage.length}/1000
               </div>
             </div>
@@ -292,13 +291,12 @@ export const ChatInputArea = ({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               type="submit"
-              disabled={sending || (!newMessage.trim() && !systemConfig.maintenance_mode) || 
-                        isLimitReached || isMaintenanceLocked || isCooldownActive}
-              className={`flex-shrink-0 w-11 h-11 sm:w-13 sm:h-13 rounded-2xl sm:rounded-full flex items-center justify-center shadow-xl transition-all ${
-                sending || !newMessage.trim() || isMaintenanceLocked || isCooldownActive
-                  ? 'bg-[var(--theme-surface-hover)] text-[var(--theme-text-muted)] border border-[var(--theme-border)] opacity-60 cursor-not-allowed' 
-                  : 'bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600 text-white shadow-cyan-500/25 cursor-pointer'
-              }`}
+              disabled={sending || (!newMessage.trim() && !systemConfig.maintenance_mode) ||
+                isLimitReached || isMaintenanceLocked || isCooldownActive}
+              className={`flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 lg:w-13 lg:h-13 rounded-xl sm:rounded-2xl lg:rounded-full flex items-center justify-center shadow-xl transition-all ${sending || !newMessage.trim() || isMaintenanceLocked || isCooldownActive
+                ? 'bg-[var(--theme-surface-hover)] text-[var(--theme-text-muted)] border border-[var(--theme-border)] opacity-60 cursor-not-allowed'
+                : 'bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600 text-white shadow-cyan-500/25 cursor-pointer'
+                }`}
               title={editingMessage ? 'Simpan Perubahan' : 'Kirim Sinyal'}
             >
               {sending ? (
@@ -316,7 +314,7 @@ export const ChatInputArea = ({
           {/* Error Banner */}
           <AnimatePresence>
             {error && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
@@ -326,8 +324,8 @@ export const ChatInputArea = ({
                 <span className="text-[10px] sm:text-xs font-bold uppercase text-red-200/80 tracking-wide flex-1">
                   {error}
                 </span>
-                <button 
-                  onClick={() => setError('')} 
+                <button
+                  onClick={() => setError('')}
                   className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] p-1 shrink-0"
                 >
                   <X className="w-4 h-4" />
@@ -337,7 +335,7 @@ export const ChatInputArea = ({
           </AnimatePresence>
 
           {/* Bottom Info Bar: Message Limit & Shortcuts */}
-          <div className="mt-2.5 flex justify-between items-center px-2 sm:px-6">
+          <div className="mt-1.5 sm:mt-2.5 flex justify-between items-center px-1 sm:px-4 lg:px-6">
             <div className="flex items-center gap-3">
               <div className="flex flex-col">
                 <span className="text-[9px] uppercase font-black tracking-wider text-[var(--theme-text-muted)]">
@@ -345,10 +343,10 @@ export const ChatInputArea = ({
                 </span>
                 <div className="flex items-center gap-2">
                   <div className="w-16 sm:w-20 h-1.5 bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] rounded-full overflow-hidden">
-                    <motion.div 
+                    <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${Math.min(100, ((user?.messageCount || 0) / limit) * 100)}%` }}
-                      className="h-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.5)]" 
+                      className="h-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.5)]"
                     />
                   </div>
                   <span className="text-[9px] sm:text-[10px] font-black text-cyan-400">

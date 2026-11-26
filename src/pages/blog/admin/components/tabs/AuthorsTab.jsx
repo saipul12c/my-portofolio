@@ -22,7 +22,8 @@ import {
 } from 'lucide-react';
 import { 
   getAuthorProfiles, 
-  saveAuthorProfile 
+  saveAuthorProfile,
+  normalizeAuthorSlug
 } from '../../../services/authorProfileService';
 
 export default function AuthorsTab({ posts = [], setToast }) {
@@ -51,38 +52,67 @@ export default function AuthorsTab({ posts = [], setToast }) {
   const authorList = useMemo(() => {
     const list = {};
 
+    const findMatchingKey = (slug, authorName) => {
+      if (slug && list[slug]) return slug;
+      const normalizedName = String(authorName || '').toLowerCase().trim();
+      if (!normalizedName) return null;
+      return Object.keys(list).find((key) => {
+        const item = list[key];
+        return (
+          item.name?.toLowerCase().trim() === normalizedName ||
+          (slug && normalizeAuthorSlug(item.name) === slug)
+        );
+      }) || null;
+    };
+
     // Ambil dari profil tersimpan
-    Object.values(profiles).forEach(p => {
-      list[p.slug] = {
-        slug: p.slug,
-        name: p.name,
-        avatar: p.avatar,
-        postCount: 0,
-        views: 0,
-        likes: 0,
-        isCustom: true
-      };
+    Object.values(profiles).forEach((p) => {
+      const slug = normalizeAuthorSlug(p.slug || p.name);
+      if (!slug) return;
+      const existingKey = findMatchingKey(slug, p.name);
+      if (existingKey) {
+        list[existingKey] = {
+          ...list[existingKey],
+          name: p.name || list[existingKey].name,
+          avatar: p.avatar || list[existingKey].avatar,
+          isCustom: true
+        };
+      } else {
+        list[slug] = {
+          slug,
+          name: p.name,
+          avatar: p.avatar,
+          postCount: 0,
+          views: 0,
+          likes: 0,
+          isCustom: true
+        };
+      }
     });
 
     // Kumpulkan statistik dari artikel yang ada
     if (Array.isArray(posts)) {
-      posts.forEach(post => {
+      posts.forEach((post) => {
         if (!post.author) return;
-        const slug = post.author.toLowerCase().trim().replace(/\s+/g, '-');
-        if (!list[slug]) {
-          list[slug] = {
-            slug,
-            name: post.author,
-            avatar: post.authorAvatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${slug}`,
+        const slug = normalizeAuthorSlug(post.author);
+        if (!slug) return;
+
+        let targetKey = findMatchingKey(slug, post.author);
+        if (!targetKey) {
+          targetKey = slug;
+          list[targetKey] = {
+            slug: targetKey,
+            name: post.author.trim(),
+            avatar: post.authorAvatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${targetKey}`,
             postCount: 0,
             views: 0,
             likes: 0,
             isCustom: false
           };
         }
-        list[slug].postCount += 1;
-        list[slug].views += (post.views || 0);
-        list[slug].likes += (post.likes || 0);
+        list[targetKey].postCount += 1;
+        list[targetKey].views += (Number(post.views) || 0);
+        list[targetKey].likes += (Number(post.likes) || 0);
       });
     }
 
@@ -94,21 +124,28 @@ export default function AuthorsTab({ posts = [], setToast }) {
     loadProfilesRef.current?.();
   }, []);
 
-  const loadProfiles = () => {
+  const loadProfiles = (preferredSlug = null) => {
     const data = getAuthorProfiles();
     setProfiles(data);
     
     // Pilih penulis pertama jika belum ada yang terpilih
     const keys = Object.keys(data);
-    if (keys.length > 0 && !selectedSlug) {
+    const targetSlug = preferredSlug || selectedSlug;
+    if (targetSlug && data[targetSlug]) {
+      handleSelectAuthor(targetSlug, data);
+    } else if (keys.length > 0 && !selectedSlug) {
       handleSelectAuthor(keys[0], data);
     }
   };
   loadProfilesRef.current = loadProfiles;
 
   const handleSelectAuthor = (slug, dataMap = profiles) => {
-    setSelectedSlug(slug);
-    const author = dataMap[slug];
+    const canonicalSlug = normalizeAuthorSlug(slug) || slug;
+    setSelectedSlug(canonicalSlug);
+    const author =
+      dataMap[slug] ||
+      dataMap[canonicalSlug] ||
+      Object.values(dataMap).find((a) => normalizeAuthorSlug(a.slug || a.name) === canonicalSlug);
 
     if (author) {
       setName(author.name || '');
@@ -128,8 +165,8 @@ export default function AuthorsTab({ posts = [], setToast }) {
       setWebsite(socials.website || '');
     } else {
       // Jika penulis dari artikel belum punya profil tersimpan, generate default
-      const foundInList = authorList.find(a => a.slug === slug);
-      const authorName = foundInList ? foundInList.name : slug.replace(/-/g, ' ');
+      const foundInList = authorList.find(a => a.slug === canonicalSlug || a.slug === slug);
+      const authorName = foundInList ? foundInList.name : canonicalSlug.replace(/-/g, ' ');
       
       setName(authorName);
       setAvatar(foundInList?.avatar || `https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80`);
@@ -139,11 +176,11 @@ export default function AuthorsTab({ posts = [], setToast }) {
       setCompany('Penulis Blog');
       setEmail('');
       setVerified(true);
-      setLinkedin(`https://linkedin.com/in/${slug}`);
-      setGithub(`https://github.com/${slug}`);
-      setInstagram(`https://instagram.com/${slug}`);
-      setTwitter(`https://twitter.com/${slug}`);
-      setWebsite(`https://${slug}.com`);
+      setLinkedin(`https://linkedin.com/in/${canonicalSlug}`);
+      setGithub(`https://github.com/${canonicalSlug}`);
+      setInstagram(`https://instagram.com/${canonicalSlug}`);
+      setTwitter(`https://twitter.com/${canonicalSlug}`);
+      setWebsite(`https://${canonicalSlug}.com`);
     }
   };
 
@@ -171,9 +208,13 @@ export default function AuthorsTab({ posts = [], setToast }) {
       return;
     }
 
+    const targetSlug = (selectedSlug && selectedSlug !== 'new-author')
+      ? normalizeAuthorSlug(selectedSlug)
+      : normalizeAuthorSlug(name);
+
     const newProfile = {
       name: name.trim(),
-      slug: name.trim().toLowerCase().replace(/\s+/g, '-'),
+      slug: targetSlug,
       avatar: avatar.trim(),
       bio: bio.trim(),
       expertise: expertise.trim(),
@@ -192,11 +233,12 @@ export default function AuthorsTab({ posts = [], setToast }) {
 
     const res = saveAuthorProfile(newProfile);
     if (res.success) {
+      const savedSlug = res.profile?.slug || targetSlug;
       if (typeof setToast === 'function') {
         setToast('success', `Profil "${newProfile.name}" berhasil disimpan dan aktif di seluruh blog!`);
       }
-      loadProfiles();
-      setSelectedSlug(newProfile.slug);
+      setSelectedSlug(savedSlug);
+      loadProfiles(savedSlug);
     } else {
       if (typeof setToast === 'function') {
         setToast('error', res.message || 'Gagal menyimpan profil penulis');

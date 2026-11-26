@@ -6,7 +6,7 @@
  * sehingga aplikasi tetap berjalan 100% mulus dan DINAMIS baik saat Supabase aktif maupun offline.
  */
 
-import { supabase } from '../../../lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from '../../../lib/supabaseClient';
 
 // Dapatkan atau buat Device ID unik per browser untuk like/bookmark/rating anonim
 export const getDeviceId = () => {
@@ -112,7 +112,7 @@ export const formatSupabasePost = (p) => {
 export const fetchAllPosts = async () => {
   let posts = [];
   try {
-    if (supabase) {
+    if (isSupabaseConfigured && supabase) {
       const { data, error } = await supabase
         .from('blog_posts')
         .select('*')
@@ -173,7 +173,7 @@ export const fetchPostBySlug = async (slug) => {
   let post = null;
 
   try {
-    if (supabase) {
+    if (isSupabaseConfigured && supabase) {
       const { data, error } = await supabase
         .from('blog_posts')
         .select('*')
@@ -241,7 +241,7 @@ export const fetchComments = async (postSlug) => {
   }
 
   try {
-    if (supabase) {
+    if (isSupabaseConfigured && supabase) {
       const { data, error } = await supabase
         .from('blog_comments')
         .select('*')
@@ -285,8 +285,9 @@ export const addComment = async ({ postSlug, name, email, message, avatar = null
     throw new Error('Nama dan pesan komentar wajib diisi.');
   }
 
+  const tempId = 'local_' + Date.now();
   const newComment = {
-    id: 'local_' + Date.now(),
+    id: tempId,
     name: name.trim(),
     email: email ? email.trim() : null,
     message: message.trim(),
@@ -295,8 +296,8 @@ export const addComment = async ({ postSlug, name, email, message, avatar = null
   };
 
   // Simpan ke localStorage terlebih dahulu (instant UI update)
+  const storageKey = `blog_comments_${postSlug}`;
   try {
-    const storageKey = `blog_comments_${postSlug}`;
     const existing = JSON.parse(localStorage.getItem(storageKey) || '[]');
     localStorage.setItem(storageKey, JSON.stringify([newComment, ...existing]));
   } catch (e) {
@@ -305,7 +306,7 @@ export const addComment = async ({ postSlug, name, email, message, avatar = null
 
   // Kirim ke Supabase jika terhubung
   try {
-    if (supabase) {
+    if (isSupabaseConfigured && supabase) {
       const { data, error } = await supabase
         .from('blog_comments')
         .insert({
@@ -319,9 +320,19 @@ export const addComment = async ({ postSlug, name, email, message, avatar = null
         .select()
         .single();
 
-      if (!error && data) {
+      if (error) {
+        console.warn('⚠️ Supabase addComment gagal:', error.message);
+      } else if (data) {
         newComment.id = data.id;
         newComment.date = data.created_at;
+        // Ganti temp ID di localStorage dengan ID permanen dari DB agar tidak duplikat saat refresh
+        try {
+          const existing = JSON.parse(localStorage.getItem(storageKey) || '[]');
+          const updated = existing.map(item => (item.id === tempId ? { ...newComment } : item));
+          localStorage.setItem(storageKey, JSON.stringify(updated));
+        } catch {
+          // abaikan error update localStorage
+        }
       }
     }
   } catch (err) {
@@ -360,20 +371,33 @@ export const toggleLike = async (postSlug, currentLikes = 0) => {
 
   // Sync dengan Supabase
   try {
-    if (supabase) {
+    if (isSupabaseConfigured && supabase) {
       if (nextLiked) {
-        await supabase
+        const { error: insertError } = await supabase
           .from('blog_likes')
           .insert({ post_slug: postSlug, device_id: deviceId })
           .select();
-        await supabase.rpc('increment_blog_likes', { target_slug: postSlug });
+
+        if (!insertError) {
+          const { error: rpcError } = await supabase.rpc('increment_blog_likes', { target_slug: postSlug });
+          if (rpcError) console.warn('⚠️ Supabase increment_blog_likes gagal:', rpcError.message);
+        } else if (insertError.code !== '23505') {
+          console.warn('⚠️ Supabase blog_likes insert gagal:', insertError.message);
+        }
       } else {
-        await supabase
+        const { data: deletedRows, error: delError } = await supabase
           .from('blog_likes')
           .delete()
           .eq('post_slug', postSlug)
-          .eq('device_id', deviceId);
-        await supabase.rpc('decrement_blog_likes', { target_slug: postSlug });
+          .eq('device_id', deviceId)
+          .select('id');
+
+        if (!delError && Array.isArray(deletedRows) && deletedRows.length > 0) {
+          const { error: rpcError } = await supabase.rpc('decrement_blog_likes', { target_slug: postSlug });
+          if (rpcError) console.warn('⚠️ Supabase decrement_blog_likes gagal:', rpcError.message);
+        } else if (delError) {
+          console.warn('⚠️ Supabase blog_likes delete gagal:', delError.message);
+        }
       }
     }
   } catch (err) {
@@ -404,17 +428,23 @@ export const toggleBookmark = async (postSlug) => {
   localStorage.setItem(`blog_bookmarked_${postSlug}`, String(nextBookmarked));
 
   try {
-    if (supabase) {
+    if (isSupabaseConfigured && supabase) {
       if (nextBookmarked) {
-        await supabase
+        const { error } = await supabase
           .from('blog_bookmarks')
           .insert({ post_slug: postSlug, device_id: deviceId });
+        if (error && error.code !== '23505') {
+          console.warn('⚠️ Supabase toggleBookmark insert gagal:', error.message);
+        }
       } else {
-        await supabase
+        const { error } = await supabase
           .from('blog_bookmarks')
           .delete()
           .eq('post_slug', postSlug)
           .eq('device_id', deviceId);
+        if (error) {
+          console.warn('⚠️ Supabase toggleBookmark delete gagal:', error.message);
+        }
       }
     }
   } catch (err) {
@@ -442,11 +472,14 @@ export const recordView = async (postSlug, currentViews = 0) => {
     setDynamicMetrics(postSlug, { views: nextViews });
 
     try {
-      if (supabase) {
-        await supabase.rpc('increment_blog_views', { target_slug: postSlug });
+      if (isSupabaseConfigured && supabase) {
+        const { error } = await supabase.rpc('increment_blog_views', { target_slug: postSlug });
+        if (error) {
+          console.warn('⚠️ Supabase increment_blog_views gagal:', error.message);
+        }
       }
     } catch {
-      // silently ignore view tracking errors
+      // silently ignore offline view tracking errors
     }
   }
 
@@ -473,8 +506,11 @@ export const recordShare = async (postSlug, currentShares = 0) => {
 
   // Sync ke Supabase
   try {
-    if (supabase) {
-      await supabase.rpc('increment_blog_shares', { target_slug: postSlug });
+    if (isSupabaseConfigured && supabase) {
+      const { error } = await supabase.rpc('increment_blog_shares', { target_slug: postSlug });
+      if (error) {
+        console.warn('⚠️ Supabase increment_blog_shares gagal:', error.message);
+      }
     }
   } catch (err) {
     console.warn('⚠️ Supabase increment_blog_shares offline/fallback:', err);
@@ -523,23 +559,17 @@ export const submitRating = async (postSlug, newScore, currentRating = 5.0, tota
   localStorage.setItem(`blog_user_rating_${postSlug}`, String(newScore));
   setDynamicMetrics(postSlug, { rating: nextRating, totalRatings: nextTotal });
 
-  // Sync ke Supabase
+  // Sync ke Supabase (submit_blog_rating RPC sudah melakukan upsert blog_ratings dan rekalkulasi avg rating atomik)
   try {
-    if (supabase) {
-      await supabase
-        .from('blog_ratings')
-        .upsert({
-          post_slug: postSlug,
-          device_id: deviceId,
-          rating: newScore,
-          updated_at: new Date().toISOString()
-        }, { onConflict: 'post_slug,device_id' });
-
-      await supabase.rpc('submit_blog_rating', {
+    if (isSupabaseConfigured && supabase) {
+      const { error } = await supabase.rpc('submit_blog_rating', {
         target_slug: postSlug,
         user_device_id: deviceId,
         score: newScore
       });
+      if (error) {
+        console.warn('⚠️ Supabase submit_blog_rating gagal:', error.message);
+      }
     }
   } catch (err) {
     console.warn('⚠️ Supabase submitRating offline/fallback:', err);
@@ -556,7 +586,7 @@ export const submitRating = async (postSlug, newScore, currentRating = 5.0, tota
  * 12. Realtime Subscriptions untuk sinkronisasi dinamis multi-user/multi-tab
  */
 export const subscribeToBlogPosts = (onUpdate) => {
-  if (!supabase || typeof supabase.channel !== 'function') return () => {};
+  if (!isSupabaseConfigured || !supabase || typeof supabase.channel !== 'function') return () => {};
   try {
     const channel = supabase
       .channel('realtime:blog_posts')
@@ -583,7 +613,7 @@ export const subscribeToBlogPosts = (onUpdate) => {
 };
 
 export const subscribeToComments = (postSlug, onComment) => {
-  if (!supabase || typeof supabase.channel !== 'function' || !postSlug) return () => {};
+  if (!isSupabaseConfigured || !supabase || typeof supabase.channel !== 'function' || !postSlug) return () => {};
   try {
     const channel = supabase
       .channel(`realtime:comments:${postSlug}`)

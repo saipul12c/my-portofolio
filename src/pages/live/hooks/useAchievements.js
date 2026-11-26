@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { supabase } from '../../../lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from '../../../lib/supabaseClient';
 
 export const ACHIEVEMENTS = {
   // Global Achievements
@@ -105,6 +105,7 @@ export const useAchievements = () => {
 
   // Muat achievements dari database
   const loadAchievements = useCallback(async (userId) => {
+    if (!isSupabaseConfigured || !supabase || !userId) return;
     try {
       const { data, error } = await supabase
         .from('achievements')
@@ -123,6 +124,7 @@ export const useAchievements = () => {
 
   // Unlock achievement
   const unlockAchievement = useCallback(async (userId, achievementId) => {
+    if (!isSupabaseConfigured || !supabase || !userId) return false;
     const achievement = Object.values(ACHIEVEMENTS).find(a => a.id === achievementId);
     if (!achievement) return false;
 

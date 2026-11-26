@@ -12,18 +12,15 @@
  * @module routeIntegration
  */
 
+import { normalizeAuthorSlug } from '../services/authorProfileService.js';
+
 /**
  * Generate author slug dari nama author
  * @param {string} authorName - Nama author
  * @returns {string} Slug format (kebab-case)
  */
 export const generateAuthorSlug = (authorName) => {
-  if (!authorName) return '';
-  return authorName
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, '');
+  return normalizeAuthorSlug(authorName);
 };
 
 /**

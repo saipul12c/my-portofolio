@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, Medal, Award, X, Sparkles, Flame } from 'lucide-react';
-import { supabase } from '../../../lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from '../../../lib/supabaseClient';
 
 export const LeaderboardModal = ({ isOpen, onClose, currentUserId }) => {
   const [leaders, setLeaders] = useState([]);
@@ -9,16 +9,30 @@ export const LeaderboardModal = ({ isOpen, onClose, currentUserId }) => {
 
   useEffect(() => {
     if (!isOpen) return;
+    if (!isSupabaseConfigured || !supabase) {
+      setLoading(false);
+      return;
+    }
 
     const fetchLeaderboard = async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase
-          .from('users')
-          .select('id, nama, role, message_count, status')
+        let { data, error } = await supabase
+          .rpc('get_public_profiles')
           .neq('status', 'banned')
           .order('message_count', { ascending: false })
           .limit(10);
+
+        if (error) {
+          const fallback = await supabase
+            .from('profiles')
+            .select('id, nama, role, message_count, status')
+            .neq('status', 'banned')
+            .order('message_count', { ascending: false })
+            .limit(10);
+          data = fallback.data;
+          error = fallback.error;
+        }
 
         if (!error && data) {
           setLeaders(data);

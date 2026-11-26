@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Maintenance from "../errors/Maintenance";
 import ContactForm from "./components/ContactForm";
 import ContactList from "./components/ContactList";
 import ContactStats from "./components/ContactStats";
@@ -11,14 +10,10 @@ import { useScrollReveal } from "./hooks/useScrollReveal";
 import { SPARKLES_ICON } from "./utils/constants";
 
 export default function Contact() {
-  const isMaintenance = false;
-
   const headerAnim = useScrollReveal(0);
   const statsAnim = useScrollReveal(0.1);
   const formAnim = useScrollReveal(0.15);
   const contactAnim = useScrollReveal(0.2);
-
-  if (isMaintenance) return <Maintenance />;
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-start px-3 sm:px-4 md:px-6 lg:px-8 xl:px-16 py-6 sm:py-10 bg-[#0f172a] text-white relative overflow-hidden">

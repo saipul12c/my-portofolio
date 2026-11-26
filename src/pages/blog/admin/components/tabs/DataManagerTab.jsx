@@ -14,12 +14,15 @@ import {
   Trash2
 } from 'lucide-react';
 import { exportBlogBackup, importBlogBackup, resetBlogToSeed } from '../../services/blogAdminService';
+import { getAdminSession } from '../../services/blogAdminAuth';
 import { isSupabaseConfigured } from '../../../../../lib/supabaseClient';
 
 export default function DataManagerTab({ 
   onDataChanged, 
   setToast 
 }) {
+  const adminSession = getAdminSession();
+  const isCloudAuth = Boolean(isSupabaseConfigured && adminSession?.authMode === 'supabase');
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [importMode, setImportMode] = useState('merge'); // 'merge' | 'overwrite'
@@ -94,8 +97,16 @@ export default function DataManagerTab({
           <div>
             <span className="text-[11px] text-gray-400 block font-medium">Status Koneksi Data</span>
             <span className="text-xs font-bold text-white flex items-center gap-1.5 mt-0.5">
-              <span className={`w-2 h-2 rounded-full ${isSupabaseConfigured ? 'bg-emerald-400' : 'bg-cyan-400'}`} />
-              {isSupabaseConfigured ? 'Supabase Cloud Aktif' : 'Local Storage Engine'}
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  isCloudAuth ? 'bg-emerald-400' : isSupabaseConfigured ? 'bg-amber-400' : 'bg-cyan-400'
+                }`}
+              />
+              {isCloudAuth
+                ? 'Supabase Cloud (Terautentikasi)'
+                : isSupabaseConfigured
+                  ? 'Supabase Read-Only (Mode Lokal)'
+                  : 'Local Storage Engine'}
             </span>
           </div>
         </div>

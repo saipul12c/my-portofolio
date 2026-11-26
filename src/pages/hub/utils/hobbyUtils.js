@@ -120,11 +120,11 @@ export const getLabelStyles = (label) => {
   if (!label) return '';
   
   if (label.includes("Hot")) {
-    return "bg-red-500/30 text-red-200 border-red-400/40";
+    return "bg-red-950/95 text-red-200 border-red-400/40";
   } else if (label.includes("Baru")) {
-    return "bg-green-500/30 text-green-200 border-green-400/40";
+    return "bg-emerald-950/95 text-green-200 border-green-400/40";
   } else {
-    return "bg-amber-500/30 text-amber-200 border-amber-400/40";
+    return "bg-amber-950/95 text-amber-200 border-amber-400/40";
   }
 };
 

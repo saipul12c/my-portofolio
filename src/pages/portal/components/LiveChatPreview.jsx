@@ -1,6 +1,6 @@
 import React, { useState, useEffect, memo } from 'react';
 import { MdChat, MdForum } from 'react-icons/md';
-import { supabase } from '../../../lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from '../../../lib/supabaseClient';
 
 const LiveChatPreview = memo(({ navigate, isMobile = false }) => {
   const [recentChats, setRecentChats] = useState([]);
@@ -8,6 +8,13 @@ const LiveChatPreview = memo(({ navigate, isMobile = false }) => {
 
   useEffect(() => {
     let isMounted = true;
+
+    if (!isSupabaseConfigured || !supabase) {
+      setLoading(false);
+      return () => {
+        isMounted = false;
+      };
+    }
 
     const fetchChats = async () => {
       try {
@@ -35,8 +42,11 @@ const LiveChatPreview = memo(({ navigate, isMobile = false }) => {
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'messages' },
         (payload) => {
-          if (isMounted) {
-            setRecentChats((prev) => [payload.new, ...prev].slice(0, 10));
+          if (isMounted && payload.new) {
+            setRecentChats((prev) => {
+              if (prev.some((msg) => msg.id === payload.new.id)) return prev;
+              return [payload.new, ...prev].slice(0, 10);
+            });
           }
         }
       )
@@ -44,7 +54,7 @@ const LiveChatPreview = memo(({ navigate, isMobile = false }) => {
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'messages' },
         (payload) => {
-          if (isMounted) {
+          if (isMounted && payload.new) {
             setRecentChats((prev) => prev.map((msg) => (msg.id === payload.new.id ? payload.new : msg)));
           }
         }
@@ -53,7 +63,7 @@ const LiveChatPreview = memo(({ navigate, isMobile = false }) => {
         'postgres_changes',
         { event: 'DELETE', schema: 'public', table: 'messages' },
         (payload) => {
-          if (isMounted) {
+          if (isMounted && payload.old?.id) {
             setRecentChats((prev) => prev.filter((msg) => msg.id !== payload.old.id));
           }
         }

@@ -13,6 +13,30 @@ const QUERY_CACHE = new Map();
 const TFIDF_CACHE = new WeakMap();
 const CACHE_TTL = 5 * 60 * 1000; // 5 menit cache
 
+function formatMaintenanceStatusAnswer(m = {}) {
+  const activePages = Array.isArray(m.activePages) ? m.activePages : [];
+  if (m.globalEnabled) {
+    return `🛠️ **Status Sistem & Pemeliharaan Website**\n\n• **Status**: Mode Maintenance Global Aktif\n• **Judul**: ${m.title || 'Situs Sedang Dalam Perawatan'}\n• **Keterangan**: ${m.description || 'Seluruh halaman publik sedang menjalani pemeliharaan terjadwal.'}`;
+  }
+  if (m.isUnderMaintenance || activePages.length > 0 || m.liveChatMaintenance || m.helpButtonMaintenance) {
+    const lines = [];
+    if (activePages.length > 0) {
+      lines.push(`• **Halaman dalam Maintenance (${activePages.length})**:`);
+      activePages.slice(0, 8).forEach((p) => {
+        lines.push(`  - ${p.label} (\`${p.key}\`) — ${p.badge || 'Dalam Perawatan'}`);
+      });
+    }
+    if (m.liveChatMaintenance) {
+      lines.push('• **Live Discussion Chat**: Sedang dikunci sementara (Lockdown)');
+    }
+    if (m.helpButtonMaintenance) {
+      lines.push('• **Tombol Bantuan**: Sedang dalam mode pemeliharaan');
+    }
+    return `🛠️ **Status Sistem & Pemeliharaan Website**\n\n• **Status**: Sebagian Layanan Dalam Pemeliharaan Aktif\n${lines.join('\n')}\n• **Catatan**: Halaman lain yang tidak tercantum tetap beroperasi normal.`;
+  }
+  return `🛡️ **Status Sistem & Pemeliharaan Website**\n\n• **Status**: Semua Sistem Beroperasi Normal (Online)\n• **Kondisi Layanan**: Seluruh fitur website, navigasi, dan SaipulAI berfungsi optimal tanpa kendala.`;
+}
+
 const INDONESIAN_STOPWORDS = new Set([
   'apa', 'siapa', 'dimana', 'bagaimana', 'kenapa', 'mengapa', 'kapan', 'apakah', 'adakah', 'berapa',
   'yang', 'dan', 'di', 'ke', 'dari', 'pada', 'dalam', 'untuk', 'dengan', 'oleh', 'ini', 'itu',
@@ -40,7 +64,11 @@ export function smartKBQuery(userQuery, knowledgeBase, options = {}) {
   const langKey = options.targetLanguage || options.language || 'auto';
   const uploadList = Array.isArray(knowledgeBase?.uploadedData) ? knowledgeBase.uploadedData : [];
   const lastUploadStamp = uploadList.length > 0 ? `${uploadList.length}:${uploadList[uploadList.length - 1]?.uploadDate || uploadList[uploadList.length - 1]?.fileName || ''}` : '0';
-  const cacheKey = `${userQuery}:${searchDepth}:${threshold}:${maxResults}:${langKey}:${lastUploadStamp}`;
+  const maintObj = knowledgeBase?.maintenance || {};
+  const maintStamp = maintObj.isUnderMaintenance
+    ? `${maintObj.globalEnabled ? 'G' : 'P'}:${(maintObj.activePages || []).map((p) => p.key).join(',')}:${maintObj.liveChatMaintenance ? 1 : 0}`
+    : '0';
+  const cacheKey = `${userQuery}:${searchDepth}:${threshold}:${maxResults}:${langKey}:${lastUploadStamp}:${maintStamp}`;
   if (useCache && QUERY_CACHE.has(cacheKey)) {
     const cached = QUERY_CACHE.get(cacheKey);
     if (Date.now() - cached.timestamp < CACHE_TTL) {
@@ -553,13 +581,13 @@ function searchExactMatch(query, knowledgeBase, options = {}) {
     });
   }
 
-  // 6. Status Sistem & Pemeliharaan (dari src/data/maintenance/maintenanceData.json)
+  // 6. Status Sistem & Pemeliharaan (dinamis dari Supabase / MaintenanceContext)
   if (lowerQuery.includes('status sistem') || lowerQuery.includes('pemeliharaan') || lowerQuery.includes('maintenance')) {
     const m = knowledgeBase.maintenance || {};
     results.push({
       source: 'maintenance_status',
       question: 'Status Pemeliharaan Sistem',
-      answer: `🛡️ **Status Sistem & Pemeliharaan Website**\n\n• **Status**: ${m.isUnderMaintenance ? 'Dalam Pemeliharaan Aktif' : 'Semua Sistem Beroperasi Normal (Online)'}\n• **Kondisi Layanan**: Seluruh fitur website, navigasi, dan SaipulAI berfungsi optimal tanpa kendala.`,
+      answer: formatMaintenanceStatusAnswer(m),
       relevanceScore: 0.99,
       matchedWords: queryWords.length,
       matchType: 'exact'
@@ -1781,7 +1809,7 @@ function searchExactMatch(query, knowledgeBase, options = {}) {
     results.push({
       source: 'maintenance',
       question: 'Status Pemeliharaan (Maintenance) Website',
-      answer: `🛠️ **Status Sistem & Pemeliharaan Website**\n\nSaat ini seluruh sistem server dan halaman portofolio beroperasi normal dan stabil (tidak dalam mode maintenance). Seluruh fitur, showcase proyek, dan SaipulAI siap diakses pengguna.`,
+      answer: formatMaintenanceStatusAnswer(knowledgeBase.maintenance || {}),
       relevanceScore: 0.97,
       matchedWords: queryWords.length,
       matchType: 'exact'
@@ -2395,7 +2423,8 @@ export function getUniversalKnowledgeEntries(kb) {
   }
   if (kb.maintenance && typeof kb.maintenance === 'object') {
     const m = kb.maintenance;
-    addEntry('maintenance', 'Status Pemeliharaan Sistem', `${m.status || ''} ${m.message || ''}`, `🛡️ **Status Sistem & Pemeliharaan**\n\n• **Status**: ${m.isUnderMaintenance ? 'Dalam Pemeliharaan' : 'Sistem Beroperasi Normal (Online)'}\n• **Pesan**: ${m.message || 'Semua layanan portofolio, SaipulAI, dan fitur web berjalan stabil.'}`, '/');
+    const activeNames = Array.isArray(m.activePages) ? m.activePages.map((p) => `${p.label} ${p.key}`).join(' ') : '';
+    addEntry('maintenance', 'Status Pemeliharaan Sistem', `${m.status || ''} ${m.message || ''} ${activeNames}`, formatMaintenanceStatusAnswer(m), '/');
   }
 
   // 19. Streaming Video & Shorts (src/data/streming/videosData.json & shortsData.json)

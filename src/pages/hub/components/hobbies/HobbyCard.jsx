@@ -1,24 +1,24 @@
-import { memo } from "react";
+import { memo, forwardRef } from "react";
 import { m } from "framer-motion";
 import { Link } from "react-router-dom";
 import HobbyIcon from "../shared/HobbyIcon";
 import { getLabelStyles } from "../../utils/hobbyUtils";
 
-function HobbyCard({ hobby, label }) {
+const HobbyCard = forwardRef(function HobbyCard({ hobby, label }, ref) {
   return (
     <m.div
+      ref={ref}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 15 }}
       transition={{ duration: 0.25, ease: "easeOut" }}
-      style={{ contentVisibility: "auto", containIntrinsicSize: "0 260px" }}
       className="relative group bg-[#141a28]/80 p-7 rounded-2xl border border-white/10 hover:border-cyan-400/40 transform-gpu hover:-translate-y-1 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_10px_25px_rgba(34,211,238,0.12)] flex flex-col justify-between"
     >
       <div>
         {/* Floating Label */}
         {label && (
           <span
-            className={`absolute -top-3 left-4 text-[11px] font-semibold px-3 py-1 rounded-full tracking-wide shadow-md backdrop-blur-sm ${getLabelStyles(label)}`}
+            className={`absolute -top-3 left-4 z-10 border text-[11px] font-semibold px-3 py-1 rounded-full tracking-wide shadow-md backdrop-blur-md ${getLabelStyles(label)}`}
           >
             {label}
           </span>
@@ -53,7 +53,7 @@ function HobbyCard({ hobby, label }) {
       </div>
     </m.div>
   );
-}
+});
 
 // Sub-components for better organization
 function ExternalLink({ href, label }) {

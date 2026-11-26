@@ -3,5 +3,11 @@ Disallow: /uji-brute
 Disallow: /admin
 Disallow: /internal
 Disallow: /private
+Disallow: /blog-admin
+Disallow: /blog/admin
+Disallow: /blog/secret-login
+Disallow: /Live-Discussion/dashboard
+Disallow: /Live-Discussion/login
+Disallow: /503
 
 Allow: /

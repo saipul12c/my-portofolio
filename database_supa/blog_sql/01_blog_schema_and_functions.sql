@@ -3,6 +3,8 @@
 -- ==============================================================================
 -- File: 01_blog_schema_and_functions.sql
 -- Urutan Eksekusi: Jalankan file ini PERTAMA di Supabase SQL Editor
+-- Diperbarui agar sesuai standar keamanan Supabase terbaru (explicit GRANT,
+-- SET search_path pada SECURITY DEFINER, serta proteksi RLS admin blog).
 -- ==============================================================================
 
 -- 1. Tabel Utama: blog_posts
@@ -104,7 +106,46 @@ CREATE INDEX IF NOT EXISTS idx_blog_bookmarks_lookup ON public.blog_bookmarks(po
 CREATE INDEX IF NOT EXISTS idx_blog_ratings_lookup ON public.blog_ratings(post_slug, device_id);
 
 -- ==============================================================================
--- ⚙️ ATOMIC RPC FUNCTIONS
+-- 🛡️ HELPER AUTHORIZATION ADMIN BLOG (Aman & Bebas Search Path Hijacking)
+-- ==============================================================================
+CREATE OR REPLACE FUNCTION public.is_blog_admin()
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  uid UUID;
+  jwt_role TEXT;
+  db_role TEXT;
+BEGIN
+  uid := auth.uid();
+  IF uid IS NULL THEN
+    RETURN FALSE;
+  END IF;
+
+  jwt_role := UPPER(COALESCE(auth.jwt() -> 'app_metadata' ->> 'role', ''));
+  IF jwt_role IN ('SUPER_ADMIN', 'ADMIN') THEN
+    RETURN TRUE;
+  END IF;
+
+  -- Cek juga ke public.users apabila modul Live Discussion sudah terpasang
+  IF to_regclass('public.users') IS NOT NULL THEN
+    EXECUTE 'SELECT UPPER(role) FROM public.users WHERE id = $1'
+      INTO db_role
+      USING uid;
+    IF db_role IN ('SUPER_ADMIN', 'ADMIN') THEN
+      RETURN TRUE;
+    END IF;
+  END IF;
+
+  RETURN FALSE;
+END;
+$$;
+
+-- ==============================================================================
+-- ⚙️ ATOMIC RPC FUNCTIONS (Dengan SET search_path = public)
 -- ==============================================================================
 
 -- 1. Tambah Views Post
@@ -112,6 +153,7 @@ CREATE OR REPLACE FUNCTION public.increment_blog_views(target_slug TEXT)
 RETURNS VOID
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
   UPDATE public.blog_posts
@@ -125,6 +167,7 @@ CREATE OR REPLACE FUNCTION public.increment_blog_likes(target_slug TEXT)
 RETURNS VOID
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
   UPDATE public.blog_posts
@@ -138,6 +181,7 @@ CREATE OR REPLACE FUNCTION public.decrement_blog_likes(target_slug TEXT)
 RETURNS VOID
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
   UPDATE public.blog_posts
@@ -151,6 +195,7 @@ CREATE OR REPLACE FUNCTION public.increment_blog_shares(target_slug TEXT)
 RETURNS VOID
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
   UPDATE public.blog_posts
@@ -164,11 +209,16 @@ CREATE OR REPLACE FUNCTION public.submit_blog_rating(target_slug TEXT, user_devi
 RETURNS NUMERIC
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
   new_avg NUMERIC;
   v_count INTEGER;
 BEGIN
+  IF score < 1 OR score > 5 THEN
+    RAISE EXCEPTION 'Skor rating harus di antara 1 sampai 5.';
+  END IF;
+
   INSERT INTO public.blog_ratings (post_slug, device_id, rating, updated_at)
   VALUES (target_slug, user_device_id, score, NOW())
   ON CONFLICT (post_slug, device_id)
@@ -198,86 +248,137 @@ ALTER TABLE public.blog_likes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.blog_bookmarks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.blog_ratings ENABLE ROW LEVEL SECURITY;
 
--- Policy Blog Posts: Siapa saja dapat membaca artikel
+-- Policy Blog Posts: Publik hanya membaca artikel published; Admin dapat melihat & mengelola semua
 DROP POLICY IF EXISTS "Public can view published blog posts" ON public.blog_posts;
-CREATE POLICY "Public can view published blog posts" 
-  ON public.blog_posts FOR SELECT USING (true);
+CREATE POLICY "Public can view published blog posts"
+  ON public.blog_posts FOR SELECT
+  USING (status = 'published' OR (select public.is_blog_admin()));
 
 DROP POLICY IF EXISTS "Authenticated users can insert blog posts" ON public.blog_posts;
-CREATE POLICY "Authenticated users can insert blog posts" 
-  ON public.blog_posts FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Blog admins can insert blog posts" ON public.blog_posts;
+CREATE POLICY "Blog admins can insert blog posts"
+  ON public.blog_posts FOR INSERT
+  TO authenticated
+  WITH CHECK ((select public.is_blog_admin()));
 
 DROP POLICY IF EXISTS "Authenticated users can update blog posts" ON public.blog_posts;
-CREATE POLICY "Authenticated users can update blog posts" 
-  ON public.blog_posts FOR UPDATE USING (true);
+DROP POLICY IF EXISTS "Blog admins can update blog posts" ON public.blog_posts;
+CREATE POLICY "Blog admins can update blog posts"
+  ON public.blog_posts FOR UPDATE
+  TO authenticated
+  USING ((select public.is_blog_admin()))
+  WITH CHECK ((select public.is_blog_admin()));
 
--- Policy Comments: Siapa saja dapat melihat dan menambahkan komentar
+DROP POLICY IF EXISTS "Blog admins can delete blog posts" ON public.blog_posts;
+CREATE POLICY "Blog admins can delete blog posts"
+  ON public.blog_posts FOR DELETE
+  TO authenticated
+  USING ((select public.is_blog_admin()));
+
+-- Policy Comments: Siapa saja dapat membaca dan mengirim komentar; hanya Admin Blog dapat mengubah/menghapus
 DROP POLICY IF EXISTS "Public can view comments" ON public.blog_comments;
-CREATE POLICY "Public can view comments" 
+CREATE POLICY "Public can view comments"
   ON public.blog_comments FOR SELECT USING (true);
 
 DROP POLICY IF EXISTS "Public can post comments" ON public.blog_comments;
-CREATE POLICY "Public can post comments" 
-  ON public.blog_comments FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public can post comments"
+  ON public.blog_comments FOR INSERT
+  TO anon, authenticated
+  WITH CHECK (
+    char_length(trim(name)) > 0
+    AND char_length(trim(message)) > 0
+  );
 
--- Policy Likes: Publik dapat melihat dan mengelola data suka
+DROP POLICY IF EXISTS "Blog admins can update comments" ON public.blog_comments;
+CREATE POLICY "Blog admins can update comments"
+  ON public.blog_comments FOR UPDATE
+  TO authenticated
+  USING ((select public.is_blog_admin()))
+  WITH CHECK ((select public.is_blog_admin()));
+
+DROP POLICY IF EXISTS "Blog admins can delete comments" ON public.blog_comments;
+CREATE POLICY "Blog admins can delete comments"
+  ON public.blog_comments FOR DELETE
+  TO authenticated
+  USING ((select public.is_blog_admin()));
+
+-- Policy Likes: Publik dapat melihat dan mengelola suka berbasis device_id
 DROP POLICY IF EXISTS "Public can read likes" ON public.blog_likes;
-CREATE POLICY "Public can read likes" 
+CREATE POLICY "Public can read likes"
   ON public.blog_likes FOR SELECT USING (true);
 
 DROP POLICY IF EXISTS "Public can insert likes" ON public.blog_likes;
-CREATE POLICY "Public can insert likes" 
-  ON public.blog_likes FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public can insert likes"
+  ON public.blog_likes FOR INSERT
+  TO anon, authenticated
+  WITH CHECK (char_length(trim(device_id)) > 0);
 
 DROP POLICY IF EXISTS "Public can delete likes" ON public.blog_likes;
-CREATE POLICY "Public can delete likes" 
-  ON public.blog_likes FOR DELETE USING (true);
+CREATE POLICY "Public can delete likes"
+  ON public.blog_likes FOR DELETE
+  TO anon, authenticated
+  USING (true);
 
--- Policy Bookmarks: Publik dapat melihat dan mengelola bookmark
+-- Policy Bookmarks: Publik dapat melihat dan mengelola bookmark berbasis device_id
 DROP POLICY IF EXISTS "Public can read bookmarks" ON public.blog_bookmarks;
-CREATE POLICY "Public can read bookmarks" 
+CREATE POLICY "Public can read bookmarks"
   ON public.blog_bookmarks FOR SELECT USING (true);
 
 DROP POLICY IF EXISTS "Public can insert bookmarks" ON public.blog_bookmarks;
-CREATE POLICY "Public can insert bookmarks" 
-  ON public.blog_bookmarks FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public can insert bookmarks"
+  ON public.blog_bookmarks FOR INSERT
+  TO anon, authenticated
+  WITH CHECK (char_length(trim(device_id)) > 0);
 
 DROP POLICY IF EXISTS "Public can delete bookmarks" ON public.blog_bookmarks;
-CREATE POLICY "Public can delete bookmarks" 
-  ON public.blog_bookmarks FOR DELETE USING (true);
+CREATE POLICY "Public can delete bookmarks"
+  ON public.blog_bookmarks FOR DELETE
+  TO anon, authenticated
+  USING (true);
 
 -- Policy Ratings: Publik dapat melihat dan memberikan rating
 DROP POLICY IF EXISTS "Public can read ratings" ON public.blog_ratings;
-CREATE POLICY "Public can read ratings" 
+CREATE POLICY "Public can read ratings"
   ON public.blog_ratings FOR SELECT USING (true);
 
 DROP POLICY IF EXISTS "Public can insert ratings" ON public.blog_ratings;
-CREATE POLICY "Public can insert ratings" 
-  ON public.blog_ratings FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public can insert ratings"
+  ON public.blog_ratings FOR INSERT
+  TO anon, authenticated
+  WITH CHECK (rating >= 1 AND rating <= 5 AND char_length(trim(device_id)) > 0);
 
 DROP POLICY IF EXISTS "Public can update ratings" ON public.blog_ratings;
-CREATE POLICY "Public can update ratings" 
-  ON public.blog_ratings FOR UPDATE USING (true);
+CREATE POLICY "Public can update ratings"
+  ON public.blog_ratings FOR UPDATE
+  TO anon, authenticated
+  USING (true)
+  WITH CHECK (rating >= 1 AND rating <= 5);
 
 -- ==============================================================================
--- 🔑 PERMISSIONS & GRANTS (Mencegah Error 42501 "permission denied for table")
+-- 🔑 PERMISSIONS & GRANTS (Wajib sejak penghapusan auto-grant 30 Okt 2026)
 -- ==============================================================================
 GRANT USAGE ON SCHEMA public TO anon, authenticated;
 
--- Tabel Blog
 GRANT SELECT ON public.blog_posts TO anon, authenticated;
 GRANT INSERT, UPDATE, DELETE ON public.blog_posts TO authenticated;
+GRANT ALL ON public.blog_posts TO service_role;
 
 GRANT SELECT, INSERT ON public.blog_comments TO anon, authenticated;
 GRANT UPDATE, DELETE ON public.blog_comments TO authenticated;
+GRANT ALL ON public.blog_comments TO service_role;
 
 GRANT SELECT, INSERT, DELETE ON public.blog_likes TO anon, authenticated;
+GRANT ALL ON public.blog_likes TO service_role;
+
 GRANT SELECT, INSERT, DELETE ON public.blog_bookmarks TO anon, authenticated;
+GRANT ALL ON public.blog_bookmarks TO service_role;
 
 GRANT SELECT, INSERT, UPDATE ON public.blog_ratings TO anon, authenticated;
 GRANT DELETE ON public.blog_ratings TO authenticated;
+GRANT ALL ON public.blog_ratings TO service_role;
 
 -- RPC Functions Blog
+GRANT EXECUTE ON FUNCTION public.is_blog_admin() TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.increment_blog_views(TEXT) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.increment_blog_likes(TEXT) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.decrement_blog_likes(TEXT) TO anon, authenticated;
@@ -290,18 +391,18 @@ GRANT EXECUTE ON FUNCTION public.submit_blog_rating(TEXT, TEXT, NUMERIC) TO anon
 DO $$
 BEGIN
   IF NOT EXISTS (
-    SELECT 1 FROM pg_publication_tables 
+    SELECT 1 FROM pg_publication_tables
     WHERE pubname = 'supabase_realtime' AND tablename = 'blog_posts'
   ) THEN
     ALTER PUBLICATION supabase_realtime ADD TABLE public.blog_posts;
   END IF;
   IF NOT EXISTS (
-    SELECT 1 FROM pg_publication_tables 
+    SELECT 1 FROM pg_publication_tables
     WHERE pubname = 'supabase_realtime' AND tablename = 'blog_comments'
   ) THEN
     ALTER PUBLICATION supabase_realtime ADD TABLE public.blog_comments;
   END IF;
 EXCEPTION
   WHEN undefined_object THEN
-    NULL; -- Publication might not exist in non-supabase pg instances
+    NULL;
 END $$;

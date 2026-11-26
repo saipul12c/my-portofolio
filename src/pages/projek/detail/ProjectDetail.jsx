@@ -33,7 +33,6 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import data from "../../../data/projects.json";
-import Maintenance from "../../errors/Maintenance";
 import Forbidden from "../../errors/Forbidden";
 import { getTechLanguageInfo } from "../../../utils/techRouteHelper";
 
@@ -44,9 +43,6 @@ export default function ProjectDetail() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isPlayingGallery, setIsPlayingGallery] = useState(false);
   const [recommendedProjects, setRecommendedProjects] = useState([]);
-
-  // 🚧 Mode maintenance
-  const isMaintenance = false; // ubah ke true kalau lagi perbaikan
 
   const project = data.projects.find((p) => p.id === Number(id));
 
@@ -161,11 +157,6 @@ export default function ProjectDetail() {
       state: { fromProjectDetail: true }
     });
   };
-
-  // 🚧 Early returns - HARUS SETELAH SEMUA HOOKS
-  if (isMaintenance) {
-    return <Maintenance />;
-  }
 
   // ❌ Jika akses tidak valid
   if (!isValidAccess) {

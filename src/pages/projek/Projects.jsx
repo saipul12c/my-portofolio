@@ -4,7 +4,6 @@ import { Rocket, Star, Sparkles, ArrowRight } from "lucide-react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import data from "../../data/projects.json";
 import { APPS_DATA } from "../daftarlistApp/data/appsData";
-import { useErrorAuth } from "../../context/useErrorAuth";
 import ProjectPopup from "./ProjectPopup";
 import ProjectAI from "./pencarian/AI/ProjectAI";
 
@@ -64,10 +63,7 @@ export default function Projects() {
 
   const navigate = useNavigate();
   const { id } = useParams();
-  const { setAuthorizedError } = useErrorAuth();
   const { projects = [], categories = [], labelColors = {} } = data;
-
-  const isMaintenance = false;
 
   // ⭐ Memoized render stars - hanya dibuat sekali
   const renderStars = useCallback((rating) => {
@@ -86,14 +82,6 @@ export default function Projects() {
       stars.push(<Star key="half" className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400/60" />);
     return stars;
   }, []);
-
-  // 🚧 Maintenance redirect
-  useEffect(() => {
-    if (isMaintenance) {
-      setAuthorizedError(true);
-      navigate("/503");
-    }
-  }, [isMaintenance, setAuthorizedError, navigate]);
 
   // Handle URL parameter untuk auto-open modal
   useEffect(() => {

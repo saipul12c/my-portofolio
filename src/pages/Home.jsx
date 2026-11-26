@@ -15,7 +15,6 @@ import {
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useState, useEffect, useRef, useMemo } from "react";
-import Maintenance from "./errors/Maintenance"; // 🧩 impor halaman Maintenance
 
 // 📊 Import data files
 import projectsData from "../data/projects.json";
@@ -74,11 +73,10 @@ function OptimizedGalleryCard({ item, isActive }) {
   return (
     <Link to="/photography" className="block h-full group">
       <div
-        className={`relative h-56 rounded-xl overflow-hidden cursor-pointer bg-slate-900/90 border transition-all duration-500 shadow-lg ${
-          isActive
-            ? "border-cyan-400/60 ring-1 ring-cyan-400/30 shadow-cyan-500/20"
-            : "border-white/10 hover:border-cyan-400/50"
-        }`}
+        className={`relative h-56 rounded-xl overflow-hidden cursor-pointer bg-slate-900/90 border transition-all duration-500 shadow-lg ${isActive
+          ? "border-cyan-400/60 ring-1 ring-cyan-400/30 shadow-cyan-500/20"
+          : "border-white/10 hover:border-cyan-400/50"
+          }`}
       >
         {/* Shimmer / Skeleton Loader saat media sedang dimuat */}
         {!isLoaded && !hasError && (
@@ -113,9 +111,8 @@ function OptimizedGalleryCard({ item, isActive }) {
             playsInline
             onLoadedData={() => setIsLoaded(true)}
             onError={handleMediaError}
-            className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ${
-              isLoaded ? "opacity-100" : "opacity-0"
-            }`}
+            className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ${isLoaded ? "opacity-100" : "opacity-0"
+              }`}
           />
         ) : (
           <img
@@ -125,9 +122,8 @@ function OptimizedGalleryCard({ item, isActive }) {
             decoding="async"
             onLoad={() => setIsLoaded(true)}
             onError={handleMediaError}
-            className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ${
-              isLoaded ? "opacity-100" : "opacity-0"
-            }`}
+            className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ${isLoaded ? "opacity-100" : "opacity-0"
+              }`}
           />
         )}
 
@@ -349,13 +345,6 @@ export default function Home() {
 
     return () => clearInterval(interval);
   }, [comingSoon, currentComingSoonIndex]);
-
-  const isMaintenance = false; // ubah ke false jika sudah normal
-  // const isMaintenance = true;
-
-  if (isMaintenance) {
-    return <Maintenance />; // 🚧 tampilkan halaman Maintenance
-  }
 
   // Fungsi getIconComponent untuk mapping icon
   const getIconComponent = (iconName) => {
@@ -1020,7 +1009,7 @@ export default function Home() {
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-mono text-gray-400 uppercase tracking-wider flex items-center gap-2">
                         <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                        Berganti setiap 6 detik
+                        Berikut ini adalah Projek yang saya kembangkan
                       </span>
                     </div>
 
@@ -1032,8 +1021,8 @@ export default function Home() {
                             key={item.id || idx}
                             onClick={() => setCurrentComingSoonIndex(idx)}
                             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${isSelected
-                                ? 'bg-white/20 text-white font-semibold border border-white/30 shadow-md scale-105'
-                                : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'
+                              ? 'bg-white/20 text-white font-semibold border border-white/30 shadow-md scale-105'
+                              : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'
                               }`}
                           >
                             <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-cyan-400' : 'bg-gray-500'}`} />
@@ -1322,11 +1311,11 @@ export default function Home() {
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-cyan-400/90 bg-cyan-400/10 px-3 py-1 rounded-full border border-cyan-400/20 flex items-center gap-1.5 shadow-sm">
                       <Clock className="w-3.5 h-3.5 animate-pulse text-cyan-400" />
-                      <span>Berganti setiap 3 detik</span>
+                      <span>Tulisan terbaru</span>
                     </span>
                     {isHoveredBlog && (
                       <span className="text-xs text-amber-400/90 bg-amber-400/10 px-2.5 py-1 rounded-full border border-amber-400/20">
-                        Jeda (di-hover)
+                        Klik untuk melihat detail
                       </span>
                     )}
                   </div>
@@ -1340,11 +1329,10 @@ export default function Home() {
                           key={item.id || idx}
                           onClick={() => setCurrentBlogIndex(idx)}
                           aria-label={`Artikel ${idx + 1}`}
-                          className={`transition-all duration-300 rounded-full cursor-pointer ${
-                            isSelected
-                              ? "w-8 h-2.5 bg-gradient-to-r from-cyan-400 to-blue-500 shadow-md"
-                              : "w-2.5 h-2.5 bg-white/20 hover:bg-white/40"
-                          }`}
+                          className={`transition-all duration-300 rounded-full cursor-pointer ${isSelected
+                            ? "w-8 h-2.5 bg-gradient-to-r from-cyan-400 to-blue-500 shadow-md"
+                            : "w-2.5 h-2.5 bg-white/20 hover:bg-white/40"
+                            }`}
                         />
                       );
                     })}
@@ -1472,11 +1460,11 @@ export default function Home() {
                 </h2>
                 <span className="text-xs text-cyan-400/90 bg-cyan-400/10 px-3 py-1 rounded-full border border-cyan-400/20 flex items-center gap-1.5 shadow-sm">
                   <Clock className="w-3.5 h-3.5 animate-pulse text-cyan-400" />
-                  <span>Berganti setiap 3 detik</span>
+                  <span>Dokumentasi Terbaru</span>
                 </span>
                 {isHoveredGallery && (
                   <span className="text-xs text-amber-400/90 bg-amber-400/10 px-2.5 py-1 rounded-full border border-amber-400/20">
-                    Jeda (di-hover)
+                    Klik Untuk Melihat detail Lebih lanjut
                   </span>
                 )}
               </div>
@@ -1495,7 +1483,7 @@ export default function Home() {
                 className="text-xs font-medium text-cyan-400 hover:text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 cursor-pointer"
               >
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>Ganti Foto</span>
+                <span>Refresh</span>
               </button>
               <Link
                 to="/photography"
@@ -1513,7 +1501,7 @@ export default function Home() {
               const isActive =
                 slotIndex ===
                 (activeGallerySlot - 1 + displayedGalleryIndices.length) %
-                  displayedGalleryIndices.length;
+                displayedGalleryIndices.length;
 
               return (
                 <div key={slotIndex} className="relative h-56 rounded-xl overflow-hidden">

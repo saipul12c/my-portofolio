@@ -38,10 +38,10 @@ Meski bermanfaat, orang tua perlu mengatur durasi bermain dan memilih game sesua
 Developer Indonesia seperti **Educa Studio** menghadirkan game seperti **MarBel** yang mengajarkan budaya dan keterampilan dasar.
 
 Dengan memilih game yang tepat, orang tua dan guru dapat memanfaatkan teknologi untuk menumbuhkan kecintaan belajar sejak dini.',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2025-11-12',
   '2025-11-15',
   'published',
@@ -138,10 +138,10 @@ Jelaskan konsep yang sulit dengan bahasa sederhana seolah-olah mengajar orang la
 Ciptakan ruang belajar bebas gangguan, gunakan teknik Pomodoro (25 menit fokus, 5 menit istirahat), dan pastikan istirahat yang cukup.
 
 Dengan menerapkan strategi ini, proses belajar menjadi lebih efisien, menyenangkan, dan hasilnya lebih tahan lama.',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2025-11-18',
   '2025-11-20',
   'published',
@@ -238,10 +238,10 @@ Lembaga kursus dan kampus mulai menawarkan program game development, mencetak ta
 Dengan dukungan pemerintah, peningkatan skill developer, dan ekspansi pasar, industri game Indonesia berpotensi menjadi salah satu penopang ekonomi kreatif nasional.
 
 Game Indonesia bukan sekadar produk hiburan, tetapi juga medium untuk bercerita dan melestarikan budaya.',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2025-11-25',
   '2025-11-28',
   'published',
@@ -338,10 +338,10 @@ Guru perlu dilatih untuk menguasai tools dan teknik mengajar virtual, termasuk m
 Virtual classroom kemungkinan akan tetap digunakan sebagai pendukung pembelajaran hybrid, menggabungkan kelebihan online dan offline.
 
 Dengan persiapan yang matang, virtual classroom dapat menjadi sarana pembelajaran yang efektif dan inklusif.',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2025-12-02',
   '2025-12-05',
   'published',
@@ -441,10 +441,10 @@ INSERT INTO public.blog_posts (
 Orang tua perlu memahami rating game dan berdiskusi dengan anak tentang konten yang dikonsumsi. Guru dapat mengintegrasikan game edukasi di sekolah.
 
 Game adalah alat netral; dampaknya tergantung pada bagaimana kita menggunakannya. Dengan kesadaran dan kontrol diri, game dapat menjadi hiburan yang bermanfaat.',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2025-12-08',
   '2025-12-12',
   'published',

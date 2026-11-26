@@ -6,6 +6,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -15,11 +16,22 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setSubmitting(true);
     try {
-      await login({ email, password });
+      const res = await login({ email, password });
+      if (res?.error) {
+        setError(res.error.message || 'Email atau password tidak valid');
+        return;
+      }
+      if (!res?.data?.user) {
+        setError('Gagal memverifikasi sesi login.');
+        return;
+      }
       navigate(from, { replace: true });
     } catch (err) {
       setError(err?.body?.message || err.message || 'Login gagal');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -37,7 +49,9 @@ const Login = () => {
           <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" autoComplete="current-password" required className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/30 transition-all text-sm" />
         </div>
         <div className="flex items-center justify-between pt-2">
-          <button className="px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl font-semibold shadow-lg hover:shadow-cyan-500/25 transition-all text-sm">Masuk</button>
+          <button disabled={submitting} className="px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 text-white rounded-xl font-semibold shadow-lg hover:shadow-cyan-500/25 transition-all text-sm">
+            {submitting ? 'Memproses...' : 'Masuk'}
+          </button>
           <Link to="/register" className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors">Daftar baru</Link>
         </div>
       </form>

@@ -8,9 +8,13 @@ import {
 import pkg from "../../package.json";
 import docsData from "../data/helpbutton/docs/docsSections.json";
 import PLANNED_VERSIONS from "./helpbutton/versiWeb/data/plannedVersions";
+import { useMaintenance } from "../context/useMaintenance";
+import { resolveRouteMaintenance } from "../config/maintenanceRoutes";
 
 export default function Navbar() {
   const location = useLocation();
+  const { config: maintenanceConfig } = useMaintenance();
+  const isRouteMaint = (path) => resolveRouteMaintenance(path, maintenanceConfig).isUnderMaintenance;
   const [isOpen, setIsOpen] = useState(false);
   const [portfolioDropdownOpen, setPortfolioDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -79,6 +83,7 @@ export default function Navbar() {
   const contactLink = { to: "/contact", label: "Contact", icon: <Mail size={18} /> };
 
   const isDesktopPortfolioActive = desktopPortfolioLinks.some(link => location.pathname === link.to);
+  const hasPortfolioMaintenance = desktopPortfolioLinks.some(link => isRouteMaint(link.to));
 
   return (
     <nav className="backdrop-blur-md bg-[#0f172a]/90 text-white sticky top-0 z-50 shadow-md border-b border-blue-900/30">
@@ -103,21 +108,29 @@ export default function Navbar() {
         {/* Menu Desktop (Dikelompokkan menjadi 5 tombol rapi) */}
         <ul className="hidden md:flex items-center gap-6">
           {/* Menu Utama: Home & About */}
-          {mainLinks.map((item) => (
-            <li key={item.to}>
-              <Link
-                to={item.to}
-                className={`relative flex items-center gap-2 text-base font-medium tracking-wide transition-all duration-300 ${
-                  location.pathname === item.to
-                    ? "text-cyan-400 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-[2px] after:bg-cyan-400"
-                    : "text-gray-300 hover:text-cyan-300 hover:drop-shadow-[0_0_8px_rgba(6,182,212,0.7)]"
-                }`}
-              >
-                <span className="text-cyan-300">{item.icon}</span>
-                <span>{item.label}</span>
-              </Link>
-            </li>
-          ))}
+          {mainLinks.map((item) => {
+            const maint = isRouteMaint(item.to);
+            return (
+              <li key={item.to}>
+                <Link
+                  to={item.to}
+                  className={`relative flex items-center gap-2 text-base font-medium tracking-wide transition-all duration-300 ${
+                    location.pathname === item.to
+                      ? "text-cyan-400 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-[2px] after:bg-cyan-400"
+                      : "text-gray-300 hover:text-cyan-300 hover:drop-shadow-[0_0_8px_rgba(6,182,212,0.7)]"
+                  }`}
+                >
+                  <span className="text-cyan-300">{item.icon}</span>
+                  <span>{item.label}</span>
+                  {maint && (
+                    <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-400/35">
+                      Maintenance
+                    </span>
+                  )}
+                </Link>
+              </li>
+            );
+          })}
 
           {/* Dropdown Karya & Portofolio */}
           <li className="relative" ref={dropdownRef}>
@@ -132,6 +145,9 @@ export default function Navbar() {
             >
               <span className="text-cyan-300"><Folder size={18} /></span>
               <span>Portfolio</span>
+              {hasPortfolioMaintenance && (
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" title="Sebagian halaman portofolio sedang Maintenance" />
+              )}
               <ChevronDown size={14} className={`transition-transform duration-200 ${portfolioDropdownOpen ? "rotate-180" : ""}`} />
             </button>
 
@@ -147,6 +163,7 @@ export default function Navbar() {
                 <div className="space-y-1">
                   {desktopPortfolioLinks.map((sub) => {
                     const isActive = location.pathname === sub.to;
+                    const subMaint = isRouteMaint(sub.to);
                     return (
                       <Link
                         key={sub.to}
@@ -160,8 +177,15 @@ export default function Navbar() {
                         <div className={`p-1.5 rounded-lg ${isActive ? "bg-cyan-400/20 text-cyan-300" : "bg-white/5 text-cyan-400"}`}>
                           {sub.icon}
                         </div>
-                        <div>
-                          <div className="text-sm font-semibold leading-tight">{sub.label}</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-semibold leading-tight flex items-center gap-1.5">
+                            <span>{sub.label}</span>
+                            {subMaint && (
+                              <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-400/35">
+                                Maint.
+                              </span>
+                            )}
+                          </div>
                           <div className="text-[11px] text-gray-400 leading-tight mt-0.5">{sub.desc}</div>
                         </div>
                       </Link>
@@ -184,6 +208,11 @@ export default function Navbar() {
             >
               <span className="text-cyan-300"><BookOpen size={18} /></span>
               <span>Blog</span>
+              {isRouteMaint("/blog") && (
+                <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-400/35">
+                  Maintenance
+                </span>
+              )}
             </Link>
           </li>
 
@@ -199,6 +228,9 @@ export default function Navbar() {
             >
               <span>{contactLink.icon}</span>
               <span>{contactLink.label}</span>
+              {isRouteMaint(contactLink.to) && (
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" title="Halaman Contact sedang Maintenance" />
+              )}
             </Link>
           </li>
         </ul>
@@ -260,6 +292,7 @@ export default function Navbar() {
                   <div className="space-y-1">
                     {mainLinks.map((item) => {
                       const isActive = location.pathname === item.to;
+                      const maint = isRouteMaint(item.to);
                       return (
                         <Link
                           key={item.to}
@@ -273,6 +306,11 @@ export default function Navbar() {
                         >
                           <span className={isActive ? "text-cyan-300" : "text-cyan-400/80"}>{item.icon}</span>
                           <span className="flex-1 text-sm">{item.label}</span>
+                          {maint && (
+                            <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-400/35">
+                              Maint.
+                            </span>
+                          )}
                           <span className="text-xs text-cyan-400/50">›</span>
                         </Link>
                       );
@@ -289,6 +327,7 @@ export default function Navbar() {
                   <div className="grid grid-cols-2 gap-2">
                     {portfolioLinks.map((item) => {
                       const isActive = location.pathname === item.to || (item.to === "/blog" && location.pathname.startsWith("/blog/"));
+                      const maint = isRouteMaint(item.to);
                       return (
                         <Link
                           key={item.to}
@@ -304,7 +343,13 @@ export default function Navbar() {
                             <div className={`p-1.5 rounded-lg ${isActive ? "bg-cyan-400/20 text-cyan-300" : "bg-white/5 text-cyan-400"}`}>
                               {item.icon}
                             </div>
-                            {isActive && <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />}
+                            {maint ? (
+                              <span className="px-1.5 py-0.5 rounded-full text-[8px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-400/35">
+                                Maint.
+                              </span>
+                            ) : (
+                              isActive && <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                            )}
                           </div>
                           <div>
                             <div className="text-sm font-semibold leading-tight">{item.label}</div>

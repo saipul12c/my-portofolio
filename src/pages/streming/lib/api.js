@@ -1,5 +1,5 @@
 // Supabase API client for streaming pages
-import { supabase } from '../../../lib/supabaseClient';
+import { assertSupabase } from '../../../lib/supabaseClient';
 
 const mapVideo = (v) => ({
   ...v,
@@ -16,7 +16,8 @@ const mapVideo = (v) => ({
 
 export const videos = {
   list: async (q, category) => {
-    let query = supabase.from('videos').select('*');
+    const client = assertSupabase();
+    let query = client.from('videos').select('*');
     if (q) {
       query = query.ilike('title', `%${q}%`);
     }
@@ -28,7 +29,8 @@ export const videos = {
     return (data || []).map(mapVideo);
   },
   getRelated: async (videoId, categories = []) => {
-    let query = supabase.from('videos').select('*').neq('id', videoId).limit(10);
+    const client = assertSupabase();
+    let query = client.from('videos').select('*').neq('id', videoId).limit(10);
     if (categories && categories.length > 0) {
       // Find videos with overlapping categories
       query = query.overlaps('category', categories);
@@ -38,14 +40,16 @@ export const videos = {
     return (data || []).map(mapVideo);
   },
   get: async (id) => {
-    const { data, error } = await supabase.from('videos').select('*').eq('id', id).single();
+    const client = assertSupabase();
+    const { data, error } = await client.from('videos').select('*').eq('id', id).single();
     if (error) throw error;
     return data ? mapVideo(data) : null;
   },
   comments: async (id, page = 1, per = 20) => {
+    const client = assertSupabase();
     const from = (page - 1) * per;
     const to = from + per - 1;
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from('video_comments')
       .select('*')
       .eq('video_id', id)
@@ -55,7 +59,8 @@ export const videos = {
     return data;
   },
   postComment: async (id, author, message) => {
-    const { data, error } = await supabase
+    const client = assertSupabase();
+    const { data, error } = await client
       .from('video_comments')
       .insert([{ video_id: id, author_name: author, content: message }])
       .select();
@@ -63,9 +68,18 @@ export const videos = {
     return data ? data[0] : null;
   },
   like: async (id, liked) => {
-    const { data: video } = await supabase.from('videos').select('likes_count').eq('id', id).single();
+    const client = assertSupabase();
+    const { data: rpcLikes, error: rpcError } = await client.rpc('increment_video_like', {
+      target_video_id: id,
+      is_liking: Boolean(liked)
+    });
+    if (!rpcError && typeof rpcLikes === 'number') {
+      return { likes: rpcLikes };
+    }
+    // Fallback for schemas before increment_video_like RPC is applied
+    const { data: video } = await client.from('videos').select('likes_count').eq('id', id).single();
     const newLikes = liked ? ((video?.likes_count || 0) + 1) : Math.max(0, (video?.likes_count || 0) - 1);
-    const { error } = await supabase.from('videos').update({ likes_count: newLikes }).eq('id', id);
+    const { error } = await client.from('videos').update({ likes_count: newLikes }).eq('id', id);
     if (error) throw error;
     return { likes: newLikes };
   }
@@ -73,7 +87,8 @@ export const videos = {
 
 export const shorts = {
   list: async () => {
-    const { data, error } = await supabase.from('video_shorts').select('*');
+    const client = assertSupabase();
+    const { data, error } = await client.from('video_shorts').select('*');
     if (error) throw error;
     return (data || []).map(s => ({
       ...s,
@@ -87,20 +102,25 @@ export const shorts = {
 
 export const streamingUsers = {
   list: async () => {
-    const { data, error } = await supabase.from('users').select('*').limit(10);
-    if (error) throw error;
-    return data;
+    const client = assertSupabase();
+    const { data, error } = await client.rpc('get_public_profiles').limit(10);
+    if (!error && data) return data;
+    const { data: fallback, error: fbError } = await client.from('profiles').select('*').limit(10);
+    if (fbError) throw fbError;
+    return fallback || [];
   }
 };
 
 export const streams = {
   listLive: async () => {
-    const { data, error } = await supabase.from('videos').select('*').eq('is_live', true);
+    const client = assertSupabase();
+    const { data, error } = await client.from('videos').select('*').eq('is_live', true);
     if (error) throw error;
     return (data || []).map(mapVideo);
   },
   start: async (payload) => {
-    const { data, error } = await supabase.from('videos').insert([{ ...payload, is_live: true }]).select();
+    const client = assertSupabase();
+    const { data, error } = await client.from('videos').insert([{ ...payload, is_live: true }]).select();
     if (error) throw error;
     return data ? mapVideo(data[0]) : null;
   }

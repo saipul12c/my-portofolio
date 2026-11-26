@@ -74,7 +74,7 @@ export const MessageItem = memo(({
           isHighlighted ? 'ring-4 ring-cyan-400/80 rounded-3xl shadow-[0_0_30px_rgba(6,182,212,0.6)] transition-all' : ''
         }`}
       >
-        <div className={`group flex flex-col max-w-[90%] sm:max-w-xl lg:max-w-2xl ${alignRight ? 'items-end' : 'items-start'}`}>
+        <div className={`group flex flex-col max-w-[85%] sm:max-w-xl lg:max-w-2xl ${alignRight ? 'items-end' : 'items-start'}`}>
           {/* Sender Info (Only for others) */}
           {!alignRight && (
             <div className="flex items-center gap-2 mb-1.5 ml-2">
@@ -143,7 +143,7 @@ export const MessageItem = memo(({
               )}
 
               {/* Actual Message Bubble */}
-              <div className={`px-3.5 sm:px-6 py-2.5 sm:py-4 rounded-2xl sm:rounded-[2rem] shadow-xl transition-colors duration-150 ${
+              <div className={`px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 rounded-2xl sm:rounded-[1.5rem] lg:rounded-[2rem] shadow-xl transition-colors duration-150 ${
                 alignRight 
                   ? 'bg-gradient-to-br from-cyan-600 via-blue-600 to-indigo-700 text-white rounded-tr-none border border-cyan-400/20 shadow-[0_4px_20px_rgba(6,182,212,0.2)]' 
                   : 'bg-[var(--theme-surface)]/95 backdrop-blur-md border border-[var(--theme-border)] text-[var(--theme-text)] shadow-md rounded-tl-none hover:border-cyan-500/30'
@@ -199,7 +199,7 @@ export const MessageItem = memo(({
                 )}
                 
                 {/* Markdown & Code Block Formatted Content */}
-                <div className="text-xs sm:text-base leading-relaxed break-words">
+                <div className="text-xs sm:text-sm lg:text-base leading-relaxed break-words">
                   <MarkdownRenderer
                     content={message.content}
                     alignRight={alignRight}

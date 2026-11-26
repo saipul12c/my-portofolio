@@ -49,13 +49,13 @@ export const ChatHeader = ({
 
   return (
     <>
-      <div className="z-40 p-2 sm:p-4 w-full flex-shrink-0">
+      <div className="z-40 p-2 sm:p-3 lg:p-4 w-full flex-shrink-0">
         <motion.header 
           initial={{ y: -30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="max-w-6xl mx-auto w-full rounded-2xl sm:rounded-3xl border border-[var(--theme-border)] bg-[var(--theme-surface)]/95 backdrop-blur-2xl py-2 sm:py-3 px-3 sm:px-6 shadow-xl"
+          className="max-w-6xl mx-auto w-full rounded-2xl sm:rounded-3xl border border-[var(--theme-border)] bg-[var(--theme-surface)]/95 backdrop-blur-2xl py-2 sm:py-2.5 px-2.5 sm:px-4 lg:px-6 shadow-xl"
         >
-          <div className="flex justify-between items-center gap-2">
+          <div className="flex justify-between items-center gap-1.5 sm:gap-2">
             {/* Logo & Online Status */}
             <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/20 shrink-0">
@@ -102,7 +102,7 @@ export const ChatHeader = ({
             </div>
 
             {/* Desktop Center: Core Interactive Tools Bar */}
-            <div className="hidden md:flex items-center gap-1 p-1 bg-[var(--theme-surface-hover)]/70 rounded-2xl border border-[var(--theme-border)]">
+            <div className="hidden md:flex items-center gap-1 p-1 bg-[var(--theme-surface-hover)]/70 rounded-2xl border border-[var(--theme-border)] shrink min-w-0">
               {onOpenSearch && (
                 <button
                   type="button"
@@ -156,7 +156,7 @@ export const ChatHeader = ({
             </div>
 
             {/* Desktop Right Cluster: Utilities + User Profile Card */}
-            <div className="hidden md:flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-1.5 lg:gap-2 shrink-0">
               {/* System Utilities (Theme, Sound, Members, Notifications) */}
               <div className="flex items-center gap-1 p-1 bg-[var(--theme-surface-hover)]/70 rounded-2xl border border-[var(--theme-border)]">
                 {/* Theme Selector */}
@@ -225,7 +225,7 @@ export const ChatHeader = ({
                       <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-[var(--theme-surface)]" />
                     </div>
                     <div className="flex flex-col min-w-0 pr-1">
-                      <span className="text-xs font-black text-[var(--theme-text)] tracking-tight truncate max-w-[110px] group-hover:text-cyan-400 transition-colors">
+                      <span className="text-xs font-black text-[var(--theme-text)] tracking-tight truncate max-w-[80px] lg:max-w-[110px] group-hover:text-cyan-400 transition-colors">
                         {user.username}
                       </span>
                       <div className="flex items-center gap-1">
@@ -268,7 +268,7 @@ export const ChatHeader = ({
             </div>
 
             {/* Mobile Header Right Bar (< 768px): Clean, Spacious & Touch-Optimized */}
-            <div className="flex md:hidden items-center gap-1.5">
+            <div className="flex md:hidden items-center gap-1">
               {/* Search Button */}
               {onOpenSearch && (
                 <button

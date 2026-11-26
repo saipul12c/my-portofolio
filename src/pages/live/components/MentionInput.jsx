@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { AtSign, X, Check, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '../../../lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from '../../../lib/supabaseClient';
 
 export const MentionInput = ({ value, onChange, onMention }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -11,19 +11,28 @@ export const MentionInput = ({ value, onChange, onMention }) => {
   const containerRef = useRef(null);
   const debounceTimerRef = useRef(null);
 
-  // Search users in database with debounce
+  // Search users in database with debounce (menggunakan RPC get_public_profiles agar aman dari privasi email RLS)
   const searchUsers = useCallback(async (query) => {
-    if (!query) {
+    if (!query || !isSupabaseConfigured || !supabase) {
       setSuggestions([]);
       return;
     }
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('id, nama, role')
+      let { data, error } = await supabase
+        .rpc('get_public_profiles')
         .ilike('nama', `%${query}%`)
         .limit(5);
+
+      if (error) {
+        const fallback = await supabase
+          .from('profiles')
+          .select('id, nama, role')
+          .ilike('nama', `%${query}%`)
+          .limit(5);
+        data = fallback.data;
+        error = fallback.error;
+      }
 
       if (!error) setSuggestions(data || []);
     } catch (err) {
@@ -59,7 +68,7 @@ export const MentionInput = ({ value, onChange, onMention }) => {
         const afterAt = text.substring(lastAtIndex + 1);
         if (/^[a-zA-Z0-9_]*$/.test(afterAt)) {
           setShowSuggestions(true);
-          
+
           if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
           debounceTimerRef.current = setTimeout(() => {
             searchUsers(afterAt);
@@ -75,10 +84,10 @@ export const MentionInput = ({ value, onChange, onMention }) => {
     const lastAtIndex = value.lastIndexOf('@');
     const beforeAt = value.substring(0, lastAtIndex);
     const newValue = beforeAt + `@${user.nama} `;
-    
+
     onChange(newValue);
     setShowSuggestions(false);
-    
+
     if (onMention) onMention(user);
     inputRef.current?.focus();
   };
@@ -110,14 +119,14 @@ export const MentionInput = ({ value, onChange, onMention }) => {
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         placeholder="Tulis sinyal... ketik @ untuk mention"
-        className="w-full bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl pl-12 sm:pl-14 pr-16 py-3.5 sm:py-5 text-xs sm:text-sm text-[var(--theme-text)] placeholder-[var(--theme-text-muted)] focus:outline-none focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500/30 transition-all resize-none min-h-[56px] sm:min-h-[60px] custom-scrollbar backdrop-blur-xl"
+        className="w-full bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl sm:rounded-3xl pl-11 sm:pl-12 lg:pl-14 pr-14 sm:pr-16 py-3 sm:py-4 lg:py-5 text-xs sm:text-sm text-[var(--theme-text)] placeholder-[var(--theme-text-muted)] focus:outline-none focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500/30 transition-all resize-none min-h-[48px] sm:min-h-[56px] lg:min-h-[60px] custom-scrollbar backdrop-blur-xl"
         rows="2"
       />
 
       {/* Suggestions Dropdown (Glassmorphism) */}
       <AnimatePresence>
         {showSuggestions && (suggestions.length > 0 || loading) && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}

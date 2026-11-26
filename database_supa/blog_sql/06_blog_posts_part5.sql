@@ -230,10 +230,10 @@ Namun, penting untuk diingat bahwa neurosains adalah bidang yang kompleks dan be
 Masa depan yang menarik terletak pada konvergensi neurosains, teknologi game, dan pendidikan. Dengan pendekatan interdisipliner dan komitmen untuk desain berbasis bukti, kita dapat menciptakan generasi baru game edukasi yang tidak hanya menyenangkan, tetapi juga dioptimalkan untuk cara otak kita belajar secara alami.
 
 Tujuan akhir bukanlah untuk ''membuat game'' atau ''mengajar konten'', tetapi untuk menciptakan pengalaman yang mengubah otak—pengalaman yang membentuk koneksi saraf baru, memperkuat jaringan kognitif, dan mengembangkan kapasitas untuk berpikir, belajar, dan berinovasi di dunia yang kompleks.',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2026-08-05',
   '2026-08-12',
   'published',
@@ -525,10 +525,10 @@ Prinsip desain universal untuk pembelajaran memberikan kerangka yang kuat untuk 
 Tantangan menuju inklusivitas digital yang sejati signifikan, tetapi tidak dapat diatasi. Dengan strategi yang disengaja, investasi yang tepat, dan komitmen untuk mendengarkan suara mereka yang paling terpinggirkan, kita dapat menciptakan masa depan pendidikan digital yang tidak hanya teknologi canggih, tetapi juga adil, manusiawi, dan benar-benar untuk semua.
 
 Inklusi bukanlah tujuan yang dapat dicapai sekali dan selesai—ini adalah perjalanan berkelanjutan yang membutuhkan kewaspadaan, adaptasi, dan komitmen tanpa henti untuk keadilan dan martabat setiap pembelajar.',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2026-09-10',
   '2026-09-18',
   'published',
@@ -814,10 +814,10 @@ Ketika digunakan dengan sengaja, game dapat membantu mengembangkan keterampilan 
 Masa depan kreativitas mungkin akan semakin terjalin dengan dunia game. Seiring dengan berkembangnya teknologi dan alat yang lebih canggih, dan seiring dengan tumbuhnya pengakuan terhadap nilai kreativitas, game mungkin akan menjadi salah satu medium utama di mana kita tidak hanya mengkonsumsi konten kreatif, tetapi juga menciptakannya.
 
 Game bukanlah pengganti untuk bentuk-bentuk tradisional pengembangan kreativitas, tetapi mereka adalah pelengkap yang kuat—ruang baru di mana imajinasi dapat berkembang dengan cara yang unik dan menarik. Dengan merangkul potensi ini, kita dapat membantu menciptakan generasi yang tidak hanya kreatif, tetapi juga terampil dalam mengekspresikan kreativitas mereka melalui medium baru yang semakin penting dalam budaya kita.',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2026-10-05',
   '2026-10-12',
   'published',
@@ -1138,10 +1138,10 @@ Assessment modern harus otentik, berkelanjutan, formatif, dan berpusat pada pemb
 Transformasi assessment adalah tantangan besar, tetapi juga peluang besar. Dengan mengubah cara kita menilai, kita dapat mengubah apa yang kita nilai dalam pendidikan—dari pengetahuan faktual menuju kompetensi holistik, dari kinerja individu menuju kolaborasi, dari produk akhir menuju proses belajar.
 
 Assessment bukanlah akhir dari pembelajaran, tetapi bagian integral darinya. Ketika dirancang dengan baik, assessment dapat menjadi salah satu alat paling kuat yang kita miliki untuk meningkatkan pembelajaran dan mempersiapkan siswa untuk sukses di dunia yang kompleks dan berubah cepat.',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2026-11-10',
   '2026-11-18',
   'published',
@@ -1436,10 +1436,10 @@ Tantangan terbesar mungkin adalah mengatasi dikotomi yang tertanam dalam budaya 
 Masa depan pendidikan mungkin terletak pada pengakuan bahwa pembelajaran yang paling mendalam sering kali terasa seperti permainan yang paling menarik—dan bahwa permainan yang paling bermakna sering kali adalah pembelajaran yang paling efektif. Dengan merangkul hubungan filosofis yang dalam antara pendidikan dan game, kita dapat membayangkan dan menciptakan masa depan di mana belajar adalah petualangan yang dinantikan setiap orang, bukan kewajiban yang harus ditanggung.
 
 Pada akhirnya, ini bukan tentang game atau teknologi. Ini tentang menciptakan pengalaman belajar yang benar-benar manusiawi—pengalaman yang menghormati kecerdasan kita, membangkitkan rasa ingin tahu kita, menantang kemampuan kita, dan memenuhi kebutuhan mendalam kita untuk makna dan koneksi. Dan dalam hal ini, baik filsuf pendidikan maupun desainer game memiliki banyak hal untuk diajarkan satu sama lain.',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2026-12-05',
   '2026-12-12',
   'published',

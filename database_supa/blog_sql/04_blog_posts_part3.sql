@@ -38,10 +38,10 @@ Ajak siswa menyelesaikan proyek nyata (misalnya membuat kampanye lingkungan) yan
 Setelah mencoba metode baru, evaluasi efektivitasnya melalui feedback siswa dan sesama guru. Kreativitas adalah proses terus-menerus.
 
 Dengan menumbuhkan mindset kreatif, guru tidak hanya mengajar, tetapi juga menginspirasi siswa untuk berpikir out-of-the-box.',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2025-12-15',
   '2025-12-18',
   'published',
@@ -138,10 +138,10 @@ Karir atlet esports relatif pendek (rata-rata di bawah 30 tahun). Penting untuk 
 Dengan banyaknya talenta muda dan dukungan sponsor, Indonesia berpotensi menjadi hub esports Asia Tenggara.
 
 Esports adalah industri yang legit dengan jalur karier beragam. Namun, seperti bidang olahraga lainnya, kesuksesan butuh disiplin, strategi, dan jaringan.',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2025-12-22',
   '2025-12-25',
   'published',
@@ -239,10 +239,10 @@ Nilai karakter dapat diselipkan dalam pelajaran apa pun. Misalnya, kerja kelompo
 Sekolah perlu berkomunikasi rutin dengan orang tua untuk memastikan konsistensi nilai yang diajarkan di rumah dan di sekolah.
 
 Pendidikan karakter bukan tugas satu pihak. Butuh sinergi antara sekolah, keluarga, dan masyarakat untuk menciptakan generasi yang tidak hanya pintar, tetapi juga baik hati.',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2025-12-30',
   '2026-01-05',
   'published',
@@ -343,10 +343,10 @@ INSERT INTO public.blog_posts (
 Tidak semua sekolah memiliki akses device yang memadai. Solusinya bisa dengan menggunakan game fisik (board game) atau bergantian menggunakan lab komputer.
 
 GBL membuktikan bahwa belajar dan bermain dapat berjalan beriringan untuk menciptakan pengalaman belajar yang mendalam dan menyenangkan.',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2026-01-10',
   '2026-01-12',
   'published',
@@ -550,10 +550,10 @@ Society 5.0 mengintegrasikan ruang siber dan fisik untuk kesejahteraan manusia. 
 Revolusi pendidikan digital adalah perjalanan yang kompleks namun tak terelakkan. Ini bukan tentang menggantikan guru dengan robot atau sekolah dengan aplikasi. Ini tentang menciptakan ekosistem pembelajaran yang lebih personal, inklusif, relevan, dan efektif. Tantangannya besar, tetapi potensi manfaatnya—pendidikan berkualitas untuk semua, pengembangan potensi maksimal setiap individu, dan persiapan menghadapi dunia yang terus berubah—jauh lebih besar.
 
 Kunci keberhasilan terletak pada keseimbangan: memanfaatkan teknologi tanpa mengabaikan sentuhan manusia, berinovasi sambil mempertahankan nilai-nilai pendidikan yang esensial, dan bergerak maju dengan inklusivitas sehingga tidak ada yang tertinggal dalam revolusi ini.',
-  'Syaiful Mukmin',
-  '/images/authors/syaiful.jpg',
-  'Pengajar dan penulis aktif di blog pendidikan dengan fokus pada inovasi metode pembelajaran dan teknologi pendidikan.',
-  '/authors/syaiful-mukmin',
+  'M. Syaiful Mukmin',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+  'Pengembang perangkat lunak, penulis, dan tech enthusiast dengan dedikasi dalam membangun arsitektur web modern, kecerdasan buatan, dan dokumentasi visual bermutu tinggi.',
+  '/blog/authors/m-syaiful-mukmin',
   '2026-02-15',
   '2026-02-20',
   'published',

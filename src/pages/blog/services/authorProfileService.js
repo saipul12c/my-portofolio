@@ -5,6 +5,109 @@
 
 const STORAGE_KEY = 'blog_author_profiles_v1';
 
+/**
+ * Normalisasi nama atau slug penulis agar konsisten di seluruh aplikasi
+ * (mis. "M. Syaiful Mukmin" dan "m.-syaiful-mukmin" -> "m-syaiful-mukmin").
+ */
+export const normalizeAuthorSlug = (slugOrName) => {
+  if (!slugOrName) return '';
+  return String(slugOrName)
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/[\s-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+};
+
+const parseUpdatedTime = (profile) => {
+  const ts = Date.parse(profile?.updatedAt || '');
+  return Number.isNaN(ts) ? 0 : ts;
+};
+
+const mergeAuthorRecords = (existing, incoming, canonicalSlug) => {
+  if (!existing) {
+    return {
+      ...incoming,
+      slug: canonicalSlug
+    };
+  }
+
+  const existingTime = parseUpdatedTime(existing);
+  const incomingTime = parseUpdatedTime(incoming);
+  const incomingIsNewer = incomingTime > existingTime || (incomingTime === existingTime && Boolean(incoming?.updatedAt) && !existing?.updatedAt);
+
+  const primary = incomingIsNewer ? incoming : existing;
+  const secondary = incomingIsNewer ? existing : incoming;
+
+  const pickText = (field) => {
+    const val = primary?.[field];
+    if (typeof val === 'string' && val.trim().length > 0) return val;
+    return secondary?.[field] ?? val ?? '';
+  };
+
+  const primarySocials = primary?.socialLinks || {};
+  const secondarySocials = secondary?.socialLinks || {};
+  const socialKeys = new Set([...Object.keys(secondarySocials), ...Object.keys(primarySocials)]);
+  const mergedSocials = {};
+  socialKeys.forEach((key) => {
+    const pVal = primarySocials[key];
+    mergedSocials[key] = (typeof pVal === 'string' && pVal.trim().length > 0)
+      ? pVal
+      : (secondarySocials[key] ?? pVal ?? '');
+  });
+
+  return {
+    ...secondary,
+    ...primary,
+    slug: canonicalSlug,
+    name: pickText('name'),
+    avatar: pickText('avatar'),
+    bio: pickText('bio'),
+    expertise: pickText('expertise'),
+    location: pickText('location'),
+    company: pickText('company'),
+    email: pickText('email'),
+    verified: primary?.verified !== undefined ? primary.verified : (secondary?.verified !== false),
+    socialLinks: mergedSocials,
+    updatedAt: primary?.updatedAt || secondary?.updatedAt
+  };
+};
+
+const normalizeProfilesMap = (rawProfiles = {}) => {
+  const merged = {};
+  let hasChanges = false;
+
+  const upsertProfile = (rawKey, profile, isStored) => {
+    if (!profile || typeof profile !== 'object') return;
+    const rawSlug = profile.slug || rawKey || profile.name;
+    const canonicalSlug = normalizeAuthorSlug(rawSlug) || normalizeAuthorSlug(profile.name) || String(rawKey || '').trim();
+    if (!canonicalSlug) return;
+
+    const normalizedName = String(profile.name || '').toLowerCase().trim();
+    let targetKey = canonicalSlug;
+
+    if (!merged[targetKey] && normalizedName) {
+      const sameNameKey = Object.keys(merged).find(
+        (k) => merged[k]?.name?.toLowerCase().trim() === normalizedName
+      );
+      if (sameNameKey) {
+        targetKey = sameNameKey;
+      }
+    }
+
+    if (isStored && (rawKey !== targetKey || profile.slug !== targetKey)) {
+      hasChanges = true;
+    }
+
+    merged[targetKey] = mergeAuthorRecords(merged[targetKey], profile, targetKey);
+  };
+
+  Object.entries(DEFAULT_PROFILES).forEach(([key, profile]) => upsertProfile(key, profile, false));
+  Object.entries(rawProfiles || {}).forEach(([key, profile]) => upsertProfile(key, profile, true));
+
+  return { profiles: merged, hasChanges };
+};
+
 export const DEFAULT_PROFILES = {
   "m-syaiful-mukmin": {
     name: "M. Syaiful Mukmin",
@@ -35,13 +138,17 @@ export const getAuthorProfiles = () => {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_PROFILES));
-      return DEFAULT_PROFILES;
+      return { ...DEFAULT_PROFILES };
     }
     const parsed = JSON.parse(raw);
-    return { ...DEFAULT_PROFILES, ...parsed };
+    const { profiles, hasChanges } = normalizeProfilesMap(parsed);
+    if (hasChanges) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(profiles));
+    }
+    return profiles;
   } catch (err) {
     console.error("Gagal membaca profil penulis:", err);
-    return DEFAULT_PROFILES;
+    return { ...DEFAULT_PROFILES };
   }
 };
 
@@ -51,16 +158,18 @@ export const getAuthorProfiles = () => {
 export const getAuthorProfile = (slugOrName) => {
   if (!slugOrName) return null;
   const profiles = getAuthorProfiles();
-  const searchSlug = String(slugOrName).toLowerCase().trim().replace(/\s+/g, '-');
+  const rawSearch = String(slugOrName).toLowerCase().trim();
+  const searchSlug = normalizeAuthorSlug(slugOrName);
 
-  // 1. Cek langsung via slug
-  if (profiles[searchSlug]) return profiles[searchSlug];
+  // 1. Cek langsung via slug ternormalisasi
+  if (searchSlug && profiles[searchSlug]) return profiles[searchSlug];
 
-  // 2. Cek via pencocokan nama
-  const found = Object.values(profiles).find(
-    p => p.name?.toLowerCase().trim() === String(slugOrName).toLowerCase().trim() ||
-         p.slug === searchSlug
-  );
+  // 2. Cek via pencocokan nama atau slug ternormalisasi
+  const found = Object.values(profiles).find((p) => {
+    const pName = p.name?.toLowerCase().trim();
+    const pSlug = normalizeAuthorSlug(p.slug || p.name);
+    return pName === rawSearch || (searchSlug && (pSlug === searchSlug || normalizeAuthorSlug(p.name) === searchSlug));
+  });
 
   return found || null;
 };
@@ -75,14 +184,29 @@ export const saveAuthorProfile = (profileData) => {
 
   try {
     const profiles = getAuthorProfiles();
-    const slug = profileData.slug || profileData.name.toLowerCase().trim().replace(/\s+/g, '-');
-    
-    const updatedProfile = {
-      ...profileData,
-      slug,
-      name: profileData.name.trim(),
-      updatedAt: new Date().toISOString()
-    };
+    const trimmedName = profileData.name.trim();
+    const requestedSlug = normalizeAuthorSlug(profileData.slug || trimmedName);
+    const nameSlug = normalizeAuthorSlug(trimmedName);
+
+    // Cari entri yang sudah ada dengan nama atau slug yang sama agar tidak menimbulkan duplikat
+    const existingSameNameKey = Object.keys(profiles).find(
+      (k) => profiles[k]?.name?.toLowerCase().trim() === trimmedName.toLowerCase()
+    );
+    const slug = (profiles[requestedSlug] ? requestedSlug : null) ||
+      existingSameNameKey ||
+      requestedSlug ||
+      nameSlug;
+
+    const updatedProfile = mergeAuthorRecords(
+      profiles[slug],
+      {
+        ...profileData,
+        slug,
+        name: trimmedName,
+        updatedAt: new Date().toISOString()
+      },
+      slug
+    );
 
     profiles[slug] = updatedProfile;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(profiles));

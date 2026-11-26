@@ -18,6 +18,7 @@ import {
   fetchPostBySlug,
   subscribeToComments
 } from "../services/blogSupabase";
+import { normalizeAuthorSlug } from "../services/authorProfileService";
 import {
   FiArrowLeft,
   FiCalendar,
@@ -509,7 +510,7 @@ export default function BlogDetail() {
   const handleAuthorClick = (e, author) => {
     e.stopPropagation();
     // Generate slug dari nama author
-    const authorSlug = author.toLowerCase().replace(/\s+/g, '-');
+    const authorSlug = normalizeAuthorSlug(author);
     navigate(`/blog/authors/${authorSlug}`, {
       state: {
         authorName: author,

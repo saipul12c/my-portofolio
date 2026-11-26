@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '../../../lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from '../../../lib/supabaseClient';
 
 const Daftar = () => {
   const navigate = useNavigate();
@@ -21,6 +21,7 @@ const Daftar = () => {
 
   // Auto-redirect jika pengguna sudah memiliki sesi login aktif yang sah
   useEffect(() => {
+    if (!isSupabaseConfigured || !supabase) return;
     const checkActiveSession = async () => {
       try {
         const authRes = await supabase.auth.getUser().catch(() => null);
@@ -89,6 +90,9 @@ const Daftar = () => {
     setMessage({ type: '', text: '' });
 
     try {
+      if (!isSupabaseConfigured || !supabase) {
+        throw new Error('Koneksi Supabase belum dikonfigurasi.');
+      }
       // Tambahkan .trim() untuk mencegah spasi tersembunyi yang menyebabkan "invalid email"
       const cleanEmail = formData.email.trim().toLowerCase();
       const cleanNama = formData.nama.trim();

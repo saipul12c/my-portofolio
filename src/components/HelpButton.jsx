@@ -4,6 +4,7 @@ import { HelpCircle, X, Wrench, Info } from "lucide-react";
 import HelpMenu from "./helpbutton/HelpMenu";
 import { ErrorBoundary } from "react-error-boundary";
 import { useRecaptcha } from "../context/useRecaptcha";
+import { useMaintenance } from "../context/useMaintenance";
 import { useNavigate } from "react-router-dom";
 import { runWhenIdle } from "../utils/deviceProfiler";
 
@@ -70,6 +71,7 @@ export default function HelpButton() {
   const [showMainTooltip, setShowMainTooltip] = useState(false);
   const [kbData, setKbData] = useState({ kb: {}, stats: {} });
   const { isRecaptchaVisible } = useRecaptcha();
+  const { config: maintenanceConfig } = useMaintenance();
   const navigate = useNavigate();
 
   // Predictive background prefetch saat browser HP idle
@@ -92,8 +94,8 @@ export default function HelpButton() {
     return () => window.removeEventListener('saipul_navigate', handleNavigate);
   }, [navigate]);
 
-  // Ubah ke false jika fitur maintenance sudah selesai
-  const isMaintenance = false;
+  // Dikontrol dinamis dari Dashboard Maintenance (tersambung ke database)
+  const isMaintenance = Boolean(maintenanceConfig?.helpButtonMaintenance);
 
   // Kontrol untuk mengaktifkan/menonaktifkan chatbot
   // Ubah ke true untuk mengaktifkan, false untuk menonaktifkan

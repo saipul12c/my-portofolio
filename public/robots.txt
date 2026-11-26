@@ -10,6 +10,15 @@ Disallow: /register
 Disallow: /discord/profile
 Disallow: /live/dash
 Disallow: /live/users
+Disallow: /internal
+Disallow: /private
+Disallow: /admin
+Disallow: /blog-admin
+Disallow: /blog/admin
+Disallow: /blog/secret-login
+Disallow: /Live-Discussion/dashboard
+Disallow: /Live-Discussion/login
+Disallow: /503
 
 # Lokasi Peta Situs (Sitemap)
 Sitemap: https://syaiful-mukmin.netlify.app/sitemap.xml

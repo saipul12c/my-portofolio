@@ -20,9 +20,13 @@ import {
 } from "lucide-react";
 import { FaTiktok, FaThreads, FaDiscord } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import { useMaintenance } from "../context/useMaintenance";
+import { resolveRouteMaintenance } from "../config/maintenanceRoutes";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const { config: maintenanceConfig } = useMaintenance();
+  const isRouteMaint = (path) => resolveRouteMaintenance(path, maintenanceConfig).isUnderMaintenance;
 
   const portfolioLinks = [
     { to: "/projects", label: "Projects", icon: <Folder className="w-4 h-4 text-cyan-300" /> },
@@ -139,6 +143,11 @@ export default function Footer() {
                     >
                       <span className="flex-shrink-0">{item.icon}</span>
                       <span>{item.label}</span>
+                      {isRouteMaint(item.to) && (
+                        <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-400/30">
+                          Maint.
+                        </span>
+                      )}
                     </Link>
                   </li>
                 ))}
@@ -159,6 +168,11 @@ export default function Footer() {
                     >
                       <span className="flex-shrink-0">{item.icon}</span>
                       <span>{item.label}</span>
+                      {isRouteMaint(item.to) && (
+                        <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-400/30">
+                          Maint.
+                        </span>
+                      )}
                     </Link>
                   </li>
                 ))}

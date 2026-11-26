@@ -29,7 +29,7 @@ import {
   Monitor
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '../../../lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from '../../../lib/supabaseClient';
 import { ACHIEVEMENTS } from '../hooks/useAchievements';
 
 const Dashboard = () => {
@@ -117,6 +117,10 @@ const Dashboard = () => {
     }
 
     const checkAccess = async () => {
+      if (!isSupabaseConfigured || !supabase) {
+        navigate('/Live-Discussion/login');
+        return;
+      }
       try {
         // 1. Get real user session from Supabase Auth (Anti-Spoofing)
         const authRes = await supabase.auth.getUser().catch(() => null);
@@ -277,7 +281,7 @@ const Dashboard = () => {
 
   // Realtime Listener for Dashboard (Throttled for Performance)
   useEffect(() => {
-    if (!user) return;
+    if (!user || !isSupabaseConfigured || !supabase) return;
     let lastRefresh = 0;
     const REFRESH_THRESHOLD = 2000; // 2 seconds throttle
 
@@ -514,7 +518,11 @@ const Dashboard = () => {
       if (error) throw error;
 
       if (status === 'approved') {
-        await supabase.from('users').update({ status: 'aktif', ban_reason: null }).eq('id', appeal.user_id);
+        const { error: unbanError } = await supabase
+          .from('users')
+          .update({ status: 'aktif', ban_reason: null })
+          .eq('id', appeal.user_id);
+        if (unbanError) throw unbanError;
         await createAuditLog(appeal.user_id, 'UNBAN_APPEAL', response);
       }
 
@@ -570,36 +578,69 @@ const Dashboard = () => {
     }
   };
 
-  // Add new user
+  // Add new user (pertahankan sesi admin agar update role/status tetap lolos RLS)
   const addNewUser = async () => {
+    if (!isSupabaseConfigured || !supabase) {
+      alert('Koneksi Supabase belum aktif.');
+      return;
+    }
     if (!newUserForm.nama || !newUserForm.email || !newUserForm.password) {
       alert('Mohon isi semua field yang diperlukan!');
       return;
     }
 
     try {
+      const { data: adminSessionRes } = await supabase.auth.getSession();
+      const prevAdminSession = adminSessionRes?.session;
+
       const { data, error } = await supabase.auth.signUp({
-        email: newUserForm.email,
+        email: newUserForm.email.trim().toLowerCase(),
         password: newUserForm.password,
         options: {
           data: {
-            nama: newUserForm.nama
+            nama: newUserForm.nama.trim()
           }
         }
       });
 
       if (error) throw error;
 
+      // Jika Auto-Confirm aktif, signUp mengganti sesi browser aktif ke user baru — kembalikan sesi Admin terlebih dahulu!
+      if (data?.session && prevAdminSession?.access_token && data.session.user?.id !== prevAdminSession.user?.id) {
+        const { error: restoreErr } = await supabase.auth.setSession({
+          access_token: prevAdminSession.access_token,
+          refresh_token: prevAdminSession.refresh_token
+        });
+        if (restoreErr) {
+          console.warn('Gagal memulihkan sesi admin secara otomatis:', restoreErr.message);
+        }
+      }
+
       if (data.user) {
-        // Force update profile record to match admin intent
-        const { error: updateError } = await supabase.from('users').update({
-          role: newUserForm.role,
-          status: newUserForm.status
-        }).eq('id', data.user.id);
+        // Beri jeda singkat agar trigger handle_new_user selesai menyisipkan baris
+        await new Promise((r) => setTimeout(r, 400));
 
-        if (updateError) throw updateError;
+        // Force update profile record to match admin intent (membutuhkan sesi admin aktif)
+        const { error: updateError } = await supabase
+          .from('users')
+          .update({
+            role: newUserForm.role,
+            status: newUserForm.status
+          })
+          .eq('id', data.user.id);
 
-        alert(`User ${newUserForm.nama} berhasil ditambahkan!`);
+        if (updateError) {
+          console.warn('Profile role update after signUp failed:', updateError.message);
+          alert(
+            `Akun Auth ${newUserForm.nama} dibuat, tetapi role/status belum terupdate (${updateError.message}). Perbarui manual di daftar pengguna atau Dashboard Supabase.`
+          );
+        } else {
+          const confirmNote = !data.session
+            ? '\n(Catatan: Confirm Email aktif di Supabase — user perlu verifikasi email sebelum login.)'
+            : '';
+          alert(`User ${newUserForm.nama} berhasil ditambahkan!${confirmNote}`);
+        }
+
         setShowAddUserModal(false);
         setNewUserForm({
           nama: '',
@@ -612,7 +653,7 @@ const Dashboard = () => {
       }
     } catch (error) {
       console.error('Error adding user:', error);
-      alert('Gagal menambahkan user');
+      alert('Gagal menambahkan user: ' + (error.message || 'Unknown error'));
     }
   };
 
@@ -621,6 +662,7 @@ const Dashboard = () => {
 
   // Delete single message with media cleanup
   const deleteMessage = async (messageId) => {
+    if (!isSupabaseConfigured || !supabase) return;
     if (!confirm('Apakah Anda yakin ingin menghapus pesan ini?')) return;
 
     try {
@@ -629,9 +671,9 @@ const Dashboard = () => {
       
       // 2. Media cleanup
       if (msg && msg.media_url) {
-        const path = msg.media_url.split('/public/live_discussion_media/')[1];
-        if (path) {
-          await supabase.storage.from('live_discussion_media').remove([path]);
+        const rawPath = msg.media_url.split('/public/live_discussion_media/')[1]?.split('?')[0];
+        if (rawPath) {
+          await supabase.storage.from('live_discussion_media').remove([decodeURIComponent(rawPath)]);
         }
       }
 
@@ -689,12 +731,14 @@ const Dashboard = () => {
         alert(`Achievement "${achievement.name}" berhasil ditambahkan untuk user!`);
         setShowAchievementModal(false);
         setSelectedUserForAchievement(null);
+      } else if (error.code === '23505') {
+        alert('User ini sudah memiliki achievement tersebut.');
       } else {
         throw error;
       }
     } catch (error) {
       console.error('Error adding achievement:', error);
-      alert('Gagal menambahkan achievement. Pastikan koneksi database stabil.');
+      alert('Gagal menambahkan achievement: ' + (error.message || 'Pastikan koneksi database stabil.'));
     }
   };
 
@@ -718,6 +762,7 @@ const Dashboard = () => {
 
   // Reset all message counts via RPC
   const handleResetMessageCounts = async () => {
+    if (!isSupabaseConfigured || !supabase) return;
     if (!confirm('Apakah Anda yakin ingin mereset SEMUA hitungan pesan user menjadi 0?')) return;
     try {
       setLoading(true);
@@ -727,7 +772,7 @@ const Dashboard = () => {
       loadDashboardData();
     } catch (err) {
       console.error('Error resetting counts:', err);
-      alert('Gagal mereset hitungan pesan.');
+      alert('Gagal mereset hitungan pesan: ' + (err.message || 'Pastikan Anda memiliki role Admin/Super Admin.'));
     } finally {
       setLoading(false);
     }
@@ -735,6 +780,7 @@ const Dashboard = () => {
 
   // New: Archive Old Messages Trigger
   const handleArchiveMessages = async () => {
+    if (!isSupabaseConfigured || !supabase) return;
     if (!confirm('Apakah Anda yakin ingin memindahkan pesan lama ke arsip (menghapus dari tabel utama)? Pesan yang lebih tua dari 30 hari akan dibersihkan.')) return;
     try {
       setLoading(true);
@@ -744,7 +790,7 @@ const Dashboard = () => {
       loadDashboardData();
     } catch (err) {
       console.error('Error archiving messages:', err);
-      alert('Gagal menjalankan pengarsipan sistem.');
+      alert('Gagal menjalankan pengarsipan sistem: ' + (err.message || 'Pastikan Anda memiliki izin akses.'));
     } finally {
       setLoading(false);
     }

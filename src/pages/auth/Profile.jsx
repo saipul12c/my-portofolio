@@ -1,30 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/useAuth';
-import api from '../../lib/backend';
 
 const Profile = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateProfile } = useAuth();
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
     username: user?.username || '',
-    display_name: user?.display_name || '',
-    description: user?.description || '',
+    display_name: user?.display_name || user?.nama || '',
+    description: user?.description || user?.bio || '',
     avatar_url: user?.avatar_url || ''
   });
   const [status, setStatus] = useState(null);
+
+  useEffect(() => {
+    if (user) {
+      setForm({
+        username: user.username || '',
+        display_name: user.display_name || user.nama || '',
+        description: user.description || user.bio || '',
+        avatar_url: user.avatar_url || ''
+      });
+    }
+  }, [user]);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const save = async () => {
     setStatus('saving');
     try {
-      await api.apiFetch(`/api/profiles/${user.id}`, {
-        method: 'PUT',
-        body: JSON.stringify(form)
+      const { error } = await updateProfile({
+        nama: form.display_name || form.username,
+        bio: form.description,
+        avatar_url: form.avatar_url
       });
+      if (error) throw error;
       setStatus('saved');
       setEditing(false);
-      // optionally refresh user by reloading token profile in AuthContext
     } catch (err) {
       console.error(err);
       setStatus('error');
@@ -38,14 +49,14 @@ const Profile = () => {
       <div className="flex items-center gap-4">
         <img src={user.avatar_url || '/avatar/default.png'} alt="avatar" className="w-20 h-20 rounded-full object-cover border-2 border-cyan-400/40" />
         <div>
-          <h2 className="text-2xl font-bold text-white">{user.display_name || user.username || user.email}</h2>
+          <h2 className="text-2xl font-bold text-white">{user.display_name || user.nama || user.username || user.email}</h2>
           <p className="text-sm text-cyan-300">{user.email}</p>
         </div>
       </div>
 
       {!editing ? (
         <div className="mt-6">
-          <p className="whitespace-pre-wrap text-gray-300 leading-relaxed">{user.description}</p>
+          <p className="whitespace-pre-wrap text-gray-300 leading-relaxed">{user.description || user.bio}</p>
           <div className="mt-6 flex gap-3">
             <button onClick={() => setEditing(true)} className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl font-semibold shadow-lg hover:shadow-cyan-500/25 transition-all text-sm">Edit</button>
             <button onClick={() => logout()} className="px-5 py-2.5 bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 rounded-xl font-semibold transition-all text-sm">Logout</button>

@@ -8,11 +8,18 @@ import {
   BookOpen,
   ShieldCheck,
   MessageCircle,
+  Wrench,
+  CheckCircle2,
 } from "lucide-react";
 // Mengimpor data dokumentasi statis untuk ditampilkan pada badge versi
 import docsData from "../../data/helpbutton/docs/docsSections.json";
 // Mengimpor utilitas untuk mengambil informasi versi terbaru dari data docs
 import { getLatestVersionInfo } from "./docs/lib/versionUtils";
+import { useMaintenance } from "../../context/useMaintenance";
+import {
+  MAINTENANCE_PAGE_CATALOG,
+  resolveRouteMaintenance,
+} from "../../config/maintenanceRoutes";
 
 // Komponen kecil untuk item dalam menu bantuan yang dapat menjadi tautan internal atau eksternal
 function HelpMenuItem({ title, subtitle, icon: Icon, to, external = false, disabled = false, label = null, disabledMessage = null }) {
@@ -76,10 +83,12 @@ function HelpMenuItem({ title, subtitle, icon: Icon, to, external = false, disab
           <ExternalLink size={14} className="text-gray-400 mt-1" />
         )}
 
-        {/* Label custom, LIVE badge, atau OFF bila dinonaktifkan */}
-        {(disabled || label === "LIVE") && (
+        {/* Label custom, LIVE badge, MAINTENANCE badge, atau OFF bila dinonaktifkan */}
+        {(disabled || label === "LIVE" || label === "MAINTENANCE") && (
           <div className={`text-[10px] mt-1 px-2.5 py-1 rounded-full font-medium ${
             label === "COMING SOON" 
+              ? "bg-amber-500/20 text-amber-300 border border-amber-400/40"
+              : label === "MAINTENANCE"
               ? "bg-amber-500/20 text-amber-300 border border-amber-400/40"
               : label === "SEDANG DIPERBAIKI"
               ? "bg-blue-500/20 text-blue-300 border border-blue-400/40"
@@ -238,8 +247,85 @@ function HelpChatbotButton({ onOpenChat, enabled = true }) {
   );
 }
 
+// Komponen status maintenance ringkas (sejajar dengan VersionBadge)
+function MaintenanceStatusBadge() {
+  const { config, liveChatMaintenance } = useMaintenance();
+  const [showList, setShowList] = React.useState(false);
+
+  const pageOverrides = config?.pageOverrides || {};
+  const activePages = MAINTENANCE_PAGE_CATALOG.filter((p) => pageOverrides[p.key] === true);
+  const customActive = (config?.customPaths || []).filter((p) => pageOverrides[p] === true);
+  const totalAffected = activePages.length + customActive.length;
+  const hasAny = Boolean(config?.globalEnabled || totalAffected > 0 || liveChatMaintenance);
+
+  return (
+    <div className="mb-3 pb-3 border-b border-gray-700/40">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 ${hasAny ? "bg-amber-500/15" : "bg-emerald-500/10"}`}>
+            {hasAny ? (
+              <Wrench size={15} className="text-amber-300" />
+            ) : (
+              <CheckCircle2 size={15} className="text-emerald-400" />
+            )}
+          </div>
+          <div className="min-w-0">
+            <div className="text-[11px] text-gray-400">Status Layanan</div>
+            <div className={`text-xs font-semibold truncate ${hasAny ? "text-amber-300" : "text-emerald-300"}`}>
+              {config?.globalEnabled
+                ? "Maintenance Global"
+                : totalAffected > 0
+                  ? `${totalAffected} Halaman Maintenance`
+                  : liveChatMaintenance
+                    ? "Chat Diskusi Terkunci"
+                    : "Semua Halaman Online"}
+            </div>
+          </div>
+        </div>
+        {hasAny && (totalAffected > 0 || liveChatMaintenance) && (
+          <button
+            type="button"
+            onClick={() => setShowList((prev) => !prev)}
+            className="text-[11px] font-semibold px-2.5 py-1 rounded-md bg-amber-500/10 border border-amber-400/30 text-amber-300 hover:bg-amber-500/20 cursor-pointer shrink-0"
+          >
+            {showList ? "Tutup" : "Detail"}
+          </button>
+        )}
+      </div>
+
+      {showList && hasAny && (
+        <div className="mt-2 p-2 rounded-lg bg-black/30 border border-white/10 space-y-1 text-[11px] max-h-32 overflow-y-auto">
+          {activePages.map((p) => (
+            <div key={p.key} className="flex items-center justify-between gap-2 text-amber-200">
+              <span className="truncate">{p.label}</span>
+              <span className="font-mono text-[10px] text-gray-400">{p.key}</span>
+            </div>
+          ))}
+          {customActive.map((p) => (
+            <div key={p} className="flex items-center justify-between gap-2 text-amber-200">
+              <span className="truncate">{p}</span>
+              <span className="font-mono text-[10px] text-gray-400">Kustom</span>
+            </div>
+          ))}
+          {liveChatMaintenance && (
+            <div className="text-rose-300">• Chat Live Discussion dikunci sementara</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // Komponen utama menu bantuan yang merangkum item, tombol chatbot, dan badge versi
 export default function HelpMenu({ onOpenChat, chatbotEnabled = false, roomEnabled = false }) {
+  const { config: maintenanceConfig, liveChatMaintenance } = useMaintenance();
+  const isMaint = (path) => resolveRouteMaintenance(path, maintenanceConfig).isUnderMaintenance;
+
+  const faqMaint = isMaint("/help/faq");
+  const docsMaint = isMaint("/help/docs");
+  const roomMaint = isMaint("/Live-Discussion") || liveChatMaintenance;
+  const commitMaint = isMaint("/help/commitment");
+
   // Render kontainer dialog menu bantuan dengan styling dan aksesibilitas
   return (
     <div
@@ -258,30 +344,33 @@ export default function HelpMenu({ onOpenChat, chatbotEnabled = false, roomEnabl
       <div className="flex flex-col gap-2">
         <HelpMenuItem
           title="FAQ (Pertanyaan Umum)"
-          subtitle="Panduan cepat & jawaban umum"
+          subtitle={faqMaint ? "Halaman sedang dalam pemeliharaan" : "Panduan cepat & jawaban umum"}
           icon={BookOpen}
           to="/help/faq"
+          label={faqMaint ? "MAINTENANCE" : null}
         />
         <HelpMenuItem
           title="Dokumentasi"
-          subtitle="Halaman dokumentasi lengkap"
+          subtitle={docsMaint ? "Halaman sedang dalam pemeliharaan" : "Halaman dokumentasi lengkap"}
           icon={FileText}
           to="/help/docs"
+          label={docsMaint ? "MAINTENANCE" : null}
         />
         <HelpMenuItem
           title="Room Diskusi"
-          subtitle="Hubungi Agent & Diskusi Langsung"
+          subtitle={roomMaint ? "Room diskusi sedang pemeliharaan" : "Hubungi Agent & Diskusi Langsung"}
           icon={MessageCircle}
           to="/Live-Discussion"
           disabled={!roomEnabled}
-          label="LIVE"
+          label={roomMaint ? "MAINTENANCE" : "LIVE"}
           disabledMessage={roomEnabled ? "Fitur ini sedang aktif" : "Room diskusi sedang dinonaktifkan"}
         />
         <HelpMenuItem
           title="Komitmen / Kebijakan"
-          subtitle="Janji layanan & kebijakan"
+          subtitle={commitMaint ? "Halaman sedang dalam pemeliharaan" : "Janji layanan & kebijakan"}
           icon={ShieldCheck}
           to="/help/commitment"
+          label={commitMaint ? "MAINTENANCE" : null}
         />
         
         {/* Seksi khusus tombol chatbot */}
@@ -293,8 +382,9 @@ export default function HelpMenu({ onOpenChat, chatbotEnabled = false, roomEnabl
         </div>
       </div>
       
-      {/* Bagian footer dengan badge versi */}
+      {/* Bagian footer dengan status layanan & badge versi */}
       <div className="mt-4 pt-3 border-t border-gray-700/40">
+        <MaintenanceStatusBadge />
         <VersionBadge />
       </div>
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import { fetchAllPosts } from "../services/blogSupabase";
-import { getAuthorProfile } from "../services/authorProfileService";
+import { getAuthorProfile, normalizeAuthorSlug } from "../services/authorProfileService";
 import { Sparkles } from "lucide-react";
 import {
   FiArrowLeft,
@@ -121,11 +121,18 @@ export default function DetailProfile() {
       setIsLoading(true);
       fetchAllPosts()
         .then((allPosts) => {
-          const authorBlogs = (Array.isArray(allPosts) ? allPosts : []).filter(blog =>
-            blog.author && blog.author.toLowerCase() === authorName.toLowerCase()
-          );
-
           const customProfile = getAuthorProfile(slug || authorName);
+          const targetSlug = normalizeAuthorSlug(customProfile?.slug || customProfile?.name || slug || authorName);
+          const authorBlogs = (Array.isArray(allPosts) ? allPosts : []).filter((blog) => {
+            if (!blog.author) return false;
+            const postAuthorSlug = normalizeAuthorSlug(blog.author);
+            return (
+              (targetSlug && postAuthorSlug === targetSlug) ||
+              blog.author.toLowerCase().trim() === authorName.toLowerCase().trim() ||
+              (customProfile?.name && blog.author.toLowerCase().trim() === customProfile.name.toLowerCase().trim())
+            );
+          });
+
           const firstBlog = authorBlogs[0] || {};
           const fallbackSocials = generateSocialLinks(authorName);
 
@@ -161,7 +168,9 @@ export default function DetailProfile() {
     // Listener realtime update jika diedit dari dashboard admin
     const handleProfileUpdated = (e) => {
       const updated = e.detail;
-      if (updated && (updated.slug === slug || updated.name?.toLowerCase() === authorName?.toLowerCase())) {
+      const updatedSlug = normalizeAuthorSlug(updated?.slug || updated?.name);
+      const currentSlug = normalizeAuthorSlug(slug || authorName);
+      if (updated && ((currentSlug && updatedSlug === currentSlug) || updated.name?.toLowerCase().trim() === authorName?.toLowerCase().trim())) {
         setAuthorData(prev => prev ? ({
           ...prev,
           name: updated.name,

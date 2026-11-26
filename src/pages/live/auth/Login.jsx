@@ -21,6 +21,7 @@ const Login = () => {
 
   // Auto-redirect jika pengguna sudah memiliki sesi login aktif yang sah (Standar Modern Supabase: getUser & onAuthStateChange)
   useEffect(() => {
+    if (!isSupabaseConfigured || !supabase) return;
     let isMounted = true;
 
     const checkActiveSession = async () => {
@@ -226,22 +227,30 @@ const Login = () => {
       if (!user) {
         const fallbackNama = authData.user.user_metadata?.nama || cleanEmail.split('@')[0];
         try {
-          const { data: healedUser } = await supabase
+          const { data: healedUser, error: healError } = await supabase
             .from('users')
             .insert({
               id: authData.user.id,
               email: cleanEmail,
               nama: fallbackNama,
               role: 'USER',
-              status: 'aktif'
+              status: 'aktif',
+              is_shadowbanned: false
             })
             .select()
             .maybeSingle();
 
-          if (healedUser) user = healedUser;
+          if (!healError && healedUser) {
+            user = healedUser;
+          } else if (healError) {
+            console.warn('Self-healing insert note:', healError.message);
+          }
         } catch (healErr) {
           console.warn('Self-healing insert skipped or failed:', healErr);
-          // Coba fetch ulang jika gagal karena duplikasi id
+        }
+
+        if (!user) {
+          // Coba fetch ulang jika gagal karena trigger/race condition sudah membuat row
           const { data: retryUser } = await supabase
             .from('users')
             .select('*')
@@ -259,8 +268,8 @@ const Login = () => {
         throw new Error('Akun Anda tidak aktif atau diblokir. Hubungi administrator.');
       }
 
-      // 4. Role Config Mapping (Prioritas: Database > App Metadata > User Metadata > USER)
-      const userRole = (user?.role || authData.user.app_metadata?.role || authData.user.user_metadata?.role || 'USER').toUpperCase();
+      // 4. Role Config Mapping (Hanya percaya Database dan App Metadata dari server, bukan user_metadata)
+      const userRole = (user?.role || authData.user.app_metadata?.role || 'USER').toUpperCase();
       const roleConfig = {
         'SUPER_ADMIN': { level: 10, name: 'Super Admin', badge: '👑', color: 'from-purple-600 to-pink-600' },
         'ADMIN': { level: 8, name: 'Admin', badge: '🛡️', color: 'from-red-500 to-orange-500' },

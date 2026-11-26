@@ -45,6 +45,7 @@ export default defineConfig([
     files: [
       'vite.config.js',
       'update-role.js',
+      'test-supabase.js',
       'api/**/*.js',
       'bin/**/*.js',
       'server/**/*.js',

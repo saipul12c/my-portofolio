@@ -11,9 +11,9 @@ const CHANNELS = [
 
 export const ChannelBar = ({ activeChannel, onSelectChannel, channelCounts = {} }) => {
   return (
-    <div className="w-full max-w-6xl mx-auto px-3 sm:px-8 mb-2">
-      <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1.5 scrollbar-none [touch-action:pan-x]">
-        <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-[var(--theme-text-muted)] mr-1 shrink-0 flex items-center gap-1">
+    <div className="w-full max-w-6xl mx-auto px-2 sm:px-4 lg:px-8 mb-1 sm:mb-2">
+      <div className="flex items-center gap-1 sm:gap-1.5 lg:gap-2 overflow-x-auto pb-1 sm:pb-1.5 scrollbar-none [touch-action:pan-x]">
+        <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-wider text-[var(--theme-text-muted)] mr-0.5 sm:mr-1 shrink-0 flex items-center gap-1">
           Channel:
         </span>
         {CHANNELS.map((ch) => {
@@ -27,7 +27,7 @@ export const ChannelBar = ({ activeChannel, onSelectChannel, channelCounts = {} 
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.96 }}
               onClick={() => onSelectChannel(ch.id)}
-              className={`shrink-0 flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-xl sm:rounded-full text-xs font-bold transition-all border min-h-[32px] cursor-pointer ${
+              className={`shrink-0 flex items-center gap-1 sm:gap-1.5 lg:gap-2 px-2.5 sm:px-3 lg:px-3.5 py-1.5 rounded-xl sm:rounded-full text-[11px] sm:text-xs font-bold transition-all border min-h-[32px] cursor-pointer ${
                 isActive
                   ? `bg-gradient-to-r ${ch.color} text-white border-transparent shadow-md shadow-cyan-500/20 font-black`
                   : 'bg-[var(--theme-surface)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] border-[var(--theme-border)] hover:border-cyan-500/30'

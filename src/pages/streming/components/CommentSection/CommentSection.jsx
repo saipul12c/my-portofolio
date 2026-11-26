@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../lib/api';
-import { supabase } from '../../../../lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from '../../../../lib/supabaseClient';
 import { debounce } from '../../utils/helpers';
-import { 
-  Send, ThumbsUp, MoreVertical, ChevronDown, 
-  ChevronUp, MessageCircle, Flag, Heart, 
+import {
+  Send, ThumbsUp, MoreVertical, ChevronDown,
+  ChevronUp, MessageCircle, Flag, Heart,
   Smile, Image as ImageIcon, AtSign
 } from 'lucide-react';
 
@@ -19,6 +19,11 @@ const CommentSection = ({ videoId }) => {
   const [total, setTotal] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
   const debouncedPostRef = useRef(null);
+  const commentsRef = useRef([]);
+
+  useEffect(() => {
+    commentsRef.current = comments;
+  }, [comments]);
 
   useEffect(() => {
     let mounted = true;
@@ -52,6 +57,12 @@ const CommentSection = ({ videoId }) => {
     loadPage(1);
 
     // Real-time subscription
+    if (!isSupabaseConfigured || !supabase) {
+      return () => {
+        mounted = false;
+      };
+    }
+
     const channel = supabase
       .channel(`video-comments-${videoId}`)
       .on(
@@ -63,9 +74,12 @@ const CommentSection = ({ videoId }) => {
           filter: `video_id=eq.${videoId}`
         },
         (payload) => {
-          if (mounted) {
-            setComments(prev => [payload.new, ...prev]);
-            setTotal(t => t + 1);
+          if (mounted && payload.new) {
+            const isNew = !commentsRef.current.some(c => c.id === payload.new.id);
+            setComments(prev => (prev.some(c => c.id === payload.new.id) ? prev : [payload.new, ...prev]));
+            if (isNew) {
+              setTotal(t => t + 1);
+            }
           }
         }
       )
@@ -84,8 +98,14 @@ const CommentSection = ({ videoId }) => {
       try {
         const author = localStorage.getItem('username') || 'You';
         const res = await api.videos.postComment(videoId, author, text);
-        // backend returns created comment object
-        setComments(prev => [res, ...prev]);
+        // backend returns created comment object; avoid duplicate if Realtime already delivered it
+        if (res) {
+          const isNew = !commentsRef.current.some(c => c.id === res.id);
+          setComments(prev => (prev.some(c => c.id === res.id) ? prev : [res, ...prev]));
+          if (isNew) {
+            setTotal(t => t + 1);
+          }
+        }
       } catch (err) {
         console.error('Failed to post comment', err);
         setComments(prev => [{ id: Date.now(), author: localStorage.getItem('username') || 'You', message: text, created_at: new Date().toISOString() }, ...prev]);
@@ -152,9 +172,9 @@ const CommentSection = ({ videoId }) => {
     <div className="space-y-6">
       {/* Comment Input */}
       <div className="flex gap-3">
-        <img 
-          src="https://i.pravatar.cc/40?img=6" 
-          alt="Your avatar" 
+        <img
+          src="https://i.pravatar.cc/40?img=6"
+          alt="Your avatar"
           className="w-10 h-10 rounded-full"
           loading="lazy"
         />
@@ -179,21 +199,20 @@ const CommentSection = ({ videoId }) => {
               </button>
             </div>
             <div className="flex items-center gap-3">
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => setComment('')}
                 className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 type="submit"
                 disabled={!comment.trim()}
-                className={`px-6 py-2 rounded-full font-medium transition-colors ${
-                  comment.trim() 
-                    ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                    : 'bg-gray-800 text-gray-400 cursor-not-allowed'
-                }`}
+                className={`px-6 py-2 rounded-full font-medium transition-colors ${comment.trim()
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-gray-800 text-gray-400 cursor-not-allowed'
+                  }`}
               >
                 Comment
               </button>
@@ -205,7 +224,7 @@ const CommentSection = ({ videoId }) => {
       {/* Sort Options */}
       <div className="flex items-center gap-4">
         <h4 className="text-lg font-semibold">Comments</h4>
-        <select 
+        <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
           className="bg-transparent border border-gray-700 rounded px-3 py-1 focus:outline-none"
@@ -228,103 +247,103 @@ const CommentSection = ({ videoId }) => {
           const liked = comment.liked || false;
 
           return (
-          <div key={comment.id || comment.video_id || Math.random()} className="space-y-4">
-            {/* Main Comment */}
-            <div className="flex gap-3">
-              <img 
-                src={authorAvatar} 
-                alt={authorName}
-                className="w-10 h-10 rounded-full"
-                loading="lazy"
-              />
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-semibold">{authorName}</span>
-                  {verified && (
-                    <span className="text-xs bg-blue-500 text-white px-1.5 py-0.5 rounded">✓</span>
-                  )}
-                  <span className="text-gray-400 text-sm">{time}</span>
-                </div>
-                <p className="mb-2">{text}</p>
-                
-                <div className="flex items-center gap-4">
-                  <button 
-                    onClick={() => handleLikeComment(comment.id)}
-                    className={`flex items-center gap-1 ${liked ? 'text-blue-400' : 'text-gray-400 hover:text-white'}`}
-                  >
-                    <ThumbsUp size={16} />
-                    <span className="text-sm">{likes}</span>
-                  </button>
-                  
-                  <button 
-                    onClick={() => handleReply(comment.id)}
-                    className="text-gray-400 hover:text-white text-sm"
-                  >
-                    Reply
-                  </button>
-                  
-                  <button className="text-gray-400 hover:text-white">
-                    <MoreVertical size={16} />
-                  </button>
-                </div>
-
-                {/* Reply Input */}
-                {showReply[comment.id] && (
-                  <div className="mt-4 flex gap-3">
-                    <img 
-                      src="https://i.pravatar.cc/32?img=6" 
-                      alt="Your avatar" 
-                      className="w-8 h-8 rounded-full"
-                      loading="lazy"
-                    />
-                    <div className="flex-1">
-                      <input
-                        type="text"
-                        placeholder="Write a reply..."
-                        className="w-full bg-gray-900 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter' && e.target.value.trim()) {
-                            handleSubmitReply(comment.id, e.target.value);
-                            e.target.value = '';
-                          }
-                        }}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* View Replies */}
-                {comment.replies > 0 && (
-                  <button className="flex items-center gap-1 text-blue-400 hover:text-blue-300 text-sm mt-3">
-                    <MessageCircle size={14} />
-                    <span>{comment.replies} replies</span>
-                    <ChevronDown size={14} />
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Replies */}
-            {replies[comment.id]?.map((reply, index) => (
-              <div key={index} className="ml-12 flex gap-3">
-                <img 
-                  src="https://i.pravatar.cc/32?img=6" 
-                  alt="Reply avatar" 
-                  className="w-8 h-8 rounded-full"
+            <div key={comment.id || comment.video_id || Math.random()} className="space-y-4">
+              {/* Main Comment */}
+              <div className="flex gap-3">
+                <img
+                  src={authorAvatar}
+                  alt={authorName}
+                  className="w-10 h-10 rounded-full"
                   loading="lazy"
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold">You</span>
-                    <span className="text-gray-400 text-sm">Just now</span>
+                    <span className="font-semibold">{authorName}</span>
+                    {verified && (
+                      <span className="text-xs bg-blue-500 text-white px-1.5 py-0.5 rounded">✓</span>
+                    )}
+                    <span className="text-gray-400 text-sm">{time}</span>
                   </div>
-                  <p className="mb-2">{reply}</p>
+                  <p className="mb-2">{text}</p>
+
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={() => handleLikeComment(comment.id)}
+                      className={`flex items-center gap-1 ${liked ? 'text-blue-400' : 'text-gray-400 hover:text-white'}`}
+                    >
+                      <ThumbsUp size={16} />
+                      <span className="text-sm">{likes}</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleReply(comment.id)}
+                      className="text-gray-400 hover:text-white text-sm"
+                    >
+                      Reply
+                    </button>
+
+                    <button className="text-gray-400 hover:text-white">
+                      <MoreVertical size={16} />
+                    </button>
+                  </div>
+
+                  {/* Reply Input */}
+                  {showReply[comment.id] && (
+                    <div className="mt-4 flex gap-3">
+                      <img
+                        src="https://i.pravatar.cc/32?img=6"
+                        alt="Your avatar"
+                        className="w-8 h-8 rounded-full"
+                        loading="lazy"
+                      />
+                      <div className="flex-1">
+                        <input
+                          type="text"
+                          placeholder="Write a reply..."
+                          className="w-full bg-gray-900 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter' && e.target.value.trim()) {
+                              handleSubmitReply(comment.id, e.target.value);
+                              e.target.value = '';
+                            }
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* View Replies */}
+                  {comment.replies > 0 && (
+                    <button className="flex items-center gap-1 text-blue-400 hover:text-blue-300 text-sm mt-3">
+                      <MessageCircle size={14} />
+                      <span>{comment.replies} replies</span>
+                      <ChevronDown size={14} />
+                    </button>
+                  )}
                 </div>
               </div>
-            ))}
-          </div>
-        );
-      })}
+
+              {/* Replies */}
+              {replies[comment.id]?.map((reply, index) => (
+                <div key={index} className="ml-12 flex gap-3">
+                  <img
+                    src="https://i.pravatar.cc/32?img=6"
+                    alt="Reply avatar"
+                    className="w-8 h-8 rounded-full"
+                    loading="lazy"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-semibold">You</span>
+                      <span className="text-gray-400 text-sm">Just now</span>
+                    </div>
+                    <p className="mb-2">{reply}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
+        })}
       </div>
 
       {/* Load More Comments */}

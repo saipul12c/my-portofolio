@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, AlertCircle, CheckCircle, Plus, MessageCircle, ArrowDown, X, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '../../lib/supabaseClient';
+import { supabase, isSupabaseConfigured, subscribeOnlinePresence } from '../../lib/supabaseClient';
 import GuestCTA from './components/GuestCTA';
 import { useAchievements } from './hooks/useAchievements';
 import { ProfileEditor } from './components/ProfileEditor';
@@ -30,6 +30,7 @@ import { compressImageToWebP } from './utils/imageCompressor';
 import { getCachedMessages, setCachedMessages } from './utils/cacheManager';
 import { setDiscussionRoomData } from '../../utils/ai/knowledgeBase';
 import { containsProfanity } from './utils/profanityFilter';
+import { useMaintenance } from '../../context/useMaintenance';
 
 const USER_ROLES = {
   SUPER_ADMIN: { level: 10, name: 'Super Admin', badge: '👑', color: 'from-purple-600 to-pink-600', canManage: true },
@@ -86,6 +87,12 @@ function Live() {
   const [onlineUsers, setOnlineUsers] = useState({});
   const [editingMessage, setEditingMessage] = useState(null);
   const [connectionStatus, setConnectionStatus] = useState('connecting'); // 'connecting', 'online', 'offline'
+  const connectionStatusRef = useRef('connecting');
+  const messageChannelRef = useRef(null);
+
+  useEffect(() => {
+    connectionStatusRef.current = connectionStatus;
+  }, [connectionStatus]);
 
   // Hook Achievement Internal
   const { loadAchievements } = useAchievements();
@@ -102,6 +109,15 @@ function Live() {
   const [unreadMentions, setUnreadMentions] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [systemConfig, setSystemConfig] = useState(INITIAL_CONFIG);
+  const { liveChatMaintenance } = useMaintenance();
+
+  useEffect(() => {
+    setSystemConfig((prev) =>
+      prev.maintenance_mode === liveChatMaintenance
+        ? prev
+        : { ...prev, maintenance_mode: liveChatMaintenance }
+    );
+  }, [liveChatMaintenance]);
 
   // Reaction & Media States
   const [reactions, setReactions] = useState({}); // { messageId: [ {emoji, user_id} ] }
@@ -250,6 +266,11 @@ function Live() {
 
   // Check user status in Database (Security Enhanced)
   const checkUserStatus = useCallback(async () => {
+    if (!isSupabaseConfigured || !supabase) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
     try {
       const authRes = await supabase.auth.getUser().catch(() => null);
       const authUser = authRes?.data?.user;
@@ -265,21 +286,32 @@ function Live() {
         .eq('id', authUser.id)
         .maybeSingle();
 
-      // Self-Healing: Jika profil di public.users belum ada, sinkronkan otomatis
+      // Self-Healing: Gunakan INSERT (bukan upsert) jika profil public.users belum dibuat trigger
       if (!data) {
         try {
-          const { data: healed } = await supabase
+          const { data: healed, error: healErr } = await supabase
             .from('users')
-            .upsert({
+            .insert({
               id: authUser.id,
               email: authUser.email,
               nama: authUser.user_metadata?.nama || authUser.email.split('@')[0],
               role: 'USER',
-              status: 'aktif'
-            }, { onConflict: 'id' })
+              status: 'aktif',
+              is_shadowbanned: false
+            })
             .select()
             .maybeSingle();
-          if (healed) data = healed;
+
+          if (!healErr && healed) {
+            data = healed;
+          } else {
+            const { data: retryData } = await supabase
+              .from('users')
+              .select('*')
+              .eq('id', authUser.id)
+              .maybeSingle();
+            if (retryData) data = retryData;
+          }
         } catch (healErr) {
           console.warn('Auto-healing profile in Live.jsx failed:', healErr);
         }
@@ -352,6 +384,7 @@ function Live() {
 
   // Fetch messages from Database
   const fetchMessagesFromDatabase = useCallback(async () => {
+    if (!isSupabaseConfigured || !supabase) return;
     try {
       const { data, error } = await supabase
         .from('messages')
@@ -381,7 +414,7 @@ function Live() {
 
   // Load more messages (Cursor-based pagination with Tie-Breaker)
   const loadMoreMessages = useCallback(async () => {
-    if (fetchingMore || !hasMore || messages.length === 0) return;
+    if (fetchingMore || !hasMore || messages.length === 0 || !isSupabaseConfigured || !supabase) return;
 
     setFetchingMore(true);
     try {
@@ -437,6 +470,7 @@ function Live() {
 
   // Setup Realtime Subscription and Presence
   const setupRealtime = useCallback(() => {
+    if (!isSupabaseConfigured || !supabase) return () => {};
     // 1. Setup subscription for messages and reactions (Active for all users & guests)
     let messageSubscription = supabase
       .channel('public:messages')
@@ -533,40 +567,36 @@ function Live() {
       });
     }
 
+    messageChannelRef.current = messageSubscription;
     messageSubscription.subscribe((status) => {
       if (status === 'SUBSCRIBED') setConnectionStatus('online');
       if (status === 'CLOSED') setConnectionStatus('offline');
       if (status === 'CHANNEL_ERROR') setConnectionStatus('offline');
     });
 
-    // 2. Setup subscription for presence (Online Users)
-    let presenceChannel = null;
-    if (user?.id) {
-      presenceChannel = supabase.channel('online-users');
+    // 2. Setup subscription for presence (Online Users) via shared coordinator
+    const presenceTrackPayload = user?.id
+      ? {
+          id: userRef.current?.id || user.id,
+          username: userRef.current?.username || 'Member',
+          role: userRef.current?.role || 'USER',
+          onlineAt: new Date().toISOString(),
+        }
+      : null;
 
-      presenceChannel
-        .on('presence', { event: 'sync' }, () => {
-          const newState = presenceChannel.presenceState();
-          const activeUsers = {};
-          Object.keys(newState).forEach(key => {
-            if (newState[key] && newState[key][0]) {
-              const userData = newState[key][0];
-              activeUsers[userData.id || userData.username] = userData;
-            }
-          });
-          setOnlineUsers(activeUsers);
-        })
-        .subscribe(async (status) => {
-          if (status === 'SUBSCRIBED' && userRef.current) {
-            await presenceChannel.track({
-              id: userRef.current.id,
-              username: userRef.current.username,
-              role: userRef.current.role,
-              onlineAt: new Date().toISOString(),
-            });
+    const unsubscribePresence = subscribeOnlinePresence({
+      trackPayload: presenceTrackPayload,
+      onSync: (newState) => {
+        const activeUsers = {};
+        Object.keys(newState || {}).forEach(key => {
+          if (newState[key] && newState[key][0]) {
+            const userData = newState[key][0];
+            activeUsers[userData.id || userData.username] = userData;
           }
         });
-    }
+        setOnlineUsers(activeUsers);
+      }
+    });
 
     // 3. Setup subscription for current user profile changes (Instant Kick / Mute / Role Update)
     let userProfileSubscription = null;
@@ -621,8 +651,11 @@ function Live() {
     }
 
     return () => {
+      if (messageChannelRef.current === messageSubscription) {
+        messageChannelRef.current = null;
+      }
       supabase.removeChannel(messageSubscription);
-      if (presenceChannel) supabase.removeChannel(presenceChannel);
+      unsubscribePresence();
       if (userProfileSubscription) supabase.removeChannel(userProfileSubscription);
     };
   }, [user?.id, navigate]);
@@ -630,6 +663,14 @@ function Live() {
   // Load initial data
   useEffect(() => {
     let isMounted = true;
+    if (!isSupabaseConfigured || !supabase) {
+      setLoading(false);
+      setConnectionStatus('offline');
+      return () => {
+        isMounted = false;
+      };
+    }
+
     const safetyTimeout = setTimeout(() => {
       if (isMounted) {
         setLoading(false);
@@ -655,7 +696,7 @@ function Live() {
 
     // Fallback polling: Fetch messages every 30 seconds only if connection is offline
     pollingIntervalRef.current = setInterval(() => {
-      if (document.visibilityState === 'visible' && connectionStatus === 'offline') {
+      if (document.visibilityState === 'visible' && connectionStatusRef.current === 'offline') {
         fetchMessagesFromDatabase();
       }
     }, 30000);
@@ -663,6 +704,8 @@ function Live() {
     fetchSystemConfig();
 
     return () => {
+      isMounted = false;
+      clearTimeout(safetyTimeout);
       if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -670,6 +713,7 @@ function Live() {
 
   // Fetch Dynamic System Config
   const fetchSystemConfig = async () => {
+    if (!isSupabaseConfigured || !supabase) return;
     try {
       const { data, error } = await supabase.from('system_config').select('*');
       if (error) throw error;
@@ -758,14 +802,14 @@ function Live() {
     }
   }, [messages, showScrollToBottom, scrollToBottom]);
 
-  // Handle typing indicator broadcast
+  // Handle typing indicator broadcast (menggunakan instance channel aktif di messageChannelRef)
   const handleTyping = useCallback(() => {
-    if (!user) return;
+    if (!user || !isSupabaseConfigured || !messageChannelRef.current) return;
     
     if (!isTyping) {
       setIsTyping(true);
       // Broadcast signal to others
-      supabase.channel('public:messages').send({
+      messageChannelRef.current.send({
         type: 'broadcast',
         event: 'typing',
         payload: { id: user.id, username: user.username }
@@ -887,16 +931,18 @@ function Live() {
     }
   }, [user, activeChannel]);
 
-  // Handle Polling Vote
+  // Handle Polling Vote (Atomik via RPC + optimistic update)
   const handleVotePoll = useCallback(async (pollId, optionId) => {
-    if (!user) return;
+    if (!user || !isSupabaseConfigured || !supabase) return;
     const currentUserId = user.id || user.username;
+    let targetMessageId = null;
 
     setMessages(prev => prev.map(msg => {
       if (msg.poll_data && (msg.poll_data.id === pollId || msg.id === pollId)) {
         const prevVoted = msg.poll_data.votedUsers?.[currentUserId];
         if (prevVoted === optionId) return msg;
 
+        targetMessageId = msg.id;
         const updatedOptions = msg.poll_data.options.map(opt => {
           let votes = opt.votes || 0;
           if (opt.id === optionId) votes += 1;
@@ -914,30 +960,48 @@ function Live() {
           totalVotes: updatedOptions.reduce((s, o) => s + o.votes, 0)
         };
 
-        if (msg.id) {
-          supabase
-            .from('messages')
-            .update({ poll_data: updatedPoll })
-            .eq('id', msg.id)
-            .then(() => {});
-        }
-
         return { ...msg, poll_data: updatedPoll };
       }
       return msg;
     }));
-  }, [user]);
 
-  // Handle Best Answer Toggle
+    const resolvedId = targetMessageId || (typeof pollId === 'number' ? pollId : null);
+    if (resolvedId) {
+      try {
+        const { data: rpcPoll, error: rpcError } = await supabase.rpc('vote_message_poll', {
+          p_message_id: resolvedId,
+          p_option_id: optionId
+        });
+        if (rpcError) throw rpcError;
+        if (rpcPoll) {
+          setMessages(prev => prev.map(m => (m.id === resolvedId ? { ...m, poll_data: rpcPoll } : m)));
+        }
+      } catch (err) {
+        console.warn('Failed to vote poll:', err);
+        setError('Gagal menyimpan voting polling.');
+        fetchMessagesFromDatabase();
+      }
+    }
+  }, [user, fetchMessagesFromDatabase]);
+
+  // Handle Best Answer Toggle (Via RPC terotorisasi pemilik thread / staff)
   const handleToggleBestAnswer = useCallback(async (message) => {
-    if (!user) return;
+    if (!user || !isSupabaseConfigured || !supabase) return;
     const newStatus = !message.is_best_answer;
     setMessages(prev => prev.map(m => m.id === message.id ? { ...m, is_best_answer: newStatus } : m));
 
     try {
-      await supabase.from('messages').update({ is_best_answer: newStatus }).eq('id', message.id);
+      const { data: rpcStatus, error } = await supabase.rpc('toggle_best_answer', {
+        p_message_id: message.id
+      });
+      if (error) throw error;
+      if (typeof rpcStatus === 'boolean') {
+        setMessages(prev => prev.map(m => m.id === message.id ? { ...m, is_best_answer: rpcStatus } : m));
+      }
     } catch (err) {
       console.warn('Failed to toggle best answer:', err);
+      setMessages(prev => prev.map(m => m.id === message.id ? { ...m, is_best_answer: message.is_best_answer } : m));
+      setError('Gagal mengubah status Best Answer.');
     }
   }, [user]);
 
@@ -1216,24 +1280,24 @@ function Live() {
   };
 
   const fetchAllProfiles = async () => {
+    if (!isSupabaseConfigured || !supabase) return;
     try {
-      // Use 'profiles' view to respect email privacy
+      // Gunakan RPC get_public_profiles agar tetap menghormati privasi email di RLS users
       let { data, error } = await supabase
-        .from('profiles')
-        .select('*')
+        .rpc('get_public_profiles')
         .order('nama', { ascending: true });
 
       if (error) {
         const res = await supabase
-          .from('users')
-          .select('id, nama, role, status, bio, custom_status, created_at')
+          .from('profiles')
+          .select('*')
           .order('nama', { ascending: true });
         data = res.data;
       }
 
       const mapped = (data || []).map(u => ({
         ...u,
-        username: u.nama || u.email?.split('@')[0] || 'Member'
+        username: u.nama || 'Member'
       }));
       setAllProfiles(mapped);
     } catch (err) {
@@ -1368,12 +1432,14 @@ function Live() {
     try {
       if (existing) {
         if (existing.id && !String(existing.id).startsWith('temp-')) {
-          await supabase.from('reactions').delete().eq('id', existing.id);
+          const { error } = await supabase.from('reactions').delete().eq('id', existing.id);
+          if (error) throw error;
         } else {
-          await supabase.from('reactions').delete().match({ message_id: messageId, user_id: user.id, emoji });
+          const { error } = await supabase.from('reactions').delete().match({ message_id: messageId, user_id: user.id, emoji });
+          if (error) throw error;
         }
       } else {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('reactions')
           .insert({
             message_id: messageId,
@@ -1383,6 +1449,7 @@ function Live() {
           .select()
           .maybeSingle();
 
+        if (error) throw error;
         if (data) {
           setReactions(prev => {
             const current = prev[messageId] || [];
@@ -1441,6 +1508,7 @@ function Live() {
 
   // Delete message with optimistic removal
   const handleDeleteMessage = useCallback(async (message) => {
+    if (!isSupabaseConfigured || !supabase) return;
     const messageId = typeof message === 'object' ? message.id : message;
     if (!window.confirm('Yakin ingin menghapus pesan ini?')) return;
     
@@ -1451,9 +1519,9 @@ function Live() {
       // 1. If has media, delete from storage
       if (typeof message === 'object' && message.media_url) {
         try {
-          const path = message.media_url.split('/public/live_discussion_media/')[1];
-          if (path) {
-            await supabase.storage.from('live_discussion_media').remove([path]);
+          const rawPath = message.media_url.split('/public/live_discussion_media/')[1]?.split('?')[0];
+          if (rawPath) {
+            await supabase.storage.from('live_discussion_media').remove([decodeURIComponent(rawPath)]);
           }
         } catch (storageErr) {
           console.warn('Could not cleanup storage asset:', storageErr);
@@ -1631,7 +1699,7 @@ function Live() {
         channelCounts={channelCounts}
       />
 
-      <main className="flex-1 min-h-0 w-full max-w-6xl mx-auto flex flex-col pt-2 sm:pt-4 pb-3 sm:pb-6 px-2 sm:px-6 relative z-10 overflow-hidden">
+      <main className="flex-1 min-h-0 w-full max-w-6xl mx-auto flex flex-col pt-1 sm:pt-3 pb-2 sm:pb-4 px-2 sm:px-4 lg:px-6 relative z-10 overflow-hidden">
         {/* Alerts Container */}
         <div className="fixed top-20 sm:top-24 right-4 z-[60] flex flex-col gap-2 max-w-xs pointer-events-none">
           <AnimatePresence>
@@ -1668,12 +1736,12 @@ function Live() {
 
 
         {/* Chat Section */}
-        <div className="flex-1 min-h-0 flex flex-col bg-[var(--theme-surface)] backdrop-blur-[30px] rounded-[3rem] border border-[var(--theme-border)] overflow-hidden shadow-2xl">
+        <div className="flex-1 min-h-0 flex flex-col bg-[var(--theme-surface)] backdrop-blur-[30px] rounded-2xl sm:rounded-3xl lg:rounded-[3rem] border border-[var(--theme-border)] overflow-hidden shadow-2xl">
           {/* Scrollable Message List */}
           <div 
             ref={messagesContainerRef}
             onScroll={handleScroll}
-            className="flex-1 min-h-0 overflow-y-auto px-6 py-8 space-y-6 custom-scrollbar"
+            className="flex-1 min-h-0 overflow-y-auto px-3 sm:px-5 lg:px-6 py-4 sm:py-6 lg:py-8 space-y-3 sm:space-y-4 lg:space-y-6 custom-scrollbar"
             style={{ overflowAnchor: 'auto', WebkitOverflowScrolling: 'touch' }}
           >
             {messages.length === 0 ? (
@@ -1683,7 +1751,7 @@ function Live() {
                 <p className="text-sm text-[var(--theme-text-muted)]">Jadilah yang pertama untuk memulai!</p>
               </div>
             ) : (
-              <div className="flex flex-col justify-start gap-6 min-h-full">
+              <div className="flex flex-col justify-start gap-3 sm:gap-4 lg:gap-6 min-h-full">
                 <AnimatePresence initial={false}>
                   {/* Typing Indicator Bubble */}
                   {Object.values(typingUsers).length > 0 && (
@@ -1769,7 +1837,7 @@ function Live() {
 
           {/* Interaction Bar Container or Guest CTA (Stabilized Height) */}
           {user && (
-            <div className="p-2.5 sm:p-5 bg-[var(--theme-surface)] border-t border-[var(--theme-border)] backdrop-blur-xl relative flex items-center justify-center">
+            <div className="p-2 sm:p-3 lg:p-5 bg-[var(--theme-surface)] border-t border-[var(--theme-border)] backdrop-blur-xl relative flex items-center justify-center">
               {/* Scroll to Bottom FAB */}
             <AnimatePresence>
               {showScrollToBottom && (

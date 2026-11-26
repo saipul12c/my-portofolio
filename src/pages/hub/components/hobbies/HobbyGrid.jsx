@@ -33,7 +33,7 @@ function HobbyGrid({
     <div className="flex flex-col items-center w-full max-w-6xl">
       <m.section
         layout="position"
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8 sm:gap-8 pt-2 w-full"
       >
         <AnimatePresence mode="popLayout">
           {displayedHobbies.map((hobby) => (

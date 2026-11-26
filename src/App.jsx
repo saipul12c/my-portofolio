@@ -8,6 +8,7 @@ import Footer from "./components/Footer";
 import ProtectedErrorPage from "./components/ProtectedErrorPage";
 import { ErrorProvider } from "./context/ErrorContext";
 import UpdateNotification from "./components/UpdateNotification";
+import MaintenanceNotification from "./components/MaintenanceNotification";
 import GlobalErrorBoundary from "./components/GlobalErrorBoundary";
 
 // 🎬 Loader animasi
@@ -25,6 +26,15 @@ import DetailCommitment from "./components/helpbutton/komit/detail/DetailCommitm
 // 🛡️ Tambahan: Launch guard dan halaman launching
 import LaunchGuard from "./components/LaunchGuard";
 import LaunchingPage from "./pages/LaunchingPage";
+import { MaintenanceProvider } from "./context/MaintenanceContext";
+import MaintenanceGuard from "./components/MaintenanceGuard";
+import MaintenanceAdminProtectedRoute from "./pages/admin/maintenance/MaintenanceAdminProtectedRoute";
+import {
+  MAINTENANCE_ADMIN_LOGIN_PATH,
+  MAINTENANCE_ADMIN_DASHBOARD_PATH,
+} from "./config/maintenanceRoutes";
+const MaintenanceAdminLogin = lazy(() => import("./pages/admin/maintenance/MaintenanceAdminLogin"));
+const MaintenanceDashboard = lazy(() => import("./pages/admin/maintenance/MaintenanceDashboard"));
 
 // website tambahan
 const Qodam = lazy(() => import("./pages/website/qodam/Qodam.jsx"));
@@ -157,6 +167,8 @@ const DefaultLayout = ({ children }) => {
     "/blog-admin",
     "/blog/secret-login",
     "/blog/admin",
+    "/internal/ctrl-m9x",
+    "/503",
     "/year-end",
     "/buat-kamu"
   ];
@@ -242,7 +254,8 @@ export default function App() {
     <Router>
       <ErrorProvider>
         <AppAuthProvider>
-          <RecaptchaProvider>
+          <MaintenanceProvider>
+            <RecaptchaProvider>
             <CommunityProvider>
               <div className="flex flex-col min-h-screen bg-[var(--color-gray-900)] text-white selection:bg-cyan-400/30 selection:text-cyan-200">
                 {/* Animasi Loader */}
@@ -261,6 +274,8 @@ export default function App() {
                     <PageTracker />
                     {/* Notifikasi pembaruan versi website */}
                     <UpdateNotification />
+                    {/* Notifikasi deteksi Maintenance halaman / layanan secara real-time */}
+                    <MaintenanceNotification />
                     {/* 🎉 Sambutan Tahun Baru Otomatis (Muncul saat Akhir Tahun & 3 Hari Awal Tahun) */}
                     <Suspense fallback={null}>
                       <TahunBaru isGlobal={true} />
@@ -271,6 +286,7 @@ export default function App() {
                           <div className="w-10 h-10 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin"></div>
                         </div>
                       }>
+                        <MaintenanceGuard>
                         <Routes>
                           {/* Redirects: direct certain paths to /coming-soon
                   Disabled temporarily to re-enable development for these routes.
@@ -281,6 +297,21 @@ export default function App() {
                           <Route path="/streming" element={<Navigate to="/coming-soon" replace />} />
                           <Route path="/login" element={<Navigate to="/coming-soon" replace />} />
                           <Route path="/register" element={<Navigate to="/coming-soon" replace />} />
+
+                          {/* 🛠️ Modul Admin Maintenance — tersembunyi & dilindungi Supabase Auth */}
+                          <Route path={MAINTENANCE_ADMIN_LOGIN_PATH} element={<MaintenanceAdminLogin />} />
+                          <Route
+                            path={MAINTENANCE_ADMIN_DASHBOARD_PATH}
+                            element={
+                              <MaintenanceAdminProtectedRoute>
+                                <MaintenanceDashboard />
+                              </MaintenanceAdminProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/internal/ctrl-m9x"
+                            element={<Navigate to={MAINTENANCE_ADMIN_DASHBOARD_PATH} replace />}
+                          />
 
                           {/* 🚀 Halaman Launching — berdiri sendiri */}
                           <Route path="/launching" element={<LaunchingPage />} />
@@ -483,6 +514,7 @@ export default function App() {
                             }
                           />
                         </Routes>
+                        </MaintenanceGuard>
                       </Suspense>
                     </GlobalErrorBoundary>
                   </motion.div>
@@ -490,6 +522,7 @@ export default function App() {
               </div>
             </CommunityProvider>
           </RecaptchaProvider>
+          </MaintenanceProvider>
         </AppAuthProvider>
       </ErrorProvider>
     </Router>
